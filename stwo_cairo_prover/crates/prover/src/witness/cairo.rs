@@ -412,46 +412,1236 @@ impl CairoInteractionClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
     ) -> CairoInteractionClaim {
-        let opcodes_interaction_claims = self
-            .opcodes_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let verify_instruction_interaction_claim = self
-            .verify_instruction_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let blake_context_interaction_claim = self
-            .blake_context_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let builtins_interaction_claims = self
-            .builtins_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let pedersen_context_interaction_claim = self
-            .pedersen_context_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let poseidon_context_interaction_claim = self
-            .poseidon_context_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let memory_address_to_id_interaction_claim = self
-            .memory_address_to_id_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let memory_id_to_value_interaction_claim = self
-            .memory_id_to_value_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
+        use cairo_air::blake::air::{
+            BlakeContextInteractionClaim, InteractionClaim as BlakeInteractionClaim,
+        };
+        use cairo_air::builtins_air::BuiltinsInteractionClaim;
+        use cairo_air::opcodes_air::OpcodeInteractionClaim;
+        use cairo_air::pedersen::air::{
+            InteractionClaim as PedersenInteractionClaim, PedersenContextInteractionClaim,
+        };
+        use cairo_air::poseidon::air::{
+            InteractionClaim as PoseidonInteractionClaim, PoseidonContextInteractionClaim,
+        };
+        use cairo_air::range_checks_air::RangeChecksInteractionClaim;
+        use rayon::scope;
 
-        let range_checks_interaction_claim = self
-            .range_checks_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let verify_bitwise_xor_4_interaction_claim = self
-            .verify_bitwise_xor_4_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let verify_bitwise_xor_7_interaction_claim = self
-            .verify_bitwise_xor_7_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let verify_bitwise_xor_8_interaction_claim = self
-            .verify_bitwise_xor_8_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let verify_bitwise_xor_9_interaction_claim = self
-            .verify_bitwise_xor_9_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
+        use crate::witness::blake_context::BlakeInteractionClaimGenerator;
+        use crate::witness::components::pedersen::PedersenInteractionClaimGenerator;
+        use crate::witness::components::poseidon::PoseidonInteractionClaimGenerator;
+        use crate::witness::utils::DeferredTreeBuilder;
+
+        // Destructure all nested interaction claim generators to access atomic generators.
+        let OpcodesInteractionClaimGenerator {
+            add: opcodes_add,
+            add_small: opcodes_add_small,
+            add_ap: opcodes_add_ap,
+            assert_eq: opcodes_assert_eq,
+            assert_eq_imm: opcodes_assert_eq_imm,
+            assert_eq_double_deref: opcodes_assert_eq_double_deref,
+            blake: opcodes_blake,
+            call: opcodes_call,
+            call_rel_imm: opcodes_call_rel_imm,
+            generic_opcode_interaction_gens: opcodes_generic,
+            jnz: opcodes_jnz,
+            jnz_taken: opcodes_jnz_taken,
+            jump: opcodes_jump,
+            jump_double_deref: opcodes_jump_double_deref,
+            jump_rel: opcodes_jump_rel,
+            jump_rel_imm: opcodes_jump_rel_imm,
+            mul: opcodes_mul,
+            mul_small: opcodes_mul_small,
+            qm31: opcodes_qm31,
+            ret_interaction_gens: opcodes_ret,
+        } = self.opcodes_interaction_gen;
+
+        let RangeChecksInteractionClaimGenerator {
+            rc_6_interaction_gen,
+            rc_8_interaction_gen,
+            rc_11_interaction_gen,
+            rc_12_interaction_gen,
+            rc_18_interaction_gen,
+            rc_20_interaction_gen,
+            rc_4_3_interaction_gen,
+            rc_4_4_interaction_gen,
+            rc_9_9_interaction_gen,
+            rc_7_2_5_interaction_gen,
+            rc_3_6_6_3_interaction_gen,
+            rc_4_4_4_4_interaction_gen,
+            rc_3_3_3_3_3_interaction_gen,
+        } = self.range_checks_interaction_gen;
+
+        let BuiltinsInteractionClaimGenerator {
+            add_mod_builtin_interaction_gen,
+            bitwise_builtin_interaction_gen,
+            mul_mod_builtin_interaction_gen,
+            pedersen_builtin_interaction_gen,
+            poseidon_builtin_interaction_gen,
+            range_check_96_builtin_interaction_gen,
+            range_check_128_builtin_interaction_gen,
+        } = self.builtins_interaction_gen;
+
+        // Extract optional context generators and destructure them into individual Option fields.
+        // This allows us to move each field independently into different spawn closures.
+        let (
+            blake_round_gen,
+            blake_g_gen,
+            blake_sigma_gen,
+            blake_triple_xor_32_gen,
+            blake_verify_bitwise_xor_12_gen,
+        ) = match self.blake_context_interaction_gen.gen {
+            Some(BlakeInteractionClaimGenerator {
+                blake_round_interaction_gen,
+                blake_g_interaction_gen,
+                blake_sigma_interaction_gen,
+                triple_xor_32_interaction_gen,
+                verify_bitwise_xor_12_interaction_gen,
+            }) => (
+                Some(blake_round_interaction_gen),
+                Some(blake_g_interaction_gen),
+                Some(blake_sigma_interaction_gen),
+                Some(triple_xor_32_interaction_gen),
+                Some(verify_bitwise_xor_12_interaction_gen),
+            ),
+            None => (None, None, None, None, None),
+        };
+
+        let (pedersen_aggregator_gen, partial_ec_mul_gen, pedersen_points_table_gen) =
+            match self.pedersen_context_interaction_gen.gen {
+                Some(PedersenInteractionClaimGenerator {
+                    pedersen_aggregator_interaction_gen,
+                    partial_ec_mul_interaction_gen,
+                    pedersen_points_table_interaction_gen,
+                }) => (
+                    Some(pedersen_aggregator_interaction_gen),
+                    Some(partial_ec_mul_interaction_gen),
+                    Some(pedersen_points_table_interaction_gen),
+                ),
+                None => (None, None, None),
+            };
+
+        let (
+            poseidon_aggregator_gen,
+            poseidon_3_partial_rounds_chain_gen,
+            poseidon_full_round_chain_gen,
+            cube_252_gen,
+            poseidon_round_keys_gen,
+            range_check_252_width_27_gen,
+        ) = match self.poseidon_context_interaction_gen.gen {
+            Some(PoseidonInteractionClaimGenerator {
+                poseidon_aggregator_interaction_gen,
+                poseidon_3_partial_rounds_chain_interaction_gen,
+                poseidon_full_round_chain_interaction_gen,
+                cube_252_interaction_gen,
+                poseidon_round_keys_interaction_gen,
+                range_check_felt_252_width_27_interaction_gen,
+            }) => (
+                Some(poseidon_aggregator_interaction_gen),
+                Some(poseidon_3_partial_rounds_chain_interaction_gen),
+                Some(poseidon_full_round_chain_interaction_gen),
+                Some(cube_252_interaction_gen),
+                Some(poseidon_round_keys_interaction_gen),
+                Some(range_check_felt_252_width_27_interaction_gen),
+            ),
+            None => (None, None, None, None, None, None),
+        };
+
+        // Result holders for parallel execution.
+        // Opcodes
+        let mut opcodes_add_result = None;
+        let mut opcodes_add_small_result = None;
+        let mut opcodes_add_ap_result = None;
+        let mut opcodes_assert_eq_result = None;
+        let mut opcodes_assert_eq_imm_result = None;
+        let mut opcodes_assert_eq_double_deref_result = None;
+        let mut opcodes_blake_result = None;
+        let mut opcodes_call_result = None;
+        let mut opcodes_call_rel_imm_result = None;
+        let mut opcodes_generic_result = None;
+        let mut opcodes_jnz_result = None;
+        let mut opcodes_jnz_taken_result = None;
+        let mut opcodes_jump_result = None;
+        let mut opcodes_jump_double_deref_result = None;
+        let mut opcodes_jump_rel_result = None;
+        let mut opcodes_jump_rel_imm_result = None;
+        let mut opcodes_mul_result = None;
+        let mut opcodes_mul_small_result = None;
+        let mut opcodes_qm31_result = None;
+        let mut opcodes_ret_result = None;
+
+        // Verify instruction
+        let mut verify_instruction_result = None;
+
+        // Memory
+        let mut memory_address_to_id_result = None;
+        let mut memory_id_to_value_result = None;
+
+        // Blake
+        let mut blake_round_result = None;
+        let mut blake_g_result = None;
+        let mut blake_sigma_result = None;
+        let mut blake_triple_xor_32_result = None;
+        let mut blake_verify_bitwise_xor_12_result = None;
+
+        // Builtins
+        let mut add_mod_builtin_result = None;
+        let mut bitwise_builtin_result = None;
+        let mut mul_mod_builtin_result = None;
+        let mut pedersen_builtin_result = None;
+        let mut poseidon_builtin_result = None;
+        let mut range_check_96_builtin_result = None;
+        let mut range_check_128_builtin_result = None;
+
+        // Pedersen
+        let mut pedersen_aggregator_result = None;
+        let mut partial_ec_mul_result = None;
+        let mut pedersen_points_table_result = None;
+
+        // Poseidon
+        let mut poseidon_aggregator_result = None;
+        let mut poseidon_3_partial_rounds_chain_result = None;
+        let mut poseidon_full_round_chain_result = None;
+        let mut cube_252_result = None;
+        let mut poseidon_round_keys_result = None;
+        let mut range_check_252_width_27_result = None;
+
+        // Range checks
+        let mut rc_6_result = None;
+        let mut rc_8_result = None;
+        let mut rc_11_result = None;
+        let mut rc_12_result = None;
+        let mut rc_18_result = None;
+        let mut rc_20_result = None;
+        let mut rc_4_3_result = None;
+        let mut rc_4_4_result = None;
+        let mut rc_9_9_result = None;
+        let mut rc_7_2_5_result = None;
+        let mut rc_3_6_6_3_result = None;
+        let mut rc_4_4_4_4_result = None;
+        let mut rc_3_3_3_3_3_result = None;
+
+        // Verify bitwise xor
+        let mut verify_bitwise_xor_4_result = None;
+        let mut verify_bitwise_xor_7_result = None;
+        let mut verify_bitwise_xor_8_result = None;
+        let mut verify_bitwise_xor_9_result = None;
+
+        // Run all atomic write_interaction_trace calls in parallel.
+        // Use join to separate partial_ec_mul from the rest.
+        // partial_ec_mul gets its own thread pool with 16 threads.
+        let partial_ec_mul_pool = rayon::ThreadPoolBuilder::new()
+            .num_threads(16)
+            .build()
+            .expect("Failed to build partial_ec_mul thread pool");
+
+        // Sequential pool with 1 thread for small generators that don't benefit from parallelism.
+        let sequential_pool = rayon::ThreadPoolBuilder::new()
+            .num_threads(1)
+            .build()
+            .expect("Failed to build sequential thread pool");
+
+        rayon::join(
+            // Left side: partial_ec_mul with dedicated 16-thread pool
+            || {
+                partial_ec_mul_result = partial_ec_mul_gen.map(|gen| {
+                    partial_ec_mul_pool.install(|| {
+                        let mut deferred = DeferredTreeBuilder::new();
+                        let claim =
+                            gen.write_interaction_trace(&mut deferred, common_lookup_elements);
+                        (claim, deferred)
+                    })
+                });
+            },
+            // Right side: all other generators
+            || {
+                scope(|s| {
+                    // Opcodes
+                    s.spawn(|_| {
+                        opcodes_add_result = Some(
+                            opcodes_add
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_add_small_result = Some(
+                            opcodes_add_small
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_add_ap_result = Some(
+                            opcodes_add_ap
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_assert_eq_result = Some(
+                            opcodes_assert_eq
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_assert_eq_imm_result = Some(
+                            opcodes_assert_eq_imm
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_assert_eq_double_deref_result = Some(
+                            opcodes_assert_eq_double_deref
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_blake_result = Some(
+                            opcodes_blake
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_call_result = Some(
+                            opcodes_call
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_call_rel_imm_result = Some(
+                            opcodes_call_rel_imm
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_generic_result = Some(
+                            opcodes_generic
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_jnz_result = Some(
+                            opcodes_jnz
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_jnz_taken_result = Some(
+                            opcodes_jnz_taken
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_jump_result = Some(
+                            opcodes_jump
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_jump_double_deref_result = Some(
+                            opcodes_jump_double_deref
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_jump_rel_result = Some(
+                            opcodes_jump_rel
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_jump_rel_imm_result = Some(
+                            opcodes_jump_rel_imm
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_mul_result = Some(
+                            opcodes_mul
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_mul_small_result = Some(
+                            opcodes_mul_small
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_qm31_result = Some(
+                            opcodes_qm31
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+                    s.spawn(|_| {
+                        opcodes_ret_result = Some(
+                            opcodes_ret
+                                .into_iter()
+                                .map(|gen| {
+                                    let mut deferred = DeferredTreeBuilder::new();
+                                    let claim = gen.write_interaction_trace(
+                                        &mut deferred,
+                                        common_lookup_elements,
+                                    );
+                                    (claim, deferred)
+                                })
+                                .collect::<Vec<_>>(),
+                        );
+                    });
+
+                    // Blake
+                    s.spawn(|_| {
+                        blake_round_result = blake_round_gen.map(|gen| {
+                            let mut deferred = DeferredTreeBuilder::new();
+                            let claim =
+                                gen.write_interaction_trace(&mut deferred, common_lookup_elements);
+                            (claim, deferred)
+                        });
+                    });
+                    s.spawn(|_| {
+                        blake_g_result = blake_g_gen.map(|gen| {
+                            let mut deferred = DeferredTreeBuilder::new();
+                            let claim =
+                                gen.write_interaction_trace(&mut deferred, common_lookup_elements);
+                            (claim, deferred)
+                        });
+                    });
+                    s.spawn(|_| {
+                        blake_sigma_result = blake_sigma_gen.map(|gen| {
+                            let mut deferred = DeferredTreeBuilder::new();
+                            let claim =
+                                gen.write_interaction_trace(&mut deferred, common_lookup_elements);
+                            (claim, deferred)
+                        });
+                    });
+                    s.spawn(|_| {
+                        blake_triple_xor_32_result = blake_triple_xor_32_gen.map(|gen| {
+                            let mut deferred = DeferredTreeBuilder::new();
+                            let claim =
+                                gen.write_interaction_trace(&mut deferred, common_lookup_elements);
+                            (claim, deferred)
+                        });
+                    });
+                    s.spawn(|_| {
+                        blake_verify_bitwise_xor_12_result =
+                            blake_verify_bitwise_xor_12_gen.map(|gen| {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                (claim, deferred)
+                            });
+                    });
+
+                    // Builtins
+                    s.spawn(|_| {
+                        add_mod_builtin_result = add_mod_builtin_interaction_gen.map(|gen| {
+                            let mut deferred = DeferredTreeBuilder::new();
+                            let claim =
+                                gen.write_interaction_trace(&mut deferred, common_lookup_elements);
+                            (claim, deferred)
+                        });
+                    });
+                    s.spawn(|_| {
+                        bitwise_builtin_result = bitwise_builtin_interaction_gen.map(|gen| {
+                            let mut deferred = DeferredTreeBuilder::new();
+                            let claim =
+                                gen.write_interaction_trace(&mut deferred, common_lookup_elements);
+                            (claim, deferred)
+                        });
+                    });
+                    s.spawn(|_| {
+                        mul_mod_builtin_result = mul_mod_builtin_interaction_gen.map(|gen| {
+                            let mut deferred = DeferredTreeBuilder::new();
+                            let claim =
+                                gen.write_interaction_trace(&mut deferred, common_lookup_elements);
+                            (claim, deferred)
+                        });
+                    });
+                    s.spawn(|_| {
+                        range_check_96_builtin_result =
+                            range_check_96_builtin_interaction_gen.map(|gen| {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                (claim, deferred)
+                            });
+                    });
+                    s.spawn(|_| {
+                        range_check_128_builtin_result = range_check_128_builtin_interaction_gen
+                            .map(|gen| {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                (claim, deferred)
+                            });
+                    });
+
+                    // Pedersen points table
+                    s.spawn(|_| {
+                        pedersen_points_table_result = pedersen_points_table_gen.map(|gen| {
+                            let mut deferred = DeferredTreeBuilder::new();
+                            let claim =
+                                gen.write_interaction_trace(&mut deferred, common_lookup_elements);
+                            (claim, deferred)
+                        });
+                    });
+
+                    // Poseidon
+                    s.spawn(|_| {
+                        poseidon_3_partial_rounds_chain_result =
+                            poseidon_3_partial_rounds_chain_gen.map(|gen| {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                (claim, deferred)
+                            });
+                    });
+                    s.spawn(|_| {
+                        poseidon_full_round_chain_result =
+                            poseidon_full_round_chain_gen.map(|gen| {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                (claim, deferred)
+                            });
+                    });
+                    s.spawn(|_| {
+                        cube_252_result = cube_252_gen.map(|gen| {
+                            let mut deferred = DeferredTreeBuilder::new();
+                            let claim =
+                                gen.write_interaction_trace(&mut deferred, common_lookup_elements);
+                            (claim, deferred)
+                        });
+                    });
+                    s.spawn(|_| {
+                        poseidon_round_keys_result = poseidon_round_keys_gen.map(|gen| {
+                            let mut deferred = DeferredTreeBuilder::new();
+                            let claim =
+                                gen.write_interaction_trace(&mut deferred, common_lookup_elements);
+                            (claim, deferred)
+                        });
+                    });
+                    s.spawn(|_| {
+                        range_check_252_width_27_result = range_check_252_width_27_gen.map(|gen| {
+                            let mut deferred = DeferredTreeBuilder::new();
+                            let claim =
+                                gen.write_interaction_trace(&mut deferred, common_lookup_elements);
+                            (claim, deferred)
+                        });
+                    });
+
+                    // Memory
+                    s.spawn(|_| {
+                        let mut deferred = DeferredTreeBuilder::new();
+                        let claim = self
+                            .memory_address_to_id_interaction_gen
+                            .write_interaction_trace(&mut deferred, common_lookup_elements);
+                        memory_address_to_id_result = Some((claim, deferred));
+                    });
+                    s.spawn(|_| {
+                        let mut deferred = DeferredTreeBuilder::new();
+                        let claim = self
+                            .memory_id_to_value_interaction_gen
+                            .write_interaction_trace(&mut deferred, common_lookup_elements);
+                        memory_id_to_value_result = Some((claim, deferred));
+                    });
+
+                    // Heavy range checks
+                    s.spawn(|_| {
+                        let mut deferred = DeferredTreeBuilder::new();
+                        let claim = rc_9_9_interaction_gen
+                            .write_interaction_trace(&mut deferred, common_lookup_elements);
+                        rc_9_9_result = Some((claim, deferred));
+                    });
+                    s.spawn(|_| {
+                        let mut deferred = DeferredTreeBuilder::new();
+                        let claim = rc_20_interaction_gen
+                            .write_interaction_trace(&mut deferred, common_lookup_elements);
+                        rc_20_result = Some((claim, deferred));
+                    });
+
+                    // Sequential spawn for small generators (1-thread pool)
+                    s.spawn(|_| {
+                        sequential_pool.install(|| {
+                            pedersen_aggregator_result = pedersen_aggregator_gen.map(|gen| {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                (claim, deferred)
+                            });
+                            poseidon_aggregator_result = poseidon_aggregator_gen.map(|gen| {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                (claim, deferred)
+                            });
+                            pedersen_builtin_result = pedersen_builtin_interaction_gen.map(|gen| {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                (claim, deferred)
+                            });
+                            poseidon_builtin_result = poseidon_builtin_interaction_gen.map(|gen| {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                (claim, deferred)
+                            });
+                            {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = rc_6_interaction_gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                rc_6_result = Some((claim, deferred));
+                            }
+                            {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = rc_8_interaction_gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                rc_8_result = Some((claim, deferred));
+                            }
+                            {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = rc_11_interaction_gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                rc_11_result = Some((claim, deferred));
+                            }
+                            {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = rc_12_interaction_gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                rc_12_result = Some((claim, deferred));
+                            }
+                            {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = rc_18_interaction_gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                rc_18_result = Some((claim, deferred));
+                            }
+                            {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = rc_4_3_interaction_gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                rc_4_3_result = Some((claim, deferred));
+                            }
+                            {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = rc_4_4_interaction_gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                rc_4_4_result = Some((claim, deferred));
+                            }
+                            {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = rc_7_2_5_interaction_gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                rc_7_2_5_result = Some((claim, deferred));
+                            }
+                            {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = rc_3_6_6_3_interaction_gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                rc_3_6_6_3_result = Some((claim, deferred));
+                            }
+                            {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = rc_4_4_4_4_interaction_gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                rc_4_4_4_4_result = Some((claim, deferred));
+                            }
+                            {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = rc_3_3_3_3_3_interaction_gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                rc_3_3_3_3_3_result = Some((claim, deferred));
+                            }
+                            {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = self
+                                    .verify_bitwise_xor_4_interaction_gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                verify_bitwise_xor_4_result = Some((claim, deferred));
+                            }
+                            {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = self
+                                    .verify_bitwise_xor_7_interaction_gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                verify_bitwise_xor_7_result = Some((claim, deferred));
+                            }
+                            {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = self
+                                    .verify_bitwise_xor_8_interaction_gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                verify_bitwise_xor_8_result = Some((claim, deferred));
+                            }
+                            {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = self
+                                    .verify_bitwise_xor_9_interaction_gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                verify_bitwise_xor_9_result = Some((claim, deferred));
+                            }
+                            {
+                                let mut deferred = DeferredTreeBuilder::new();
+                                let claim = self
+                                    .verify_instruction_interaction_gen
+                                    .write_interaction_trace(&mut deferred, common_lookup_elements);
+                                verify_instruction_result = Some((claim, deferred));
+                            }
+                        });
+                    });
+                });
+            },
+        );
+
+        // Now flush all deferred evals to tree_builder in the correct order.
+        // The order must match the original sequential order.
+
+        // Opcodes (in order) - inline the flush logic to avoid closure type inference issues
+        let add_interaction_claims: Vec<_> = opcodes_add_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+        let add_small_interaction_claims: Vec<_> = opcodes_add_small_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+        let add_ap_interaction_claims: Vec<_> = opcodes_add_ap_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+        let assert_eq_interaction_claims: Vec<_> = opcodes_assert_eq_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+        let assert_eq_imm_interaction_claims: Vec<_> = opcodes_assert_eq_imm_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+        let assert_eq_double_deref_interaction_claims: Vec<_> =
+            opcodes_assert_eq_double_deref_result
+                .unwrap()
+                .into_iter()
+                .map(|(claim, deferred)| {
+                    deferred.flush_to(tree_builder);
+                    claim
+                })
+                .collect();
+        let blake_interaction_claims: Vec<_> = opcodes_blake_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+        let call_interaction_claims: Vec<_> = opcodes_call_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+        let call_rel_imm_interaction_claims: Vec<_> = opcodes_call_rel_imm_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+        let generic_opcode_interaction_claims: Vec<_> = opcodes_generic_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+        let jnz_interaction_claims: Vec<_> = opcodes_jnz_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+        let jnz_taken_interaction_claims: Vec<_> = opcodes_jnz_taken_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+        let jump_interaction_claims: Vec<_> = opcodes_jump_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+        let jump_double_deref_interaction_claims: Vec<_> = opcodes_jump_double_deref_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+        let jump_rel_interaction_claims: Vec<_> = opcodes_jump_rel_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+        let jump_rel_imm_interaction_claims: Vec<_> = opcodes_jump_rel_imm_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+        let mul_interaction_claims: Vec<_> = opcodes_mul_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+        let mul_small_interaction_claims: Vec<_> = opcodes_mul_small_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+        let qm31_interaction_claims: Vec<_> = opcodes_qm31_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+        let ret_interaction_claims: Vec<_> = opcodes_ret_result
+            .unwrap()
+            .into_iter()
+            .map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            })
+            .collect();
+
+        let opcodes_interaction_claims = OpcodeInteractionClaim {
+            add: add_interaction_claims,
+            add_small: add_small_interaction_claims,
+            add_ap: add_ap_interaction_claims,
+            assert_eq: assert_eq_interaction_claims,
+            assert_eq_imm: assert_eq_imm_interaction_claims,
+            assert_eq_double_deref: assert_eq_double_deref_interaction_claims,
+            blake: blake_interaction_claims,
+            call: call_interaction_claims,
+            call_rel_imm: call_rel_imm_interaction_claims,
+            generic: generic_opcode_interaction_claims,
+            jnz: jnz_interaction_claims,
+            jnz_taken: jnz_taken_interaction_claims,
+            jump: jump_interaction_claims,
+            jump_double_deref: jump_double_deref_interaction_claims,
+            jump_rel: jump_rel_interaction_claims,
+            jump_rel_imm: jump_rel_imm_interaction_claims,
+            mul: mul_interaction_claims,
+            mul_small: mul_small_interaction_claims,
+            qm31: qm31_interaction_claims,
+            ret: ret_interaction_claims,
+        };
+
+        // Verify instruction
+        let (verify_instruction_interaction_claim, deferred) = verify_instruction_result.unwrap();
+        deferred.flush_to(tree_builder);
+
+        // Blake context
+        let blake_context_interaction_claim =
+            if let Some((blake_round_claim, deferred)) = blake_round_result {
+                deferred.flush_to(tree_builder);
+                let (blake_g_claim, deferred) = blake_g_result.unwrap();
+                deferred.flush_to(tree_builder);
+                let (blake_sigma_claim, deferred) = blake_sigma_result.unwrap();
+                deferred.flush_to(tree_builder);
+                let (triple_xor_32_claim, deferred) = blake_triple_xor_32_result.unwrap();
+                deferred.flush_to(tree_builder);
+                let (verify_bitwise_xor_12_claim, deferred) =
+                    blake_verify_bitwise_xor_12_result.unwrap();
+                deferred.flush_to(tree_builder);
+
+                BlakeContextInteractionClaim {
+                    claim: Some(BlakeInteractionClaim {
+                        blake_round: blake_round_claim,
+                        blake_g: blake_g_claim,
+                        blake_sigma: blake_sigma_claim,
+                        triple_xor_32: triple_xor_32_claim,
+                        verify_bitwise_xor_12: verify_bitwise_xor_12_claim,
+                    }),
+                }
+            } else {
+                BlakeContextInteractionClaim { claim: None }
+            };
+
+        // Builtins
+        let add_mod_builtin_interaction_claim = add_mod_builtin_result.map(|(claim, deferred)| {
+            deferred.flush_to(tree_builder);
+            claim
+        });
+        let bitwise_builtin_interaction_claim = bitwise_builtin_result.map(|(claim, deferred)| {
+            deferred.flush_to(tree_builder);
+            claim
+        });
+        let mul_mod_builtin_interaction_claim = mul_mod_builtin_result.map(|(claim, deferred)| {
+            deferred.flush_to(tree_builder);
+            claim
+        });
+        let pedersen_builtin_interaction_claim =
+            pedersen_builtin_result.map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            });
+        let poseidon_builtin_interaction_claim =
+            poseidon_builtin_result.map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            });
+        let range_check_96_builtin_interaction_claim =
+            range_check_96_builtin_result.map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            });
+        let range_check_128_builtin_interaction_claim =
+            range_check_128_builtin_result.map(|(claim, deferred)| {
+                deferred.flush_to(tree_builder);
+                claim
+            });
+
+        let builtins_interaction_claims = BuiltinsInteractionClaim {
+            add_mod_builtin: add_mod_builtin_interaction_claim,
+            bitwise_builtin: bitwise_builtin_interaction_claim,
+            mul_mod_builtin: mul_mod_builtin_interaction_claim,
+            pedersen_builtin: pedersen_builtin_interaction_claim,
+            poseidon_builtin: poseidon_builtin_interaction_claim,
+            range_check_96_builtin: range_check_96_builtin_interaction_claim,
+            range_check_128_builtin: range_check_128_builtin_interaction_claim,
+        };
+
+        // Pedersen context
+        let pedersen_context_interaction_claim =
+            if let Some((pedersen_aggregator_claim, deferred)) = pedersen_aggregator_result {
+                deferred.flush_to(tree_builder);
+                let (partial_ec_mul_claim, deferred) = partial_ec_mul_result.unwrap();
+                deferred.flush_to(tree_builder);
+                let (pedersen_points_table_claim, deferred) = pedersen_points_table_result.unwrap();
+                deferred.flush_to(tree_builder);
+
+                PedersenContextInteractionClaim {
+                    claim: Some(PedersenInteractionClaim {
+                        pedersen_aggregator: pedersen_aggregator_claim,
+                        partial_ec_mul: partial_ec_mul_claim,
+                        pedersen_points_table: pedersen_points_table_claim,
+                    }),
+                }
+            } else {
+                PedersenContextInteractionClaim { claim: None }
+            };
+
+        // Poseidon context
+        let poseidon_context_interaction_claim =
+            if let Some((poseidon_aggregator_claim, deferred)) = poseidon_aggregator_result {
+                deferred.flush_to(tree_builder);
+                let (poseidon_3_partial_rounds_chain_claim, deferred) =
+                    poseidon_3_partial_rounds_chain_result.unwrap();
+                deferred.flush_to(tree_builder);
+                let (poseidon_full_round_chain_claim, deferred) =
+                    poseidon_full_round_chain_result.unwrap();
+                deferred.flush_to(tree_builder);
+                let (cube_252_claim, deferred) = cube_252_result.unwrap();
+                deferred.flush_to(tree_builder);
+                let (poseidon_round_keys_claim, deferred) = poseidon_round_keys_result.unwrap();
+                deferred.flush_to(tree_builder);
+                let (range_check_252_width_27_claim, deferred) =
+                    range_check_252_width_27_result.unwrap();
+                deferred.flush_to(tree_builder);
+
+                PoseidonContextInteractionClaim {
+                    claim: Some(PoseidonInteractionClaim {
+                        poseidon_aggregator: poseidon_aggregator_claim,
+                        poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_claim,
+                        poseidon_full_round_chain: poseidon_full_round_chain_claim,
+                        cube_252: cube_252_claim,
+                        poseidon_round_keys: poseidon_round_keys_claim,
+                        range_check_252_width_27: range_check_252_width_27_claim,
+                    }),
+                }
+            } else {
+                PoseidonContextInteractionClaim { claim: None }
+            };
+
+        // Memory
+        let (memory_address_to_id_interaction_claim, deferred) =
+            memory_address_to_id_result.unwrap();
+        deferred.flush_to(tree_builder);
+        let (memory_id_to_value_interaction_claim, deferred) = memory_id_to_value_result.unwrap();
+        deferred.flush_to(tree_builder);
+
+        // Range checks
+        let (rc_6_interaction_claim, deferred) = rc_6_result.unwrap();
+        deferred.flush_to(tree_builder);
+        let (rc_8_interaction_claim, deferred) = rc_8_result.unwrap();
+        deferred.flush_to(tree_builder);
+        let (rc_11_interaction_claim, deferred) = rc_11_result.unwrap();
+        deferred.flush_to(tree_builder);
+        let (rc_12_interaction_claim, deferred) = rc_12_result.unwrap();
+        deferred.flush_to(tree_builder);
+        let (rc_18_interaction_claim, deferred) = rc_18_result.unwrap();
+        deferred.flush_to(tree_builder);
+        let (rc_20_interaction_claim, deferred) = rc_20_result.unwrap();
+        deferred.flush_to(tree_builder);
+        let (rc_4_3_interaction_claim, deferred) = rc_4_3_result.unwrap();
+        deferred.flush_to(tree_builder);
+        let (rc_4_4_interaction_claim, deferred) = rc_4_4_result.unwrap();
+        deferred.flush_to(tree_builder);
+        let (rc_9_9_interaction_claim, deferred) = rc_9_9_result.unwrap();
+        deferred.flush_to(tree_builder);
+        let (rc_7_2_5_interaction_claim, deferred) = rc_7_2_5_result.unwrap();
+        deferred.flush_to(tree_builder);
+        let (rc_3_6_6_3_interaction_claim, deferred) = rc_3_6_6_3_result.unwrap();
+        deferred.flush_to(tree_builder);
+        let (rc_4_4_4_4_interaction_claim, deferred) = rc_4_4_4_4_result.unwrap();
+        deferred.flush_to(tree_builder);
+        let (rc_3_3_3_3_3_interaction_claim, deferred) = rc_3_3_3_3_3_result.unwrap();
+        deferred.flush_to(tree_builder);
+
+        let range_checks_interaction_claim = RangeChecksInteractionClaim {
+            rc_6: rc_6_interaction_claim,
+            rc_8: rc_8_interaction_claim,
+            rc_11: rc_11_interaction_claim,
+            rc_12: rc_12_interaction_claim,
+            rc_18: rc_18_interaction_claim,
+            rc_20: rc_20_interaction_claim,
+            rc_4_3: rc_4_3_interaction_claim,
+            rc_4_4: rc_4_4_interaction_claim,
+            rc_9_9: rc_9_9_interaction_claim,
+            rc_7_2_5: rc_7_2_5_interaction_claim,
+            rc_3_6_6_3: rc_3_6_6_3_interaction_claim,
+            rc_4_4_4_4: rc_4_4_4_4_interaction_claim,
+            rc_3_3_3_3_3: rc_3_3_3_3_3_interaction_claim,
+        };
+
+        // Verify bitwise xor
+        let (verify_bitwise_xor_4_interaction_claim, deferred) =
+            verify_bitwise_xor_4_result.unwrap();
+        deferred.flush_to(tree_builder);
+        let (verify_bitwise_xor_7_interaction_claim, deferred) =
+            verify_bitwise_xor_7_result.unwrap();
+        deferred.flush_to(tree_builder);
+        let (verify_bitwise_xor_8_interaction_claim, deferred) =
+            verify_bitwise_xor_8_result.unwrap();
+        deferred.flush_to(tree_builder);
+        let (verify_bitwise_xor_9_interaction_claim, deferred) =
+            verify_bitwise_xor_9_result.unwrap();
+        deferred.flush_to(tree_builder);
 
         CairoInteractionClaim {
             opcodes: opcodes_interaction_claims,

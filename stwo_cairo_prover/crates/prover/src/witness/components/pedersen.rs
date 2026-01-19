@@ -1,7 +1,4 @@
-use cairo_air::pedersen::air::{
-    Claim, InteractionClaim, PedersenContextClaim, PedersenContextInteractionClaim,
-};
-use cairo_air::relations::CommonLookupElements;
+use cairo_air::pedersen::air::{Claim, PedersenContextClaim};
 use stwo::prover::backend::simd::SimdBackend;
 use tracing::{span, Level};
 
@@ -67,7 +64,7 @@ pub fn pedersen_context_write_trace(
         partial_ec_mul: partial_ec_mul_claim,
         pedersen_points_table: pedersen_points_table_claim,
     });
-    let gen = Some(InteractionClaimGenerator {
+    let gen = Some(PedersenInteractionClaimGenerator {
         pedersen_aggregator_interaction_gen,
         partial_ec_mul_interaction_gen,
         pedersen_points_table_interaction_gen,
@@ -79,49 +76,13 @@ pub fn pedersen_context_write_trace(
 }
 
 pub struct PedersenContextInteractionClaimGenerator {
-    gen: Option<InteractionClaimGenerator>,
-}
-impl PedersenContextInteractionClaimGenerator {
-    pub fn write_interaction_trace(
-        self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        common_lookup_elements: &CommonLookupElements,
-    ) -> PedersenContextInteractionClaim {
-        PedersenContextInteractionClaim {
-            claim: self
-                .gen
-                .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements)),
-        }
-    }
+    pub gen: Option<PedersenInteractionClaimGenerator>,
 }
 
-struct InteractionClaimGenerator {
-    pedersen_aggregator_interaction_gen:
+pub struct PedersenInteractionClaimGenerator {
+    pub pedersen_aggregator_interaction_gen:
         pedersen_aggregator_window_bits_18::InteractionClaimGenerator,
-    partial_ec_mul_interaction_gen: partial_ec_mul_window_bits_18::InteractionClaimGenerator,
-    pedersen_points_table_interaction_gen:
+    pub partial_ec_mul_interaction_gen: partial_ec_mul_window_bits_18::InteractionClaimGenerator,
+    pub pedersen_points_table_interaction_gen:
         pedersen_points_table_window_bits_18::InteractionClaimGenerator,
-}
-impl InteractionClaimGenerator {
-    pub fn write_interaction_trace(
-        self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        common_lookup_elements: &CommonLookupElements,
-    ) -> InteractionClaim {
-        let pedersen_aggregator_interaction_claim = self
-            .pedersen_aggregator_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let partial_ec_mul_interaction_claim = self
-            .partial_ec_mul_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let pedersen_points_table_interaction_claim = self
-            .pedersen_points_table_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-
-        InteractionClaim {
-            pedersen_aggregator: pedersen_aggregator_interaction_claim,
-            partial_ec_mul: partial_ec_mul_interaction_claim,
-            pedersen_points_table: pedersen_points_table_interaction_claim,
-        }
-    }
 }

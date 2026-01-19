@@ -1,5 +1,4 @@
-use cairo_air::opcodes_air::{OpcodeClaim, OpcodeInteractionClaim};
-use cairo_air::relations::CommonLookupElements;
+use cairo_air::opcodes_air::OpcodeClaim;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::opcodes::CasmStatesByOpcode;
 
@@ -401,154 +400,24 @@ pub fn opcodes_write_trace(
 }
 
 pub struct OpcodesInteractionClaimGenerator {
-    add: Vec<add_opcode::InteractionClaimGenerator>,
-    add_small: Vec<add_opcode_small::InteractionClaimGenerator>,
-    add_ap: Vec<add_ap_opcode::InteractionClaimGenerator>,
-    assert_eq: Vec<assert_eq_opcode::InteractionClaimGenerator>,
-    assert_eq_imm: Vec<assert_eq_opcode_imm::InteractionClaimGenerator>,
-    assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::InteractionClaimGenerator>,
-    blake: Vec<blake_compress_opcode::InteractionClaimGenerator>,
-    call: Vec<call_opcode_abs::InteractionClaimGenerator>,
-    call_rel_imm: Vec<call_opcode_rel_imm::InteractionClaimGenerator>,
-    generic_opcode_interaction_gens: Vec<generic_opcode::InteractionClaimGenerator>,
-    jnz: Vec<jnz_opcode_non_taken::InteractionClaimGenerator>,
-    jnz_taken: Vec<jnz_opcode_taken::InteractionClaimGenerator>,
-    jump: Vec<jump_opcode_abs::InteractionClaimGenerator>,
-    jump_double_deref: Vec<jump_opcode_double_deref::InteractionClaimGenerator>,
-    jump_rel: Vec<jump_opcode_rel::InteractionClaimGenerator>,
-    jump_rel_imm: Vec<jump_opcode_rel_imm::InteractionClaimGenerator>,
-    mul: Vec<mul_opcode::InteractionClaimGenerator>,
-    mul_small: Vec<mul_opcode_small::InteractionClaimGenerator>,
-    qm31: Vec<qm_31_add_mul_opcode::InteractionClaimGenerator>,
-    ret_interaction_gens: Vec<ret_opcode::InteractionClaimGenerator>,
-}
-impl OpcodesInteractionClaimGenerator {
-    pub fn write_interaction_trace(
-        self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        common_lookup_elements: &CommonLookupElements,
-    ) -> OpcodeInteractionClaim {
-        let add_interaction_claims = self
-            .add
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let add_small_interaction_claims = self
-            .add_small
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let add_ap_interaction_claims = self
-            .add_ap
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let assert_eq_interaction_claims = self
-            .assert_eq
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let assert_eq_imm_interaction_claims = self
-            .assert_eq_imm
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let assert_eq_double_deref_interaction_claims = self
-            .assert_eq_double_deref
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let blake_interaction_claims = self
-            .blake
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let call_interaction_claims = self
-            .call
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let call_rel_imm_interaction_claims = self
-            .call_rel_imm
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let generic_opcode_interaction_claims = self
-            .generic_opcode_interaction_gens
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let jnz_interaction_claims = self
-            .jnz
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let jnz_taken_interaction_claims = self
-            .jnz_taken
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let jump_interaction_claims = self
-            .jump
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let jump_double_deref_interaction_claims = self
-            .jump_double_deref
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let jump_rel_interaction_claims = self
-            .jump_rel
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let jump_rel_imm_interaction_claims = self
-            .jump_rel_imm
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let mul_interaction_claims = self
-            .mul
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let mul_small_interaction_claims = self
-            .mul_small
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let qm31_interaction_claims = self
-            .qm31
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let ret_interaction_claims = self
-            .ret_interaction_gens
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        OpcodeInteractionClaim {
-            add: add_interaction_claims,
-            add_small: add_small_interaction_claims,
-            add_ap: add_ap_interaction_claims,
-            assert_eq: assert_eq_interaction_claims,
-            assert_eq_imm: assert_eq_imm_interaction_claims,
-            assert_eq_double_deref: assert_eq_double_deref_interaction_claims,
-            blake: blake_interaction_claims,
-            call: call_interaction_claims,
-            call_rel_imm: call_rel_imm_interaction_claims,
-            generic: generic_opcode_interaction_claims,
-            jnz: jnz_interaction_claims,
-            jnz_taken: jnz_taken_interaction_claims,
-            jump: jump_interaction_claims,
-            jump_double_deref: jump_double_deref_interaction_claims,
-            jump_rel: jump_rel_interaction_claims,
-            jump_rel_imm: jump_rel_imm_interaction_claims,
-            mul: mul_interaction_claims,
-            mul_small: mul_small_interaction_claims,
-            qm31: qm31_interaction_claims,
-            ret: ret_interaction_claims,
-        }
-    }
+    pub add: Vec<add_opcode::InteractionClaimGenerator>,
+    pub add_small: Vec<add_opcode_small::InteractionClaimGenerator>,
+    pub add_ap: Vec<add_ap_opcode::InteractionClaimGenerator>,
+    pub assert_eq: Vec<assert_eq_opcode::InteractionClaimGenerator>,
+    pub assert_eq_imm: Vec<assert_eq_opcode_imm::InteractionClaimGenerator>,
+    pub assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::InteractionClaimGenerator>,
+    pub blake: Vec<blake_compress_opcode::InteractionClaimGenerator>,
+    pub call: Vec<call_opcode_abs::InteractionClaimGenerator>,
+    pub call_rel_imm: Vec<call_opcode_rel_imm::InteractionClaimGenerator>,
+    pub generic_opcode_interaction_gens: Vec<generic_opcode::InteractionClaimGenerator>,
+    pub jnz: Vec<jnz_opcode_non_taken::InteractionClaimGenerator>,
+    pub jnz_taken: Vec<jnz_opcode_taken::InteractionClaimGenerator>,
+    pub jump: Vec<jump_opcode_abs::InteractionClaimGenerator>,
+    pub jump_double_deref: Vec<jump_opcode_double_deref::InteractionClaimGenerator>,
+    pub jump_rel: Vec<jump_opcode_rel::InteractionClaimGenerator>,
+    pub jump_rel_imm: Vec<jump_opcode_rel_imm::InteractionClaimGenerator>,
+    pub mul: Vec<mul_opcode::InteractionClaimGenerator>,
+    pub mul_small: Vec<mul_opcode_small::InteractionClaimGenerator>,
+    pub qm31: Vec<qm_31_add_mul_opcode::InteractionClaimGenerator>,
+    pub ret_interaction_gens: Vec<ret_opcode::InteractionClaimGenerator>,
 }

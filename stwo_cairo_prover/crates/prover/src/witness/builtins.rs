@@ -1,5 +1,4 @@
-use cairo_air::builtins_air::{BuiltinsClaim, BuiltinsInteractionClaim};
-use cairo_air::relations::CommonLookupElements;
+use cairo_air::builtins_air::BuiltinsClaim;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::builtins::BuiltinSegments;
 use stwo_cairo_common::builtins::{
@@ -232,72 +231,13 @@ pub fn builtins_write_trace(
 }
 
 pub struct BuiltinsInteractionClaimGenerator {
-    add_mod_builtin_interaction_gen: Option<add_mod_builtin::InteractionClaimGenerator>,
-    bitwise_builtin_interaction_gen: Option<bitwise_builtin::InteractionClaimGenerator>,
-    mul_mod_builtin_interaction_gen: Option<mul_mod_builtin::InteractionClaimGenerator>,
-    pedersen_builtin_interaction_gen: Option<pedersen_builtin::InteractionClaimGenerator>,
-    poseidon_builtin_interaction_gen: Option<poseidon_builtin::InteractionClaimGenerator>,
-    range_check_96_builtin_interaction_gen:
+    pub add_mod_builtin_interaction_gen: Option<add_mod_builtin::InteractionClaimGenerator>,
+    pub bitwise_builtin_interaction_gen: Option<bitwise_builtin::InteractionClaimGenerator>,
+    pub mul_mod_builtin_interaction_gen: Option<mul_mod_builtin::InteractionClaimGenerator>,
+    pub pedersen_builtin_interaction_gen: Option<pedersen_builtin::InteractionClaimGenerator>,
+    pub poseidon_builtin_interaction_gen: Option<poseidon_builtin::InteractionClaimGenerator>,
+    pub range_check_96_builtin_interaction_gen:
         Option<range_check96_builtin::InteractionClaimGenerator>,
-    range_check_128_builtin_interaction_gen: Option<range_check_builtin::InteractionClaimGenerator>,
-}
-impl BuiltinsInteractionClaimGenerator {
-    pub fn write_interaction_trace(
-        self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        common_lookup_elements: &CommonLookupElements,
-    ) -> BuiltinsInteractionClaim {
-        let add_mod_builtin_interaction_claim =
-            self.add_mod_builtin_interaction_gen
-                .map(|add_mod_builtin_interaction_gen| {
-                    add_mod_builtin_interaction_gen
-                        .write_interaction_trace(tree_builder, common_lookup_elements)
-                });
-        let bitwise_builtin_interaction_claim =
-            self.bitwise_builtin_interaction_gen
-                .map(|bitwise_builtin_interaction_gen| {
-                    bitwise_builtin_interaction_gen
-                        .write_interaction_trace(tree_builder, common_lookup_elements)
-                });
-        let mul_mod_builtin_interaction_claim =
-            self.mul_mod_builtin_interaction_gen
-                .map(|mul_mod_builtin_interaction_gen| {
-                    mul_mod_builtin_interaction_gen
-                        .write_interaction_trace(tree_builder, common_lookup_elements)
-                });
-        let pedersen_builtin_interaction_claim =
-            self.pedersen_builtin_interaction_gen
-                .map(|pedersen_builtin_interaction_gen| {
-                    pedersen_builtin_interaction_gen
-                        .write_interaction_trace(tree_builder, common_lookup_elements)
-                });
-        let poseidon_builtin_interaction_claim = self.poseidon_builtin_interaction_gen.map(
-            |poseidon_builtin_interaction_gen: poseidon_builtin::InteractionClaimGenerator| {
-                poseidon_builtin_interaction_gen
-                    .write_interaction_trace(tree_builder, common_lookup_elements)
-            },
-        );
-        let range_check_96_builtin_interaction_claim = self
-            .range_check_96_builtin_interaction_gen
-            .map(|range_check_96_builtin_interaction_gen| {
-                range_check_96_builtin_interaction_gen
-                    .write_interaction_trace(tree_builder, common_lookup_elements)
-            });
-        let range_check_128_builtin_interaction_claim = self
-            .range_check_128_builtin_interaction_gen
-            .map(|range_check_128_builtin_interaction_gen| {
-                range_check_128_builtin_interaction_gen
-                    .write_interaction_trace(tree_builder, common_lookup_elements)
-            });
-
-        BuiltinsInteractionClaim {
-            add_mod_builtin: add_mod_builtin_interaction_claim,
-            bitwise_builtin: bitwise_builtin_interaction_claim,
-            mul_mod_builtin: mul_mod_builtin_interaction_claim,
-            pedersen_builtin: pedersen_builtin_interaction_claim,
-            poseidon_builtin: poseidon_builtin_interaction_claim,
-            range_check_96_builtin: range_check_96_builtin_interaction_claim,
-            range_check_128_builtin: range_check_128_builtin_interaction_claim,
-        }
-    }
+    pub range_check_128_builtin_interaction_gen:
+        Option<range_check_builtin::InteractionClaimGenerator>,
 }

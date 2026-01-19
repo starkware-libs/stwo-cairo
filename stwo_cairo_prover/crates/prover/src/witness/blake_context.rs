@@ -1,7 +1,4 @@
-use cairo_air::blake::air::{
-    BlakeContextClaim, BlakeContextInteractionClaim, Claim, InteractionClaim,
-};
-use cairo_air::relations::CommonLookupElements;
+use cairo_air::blake::air::{BlakeContextClaim, Claim};
 use stwo::prover::backend::simd::SimdBackend;
 use tracing::{span, Level};
 
@@ -71,7 +68,7 @@ pub fn blake_context_write_trace(
         triple_xor_32: triple_xor_32_claim,
         verify_bitwise_xor_12: verify_bitwise_xor_12_claim,
     });
-    let gen = Some(InteractionClaimGenerator {
+    let gen = Some(BlakeInteractionClaimGenerator {
         blake_round_interaction_gen,
         blake_g_interaction_gen,
         blake_sigma_interaction_gen,
@@ -85,57 +82,13 @@ pub fn blake_context_write_trace(
 }
 
 pub struct BlakeContextInteractionClaimGenerator {
-    gen: Option<InteractionClaimGenerator>,
-}
-impl BlakeContextInteractionClaimGenerator {
-    pub fn write_interaction_trace(
-        self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        common_lookup_elements: &CommonLookupElements,
-    ) -> BlakeContextInteractionClaim {
-        BlakeContextInteractionClaim {
-            claim: self
-                .gen
-                .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements)),
-        }
-    }
+    pub gen: Option<BlakeInteractionClaimGenerator>,
 }
 
-struct InteractionClaimGenerator {
-    blake_round_interaction_gen: blake_round::InteractionClaimGenerator,
-    blake_g_interaction_gen: blake_g::InteractionClaimGenerator,
-    blake_sigma_interaction_gen: blake_round_sigma::InteractionClaimGenerator,
-    triple_xor_32_interaction_gen: triple_xor_32::InteractionClaimGenerator,
-    verify_bitwise_xor_12_interaction_gen: verify_bitwise_xor_12::InteractionClaimGenerator,
-}
-impl InteractionClaimGenerator {
-    pub fn write_interaction_trace(
-        self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        common_lookup_elements: &CommonLookupElements,
-    ) -> InteractionClaim {
-        let blake_round_interaction_claim = self
-            .blake_round_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let blake_g_interaction_claim = self
-            .blake_g_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let blake_sigma_interaction_claim = self
-            .blake_sigma_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let triple_xor_32_interaction_claim = self
-            .triple_xor_32_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let verify_bitwise_xor_12_interaction_claim = self
-            .verify_bitwise_xor_12_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-
-        InteractionClaim {
-            blake_round: blake_round_interaction_claim,
-            blake_g: blake_g_interaction_claim,
-            blake_sigma: blake_sigma_interaction_claim,
-            triple_xor_32: triple_xor_32_interaction_claim,
-            verify_bitwise_xor_12: verify_bitwise_xor_12_interaction_claim,
-        }
-    }
+pub struct BlakeInteractionClaimGenerator {
+    pub blake_round_interaction_gen: blake_round::InteractionClaimGenerator,
+    pub blake_g_interaction_gen: blake_g::InteractionClaimGenerator,
+    pub blake_sigma_interaction_gen: blake_round_sigma::InteractionClaimGenerator,
+    pub triple_xor_32_interaction_gen: triple_xor_32::InteractionClaimGenerator,
+    pub verify_bitwise_xor_12_interaction_gen: verify_bitwise_xor_12::InteractionClaimGenerator,
 }
