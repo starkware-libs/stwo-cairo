@@ -651,7 +651,7 @@ mod tests {
 
         // Base trace.
         let mut tree_builder = commitment_scheme.tree_builder();
-        let preprocessed_trace = Arc::new(PreProcessedTrace::canonical());
+        let preprocessed_trace = Arc::new(PreProcessedTrace::canonical_without_pedersen());
         let id_to_big = super::ClaimGenerator::new(Arc::clone(&memory));
         let range_check_9_9 = range_check_9_9::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
         let (claim, interaction_generator) =
@@ -666,7 +666,8 @@ mod tests {
             interaction_generator.write_interaction_trace(&mut tree_builder, &interaction_elements);
         tree_builder.finalize_interaction();
 
-        let mut location_allocator = TraceLocationAllocator::default();
+        let mut location_allocator =
+            TraceLocationAllocator::new_with_preprocessed_columns(&preprocessed_trace.ids());
         let big_components = memory_id_to_big::big_components_from_claim(
             &claim.big_log_sizes,
             &interaction_claim.big_claimed_sums,
