@@ -60,10 +60,10 @@ stwo-cairo-common = { path = "crates/common" }
 cairo-air = { path = "crates/cairo-air" }
 stwo-cairo-serialize = { path = "crates/cairo-serialize", version = "~0.1.0" }
 # TODO(Ohad): re export stwo from constraint-framework.
-stwo = { git = "https://github.com/starkware-libs/stwo", rev = "6b5c843" }
-stwo-constraint-framework = { git = "https://github.com/starkware-libs/stwo", rev = "6b5c843" }
-stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "6b5c843" }
-stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "6b5c843" }
+stwo = { git = "https://github.com/starkware-libs/stwo", rev = "e309514" }
+stwo-constraint-framework = { git = "https://github.com/starkware-libs/stwo", rev = "e309514" }
+stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "e309514" }
+stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "e309514" }
 test-case = "3.3.1"
 thiserror = { version = "2.0.12", default-features = false }
 tracing = "0.1.40"
