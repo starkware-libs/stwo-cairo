@@ -49,17 +49,20 @@ pub fn blake_context_write_trace(
         rc_7_2_5_trace_generator.unwrap(),
         &mut blake_g,
     );
-    let (blake_g_claim, blake_g_interaction_gen) = blake_g.write_trace(
-        tree_builder,
+    let (blake_g_trace, blake_g_claim, blake_g_interaction_gen) = blake_g.write_trace(
         verify_bitwise_xor_8_trace_generator.unwrap(),
         &verify_bitwise_xor_12,
         verify_bitwise_xor_4_trace_generator.unwrap(),
         verify_bitwise_xor_7_trace_generator.unwrap(),
         verify_bitwise_xor_9_trace_generator.unwrap(),
     );
-    let (blake_sigma_claim, blake_sigma_interaction_gen) = blake_sigma.write_trace(tree_builder);
-    let (triple_xor_32_claim, triple_xor_32_interaction_gen) =
-        triple_xor_32.write_trace(tree_builder, verify_bitwise_xor_8_trace_generator.unwrap());
+    tree_builder.extend_evals(blake_g_trace.to_evals());
+    let (blake_sigma_trace, blake_sigma_claim, blake_sigma_interaction_gen) =
+        blake_sigma.write_trace();
+    tree_builder.extend_evals(blake_sigma_trace.to_evals());
+    let (triple_xor_32_trace, triple_xor_32_claim, triple_xor_32_interaction_gen) =
+        triple_xor_32.write_trace(verify_bitwise_xor_8_trace_generator.unwrap());
+    tree_builder.extend_evals(triple_xor_32_trace.to_evals());
     let (verify_bitwise_xor_12_claim, verify_bitwise_xor_12_interaction_gen) =
         verify_bitwise_xor_12.write_trace(tree_builder);
     span.exit();
@@ -114,21 +117,26 @@ impl InteractionClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
     ) -> InteractionClaim {
-        let blake_round_interaction_claim = self
+        let (trace, blake_round_interaction_claim) = self
             .blake_round_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let blake_g_interaction_claim = self
+            .write_interaction_trace(common_lookup_elements);
+        tree_builder.extend_evals(trace);
+        let (trace, blake_g_interaction_claim) = self
             .blake_g_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let blake_sigma_interaction_claim = self
+            .write_interaction_trace(common_lookup_elements);
+        tree_builder.extend_evals(trace);
+        let (trace, blake_sigma_interaction_claim) = self
             .blake_sigma_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let triple_xor_32_interaction_claim = self
+            .write_interaction_trace(common_lookup_elements);
+        tree_builder.extend_evals(trace);
+        let (trace, triple_xor_32_interaction_claim) = self
             .triple_xor_32_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let verify_bitwise_xor_12_interaction_claim = self
+            .write_interaction_trace(common_lookup_elements);
+        tree_builder.extend_evals(trace);
+        let (trace, verify_bitwise_xor_12_interaction_claim) = self
             .verify_bitwise_xor_12_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
+            .write_interaction_trace(common_lookup_elements);
+        tree_builder.extend_evals(trace);
 
         InteractionClaim {
             blake_round: blake_round_interaction_claim,

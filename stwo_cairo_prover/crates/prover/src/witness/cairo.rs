@@ -247,14 +247,17 @@ impl CairoClaimGenerator {
         );
         span.exit();
         let span = span!(Level::INFO, "internal component trace").entered();
-        let (verify_instruction_claim, verify_instruction_interaction_gen) =
-            self.verify_instruction.unwrap().write_trace(
-                tree_builder,
-                self.range_check_7_2_5.as_ref().unwrap(),
-                self.range_check_4_3.as_ref().unwrap(),
-                self.memory_address_to_id.as_ref().unwrap(),
-                self.memory_id_to_big.as_ref().unwrap(),
-            );
+        let (
+            verify_instruction_trace,
+            verify_instruction_claim,
+            verify_instruction_interaction_gen,
+        ) = self.verify_instruction.unwrap().write_trace(
+            self.range_check_7_2_5.as_ref().unwrap(),
+            self.range_check_4_3.as_ref().unwrap(),
+            self.memory_address_to_id.as_ref().unwrap(),
+            self.memory_id_to_big.as_ref().unwrap(),
+        );
+        tree_builder.extend_evals(verify_instruction_trace.to_evals());
         let (blake_context_claim, blake_context_interaction_gen) = blake_context_write_trace(
             self.blake_round,
             self.blake_g,
@@ -318,17 +321,28 @@ impl CairoClaimGenerator {
                 self.range_check_18.as_ref(),
                 self.range_check_20.as_ref(),
             );
-        let (memory_address_to_id_claim, memory_address_to_id_interaction_gen) =
-            self.memory_address_to_id.unwrap().write_trace(tree_builder);
+        let (
+            memory_address_to_id_trace,
+            memory_address_to_id_claim,
+            memory_address_to_id_interaction_gen,
+        ) = self.memory_address_to_id.unwrap().write_trace();
+        tree_builder.extend_evals(memory_address_to_id_trace);
 
         // Memory uses "Sequence", split it according to `MAX_SEQUENCE_LOG_SIZE`.
         const LOG_MAX_BIG_SIZE: u32 = MAX_SEQUENCE_LOG_SIZE;
-        let (memory_id_to_value_claim, memory_id_to_value_interaction_gen) =
-            self.memory_id_to_big.unwrap().write_trace(
-                tree_builder,
-                self.range_check_9_9.as_ref().unwrap(),
-                LOG_MAX_BIG_SIZE,
-            );
+        let (
+            memory_id_to_value_big_traces,
+            memory_id_to_value_small_trace,
+            memory_id_to_value_claim,
+            memory_id_to_value_interaction_gen,
+        ) = self
+            .memory_id_to_big
+            .unwrap()
+            .write_trace(self.range_check_9_9.as_ref().unwrap(), LOG_MAX_BIG_SIZE);
+        for big_trace in memory_id_to_value_big_traces {
+            tree_builder.extend_evals(big_trace);
+        }
+        tree_builder.extend_evals(memory_id_to_value_small_trace);
         let (range_checks_claim, range_checks_interaction_gen) = range_checks_write_trace(
             self.range_check_6,
             self.range_check_8,
@@ -345,14 +359,30 @@ impl CairoClaimGenerator {
             self.range_check_3_3_3_3_3,
             tree_builder,
         );
-        let (verify_bitwise_xor_4_claim, verify_bitwise_xor_4_interaction_gen) =
-            self.verify_bitwise_xor_4.unwrap().write_trace(tree_builder);
-        let (verify_bitwise_xor_7_claim, verify_bitwise_xor_7_interaction_gen) =
-            self.verify_bitwise_xor_7.unwrap().write_trace(tree_builder);
-        let (verify_bitwise_xor_8_claim, verify_bitwise_xor_8_interaction_gen) =
-            self.verify_bitwise_xor_8.unwrap().write_trace(tree_builder);
-        let (verify_bitwise_xor_9_claim, verify_bitwise_xor_9_interaction_gen) =
-            self.verify_bitwise_xor_9.unwrap().write_trace(tree_builder);
+        let (
+            verify_bitwise_xor_4_trace,
+            verify_bitwise_xor_4_claim,
+            verify_bitwise_xor_4_interaction_gen,
+        ) = self.verify_bitwise_xor_4.unwrap().write_trace();
+        tree_builder.extend_evals(verify_bitwise_xor_4_trace.to_evals());
+        let (
+            verify_bitwise_xor_7_trace,
+            verify_bitwise_xor_7_claim,
+            verify_bitwise_xor_7_interaction_gen,
+        ) = self.verify_bitwise_xor_7.unwrap().write_trace();
+        tree_builder.extend_evals(verify_bitwise_xor_7_trace.to_evals());
+        let (
+            verify_bitwise_xor_8_trace,
+            verify_bitwise_xor_8_claim,
+            verify_bitwise_xor_8_interaction_gen,
+        ) = self.verify_bitwise_xor_8.unwrap().write_trace();
+        tree_builder.extend_evals(verify_bitwise_xor_8_trace.to_evals());
+        let (
+            verify_bitwise_xor_9_trace,
+            verify_bitwise_xor_9_claim,
+            verify_bitwise_xor_9_interaction_gen,
+        ) = self.verify_bitwise_xor_9.unwrap().write_trace();
+        tree_builder.extend_evals(verify_bitwise_xor_9_trace.to_evals());
         span.exit();
         (
             CairoClaim {
@@ -415,9 +445,10 @@ impl CairoInteractionClaimGenerator {
         let opcodes_interaction_claims = self
             .opcodes_interaction_gen
             .write_interaction_trace(tree_builder, common_lookup_elements);
-        let verify_instruction_interaction_claim = self
+        let (verify_instruction_trace, verify_instruction_interaction_claim) = self
             .verify_instruction_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
+            .write_interaction_trace(common_lookup_elements);
+        tree_builder.extend_evals(verify_instruction_trace);
         let blake_context_interaction_claim = self
             .blake_context_interaction_gen
             .write_interaction_trace(tree_builder, common_lookup_elements);
@@ -430,28 +461,41 @@ impl CairoInteractionClaimGenerator {
         let poseidon_context_interaction_claim = self
             .poseidon_context_interaction_gen
             .write_interaction_trace(tree_builder, common_lookup_elements);
-        let memory_address_to_id_interaction_claim = self
+        let (memory_address_to_id_trace, memory_address_to_id_interaction_claim) = self
             .memory_address_to_id_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let memory_id_to_value_interaction_claim = self
+            .write_interaction_trace(common_lookup_elements);
+        tree_builder.extend_evals(memory_address_to_id_trace);
+        let (
+            memory_id_to_value_big_traces,
+            memory_id_to_value_small_trace,
+            memory_id_to_value_interaction_claim,
+        ) = self
             .memory_id_to_value_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
+            .write_interaction_trace(common_lookup_elements);
+        for big_trace in memory_id_to_value_big_traces {
+            tree_builder.extend_evals(big_trace);
+        }
+        tree_builder.extend_evals(memory_id_to_value_small_trace);
 
         let range_checks_interaction_claim = self
             .range_checks_interaction_gen
             .write_interaction_trace(tree_builder, common_lookup_elements);
-        let verify_bitwise_xor_4_interaction_claim = self
+        let (verify_bitwise_xor_4_trace, verify_bitwise_xor_4_interaction_claim) = self
             .verify_bitwise_xor_4_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let verify_bitwise_xor_7_interaction_claim = self
+            .write_interaction_trace(common_lookup_elements);
+        tree_builder.extend_evals(verify_bitwise_xor_4_trace);
+        let (verify_bitwise_xor_7_trace, verify_bitwise_xor_7_interaction_claim) = self
             .verify_bitwise_xor_7_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let verify_bitwise_xor_8_interaction_claim = self
+            .write_interaction_trace(common_lookup_elements);
+        tree_builder.extend_evals(verify_bitwise_xor_7_trace);
+        let (verify_bitwise_xor_8_trace, verify_bitwise_xor_8_interaction_claim) = self
             .verify_bitwise_xor_8_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let verify_bitwise_xor_9_interaction_claim = self
+            .write_interaction_trace(common_lookup_elements);
+        tree_builder.extend_evals(verify_bitwise_xor_8_trace);
+        let (verify_bitwise_xor_9_trace, verify_bitwise_xor_9_interaction_claim) = self
             .verify_bitwise_xor_9_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
+            .write_interaction_trace(common_lookup_elements);
+        tree_builder.extend_evals(verify_bitwise_xor_9_trace);
 
         CairoInteractionClaim {
             opcodes: opcodes_interaction_claims,

@@ -20,10 +20,13 @@ use stwo_cairo_common::prover_types::simd::{PackedFelt252, SIMD_ENUMERATION_0};
 
 use crate::witness::components::range_check_9_9;
 use crate::witness::prelude::*;
-use crate::witness::utils::{AtomicMultiplicityColumn, TreeBuilder};
+use crate::witness::utils::AtomicMultiplicityColumn;
 
 pub type InputType = M31;
 pub type PackedInputType = PackedM31;
+
+type BigTraces = Vec<Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>>;
+type SmallTrace = Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>;
 
 /// Generates the trace and the claim for the id -> f252 memory table.
 /// Generates 2 table, one for large values and one for small values. A large value is a full 28
@@ -114,10 +117,9 @@ impl ClaimGenerator {
 
     pub fn write_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
         log_max_big_size: u32,
-    ) -> (Claim, InteractionClaimGenerator) {
+    ) -> (BigTraces, SmallTrace, Claim, InteractionClaimGenerator) {
         let big_table_traces = gen_big_memory_traces(
             self.big_values,
             self.big_mults.into_simd_vec(),
@@ -232,6 +234,7 @@ impl ClaimGenerator {
 
         // Extend trace.
         let mut big_log_sizes = vec![];
+        let mut big_traces = vec![];
         for big_table_trace in big_table_traces {
             let big_log_size = big_table_trace[0].length.ilog2();
             big_log_sizes.push(big_log_size);
@@ -244,10 +247,10 @@ impl ClaimGenerator {
                     )
                 })
                 .collect_vec();
-            tree_builder.extend_evals(trace);
+            big_traces.push(trace);
         }
         let small_log_size = small_table_trace[0].len().ilog2();
-        let trace = small_table_trace
+        let small_trace = small_table_trace
             .into_iter()
             .map(|eval| {
                 CircleEvaluation::<SimdBackend, M31, BitReversedOrder>::new(
@@ -256,9 +259,10 @@ impl ClaimGenerator {
                 )
             })
             .collect_vec();
-        tree_builder.extend_evals(trace);
 
         (
+            big_traces,
+            small_trace,
             Claim {
                 big_log_sizes,
                 small_log_size,
@@ -381,9 +385,8 @@ pub struct InteractionClaimGenerator {
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> InteractionClaim {
+    ) -> (BigTraces, SmallTrace, InteractionClaim) {
         let mut offset = 0;
         let (big_traces, big_claimed_sums): (Vec<_>, Vec<_>) = self
             .big_components_values
@@ -400,18 +403,18 @@ impl InteractionClaimGenerator {
                 res
             })
             .unzip();
-        for big_trace in big_traces {
-            tree_builder.extend_evals(big_trace);
-        }
 
         let (small_trace, small_claimed_sum) =
             self.gen_small_memory_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(small_trace);
 
-        InteractionClaim {
-            small_claimed_sum,
-            big_claimed_sums,
-        }
+        (
+            big_traces,
+            small_trace,
+            InteractionClaim {
+                small_claimed_sum,
+                big_claimed_sums,
+            },
+        )
     }
 
     fn gen_big_memory_interaction_trace(
@@ -654,16 +657,24 @@ mod tests {
         let preprocessed_trace = Arc::new(PreProcessedTrace::canonical_without_pedersen());
         let id_to_big = super::ClaimGenerator::new(Arc::clone(&memory));
         let range_check_9_9 = range_check_9_9::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let (claim, interaction_generator) =
-            id_to_big.write_trace(&mut tree_builder, &range_check_9_9, log_max_seq_size);
+        let (big_traces, small_trace, claim, interaction_generator) =
+            id_to_big.write_trace(&range_check_9_9, log_max_seq_size);
+        for big_trace in big_traces {
+            tree_builder.extend_evals(big_trace);
+        }
+        tree_builder.extend_evals(small_trace);
         tree_builder.finalize_interaction();
 
         // Interaction trace.
         let mut dummy_channel = Blake2sChannel::default();
         let interaction_elements = CommonLookupElements::draw(&mut dummy_channel);
         let mut tree_builder = commitment_scheme.tree_builder();
-        let interaction_claim =
-            interaction_generator.write_interaction_trace(&mut tree_builder, &interaction_elements);
+        let (big_traces, small_trace, interaction_claim) =
+            interaction_generator.write_interaction_trace(&interaction_elements);
+        for big_trace in big_traces {
+            tree_builder.extend_evals(big_trace);
+        }
+        tree_builder.extend_evals(small_trace);
         tree_builder.finalize_interaction();
 
         let mut location_allocator =
@@ -709,8 +720,6 @@ mod tests {
             mem.set(i, MemoryValue::Small(rng.gen()));
         }
         let memory = Arc::new(mem.build().0);
-        let mut commitment_scheme = MockCommitmentScheme::default();
-        let mut tree_builder = commitment_scheme.tree_builder();
         let preprocessed_trace = Arc::new(PreProcessedTrace::canonical());
         let id_to_big = super::ClaimGenerator::new(Arc::clone(&memory));
         let range_check_9_9 = range_check_9_9::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
@@ -724,8 +733,7 @@ mod tests {
         let expected_big_log_sizes =
             vec![expected_first_big_log_size, expected_second_big_log_size];
 
-        let (claim, ..) =
-            id_to_big.write_trace(&mut tree_builder, &range_check_9_9, log_max_seq_size);
+        let (_, _, claim, _) = id_to_big.write_trace(&range_check_9_9, log_max_seq_size);
 
         assert_eq!(claim.small_log_size, expected_small_log_size);
         assert_eq!(claim.big_log_sizes, expected_big_log_sizes);
