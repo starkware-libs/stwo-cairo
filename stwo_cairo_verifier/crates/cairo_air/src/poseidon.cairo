@@ -5,159 +5,37 @@ use components::poseidon_builtin::InteractionClaimImpl as PoseidonBuiltinInterac
 use components::poseidon_full_round_chain::InteractionClaimImpl as PoseidonFullRoundChainInteractionClaimImpl;
 use components::poseidon_round_keys::InteractionClaimImpl as PoseidonRoundKeysInteractionClaimImpl;
 use components::range_check_252_width_27::InteractionClaimImpl as RangeCheckFelt252Width27InteractionClaimImpl;
-use core::box::BoxImpl;
-use core::num::traits::Zero;
+use core::array::Span;
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
-use stwo_cairo_air::{RelationUsesDict, components, utils};
+use stwo_cairo_air::claims::CairoClaim;
+use stwo_cairo_air::components;
+use stwo_constraint_framework::PreprocessedMaskValuesImpl;
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use stwo_constraint_framework::{CommonLookupElements, PreprocessedMaskValues};
-use stwo_constraint_framework::{LookupElementsImpl, PreprocessedMaskValuesImpl};
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::TreeArray;
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
+#[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use stwo_verifier_core::fields::qm31::QM31;
-use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
-use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
+use stwo_verifier_core::utils::OptionImpl;
+use crate::utils;
 
-#[derive(Drop, Serde)]
-pub struct PoseidonClaim {
-    pub poseidon_aggregator: components::poseidon_aggregator::Claim,
-    pub poseidon_3_partial_rounds_chain: components::poseidon_3_partial_rounds_chain::Claim,
-    pub poseidon_full_round_chain: components::poseidon_full_round_chain::Claim,
-    pub cube_252: components::cube_252::Claim,
-    pub poseidon_round_keys: components::poseidon_round_keys::Claim,
-    pub range_check_252_width_27: components::range_check_252_width_27::Claim,
-}
-
-pub impl PoseidonClaimImpl of ClaimTrait<PoseidonClaim> {
-    fn mix_into(self: @PoseidonClaim, ref channel: Channel) {
-        self.poseidon_aggregator.mix_into(ref channel);
-        self.poseidon_3_partial_rounds_chain.mix_into(ref channel);
-        self.poseidon_full_round_chain.mix_into(ref channel);
-        self.cube_252.mix_into(ref channel);
-        self.poseidon_round_keys.mix_into(ref channel);
-        self.range_check_252_width_27.mix_into(ref channel);
-    }
-
-    fn log_sizes(self: @PoseidonClaim) -> TreeArray<Span<u32>> {
-        utils::tree_array_concat_cols(
-            array![
-                self.poseidon_aggregator.log_sizes(),
-                self.poseidon_3_partial_rounds_chain.log_sizes(),
-                self.poseidon_full_round_chain.log_sizes(), self.cube_252.log_sizes(),
-                self.poseidon_round_keys.log_sizes(), self.range_check_252_width_27.log_sizes(),
-            ],
-        )
-    }
-
-    fn accumulate_relation_uses(self: @PoseidonClaim, ref relation_uses: RelationUsesDict) {
-        let PoseidonClaim {
-            poseidon_aggregator,
-            poseidon_3_partial_rounds_chain,
-            poseidon_full_round_chain,
-            cube_252,
-            poseidon_round_keys: _,
-            range_check_252_width_27,
-        } = self;
-
-        // NOTE: The following components do not USE relations:
-        // - poseidon_round_keys
-        poseidon_aggregator.accumulate_relation_uses(ref relation_uses);
-        poseidon_3_partial_rounds_chain.accumulate_relation_uses(ref relation_uses);
-        poseidon_full_round_chain.accumulate_relation_uses(ref relation_uses);
-        cube_252.accumulate_relation_uses(ref relation_uses);
-        range_check_252_width_27.accumulate_relation_uses(ref relation_uses);
+pub fn poseidon_context_log_sizes(claim: @CairoClaim) -> TreeArray<Span<u32>> {
+    if claim.poseidon_aggregator.is_some() {
+        let log_sizes = array![
+            claim.poseidon_aggregator.unwrap().log_sizes(),
+            claim.poseidon_3_partial_rounds_chain.unwrap().log_sizes(),
+            claim.poseidon_full_round_chain.unwrap().log_sizes(),
+            claim.cube_252.unwrap().log_sizes(), claim.poseidon_round_keys.unwrap().log_sizes(),
+            claim.range_check_252_width_27.unwrap().log_sizes(),
+        ];
+        utils::tree_array_concat_cols(log_sizes)
+    } else {
+        utils::tree_array_concat_cols(array![])
     }
 }
-
-#[derive(Drop, Serde)]
-pub struct PoseidonInteractionClaim {
-    pub poseidon_aggregator: components::poseidon_aggregator::InteractionClaim,
-    pub poseidon_3_partial_rounds_chain: components::poseidon_3_partial_rounds_chain::InteractionClaim,
-    pub poseidon_full_round_chain: components::poseidon_full_round_chain::InteractionClaim,
-    pub cube_252: components::cube_252::InteractionClaim,
-    pub poseidon_round_keys: components::poseidon_round_keys::InteractionClaim,
-    pub range_check_252_width_27: components::range_check_252_width_27::InteractionClaim,
-}
-
-#[generate_trait]
-pub impl PoseidonInteractionClaimImpl of PoseidonInteractionClaimTrait {
-    fn mix_into(self: @PoseidonInteractionClaim, ref channel: Channel) {
-        self.poseidon_aggregator.mix_into(ref channel);
-        self.poseidon_3_partial_rounds_chain.mix_into(ref channel);
-        self.poseidon_full_round_chain.mix_into(ref channel);
-        self.cube_252.mix_into(ref channel);
-        self.poseidon_round_keys.mix_into(ref channel);
-        self.range_check_252_width_27.mix_into(ref channel);
-    }
-
-    fn sum(self: @PoseidonInteractionClaim) -> QM31 {
-        let mut sum = Zero::zero();
-        sum += *self.poseidon_aggregator.claimed_sum;
-        sum += *self.poseidon_3_partial_rounds_chain.claimed_sum;
-        sum += *self.poseidon_full_round_chain.claimed_sum;
-        sum += *self.cube_252.claimed_sum;
-        sum += *self.poseidon_round_keys.claimed_sum;
-        sum += *self.range_check_252_width_27.claimed_sum;
-        sum
-    }
-}
-
-#[derive(Drop, Serde)]
-pub struct PoseidonContextClaim {
-    pub claim: Option<PoseidonClaim>,
-}
-
-pub impl PoseidonContextClaimImpl of ClaimTrait<PoseidonContextClaim> {
-    fn mix_into(self: @PoseidonContextClaim, ref channel: Channel) {
-        if let Some(claim) = self.claim {
-            channel.mix_u64(1);
-            claim.mix_into(ref channel);
-        } else {
-            channel.mix_u64(0);
-        }
-    }
-
-    fn log_sizes(self: @PoseidonContextClaim) -> TreeArray<Span<u32>> {
-        if let Option::Some(claim) = self.claim {
-            claim.log_sizes()
-        } else {
-            array![]
-        }
-    }
-
-    fn accumulate_relation_uses(self: @PoseidonContextClaim, ref relation_uses: RelationUsesDict) {
-        if let Some(claim) = self.claim {
-            claim.accumulate_relation_uses(ref relation_uses);
-        }
-    }
-}
-
-#[derive(Drop, Serde)]
-pub struct PoseidonContextInteractionClaim {
-    pub interaction_claim: Option<PoseidonInteractionClaim>,
-}
-
-#[generate_trait]
-pub impl PoseidonContextInteractionClaimImpl of PoseidonContextInteractionClaimTrait {
-    fn mix_into(self: @PoseidonContextInteractionClaim, ref channel: Channel) {
-        if let Some(interaction_claim) = self.interaction_claim {
-            interaction_claim.mix_into(ref channel);
-        }
-    }
-
-    fn sum(self: @PoseidonContextInteractionClaim) -> QM31 {
-        if let Some(interaction_claim) = self.interaction_claim {
-            interaction_claim.sum()
-        } else {
-            Zero::zero()
-        }
-    }
-}
-
 
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 #[derive(Drop)]
@@ -169,22 +47,62 @@ pub struct PoseidonContextComponents {
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 pub impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
     fn new(
-        claim: @PoseidonContextClaim,
+        poseidon_aggregator_claim: @Option<components::poseidon_aggregator::Claim>,
+        poseidon_3_partial_rounds_chain_claim: @Option<
+            components::poseidon_3_partial_rounds_chain::Claim,
+        >,
+        poseidon_full_round_chain_claim: @Option<components::poseidon_full_round_chain::Claim>,
+        cube_252_claim: @Option<components::cube_252::Claim>,
+        poseidon_round_keys_claim: @Option<components::poseidon_round_keys::Claim>,
+        range_check_252_width_27_claim: @Option<components::range_check_252_width_27::Claim>,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @PoseidonContextInteractionClaim,
+        poseidon_aggregator_interaction_claim: @Option<
+            components::poseidon_aggregator::InteractionClaim,
+        >,
+        poseidon_3_partial_rounds_chain_interaction_claim: @Option<
+            components::poseidon_3_partial_rounds_chain::InteractionClaim,
+        >,
+        poseidon_full_round_chain_interaction_claim: @Option<
+            components::poseidon_full_round_chain::InteractionClaim,
+        >,
+        cube_252_interaction_claim: @Option<components::cube_252::InteractionClaim>,
+        poseidon_round_keys_interaction_claim: @Option<
+            components::poseidon_round_keys::InteractionClaim,
+        >,
+        range_check_252_width_27_interaction_claim: @Option<
+            components::range_check_252_width_27::InteractionClaim,
+        >,
     ) -> PoseidonContextComponents {
-        if let Some(claim) = claim.claim {
-            PoseidonContextComponents {
-                components: Some(
-                    PoseidonComponentsImpl::new(
-                        claim,
-                        common_lookup_elements,
-                        interaction_claim.interaction_claim.as_snap().unwrap(),
-                    ),
-                ),
-            }
+        if let Some(_) = poseidon_aggregator_claim {
+            let components = PoseidonComponentsImpl::new(
+                poseidon_aggregator_claim,
+                poseidon_3_partial_rounds_chain_claim,
+                poseidon_full_round_chain_claim,
+                cube_252_claim,
+                poseidon_round_keys_claim,
+                range_check_252_width_27_claim,
+                common_lookup_elements,
+                poseidon_aggregator_interaction_claim,
+                poseidon_3_partial_rounds_chain_interaction_claim,
+                poseidon_full_round_chain_interaction_claim,
+                cube_252_interaction_claim,
+                poseidon_round_keys_interaction_claim,
+                range_check_252_width_27_interaction_claim,
+            );
+
+            PoseidonContextComponents { components: Some(components) }
         } else {
-            assert!(interaction_claim.interaction_claim.is_none());
+            assert!(poseidon_3_partial_rounds_chain_claim.is_none());
+            assert!(poseidon_full_round_chain_claim.is_none());
+            assert!(cube_252_claim.is_none());
+            assert!(poseidon_round_keys_claim.is_none());
+            assert!(range_check_252_width_27_claim.is_none());
+            assert!(poseidon_aggregator_interaction_claim.is_none());
+            assert!(poseidon_3_partial_rounds_chain_interaction_claim.is_none());
+            assert!(poseidon_full_round_chain_interaction_claim.is_none());
+            assert!(cube_252_interaction_claim.is_none());
+            assert!(poseidon_round_keys_interaction_claim.is_none());
+            assert!(range_check_252_width_27_interaction_claim.is_none());
             PoseidonContextComponents { components: None }
         }
     }
@@ -225,54 +143,82 @@ pub struct PoseidonComponents {
 #[generate_trait]
 pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
     fn new(
-        claim: @PoseidonClaim,
+        poseidon_aggregator_claim: @Option<components::poseidon_aggregator::Claim>,
+        poseidon_3_partial_rounds_chain_claim: @Option<
+            components::poseidon_3_partial_rounds_chain::Claim,
+        >,
+        poseidon_full_round_chain_claim: @Option<components::poseidon_full_round_chain::Claim>,
+        cube_252_claim: @Option<components::cube_252::Claim>,
+        poseidon_round_keys_claim: @Option<components::poseidon_round_keys::Claim>,
+        range_check_252_width_27_claim: @Option<components::range_check_252_width_27::Claim>,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @PoseidonInteractionClaim,
+        poseidon_aggregator_interaction_claim: @Option<
+            components::poseidon_aggregator::InteractionClaim,
+        >,
+        poseidon_3_partial_rounds_chain_interaction_claim: @Option<
+            components::poseidon_3_partial_rounds_chain::InteractionClaim,
+        >,
+        poseidon_full_round_chain_interaction_claim: @Option<
+            components::poseidon_full_round_chain::InteractionClaim,
+        >,
+        cube_252_interaction_claim: @Option<components::cube_252::InteractionClaim>,
+        poseidon_round_keys_interaction_claim: @Option<
+            components::poseidon_round_keys::InteractionClaim,
+        >,
+        range_check_252_width_27_interaction_claim: @Option<
+            components::range_check_252_width_27::InteractionClaim,
+        >,
     ) -> PoseidonComponents {
-        let poseidon_aggregator_component = components::poseidon_aggregator::NewComponentImpl::new(
-            claim.poseidon_aggregator,
-            interaction_claim.poseidon_aggregator,
+        let poseidon_aggregator = components::poseidon_aggregator::NewComponentImpl::try_new(
+            poseidon_aggregator_claim,
+            poseidon_aggregator_interaction_claim,
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
-        let poseidon_3_partial_rounds_chain_component =
-            components::poseidon_3_partial_rounds_chain::NewComponentImpl::new(
-            claim.poseidon_3_partial_rounds_chain,
-            interaction_claim.poseidon_3_partial_rounds_chain,
+        let poseidon_3_partial_rounds_chain =
+            components::poseidon_3_partial_rounds_chain::NewComponentImpl::try_new(
+            poseidon_3_partial_rounds_chain_claim,
+            poseidon_3_partial_rounds_chain_interaction_claim,
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
-        let poseidon_full_round_chain_component =
-            components::poseidon_full_round_chain::NewComponentImpl::new(
-            claim.poseidon_full_round_chain,
-            interaction_claim.poseidon_full_round_chain,
+        let poseidon_full_round_chain =
+            components::poseidon_full_round_chain::NewComponentImpl::try_new(
+            poseidon_full_round_chain_claim,
+            poseidon_full_round_chain_interaction_claim,
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
-        let cube_252_component = components::cube_252::NewComponentImpl::new(
-            claim.cube_252, interaction_claim.cube_252, common_lookup_elements,
-        );
+        let cube_252 = components::cube_252::NewComponentImpl::try_new(
+            cube_252_claim, cube_252_interaction_claim, common_lookup_elements,
+        )
+            .unwrap();
 
-        let poseidon_round_keys_component = components::poseidon_round_keys::NewComponentImpl::new(
-            claim.poseidon_round_keys,
-            interaction_claim.poseidon_round_keys,
+        let poseidon_round_keys = components::poseidon_round_keys::NewComponentImpl::try_new(
+            poseidon_round_keys_claim,
+            poseidon_round_keys_interaction_claim,
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
-        let range_check_felt_252_width_27_component =
-            components::range_check_252_width_27::NewComponentImpl::new(
-            claim.range_check_252_width_27,
-            interaction_claim.range_check_252_width_27,
+        let range_check_252_width_27 =
+            components::range_check_252_width_27::NewComponentImpl::try_new(
+            range_check_252_width_27_claim,
+            range_check_252_width_27_interaction_claim,
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
         PoseidonComponents {
-            poseidon_aggregator: poseidon_aggregator_component,
-            poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_component,
-            poseidon_full_round_chain: poseidon_full_round_chain_component,
-            cube_252: cube_252_component,
-            poseidon_round_keys: poseidon_round_keys_component,
-            range_check_252_width_27: range_check_felt_252_width_27_component,
+            poseidon_aggregator,
+            poseidon_3_partial_rounds_chain,
+            poseidon_full_round_chain,
+            cube_252,
+            poseidon_round_keys,
+            range_check_252_width_27,
         }
     }
 
