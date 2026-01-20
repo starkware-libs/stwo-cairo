@@ -47,6 +47,12 @@ pub struct CairoClaimGenerator {
     pub verify_instruction: Option<verify_instruction::ClaimGenerator>,
     pub range_check_4_3: Option<range_check_4_3::ClaimGenerator>,
     pub range_check_7_2_5: Option<range_check_7_2_5::ClaimGenerator>,
+    pub pedersen_builtin_narrow_windows: Option<pedersen_builtin_narrow_windows::ClaimGenerator>,
+    pub pedersen_aggregator_window_bits_9:
+        Option<pedersen_aggregator_window_bits_9::ClaimGenerator>,
+    pub partial_ec_mul_window_bits_9: Option<partial_ec_mul_window_bits_9::ClaimGenerator>,
+    pub pedersen_points_table_window_bits_9:
+        Option<pedersen_points_table_window_bits_9::ClaimGenerator>,
     pub pedersen_builtin: Option<pedersen_builtin::ClaimGenerator>,
     pub pedersen_aggregator_window_bits_18:
         Option<pedersen_aggregator_window_bits_18::ClaimGenerator>,
@@ -123,6 +129,10 @@ impl CairoClaimGenerator {
             verify_instruction: verify_instruction_ref,
             range_check_4_3: range_check_4_3_ref,
             range_check_7_2_5: range_check_7_2_5_ref,
+            pedersen_builtin_narrow_windows: pedersen_builtin_narrow_windows_ref,
+            pedersen_aggregator_window_bits_9: pedersen_aggregator_window_bits_9_ref,
+            partial_ec_mul_window_bits_9: partial_ec_mul_window_bits_9_ref,
+            pedersen_points_table_window_bits_9: pedersen_points_table_window_bits_9_ref,
             pedersen_builtin: pedersen_builtin_ref,
             pedersen_aggregator_window_bits_18: pedersen_aggregator_window_bits_18_ref,
             partial_ec_mul_window_bits_18: partial_ec_mul_window_bits_18_ref,
@@ -368,16 +378,52 @@ impl CairoClaimGenerator {
                     ));
                 });
             }
+            if components.contains(&"pedersen_builtin_narrow_windows") {
+                s.spawn(|_| {
+                let segment = builtin_segments.get_segment_by_name("pedersen_builtin_narrow_windows").unwrap();
+                let segment_length = segment.stop_ptr - segment.begin_addr;
+                assert!(
+                    segment_length.is_multiple_of(PEDERSEN_BUILTIN_NARROW_WINDOWS_MEMORY_CELLS),
+                    "pedersen_builtin_narrow_windows segment length is not a multiple of it's cells_per_instance"
+                );
+                let n_instances = segment_length / PEDERSEN_BUILTIN_NARROW_WINDOWS_MEMORY_CELLS;
+                assert!(
+                    n_instances.is_power_of_two(),
+                    "pedersen_builtin_narrow_windows instances number is not a power of two"
+                );
+                *pedersen_builtin_narrow_windows_ref = Some(pedersen_builtin_narrow_windows::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32));
+            });
+            }
+            if components.contains(&"pedersen_aggregator_window_bits_9") {
+                s.spawn(|_| {
+                    *pedersen_aggregator_window_bits_9_ref =
+                        Some(pedersen_aggregator_window_bits_9::ClaimGenerator::new());
+                });
+            }
+            if components.contains(&"partial_ec_mul_window_bits_9") {
+                s.spawn(|_| {
+                    *partial_ec_mul_window_bits_9_ref =
+                        Some(partial_ec_mul_window_bits_9::ClaimGenerator::new());
+                });
+            }
+            if components.contains(&"pedersen_points_table_window_bits_9") {
+                s.spawn(|_| {
+                    *pedersen_points_table_window_bits_9_ref =
+                        Some(pedersen_points_table_window_bits_9::ClaimGenerator::new(
+                            preprocessed_trace.clone(),
+                        ));
+                });
+            }
             if components.contains(&"pedersen_builtin") {
                 s.spawn(|_| {
-                    let segment = builtin_segments.pedersen_builtin.unwrap();
-
+                    let segment = builtin_segments
+                        .get_segment_by_name("pedersen_builtin")
+                        .unwrap();
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(
                     segment_length.is_multiple_of(PEDERSEN_BUILTIN_MEMORY_CELLS),
                     "pedersen_builtin segment length is not a multiple of it's cells_per_instance"
                 );
-
                     let n_instances = segment_length / PEDERSEN_BUILTIN_MEMORY_CELLS;
                     assert!(
                         n_instances.is_power_of_two(),
@@ -418,14 +464,14 @@ impl CairoClaimGenerator {
             }
             if components.contains(&"poseidon_builtin") {
                 s.spawn(|_| {
-                    let segment = builtin_segments.poseidon_builtin.unwrap();
-
+                    let segment = builtin_segments
+                        .get_segment_by_name("poseidon_builtin")
+                        .unwrap();
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(
                     segment_length.is_multiple_of(POSEIDON_BUILTIN_MEMORY_CELLS),
                     "poseidon_builtin segment length is not a multiple of it's cells_per_instance"
                 );
-
                     let n_instances = segment_length / POSEIDON_BUILTIN_MEMORY_CELLS;
                     assert!(
                         n_instances.is_power_of_two(),
@@ -502,14 +548,14 @@ impl CairoClaimGenerator {
             }
             if components.contains(&"mul_mod_builtin") {
                 s.spawn(|_| {
-                    let segment = builtin_segments.mul_mod_builtin.unwrap();
-
+                    let segment = builtin_segments
+                        .get_segment_by_name("mul_mod_builtin")
+                        .unwrap();
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(
                     segment_length.is_multiple_of(MUL_MOD_BUILTIN_MEMORY_CELLS),
                     "mul_mod_builtin segment length is not a multiple of it's cells_per_instance"
                 );
-
                     let n_instances = segment_length / MUL_MOD_BUILTIN_MEMORY_CELLS;
                     assert!(
                         n_instances.is_power_of_two(),
@@ -544,14 +590,14 @@ impl CairoClaimGenerator {
             }
             if components.contains(&"add_mod_builtin") {
                 s.spawn(|_| {
-                    let segment = builtin_segments.add_mod_builtin.unwrap();
-
+                    let segment = builtin_segments
+                        .get_segment_by_name("add_mod_builtin")
+                        .unwrap();
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(
                     segment_length.is_multiple_of(ADD_MOD_BUILTIN_MEMORY_CELLS),
                     "add_mod_builtin segment length is not a multiple of it's cells_per_instance"
                 );
-
                     let n_instances = segment_length / ADD_MOD_BUILTIN_MEMORY_CELLS;
                     assert!(
                         n_instances.is_power_of_two(),
@@ -565,14 +611,12 @@ impl CairoClaimGenerator {
             }
             if components.contains(&"range_check96_builtin") {
                 s.spawn(|_| {
-                let segment = builtin_segments.range_check96_builtin.unwrap();
-
+                let segment = builtin_segments.get_segment_by_name("range_check96_builtin").unwrap();
                 let segment_length = segment.stop_ptr - segment.begin_addr;
                 assert!(
                     segment_length.is_multiple_of(RANGE_CHECK_96_BUILTIN_MEMORY_CELLS),
                     "range_check96_builtin segment length is not a multiple of it's cells_per_instance"
                 );
-
                 let n_instances = segment_length / RANGE_CHECK_96_BUILTIN_MEMORY_CELLS;
                 assert!(
                     n_instances.is_power_of_two(),
@@ -590,14 +634,12 @@ impl CairoClaimGenerator {
             }
             if components.contains(&"range_check_builtin") {
                 s.spawn(|_| {
-                let segment = builtin_segments.range_check_builtin.unwrap();
-
+                let segment = builtin_segments.get_segment_by_name("range_check_builtin").unwrap();
                 let segment_length = segment.stop_ptr - segment.begin_addr;
                 assert!(
                     segment_length.is_multiple_of(RANGE_CHECK_BUILTIN_MEMORY_CELLS),
                     "range_check_builtin segment length is not a multiple of it's cells_per_instance"
                 );
-
                 let n_instances = segment_length / RANGE_CHECK_BUILTIN_MEMORY_CELLS;
                 assert!(
                     n_instances.is_power_of_two(),
@@ -608,14 +650,14 @@ impl CairoClaimGenerator {
             }
             if components.contains(&"bitwise_builtin") {
                 s.spawn(|_| {
-                    let segment = builtin_segments.bitwise_builtin.unwrap();
-
+                    let segment = builtin_segments
+                        .get_segment_by_name("bitwise_builtin")
+                        .unwrap();
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(
                     segment_length.is_multiple_of(BITWISE_BUILTIN_MEMORY_CELLS),
                     "bitwise_builtin segment length is not a multiple of it's cells_per_instance"
                 );
-
                     let n_instances = segment_length / BITWISE_BUILTIN_MEMORY_CELLS;
                     assert!(
                         n_instances.is_power_of_two(),
@@ -979,6 +1021,19 @@ pub fn get_sub_components(component_name: &str) -> Vec<&'static str> {
                 "partial_ec_mul_window_bits_18",
                 "pedersen_aggregator_window_bits_18",
                 "pedersen_builtin",
+            ]
+        }
+        "pedersen_builtin_narrow_windows" => {
+            vec![
+                "memory_address_to_id",
+                "range_check_9_9",
+                "memory_id_to_big",
+                "range_check_8",
+                "pedersen_points_table_window_bits_9",
+                "range_check_20",
+                "partial_ec_mul_window_bits_9",
+                "pedersen_aggregator_window_bits_9",
+                "pedersen_builtin_narrow_windows",
             ]
         }
         _ => panic!("Unknown component: {component_name}"),

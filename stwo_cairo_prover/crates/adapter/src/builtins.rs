@@ -96,6 +96,25 @@ impl BuiltinSegments {
         counts
     }
 
+    /// Returns the memory segment addresses for the given builtin name.
+    /// These names are not the same as the BuiltinName enum defined by the vm, as they include
+    /// "pedersen_builtin_narrow_windows", which is an alternative implementation for the pedersen
+    /// builtin.
+    pub fn get_segment_by_name(&self, name: &str) -> Option<MemorySegmentAddresses> {
+        match name {
+            "add_mod_builtin" => self.add_mod_builtin,
+            "bitwise_builtin" => self.bitwise_builtin,
+            "output" => self.output,
+            "mul_mod_builtin" => self.mul_mod_builtin,
+            "pedersen_builtin" => self.pedersen_builtin,
+            "pedersen_builtin_narrow_windows" => self.pedersen_builtin,
+            "poseidon_builtin" => self.poseidon_builtin,
+            "range_check96_builtin" => self.range_check96_builtin,
+            "range_check_builtin" => self.range_check_builtin,
+            _ => panic!("Invalid builtin name: {name}"),
+        }
+    }
+
     // Pads the relocatable builtin segments output by the VM to match the size required by Stwo.
     // Assumes and verifies that the segments contain no holes and that their length is divisible by
     // the number of cells per instance.
