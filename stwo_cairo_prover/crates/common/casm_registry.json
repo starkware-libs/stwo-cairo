@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "air_version": "699e06bc",
+=======
+  "air_version": "c3d13542",
+>>>>>>> c05aabd0 (integare auto gen of calim and interaction claim)
   "canonical_ppt_n_trace_cells": 543100528,
   "canonical_without_pedersen_ppt_n_trace_cells": 73338480,
   "air_fns": {

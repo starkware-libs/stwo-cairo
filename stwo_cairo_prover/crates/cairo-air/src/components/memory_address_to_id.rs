@@ -8,6 +8,7 @@ use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry};
 
 use crate::relations::{self, MEMORY_ADDRESS_TO_ID_RELATION_ID};
+use crate::verifier::RelationUse;
 
 /// Split the (ID , Multiplicity) columns to shorter chunks. This is done to improve the performance
 /// during The merkle commitment and FRI, as this component is usually the tallest in the Cairo AIR.
@@ -26,6 +27,7 @@ pub const MEMORY_ADDRESS_TO_ID_SPLIT: usize = 16;
 pub const N_ID_AND_MULT_COLUMNS_PER_CHUNK: usize = 2;
 pub const N_TRACE_COLUMNS: usize = MEMORY_ADDRESS_TO_ID_SPLIT * N_ID_AND_MULT_COLUMNS_PER_CHUNK;
 
+pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 pub type Component = FrameworkComponent<Eval>;
 
 #[derive(Clone)]
@@ -35,7 +37,7 @@ pub struct Eval {
     pub common_lookup_elements: relations::CommonLookupElements,
 }
 impl Eval {
-    pub fn new(claim: Claim, common_lookup_elements: relations::CommonLookupElements) -> Self {
+    pub fn new(claim: &Claim, common_lookup_elements: relations::CommonLookupElements) -> Self {
         Self {
             log_size: claim.log_size,
             common_lookup_elements,
@@ -73,7 +75,7 @@ impl FrameworkEval for Eval {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Claim {
     pub log_size: u32,
 }
@@ -90,7 +92,7 @@ impl Claim {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct InteractionClaim {
     pub claimed_sum: SecureField,
 }
