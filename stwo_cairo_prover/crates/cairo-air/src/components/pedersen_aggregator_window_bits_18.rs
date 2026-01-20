@@ -15,8 +15,8 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 3] = [
         uses: 2,
     },
     RelationUse {
-        relation_id: "RangeCheck_8",
-        uses: 4,
+        relation_id: "RangeCheck_9_9",
+        uses: 2,
     },
 ];
 
@@ -32,7 +32,7 @@ pub struct Claim {
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 6];
+        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 5];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
@@ -192,10 +192,10 @@ impl FrameworkEval for Eval {
         let value_limb_27_col58 = eval.next_trace_mask();
         let ms_limb_is_max_col59 = eval.next_trace_mask();
         let ms_and_mid_limbs_are_max_col60 = eval.next_trace_mask();
-        let rc_input_col61 = eval.next_trace_mask();
+        let rc_input_1_col61 = eval.next_trace_mask();
         let ms_limb_is_max_col62 = eval.next_trace_mask();
         let ms_and_mid_limbs_are_max_col63 = eval.next_trace_mask();
-        let rc_input_col64 = eval.next_trace_mask();
+        let rc_input_1_col64 = eval.next_trace_mask();
         let partial_ec_mul_window_bits_18_output_limb_0_col65 = eval.next_trace_mask();
         let partial_ec_mul_window_bits_18_output_limb_1_col66 = eval.next_trace_mask();
         let partial_ec_mul_window_bits_18_output_limb_2_col67 = eval.next_trace_mask();
@@ -437,7 +437,7 @@ impl FrameworkEval for Eval {
             ],
             ms_limb_is_max_col59.clone(),
             ms_and_mid_limbs_are_max_col60.clone(),
-            rc_input_col61.clone(),
+            rc_input_1_col61.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
@@ -474,7 +474,7 @@ impl FrameworkEval for Eval {
             ],
             ms_limb_is_max_col62.clone(),
             ms_and_mid_limbs_are_max_col63.clone(),
-            rc_input_col64.clone(),
+            rc_input_1_col64.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );

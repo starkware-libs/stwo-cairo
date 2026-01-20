@@ -139,7 +139,6 @@ fn cairo_relation_entries(
 
     let RangeChecksComponents {
         rc_6,
-        rc_8,
         rc_11,
         rc_12,
         rc_18,
@@ -176,7 +175,6 @@ fn cairo_relation_entries(
         add_to_relation_entries_many(ret, trace),
         add_to_relation_entries(verify_instruction, trace),
         add_to_relation_entries(rc_6, trace),
-        add_to_relation_entries(rc_8, trace),
         add_to_relation_entries(rc_11, trace),
         add_to_relation_entries(rc_12, trace),
         add_to_relation_entries(rc_18, trace),

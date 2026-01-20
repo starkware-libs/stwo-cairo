@@ -5,7 +5,9 @@ use cairo_air::components::pedersen_aggregator_window_bits_18::{
     Claim, InteractionClaim, N_TRACE_COLUMNS,
 };
 
-use crate::witness::components::{memory_id_to_big, partial_ec_mul_window_bits_18, range_check_8};
+use crate::witness::components::{
+    memory_id_to_big, partial_ec_mul_window_bits_18, range_check_9_9,
+};
 use crate::witness::prelude::*;
 
 pub type InputType = ([M31; 2], M31);
@@ -29,7 +31,7 @@ impl ClaimGenerator {
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-        range_check_8_state: &range_check_8::ClaimGenerator,
+        range_check_9_9_state: &range_check_9_9::ClaimGenerator,
         partial_ec_mul_window_bits_18_state: &mut partial_ec_mul_window_bits_18::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let mut inputs_mults = self
@@ -57,14 +59,14 @@ impl ClaimGenerator {
             packed_inputs,
             packed_mults,
             memory_id_to_big_state,
-            range_check_8_state,
+            range_check_9_9_state,
             partial_ec_mul_window_bits_18_state,
         );
         for inputs in sub_component_inputs.memory_id_to_big {
             memory_id_to_big_state.add_packed_inputs(&inputs, 0);
         }
-        for inputs in sub_component_inputs.range_check_8 {
-            range_check_8_state.add_packed_inputs(&inputs, 0);
+        for inputs in sub_component_inputs.range_check_9_9 {
+            range_check_9_9_state.add_packed_inputs(&inputs, 0);
         }
         for inputs in sub_component_inputs.partial_ec_mul_window_bits_18 {
             partial_ec_mul_window_bits_18_state.add_packed_inputs(&inputs, 0);
@@ -99,7 +101,7 @@ impl ClaimGenerator {
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct SubComponentInputs {
     memory_id_to_big: [Vec<memory_id_to_big::PackedInputType>; 3],
-    range_check_8: [Vec<range_check_8::PackedInputType>; 4],
+    range_check_9_9: [Vec<range_check_9_9::PackedInputType>; 2],
     partial_ec_mul_window_bits_18: [Vec<partial_ec_mul_window_bits_18::PackedInputType>; 28],
 }
 
@@ -111,7 +113,7 @@ fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     mults: Vec<PackedM31>,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-    range_check_8_state: &range_check_8::ClaimGenerator,
+    range_check_9_9_state: &range_check_9_9::ClaimGenerator,
     partial_ec_mul_window_bits_18_state: &mut partial_ec_mul_window_bits_18::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
@@ -158,7 +160,6 @@ fn write_trace_simd(
     let M31_14 = PackedM31::broadcast(M31::from(14));
     let M31_140 = PackedM31::broadcast(M31::from(140));
     let M31_141 = PackedM31::broadcast(M31::from(141));
-    let M31_1420243005 = PackedM31::broadcast(M31::from(1420243005));
     let M31_15 = PackedM31::broadcast(M31::from(15));
     let M31_155 = PackedM31::broadcast(M31::from(155));
     let M31_156 = PackedM31::broadcast(M31::from(156));
@@ -198,6 +199,7 @@ fn write_trace_simd(
     let M31_325 = PackedM31::broadcast(M31::from(325));
     let M31_334 = PackedM31::broadcast(M31::from(334));
     let M31_373 = PackedM31::broadcast(M31::from(373));
+    let M31_376 = PackedM31::broadcast(M31::from(376));
     let M31_377 = PackedM31::broadcast(M31::from(377));
     let M31_379 = PackedM31::broadcast(M31::from(379));
     let M31_389 = PackedM31::broadcast(M31::from(389));
@@ -217,6 +219,7 @@ fn write_trace_simd(
     let M31_5 = PackedM31::broadcast(M31::from(5));
     let M31_510 = PackedM31::broadcast(M31::from(510));
     let M31_512 = PackedM31::broadcast(M31::from(512));
+    let M31_517791011 = PackedM31::broadcast(M31::from(517791011));
     let M31_520578465 = PackedM31::broadcast(M31::from(520578465));
     let M31_54 = PackedM31::broadcast(M31::from(54));
     let M31_6 = PackedM31::broadcast(M31::from(6));
@@ -314,23 +317,19 @@ fn write_trace_simd(
 
             let ms_limb_is_max_tmp_94cb4_4 = value_limb_27_col30.eq(M31_256);let ms_limb_is_max_col59 = ms_limb_is_max_tmp_94cb4_4.as_m31();
             *row[59] = ms_limb_is_max_col59;let ms_and_mid_limbs_are_max_tmp_94cb4_5 = ((value_limb_27_col30.eq(M31_256)) & (value_limb_21_col24.eq(M31_136)));let ms_and_mid_limbs_are_max_col60 = ms_and_mid_limbs_are_max_tmp_94cb4_5.as_m31();
-            *row[60] = ms_and_mid_limbs_are_max_col60;*sub_component_inputs.range_check_8[0] =
-                [((value_limb_27_col30) - (ms_limb_is_max_col59))];
-            *lookup_data.range_check_8_0 = [M31_1420243005, ((value_limb_27_col30) - (ms_limb_is_max_col59))];let rc_input_col61 = ((ms_limb_is_max_col59) * (((((M31_120) + (value_limb_21_col24))) - (ms_and_mid_limbs_are_max_col60))));
-            *row[61] = rc_input_col61;*sub_component_inputs.range_check_8[1] =
-                [rc_input_col61];
-            *lookup_data.range_check_8_1 = [M31_1420243005, rc_input_col61];
+            *row[60] = ms_and_mid_limbs_are_max_col60;let rc_input_1_col61 = ((ms_limb_is_max_col59) * (((((M31_376) + (value_limb_21_col24))) - (ms_and_mid_limbs_are_max_col60))));
+            *row[61] = rc_input_1_col61;*sub_component_inputs.range_check_9_9[0] =
+                [((((value_limb_27_col30) - (ms_limb_is_max_col59))) + (M31_256)), rc_input_1_col61];
+            *lookup_data.range_check_9_9_0 = [M31_517791011, ((((value_limb_27_col30) - (ms_limb_is_max_col59))) + (M31_256)), rc_input_1_col61];
 
             // Verify Reduced 252.
 
             let ms_limb_is_max_tmp_94cb4_6 = value_limb_27_col58.eq(M31_256);let ms_limb_is_max_col62 = ms_limb_is_max_tmp_94cb4_6.as_m31();
             *row[62] = ms_limb_is_max_col62;let ms_and_mid_limbs_are_max_tmp_94cb4_7 = ((value_limb_27_col58.eq(M31_256)) & (value_limb_21_col52.eq(M31_136)));let ms_and_mid_limbs_are_max_col63 = ms_and_mid_limbs_are_max_tmp_94cb4_7.as_m31();
-            *row[63] = ms_and_mid_limbs_are_max_col63;*sub_component_inputs.range_check_8[2] =
-                [((value_limb_27_col58) - (ms_limb_is_max_col62))];
-            *lookup_data.range_check_8_2 = [M31_1420243005, ((value_limb_27_col58) - (ms_limb_is_max_col62))];let rc_input_col64 = ((ms_limb_is_max_col62) * (((((M31_120) + (value_limb_21_col52))) - (ms_and_mid_limbs_are_max_col63))));
-            *row[64] = rc_input_col64;*sub_component_inputs.range_check_8[3] =
-                [rc_input_col64];
-            *lookup_data.range_check_8_3 = [M31_1420243005, rc_input_col64];
+            *row[63] = ms_and_mid_limbs_are_max_col63;let rc_input_1_col64 = ((ms_limb_is_max_col62) * (((((M31_376) + (value_limb_21_col52))) - (ms_and_mid_limbs_are_max_col63))));
+            *row[64] = rc_input_1_col64;*sub_component_inputs.range_check_9_9[1] =
+                [((((value_limb_27_col58) - (ms_limb_is_max_col62))) + (M31_256)), rc_input_1_col64];
+            *lookup_data.range_check_9_9_1 = [M31_517791011, ((((value_limb_27_col58) - (ms_limb_is_max_col62))) + (M31_256)), rc_input_1_col64];
 
             let partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8 = ((seq) * (M31_2));*lookup_data.partial_ec_mul_window_bits_18_0 = [M31_1621226978, partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8, M31_0, ((value_limb_0_col3) + (((value_limb_1_col4) * (M31_512)))), ((value_limb_2_col5) + (((value_limb_3_col6) * (M31_512)))), ((value_limb_4_col7) + (((value_limb_5_col8) * (M31_512)))), ((value_limb_6_col9) + (((value_limb_7_col10) * (M31_512)))), ((value_limb_8_col11) + (((value_limb_9_col12) * (M31_512)))), ((value_limb_10_col13) + (((value_limb_11_col14) * (M31_512)))), ((value_limb_12_col15) + (((value_limb_13_col16) * (M31_512)))), ((value_limb_14_col17) + (((value_limb_15_col18) * (M31_512)))), ((value_limb_16_col19) + (((value_limb_17_col20) * (M31_512)))), ((value_limb_18_col21) + (((value_limb_19_col22) * (M31_512)))), ((value_limb_20_col23) + (((value_limb_21_col24) * (M31_512)))), ((value_limb_22_col25) + (((value_limb_23_col26) * (M31_512)))), ((value_limb_24_col27) + (((value_limb_25_col28) * (M31_512)))), ((value_limb_26_col29) + (((value_limb_27_col30) * (M31_512)))), M31_510, M31_315, M31_208, M31_480, M31_418, M31_115, M31_155, M31_54, M31_162, M31_449, M31_428, M31_466, M31_484, M31_169, M31_497, M31_373, M31_98, M31_64, M31_464, M31_498, M31_124, M31_68, M31_379, M31_140, M31_26, M31_22, M31_135, M31_202, M31_156, M31_120, M31_213, M31_389, M31_377, M31_20, M31_325, M31_303, M31_473, M31_334, M31_223, M31_160, M31_225, M31_297, M31_101, M31_420, M31_377, M31_72, M31_191, M31_49, M31_314, M31_27, M31_199, M31_222, M31_79, M31_97, M31_108, M31_141];*sub_component_inputs.partial_ec_mul_window_bits_18[0] =
                 (partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8, M31_0, ([((value_limb_0_col3) + (((value_limb_1_col4) * (M31_512)))), ((value_limb_2_col5) + (((value_limb_3_col6) * (M31_512)))), ((value_limb_4_col7) + (((value_limb_5_col8) * (M31_512)))), ((value_limb_6_col9) + (((value_limb_7_col10) * (M31_512)))), ((value_limb_8_col11) + (((value_limb_9_col12) * (M31_512)))), ((value_limb_10_col13) + (((value_limb_11_col14) * (M31_512)))), ((value_limb_12_col15) + (((value_limb_13_col16) * (M31_512)))), ((value_limb_14_col17) + (((value_limb_15_col18) * (M31_512)))), ((value_limb_16_col19) + (((value_limb_17_col20) * (M31_512)))), ((value_limb_18_col21) + (((value_limb_19_col22) * (M31_512)))), ((value_limb_20_col23) + (((value_limb_21_col24) * (M31_512)))), ((value_limb_22_col25) + (((value_limb_23_col26) * (M31_512)))), ((value_limb_24_col27) + (((value_limb_25_col28) * (M31_512)))), ((value_limb_26_col29) + (((value_limb_27_col30) * (M31_512))))], [Felt252_2796306760980396030_6142433350943679003_9786206818587032316_455457488062799560, Felt252_15078781199387521180_7290787951512770967_8332093602989199897_317979597309161923]));
@@ -548,10 +547,8 @@ struct LookupData {
     partial_ec_mul_window_bits_18_2: Vec<[PackedM31; 73]>,
     partial_ec_mul_window_bits_18_3: Vec<[PackedM31; 73]>,
     pedersen_aggregator_window_bits_18_0: Vec<[PackedM31; 4]>,
-    range_check_8_0: Vec<[PackedM31; 2]>,
-    range_check_8_1: Vec<[PackedM31; 2]>,
-    range_check_8_2: Vec<[PackedM31; 2]>,
-    range_check_8_3: Vec<[PackedM31; 2]>,
+    range_check_9_9_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_1: Vec<[PackedM31; 3]>,
     mults_0: Vec<PackedM31>,
 }
 
@@ -585,22 +582,8 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_8_0,
-            &self.lookup_data.range_check_8_1,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
-
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_8_2,
-            &self.lookup_data.range_check_8_3,
+            &self.lookup_data.range_check_9_9_0,
+            &self.lookup_data.range_check_9_9_1,
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {

@@ -7,7 +7,7 @@ use tracing::{span, Level};
 
 use crate::witness::components::{
     memory_id_to_big, partial_ec_mul_window_bits_18, pedersen_aggregator_window_bits_18,
-    pedersen_points_table_window_bits_18, range_check_20, range_check_8, range_check_9_9,
+    pedersen_points_table_window_bits_18, range_check_20, range_check_9_9,
 };
 use crate::witness::utils::TreeBuilder;
 
@@ -19,7 +19,6 @@ pub fn pedersen_context_write_trace(
     >,
     tree_builder: &mut impl TreeBuilder<SimdBackend>,
     memory_id_to_big_state: Option<&memory_id_to_big::ClaimGenerator>,
-    rc_8_trace_generator: Option<&range_check_8::ClaimGenerator>,
     rc_9_9_trace_generator: Option<&range_check_9_9::ClaimGenerator>,
     rc_20_trace_generator: Option<&range_check_20::ClaimGenerator>,
 ) -> (
@@ -48,7 +47,7 @@ pub fn pedersen_context_write_trace(
         pedersen_aggregator_trace_generator.write_trace(
             tree_builder,
             memory_id_to_big_state.unwrap(),
-            rc_8_trace_generator.unwrap(),
+            rc_9_9_trace_generator.unwrap(),
             &mut partial_ec_mul_trace_generator,
         );
     let (partial_ec_mul_claim, partial_ec_mul_interaction_gen) = partial_ec_mul_trace_generator

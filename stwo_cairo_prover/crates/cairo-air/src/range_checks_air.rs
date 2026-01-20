@@ -10,14 +10,13 @@ use stwo_constraint_framework::TraceLocationAllocator;
 use crate::components::{
     indented_component_display, range_check_11, range_check_12, range_check_18, range_check_20,
     range_check_3_3_3_3_3, range_check_3_6_6_3, range_check_4_3, range_check_4_4,
-    range_check_4_4_4_4, range_check_6, range_check_7_2_5, range_check_8, range_check_9_9,
+    range_check_4_4_4_4, range_check_6, range_check_7_2_5, range_check_9_9,
 };
 use crate::relations;
 
 #[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct RangeChecksClaim {
     pub rc_6: range_check_6::Claim,
-    pub rc_8: range_check_8::Claim,
     pub rc_11: range_check_11::Claim,
     pub rc_12: range_check_12::Claim,
     pub rc_18: range_check_18::Claim,
@@ -33,7 +32,6 @@ pub struct RangeChecksClaim {
 impl RangeChecksClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         self.rc_6.mix_into(channel);
-        self.rc_8.mix_into(channel);
         self.rc_11.mix_into(channel);
         self.rc_12.mix_into(channel);
         self.rc_18.mix_into(channel);
@@ -51,7 +49,6 @@ impl RangeChecksClaim {
         TreeVec::concat_cols(
             vec![
                 self.rc_6.log_sizes(),
-                self.rc_8.log_sizes(),
                 self.rc_11.log_sizes(),
                 self.rc_12.log_sizes(),
                 self.rc_18.log_sizes(),
@@ -72,7 +69,6 @@ impl RangeChecksClaim {
 #[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct RangeChecksInteractionClaim {
     pub rc_6: range_check_6::InteractionClaim,
-    pub rc_8: range_check_8::InteractionClaim,
     pub rc_11: range_check_11::InteractionClaim,
     pub rc_12: range_check_12::InteractionClaim,
     pub rc_18: range_check_18::InteractionClaim,
@@ -88,7 +84,6 @@ pub struct RangeChecksInteractionClaim {
 impl RangeChecksInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         self.rc_6.mix_into(channel);
-        self.rc_8.mix_into(channel);
         self.rc_11.mix_into(channel);
         self.rc_12.mix_into(channel);
         self.rc_18.mix_into(channel);
@@ -105,7 +100,6 @@ impl RangeChecksInteractionClaim {
     pub fn sum(&self) -> SecureField {
         let mut sum = QM31::zero();
         sum += self.rc_6.claimed_sum;
-        sum += self.rc_8.claimed_sum;
         sum += self.rc_11.claimed_sum;
         sum += self.rc_12.claimed_sum;
         sum += self.rc_18.claimed_sum;
@@ -123,7 +117,6 @@ impl RangeChecksInteractionClaim {
 
 pub struct RangeChecksComponents {
     pub rc_6: range_check_6::Component,
-    pub rc_8: range_check_8::Component,
     pub rc_11: range_check_11::Component,
     pub rc_12: range_check_12::Component,
     pub rc_18: range_check_18::Component,
@@ -149,14 +142,6 @@ impl RangeChecksComponents {
                 common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.rc_6.claimed_sum,
-        );
-        let rc_8_component = range_check_8::Component::new(
-            tree_span_provider,
-            range_check_8::Eval {
-                claim: range_check_8::Claim {},
-                common_lookup_elements: common_lookup_elements.clone(),
-            },
-            interaction_claim.rc_8.claimed_sum,
         );
         let rc_11_component = range_check_11::Component::new(
             tree_span_provider,
@@ -248,7 +233,6 @@ impl RangeChecksComponents {
         );
         Self {
             rc_6: rc_6_component,
-            rc_8: rc_8_component,
             rc_11: rc_11_component,
             rc_12: rc_12_component,
             rc_18: rc_18_component,
@@ -266,7 +250,6 @@ impl RangeChecksComponents {
     pub fn components(&self) -> Vec<&dyn Component> {
         vec![
             &self.rc_6 as &dyn Component,
-            &self.rc_8 as &dyn Component,
             &self.rc_11 as &dyn Component,
             &self.rc_12 as &dyn Component,
             &self.rc_18 as &dyn Component,
@@ -285,7 +268,6 @@ impl RangeChecksComponents {
 impl std::fmt::Display for RangeChecksComponents {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         writeln!(f, "RangeCheck6: {}", indented_component_display(&self.rc_6))?;
-        writeln!(f, "RangeCheck8: {}", indented_component_display(&self.rc_8))?;
         writeln!(
             f,
             "RangeCheck11: {}",
