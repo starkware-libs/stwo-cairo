@@ -2,7 +2,6 @@ use std::collections::HashMap;
 use std::iter::once;
 
 use itertools::{chain, Itertools};
-use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::air::Component;
 use stwo::core::channel::Channel;
@@ -21,23 +20,19 @@ use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_constraint_framework::{Relation, TraceLocationAllocator};
 
-use super::blake::air::{BlakeContextClaim, BlakeContextComponents, BlakeContextInteractionClaim};
-use super::builtins_air::{BuiltinComponents, BuiltinsClaim, BuiltinsInteractionClaim};
+use super::blake::air::{blake_context_log_sizes, BlakeContextComponents};
+use super::builtins_air::{builtins_log_sizes, BuiltinComponents};
 use super::components::indented_component_display;
-use super::opcodes_air::{OpcodeClaim, OpcodeComponents, OpcodeInteractionClaim};
-use super::pedersen::air::{
-    PedersenContextClaim, PedersenContextComponents, PedersenContextInteractionClaim,
-};
-use super::poseidon::air::{
-    PoseidonContextClaim, PoseidonContextComponents, PoseidonContextInteractionClaim,
-};
-use super::range_checks_air::{
-    RangeChecksClaim, RangeChecksComponents, RangeChecksInteractionClaim,
-};
+use super::opcodes_air::OpcodeComponents;
+use super::pedersen::air::{pedersen_context_log_sizes, PedersenContextComponents};
+use super::poseidon::air::{poseidon_context_log_sizes, PoseidonContextComponents};
+use super::range_checks_air::{range_checks_log_sizes, RangeChecksComponents};
+use crate::claims::{CairoClaim, CairoInteractionClaim};
 use crate::components::{
     memory_address_to_id, memory_id_to_big, verify_bitwise_xor_4, verify_bitwise_xor_7,
     verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
 };
+use crate::opcodes_air::opcodes_log_sizes;
 use crate::relations::{
     self, CommonLookupElements, MEMORY_ADDRESS_TO_ID_RELATION_ID, MEMORY_ID_TO_BIG_RELATION_ID,
     OPCODES_RELATION_ID,
@@ -109,129 +104,53 @@ pub fn accumulate_relation_uses<const N: usize>(
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct CairoClaim {
-    pub public_data: PublicData,
-    pub opcodes: OpcodeClaim,
-    pub verify_instruction: verify_instruction::Claim,
-    pub blake_context: BlakeContextClaim,
-    pub builtins: BuiltinsClaim,
-    pub pedersen_context: PedersenContextClaim,
-    pub poseidon_context: PoseidonContextClaim,
-    pub memory_address_to_id: memory_address_to_id::Claim,
-    pub memory_id_to_value: memory_id_to_big::Claim,
-    pub range_checks: RangeChecksClaim,
-    pub verify_bitwise_xor_4: verify_bitwise_xor_4::Claim,
-    pub verify_bitwise_xor_7: verify_bitwise_xor_7::Claim,
-    pub verify_bitwise_xor_8: verify_bitwise_xor_8::Claim,
-    pub verify_bitwise_xor_9: verify_bitwise_xor_9::Claim,
-    // ...
-}
-
 impl CairoClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        let Self {
-            public_data,
-            opcodes,
-            verify_instruction,
-            blake_context,
-            builtins,
-            pedersen_context,
-            poseidon_context,
-            memory_address_to_id,
-            memory_id_to_value,
-            range_checks,
-            verify_bitwise_xor_4,
-            verify_bitwise_xor_7,
-            verify_bitwise_xor_8,
-            verify_bitwise_xor_9,
-        } = self;
-        public_data.mix_into(channel);
-        opcodes.mix_into(channel);
-        verify_instruction.mix_into(channel);
-        blake_context.mix_into(channel);
-        builtins.mix_into(channel);
-        pedersen_context.mix_into(channel);
-        poseidon_context.mix_into(channel);
-        memory_address_to_id.mix_into(channel);
-        memory_id_to_value.mix_into(channel);
-        range_checks.mix_into(channel);
-        verify_bitwise_xor_4.mix_into(channel);
-        verify_bitwise_xor_7.mix_into(channel);
-        verify_bitwise_xor_8.mix_into(channel);
-        verify_bitwise_xor_9.mix_into(channel);
-    }
-
-    /// Returns the log sizes of the components.
-    /// Does not include the preprocessed trace log sizes.
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let log_sizes_list = vec![
-            self.opcodes.log_sizes(),
-            self.verify_instruction.log_sizes(),
-            self.blake_context.log_sizes(),
-            self.builtins.log_sizes(),
-            self.pedersen_context.log_sizes(),
-            self.poseidon_context.log_sizes(),
-            self.memory_address_to_id.log_sizes(),
-            self.memory_id_to_value.log_sizes(),
-            self.range_checks.log_sizes(),
-            self.verify_bitwise_xor_4.log_sizes(),
-            self.verify_bitwise_xor_7.log_sizes(),
-            self.verify_bitwise_xor_8.log_sizes(),
-            self.verify_bitwise_xor_9.log_sizes(),
-        ];
-
+        let mut log_sizes_list = vec![];
+        log_sizes_list.push(opcodes_log_sizes(self));
+        self.verify_instruction
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        log_sizes_list.push(blake_context_log_sizes(self));
+        log_sizes_list.push(builtins_log_sizes(self));
+        log_sizes_list.push(pedersen_context_log_sizes(self));
+        log_sizes_list.push(poseidon_context_log_sizes(self));
+        self.memory_address_to_id
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.memory_id_to_big
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        log_sizes_list.push(range_checks_log_sizes(self));
+        self.verify_bitwise_xor_4
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.verify_bitwise_xor_7
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.verify_bitwise_xor_8
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.verify_bitwise_xor_9
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
         TreeVec::concat_cols(log_sizes_list.into_iter())
     }
+}
+pub fn accumulate_relation_memory(
+    relation_uses: &mut RelationUsesDict,
+    claim: &Option<memory_id_to_big::Claim>,
+) {
+    let memory_id_to_value = claim.as_ref().expect("memory_id_to_value must be Some");
 
-    pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
-        let Self {
-            public_data: _,
-            opcodes,
-            verify_instruction,
-            blake_context,
-            builtins,
-            pedersen_context,
-            poseidon_context,
-            memory_address_to_id: _,
-            memory_id_to_value,
-            range_checks: _,
-            verify_bitwise_xor_4: _,
-            verify_bitwise_xor_7: _,
-            verify_bitwise_xor_8: _,
-            verify_bitwise_xor_9: _,
-        } = self;
-        // NOTE: The following components do not USE relations:
-        // - range_checks
-        // - verify_bitwise_xor_*
-        // - memory_address_to_id
-
-        opcodes.accumulate_relation_uses(relation_uses);
-        builtins.accumulate_relation_uses(relation_uses);
-        blake_context.accumulate_relation_uses(relation_uses);
-        pedersen_context.accumulate_relation_uses(relation_uses);
-        poseidon_context.accumulate_relation_uses(relation_uses);
+    // TODO(ShaharS): Look into the file name of memory_id_to_big.
+    // memory_id_to_value has a big value component and a small value component.
+    for log_size in &memory_id_to_value.big_log_sizes {
         accumulate_relation_uses(
             relation_uses,
-            verify_instruction::RELATION_USES_PER_ROW,
-            verify_instruction.log_size,
-        );
-
-        // TODO(ShaharS): Look into the file name of memory_id_to_big.
-        // memory_id_to_value has a big value component and a small value component.
-        for &log_size in &memory_id_to_value.big_log_sizes {
-            accumulate_relation_uses(
-                relation_uses,
-                memory_id_to_big::RELATION_USES_PER_ROW_BIG,
-                log_size,
-            );
-        }
-        accumulate_relation_uses(
-            relation_uses,
-            memory_id_to_big::RELATION_USES_PER_ROW_SMALL,
-            memory_id_to_value.small_log_size,
+            memory_id_to_big::RELATION_USES_PER_ROW_BIG,
+            *log_size,
         );
     }
+    accumulate_relation_uses(
+        relation_uses,
+        memory_id_to_big::RELATION_USES_PER_ROW_SMALL,
+        memory_id_to_value.small_log_size,
+    );
 }
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, Default, Clone)]
@@ -590,67 +509,6 @@ impl PublicMemory {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, Clone)]
-pub struct CairoInteractionClaim {
-    pub opcodes: OpcodeInteractionClaim,
-    pub verify_instruction: verify_instruction::InteractionClaim,
-    pub blake_context: BlakeContextInteractionClaim,
-    pub builtins: BuiltinsInteractionClaim,
-    pub pedersen_context: PedersenContextInteractionClaim,
-    pub poseidon_context: PoseidonContextInteractionClaim,
-    pub memory_address_to_id: memory_address_to_id::InteractionClaim,
-    pub memory_id_to_value: memory_id_to_big::InteractionClaim,
-    pub range_checks: RangeChecksInteractionClaim,
-    pub verify_bitwise_xor_4: verify_bitwise_xor_4::InteractionClaim,
-    pub verify_bitwise_xor_7: verify_bitwise_xor_7::InteractionClaim,
-    pub verify_bitwise_xor_8: verify_bitwise_xor_8::InteractionClaim,
-    pub verify_bitwise_xor_9: verify_bitwise_xor_9::InteractionClaim,
-}
-impl CairoInteractionClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        self.opcodes.mix_into(channel);
-        self.verify_instruction.mix_into(channel);
-        self.blake_context.mix_into(channel);
-        self.builtins.mix_into(channel);
-        self.pedersen_context.mix_into(channel);
-        self.poseidon_context.mix_into(channel);
-        self.memory_address_to_id.mix_into(channel);
-        self.memory_id_to_value.mix_into(channel);
-        self.range_checks.mix_into(channel);
-        self.verify_bitwise_xor_4.mix_into(channel);
-        self.verify_bitwise_xor_7.mix_into(channel);
-        self.verify_bitwise_xor_8.mix_into(channel);
-        self.verify_bitwise_xor_9.mix_into(channel);
-    }
-}
-
-pub fn lookup_sum(
-    claim: &CairoClaim,
-    common_lookup_elements: &CommonLookupElements,
-    interaction_claim: &CairoInteractionClaim,
-) -> SecureField {
-    let mut sum = QM31::zero();
-    sum += claim.public_data.logup_sum(common_lookup_elements);
-
-    // If the table is padded, take the sum of the non-padded values.
-    // Otherwise, the claimed_sum is the total_sum.
-    sum += interaction_claim.opcodes.sum();
-    sum += interaction_claim.verify_instruction.claimed_sum;
-    sum += interaction_claim.blake_context.sum();
-    sum += interaction_claim.builtins.sum();
-    sum += interaction_claim.pedersen_context.sum();
-    sum += interaction_claim.poseidon_context.sum();
-    sum += interaction_claim.memory_address_to_id.claimed_sum;
-    sum += interaction_claim.memory_id_to_value.claimed_sum();
-    sum += interaction_claim.range_checks.sum();
-    sum += interaction_claim.verify_bitwise_xor_4.claimed_sum;
-    sum += interaction_claim.verify_bitwise_xor_7.claimed_sum;
-    sum += interaction_claim.verify_bitwise_xor_8.claimed_sum;
-    sum += interaction_claim.verify_bitwise_xor_9.claimed_sum;
-
-    sum
-}
-
 pub struct CairoComponents {
     pub opcodes: OpcodeComponents,
     pub verify_instruction: verify_instruction::Component,
@@ -683,106 +541,195 @@ impl CairoComponents {
 
         let opcode_components = OpcodeComponents::new(
             tree_span_provider,
-            &cairo_claim.opcodes,
+            &cairo_claim.add_opcode,
+            &cairo_claim.add_opcode_small,
+            &cairo_claim.add_ap_opcode,
+            &cairo_claim.assert_eq_opcode,
+            &cairo_claim.assert_eq_opcode_imm,
+            &cairo_claim.assert_eq_opcode_double_deref,
+            &cairo_claim.blake_compress_opcode,
+            &cairo_claim.call_opcode_abs,
+            &cairo_claim.call_opcode_rel_imm,
+            &cairo_claim.generic_opcode,
+            &cairo_claim.jnz_opcode_non_taken,
+            &cairo_claim.jnz_opcode_taken,
+            &cairo_claim.jump_opcode_abs,
+            &cairo_claim.jump_opcode_double_deref,
+            &cairo_claim.jump_opcode_rel,
+            &cairo_claim.jump_opcode_rel_imm,
+            &cairo_claim.mul_opcode,
+            &cairo_claim.mul_opcode_small,
+            &cairo_claim.qm_31_add_mul_opcode,
+            &cairo_claim.ret_opcode,
             common_lookup_elements,
-            &interaction_claim.opcodes,
+            &interaction_claim.add_opcode,
+            &interaction_claim.add_opcode_small,
+            &interaction_claim.add_ap_opcode,
+            &interaction_claim.assert_eq_opcode,
+            &interaction_claim.assert_eq_opcode_imm,
+            &interaction_claim.assert_eq_opcode_double_deref,
+            &interaction_claim.blake_compress_opcode,
+            &interaction_claim.call_opcode_abs,
+            &interaction_claim.call_opcode_rel_imm,
+            &interaction_claim.generic_opcode,
+            &interaction_claim.jnz_opcode_non_taken,
+            &interaction_claim.jnz_opcode_taken,
+            &interaction_claim.jump_opcode_abs,
+            &interaction_claim.jump_opcode_double_deref,
+            &interaction_claim.jump_opcode_rel,
+            &interaction_claim.jump_opcode_rel_imm,
+            &interaction_claim.mul_opcode,
+            &interaction_claim.mul_opcode_small,
+            &interaction_claim.qm_31_add_mul_opcode,
+            &interaction_claim.ret_opcode,
         );
 
         let verify_instruction_component = verify_instruction::Component::new(
             tree_span_provider,
             verify_instruction::Eval {
-                claim: cairo_claim.verify_instruction,
+                claim: cairo_claim.verify_instruction.unwrap(),
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.verify_instruction.claimed_sum,
+            interaction_claim.verify_instruction.unwrap().claimed_sum,
         );
 
         let blake_context = BlakeContextComponents::new(
             tree_span_provider,
-            &cairo_claim.blake_context,
+            &cairo_claim.blake_round,
+            &cairo_claim.blake_g,
+            &cairo_claim.blake_round_sigma,
+            &cairo_claim.triple_xor_32,
+            &cairo_claim.verify_bitwise_xor_12,
             common_lookup_elements,
-            &interaction_claim.blake_context,
+            &interaction_claim.blake_round,
+            &interaction_claim.blake_g,
+            &interaction_claim.blake_round_sigma,
+            &interaction_claim.triple_xor_32,
+            &interaction_claim.verify_bitwise_xor_12,
         );
         let builtin_components = BuiltinComponents::new(
             tree_span_provider,
-            &cairo_claim.builtins,
+            &cairo_claim.add_mod_builtin,
+            &cairo_claim.bitwise_builtin,
+            &cairo_claim.mul_mod_builtin,
+            &cairo_claim.pedersen_builtin,
+            &cairo_claim.poseidon_builtin,
+            &cairo_claim.range_check96_builtin,
+            &cairo_claim.range_check_builtin,
             common_lookup_elements,
-            &interaction_claim.builtins,
+            &interaction_claim.add_mod_builtin,
+            &interaction_claim.bitwise_builtin,
+            &interaction_claim.mul_mod_builtin,
+            &interaction_claim.pedersen_builtin,
+            &interaction_claim.poseidon_builtin,
+            &interaction_claim.range_check96_builtin,
+            &interaction_claim.range_check_builtin,
         );
         let pedersen_context = PedersenContextComponents::new(
             tree_span_provider,
-            &cairo_claim.pedersen_context,
+            &cairo_claim.pedersen_aggregator_window_bits_18,
+            &cairo_claim.partial_ec_mul_window_bits_18,
+            &cairo_claim.pedersen_points_table_window_bits_18,
             common_lookup_elements,
-            &interaction_claim.pedersen_context,
+            &interaction_claim.pedersen_aggregator_window_bits_18,
+            &interaction_claim.partial_ec_mul_window_bits_18,
+            &interaction_claim.pedersen_points_table_window_bits_18,
         );
         let poseidon_context = PoseidonContextComponents::new(
             tree_span_provider,
-            &cairo_claim.poseidon_context,
+            &cairo_claim.poseidon_aggregator,
+            &cairo_claim.poseidon_3_partial_rounds_chain,
+            &cairo_claim.poseidon_full_round_chain,
+            &cairo_claim.cube_252,
+            &cairo_claim.poseidon_round_keys,
+            &cairo_claim.range_check_252_width_27,
             common_lookup_elements,
-            &interaction_claim.poseidon_context,
+            &interaction_claim.poseidon_aggregator,
+            &interaction_claim.poseidon_3_partial_rounds_chain,
+            &interaction_claim.poseidon_full_round_chain,
+            &interaction_claim.cube_252,
+            &interaction_claim.poseidon_round_keys,
+            &interaction_claim.range_check_252_width_27,
         );
         let memory_address_to_id_component = memory_address_to_id::Component::new(
             tree_span_provider,
             memory_address_to_id::Eval::new(
-                cairo_claim.memory_address_to_id.clone(),
+                cairo_claim.memory_address_to_id.as_ref().unwrap(),
                 common_lookup_elements.clone(),
             ),
-            interaction_claim.memory_address_to_id.clone().claimed_sum,
+            interaction_claim.memory_address_to_id.unwrap().claimed_sum,
         );
 
         let memory_id_to_value_components = memory_id_to_big::big_components_from_claim(
-            &cairo_claim.memory_id_to_value.big_log_sizes,
-            &interaction_claim.memory_id_to_value.big_claimed_sums,
+            &cairo_claim.memory_id_to_big.as_ref().unwrap().big_log_sizes,
+            &interaction_claim
+                .memory_id_to_big
+                .as_ref()
+                .unwrap()
+                .big_claimed_sums,
             &common_lookup_elements.clone(),
             tree_span_provider,
         );
         let small_memory_id_to_value_component = memory_id_to_big::SmallComponent::new(
             tree_span_provider,
             memory_id_to_big::SmallEval::new(
-                cairo_claim.memory_id_to_value.clone(),
+                cairo_claim.memory_id_to_big.as_ref().unwrap(),
                 common_lookup_elements.clone(),
             ),
             interaction_claim
-                .memory_id_to_value
-                .clone()
+                .memory_id_to_big
+                .as_ref()
+                .unwrap()
                 .small_claimed_sum,
         );
         let range_checks_component = RangeChecksComponents::new(
             tree_span_provider,
             common_lookup_elements,
-            &interaction_claim.range_checks,
+            &interaction_claim.range_check_6,
+            &interaction_claim.range_check_8,
+            &interaction_claim.range_check_11,
+            &interaction_claim.range_check_12,
+            &interaction_claim.range_check_18,
+            &interaction_claim.range_check_20,
+            &interaction_claim.range_check_4_3,
+            &interaction_claim.range_check_4_4,
+            &interaction_claim.range_check_9_9,
+            &interaction_claim.range_check_7_2_5,
+            &interaction_claim.range_check_3_6_6_3,
+            &interaction_claim.range_check_4_4_4_4,
+            &interaction_claim.range_check_3_3_3_3_3,
         );
         let verify_bitwise_xor_4_component = verify_bitwise_xor_4::Component::new(
             tree_span_provider,
             verify_bitwise_xor_4::Eval {
-                claim: cairo_claim.verify_bitwise_xor_4,
+                claim: cairo_claim.verify_bitwise_xor_4.unwrap(),
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.verify_bitwise_xor_4.claimed_sum,
+            interaction_claim.verify_bitwise_xor_4.unwrap().claimed_sum,
         );
         let verify_bitwise_xor_7_component = verify_bitwise_xor_7::Component::new(
             tree_span_provider,
             verify_bitwise_xor_7::Eval {
-                claim: cairo_claim.verify_bitwise_xor_7,
+                claim: cairo_claim.verify_bitwise_xor_7.unwrap(),
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.verify_bitwise_xor_7.claimed_sum,
+            interaction_claim.verify_bitwise_xor_7.unwrap().claimed_sum,
         );
         let verify_bitwise_xor_8_component = verify_bitwise_xor_8::Component::new(
             tree_span_provider,
             verify_bitwise_xor_8::Eval {
-                claim: cairo_claim.verify_bitwise_xor_8,
+                claim: cairo_claim.verify_bitwise_xor_8.unwrap(),
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.verify_bitwise_xor_8.claimed_sum,
+            interaction_claim.verify_bitwise_xor_8.unwrap().claimed_sum,
         );
         let verify_bitwise_xor_9_component = verify_bitwise_xor_9::Component::new(
             tree_span_provider,
             verify_bitwise_xor_9::Eval {
-                claim: cairo_claim.verify_bitwise_xor_9,
+                claim: cairo_claim.verify_bitwise_xor_9.unwrap(),
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.verify_bitwise_xor_9.claimed_sum,
+            interaction_claim.verify_bitwise_xor_9.unwrap().claimed_sum,
         );
         Self {
             opcodes: opcode_components,

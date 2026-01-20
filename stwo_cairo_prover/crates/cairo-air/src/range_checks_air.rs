@@ -1,12 +1,8 @@
-use num_traits::Zero;
-use serde::{Deserialize, Serialize};
 use stwo::core::air::Component;
-use stwo::core::channel::Channel;
-use stwo::core::fields::qm31::{SecureField, QM31};
 use stwo::core::pcs::TreeVec;
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::TraceLocationAllocator;
 
+use crate::claims::CairoClaim;
 use crate::components::{
     indented_component_display, range_check_11, range_check_12, range_check_18, range_check_20,
     range_check_3_3_3_3_3, range_check_3_6_6_3, range_check_4_3, range_check_4_4,
@@ -14,111 +10,25 @@ use crate::components::{
 };
 use crate::relations;
 
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct RangeChecksClaim {
-    pub rc_6: range_check_6::Claim,
-    pub rc_8: range_check_8::Claim,
-    pub rc_11: range_check_11::Claim,
-    pub rc_12: range_check_12::Claim,
-    pub rc_18: range_check_18::Claim,
-    pub rc_20: range_check_20::Claim,
-    pub rc_4_3: range_check_4_3::Claim,
-    pub rc_4_4: range_check_4_4::Claim,
-    pub rc_9_9: range_check_9_9::Claim,
-    pub rc_7_2_5: range_check_7_2_5::Claim,
-    pub rc_3_6_6_3: range_check_3_6_6_3::Claim,
-    pub rc_4_4_4_4: range_check_4_4_4_4::Claim,
-    pub rc_3_3_3_3_3: range_check_3_3_3_3_3::Claim,
-}
-impl RangeChecksClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        self.rc_6.mix_into(channel);
-        self.rc_8.mix_into(channel);
-        self.rc_11.mix_into(channel);
-        self.rc_12.mix_into(channel);
-        self.rc_18.mix_into(channel);
-        self.rc_20.mix_into(channel);
-        self.rc_4_3.mix_into(channel);
-        self.rc_4_4.mix_into(channel);
-        self.rc_9_9.mix_into(channel);
-        self.rc_7_2_5.mix_into(channel);
-        self.rc_3_6_6_3.mix_into(channel);
-        self.rc_4_4_4_4.mix_into(channel);
-        self.rc_3_3_3_3_3.mix_into(channel);
-    }
-
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        TreeVec::concat_cols(
-            vec![
-                self.rc_6.log_sizes(),
-                self.rc_8.log_sizes(),
-                self.rc_11.log_sizes(),
-                self.rc_12.log_sizes(),
-                self.rc_18.log_sizes(),
-                self.rc_20.log_sizes(),
-                self.rc_4_3.log_sizes(),
-                self.rc_4_4.log_sizes(),
-                self.rc_9_9.log_sizes(),
-                self.rc_7_2_5.log_sizes(),
-                self.rc_3_6_6_3.log_sizes(),
-                self.rc_4_4_4_4.log_sizes(),
-                self.rc_3_3_3_3_3.log_sizes(),
-            ]
-            .into_iter(),
-        )
-    }
-}
-
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct RangeChecksInteractionClaim {
-    pub rc_6: range_check_6::InteractionClaim,
-    pub rc_8: range_check_8::InteractionClaim,
-    pub rc_11: range_check_11::InteractionClaim,
-    pub rc_12: range_check_12::InteractionClaim,
-    pub rc_18: range_check_18::InteractionClaim,
-    pub rc_20: range_check_20::InteractionClaim,
-    pub rc_4_3: range_check_4_3::InteractionClaim,
-    pub rc_4_4: range_check_4_4::InteractionClaim,
-    pub rc_9_9: range_check_9_9::InteractionClaim,
-    pub rc_7_2_5: range_check_7_2_5::InteractionClaim,
-    pub rc_3_6_6_3: range_check_3_6_6_3::InteractionClaim,
-    pub rc_4_4_4_4: range_check_4_4_4_4::InteractionClaim,
-    pub rc_3_3_3_3_3: range_check_3_3_3_3_3::InteractionClaim,
-}
-impl RangeChecksInteractionClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        self.rc_6.mix_into(channel);
-        self.rc_8.mix_into(channel);
-        self.rc_11.mix_into(channel);
-        self.rc_12.mix_into(channel);
-        self.rc_18.mix_into(channel);
-        self.rc_20.mix_into(channel);
-        self.rc_4_3.mix_into(channel);
-        self.rc_4_4.mix_into(channel);
-        self.rc_9_9.mix_into(channel);
-        self.rc_7_2_5.mix_into(channel);
-        self.rc_3_6_6_3.mix_into(channel);
-        self.rc_4_4_4_4.mix_into(channel);
-        self.rc_3_3_3_3_3.mix_into(channel);
-    }
-
-    pub fn sum(&self) -> SecureField {
-        let mut sum = QM31::zero();
-        sum += self.rc_6.claimed_sum;
-        sum += self.rc_8.claimed_sum;
-        sum += self.rc_11.claimed_sum;
-        sum += self.rc_12.claimed_sum;
-        sum += self.rc_18.claimed_sum;
-        sum += self.rc_20.claimed_sum;
-        sum += self.rc_4_3.claimed_sum;
-        sum += self.rc_4_4.claimed_sum;
-        sum += self.rc_9_9.claimed_sum;
-        sum += self.rc_7_2_5.claimed_sum;
-        sum += self.rc_3_6_6_3.claimed_sum;
-        sum += self.rc_4_4_4_4.claimed_sum;
-        sum += self.rc_3_3_3_3_3.claimed_sum;
-        sum
-    }
+pub fn range_checks_log_sizes(claim: &CairoClaim) -> TreeVec<Vec<u32>> {
+    TreeVec::concat_cols(
+        vec![
+            claim.range_check_6.unwrap().log_sizes(),
+            claim.range_check_8.unwrap().log_sizes(),
+            claim.range_check_11.unwrap().log_sizes(),
+            claim.range_check_12.unwrap().log_sizes(),
+            claim.range_check_18.unwrap().log_sizes(),
+            claim.range_check_20.unwrap().log_sizes(),
+            claim.range_check_4_3.unwrap().log_sizes(),
+            claim.range_check_4_4.unwrap().log_sizes(),
+            claim.range_check_9_9.unwrap().log_sizes(),
+            claim.range_check_7_2_5.unwrap().log_sizes(),
+            claim.range_check_3_6_6_3.unwrap().log_sizes(),
+            claim.range_check_4_4_4_4.unwrap().log_sizes(),
+            claim.range_check_3_3_3_3_3.unwrap().log_sizes(),
+        ]
+        .into_iter(),
+    )
 }
 
 pub struct RangeChecksComponents {
@@ -137,10 +47,23 @@ pub struct RangeChecksComponents {
     pub rc_3_3_3_3_3: range_check_3_3_3_3_3::Component,
 }
 impl RangeChecksComponents {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         tree_span_provider: &mut TraceLocationAllocator,
         common_lookup_elements: &relations::CommonLookupElements,
-        interaction_claim: &RangeChecksInteractionClaim,
+        rc_6_interaction_claim: &Option<range_check_6::InteractionClaim>,
+        rc_8_interaction_claim: &Option<range_check_8::InteractionClaim>,
+        rc_11_interaction_claim: &Option<range_check_11::InteractionClaim>,
+        rc_12_interaction_claim: &Option<range_check_12::InteractionClaim>,
+        rc_18_interaction_claim: &Option<range_check_18::InteractionClaim>,
+        rc_20_interaction_claim: &Option<range_check_20::InteractionClaim>,
+        rc_4_3_interaction_claim: &Option<range_check_4_3::InteractionClaim>,
+        rc_4_4_interaction_claim: &Option<range_check_4_4::InteractionClaim>,
+        rc_9_9_interaction_claim: &Option<range_check_9_9::InteractionClaim>,
+        rc_7_2_5_interaction_claim: &Option<range_check_7_2_5::InteractionClaim>,
+        rc_3_6_6_3_interaction_claim: &Option<range_check_3_6_6_3::InteractionClaim>,
+        rc_4_4_4_4_interaction_claim: &Option<range_check_4_4_4_4::InteractionClaim>,
+        rc_3_3_3_3_3_interaction_claim: &Option<range_check_3_3_3_3_3::InteractionClaim>,
     ) -> Self {
         let rc_6_component = range_check_6::Component::new(
             tree_span_provider,
@@ -148,7 +71,7 @@ impl RangeChecksComponents {
                 claim: range_check_6::Claim {},
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.rc_6.claimed_sum,
+            rc_6_interaction_claim.unwrap().claimed_sum,
         );
         let rc_8_component = range_check_8::Component::new(
             tree_span_provider,
@@ -156,7 +79,7 @@ impl RangeChecksComponents {
                 claim: range_check_8::Claim {},
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.rc_8.claimed_sum,
+            rc_8_interaction_claim.unwrap().claimed_sum,
         );
         let rc_11_component = range_check_11::Component::new(
             tree_span_provider,
@@ -164,7 +87,7 @@ impl RangeChecksComponents {
                 claim: range_check_11::Claim {},
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.rc_11.claimed_sum,
+            rc_11_interaction_claim.unwrap().claimed_sum,
         );
         let rc_12_component = range_check_12::Component::new(
             tree_span_provider,
@@ -172,7 +95,7 @@ impl RangeChecksComponents {
                 claim: range_check_12::Claim {},
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.rc_12.claimed_sum,
+            rc_12_interaction_claim.unwrap().claimed_sum,
         );
         let rc_18_component = range_check_18::Component::new(
             tree_span_provider,
@@ -180,7 +103,7 @@ impl RangeChecksComponents {
                 claim: range_check_18::Claim {},
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.rc_18.claimed_sum,
+            rc_18_interaction_claim.unwrap().claimed_sum,
         );
         let rc_20_component = range_check_20::Component::new(
             tree_span_provider,
@@ -188,7 +111,7 @@ impl RangeChecksComponents {
                 claim: range_check_20::Claim {},
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.rc_20.claimed_sum,
+            rc_20_interaction_claim.unwrap().claimed_sum,
         );
         let rc_4_3_component = range_check_4_3::Component::new(
             tree_span_provider,
@@ -196,7 +119,7 @@ impl RangeChecksComponents {
                 claim: range_check_4_3::Claim {},
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.rc_4_3.claimed_sum,
+            rc_4_3_interaction_claim.unwrap().claimed_sum,
         );
         let rc_4_4_component = range_check_4_4::Component::new(
             tree_span_provider,
@@ -204,7 +127,7 @@ impl RangeChecksComponents {
                 claim: range_check_4_4::Claim {},
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.rc_4_4.claimed_sum,
+            rc_4_4_interaction_claim.unwrap().claimed_sum,
         );
         let rc_9_9_component = range_check_9_9::Component::new(
             tree_span_provider,
@@ -212,7 +135,7 @@ impl RangeChecksComponents {
                 claim: range_check_9_9::Claim {},
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.rc_9_9.claimed_sum,
+            rc_9_9_interaction_claim.unwrap().claimed_sum,
         );
         let rc_7_2_5_component = range_check_7_2_5::Component::new(
             tree_span_provider,
@@ -220,7 +143,7 @@ impl RangeChecksComponents {
                 claim: range_check_7_2_5::Claim {},
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.rc_7_2_5.claimed_sum,
+            rc_7_2_5_interaction_claim.unwrap().claimed_sum,
         );
         let rc_3_6_6_3_component = range_check_3_6_6_3::Component::new(
             tree_span_provider,
@@ -228,7 +151,7 @@ impl RangeChecksComponents {
                 claim: range_check_3_6_6_3::Claim {},
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.rc_3_6_6_3.claimed_sum,
+            rc_3_6_6_3_interaction_claim.unwrap().claimed_sum,
         );
         let rc_4_4_4_4_component = range_check_4_4_4_4::Component::new(
             tree_span_provider,
@@ -236,7 +159,7 @@ impl RangeChecksComponents {
                 claim: range_check_4_4_4_4::Claim {},
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.rc_4_4_4_4.claimed_sum,
+            rc_4_4_4_4_interaction_claim.unwrap().claimed_sum,
         );
         let rc_3_3_3_3_3_component = range_check_3_3_3_3_3::Component::new(
             tree_span_provider,
@@ -244,7 +167,7 @@ impl RangeChecksComponents {
                 claim: range_check_3_3_3_3_3::Claim {},
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.rc_3_3_3_3_3.claimed_sum,
+            rc_3_3_3_3_3_interaction_claim.unwrap().claimed_sum,
         );
         Self {
             rc_6: rc_6_component,

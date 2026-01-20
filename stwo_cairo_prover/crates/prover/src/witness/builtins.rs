@@ -1,4 +1,10 @@
-use cairo_air::builtins_air::{BuiltinsClaim, BuiltinsInteractionClaim};
+use cairo_air::components::{
+    add_mod_builtin as add_mod_builtin_claim, bitwise_builtin as bitwise_builtin_claim,
+    mul_mod_builtin as mul_mod_builtin_claim, pedersen_builtin as pedersen_builtin_claim,
+    poseidon_builtin as poseidon_builtin_claim,
+    range_check96_builtin as range_check96_builtin_claim,
+    range_check_builtin as range_check_builtin_claim,
+};
 use cairo_air::relations::CommonLookupElements;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::builtins::BuiltinSegments;
@@ -114,6 +120,7 @@ pub fn get_builtins(builtin_segments: &BuiltinSegments) -> Vec<&'static str> {
     builtins
 }
 
+#[allow(clippy::type_complexity)]
 pub fn builtins_write_trace(
     add_mod_builtin: Option<add_mod_builtin::ClaimGenerator>,
     bitwise_builtin: Option<bitwise_builtin::ClaimGenerator>,
@@ -135,7 +142,16 @@ pub fn builtins_write_trace(
     range_check_3_6_6_3_trace_generator: Option<&range_check_3_6_6_3::ClaimGenerator>,
     verify_bitwise_xor_8_trace_generator: Option<&verify_bitwise_xor_8::ClaimGenerator>,
     verify_bitwise_xor_9_trace_generator: Option<&verify_bitwise_xor_9::ClaimGenerator>,
-) -> (BuiltinsClaim, BuiltinsInteractionClaimGenerator) {
+) -> (
+    Option<add_mod_builtin_claim::Claim>,
+    Option<bitwise_builtin_claim::Claim>,
+    Option<mul_mod_builtin_claim::Claim>,
+    Option<pedersen_builtin_claim::Claim>,
+    Option<poseidon_builtin_claim::Claim>,
+    Option<range_check96_builtin_claim::Claim>,
+    Option<range_check_builtin_claim::Claim>,
+    BuiltinsInteractionClaimGenerator,
+) {
     let (add_mod_builtin_claim, add_mod_builtin_interaction_gen) = add_mod_builtin
         .map(|add_mod_builtin_trace_generator| {
             add_mod_builtin_trace_generator.write_trace(
@@ -210,15 +226,13 @@ pub fn builtins_write_trace(
             .unzip();
 
     (
-        BuiltinsClaim {
-            add_mod_builtin: add_mod_builtin_claim,
-            bitwise_builtin: bitwise_builtin_claim,
-            mul_mod_builtin: mul_mod_builtin_claim,
-            pedersen_builtin: pedersen_builtin_claim,
-            poseidon_builtin: poseidon_builtin_claim,
-            range_check_96_builtin: range_check_96_builtin_claim,
-            range_check_128_builtin: range_check_128_builtin_claim,
-        },
+        add_mod_builtin_claim,
+        bitwise_builtin_claim,
+        mul_mod_builtin_claim,
+        pedersen_builtin_claim,
+        poseidon_builtin_claim,
+        range_check_96_builtin_claim,
+        range_check_128_builtin_claim,
         BuiltinsInteractionClaimGenerator {
             add_mod_builtin_interaction_gen,
             bitwise_builtin_interaction_gen,
@@ -242,11 +256,20 @@ pub struct BuiltinsInteractionClaimGenerator {
     range_check_128_builtin_interaction_gen: Option<range_check_builtin::InteractionClaimGenerator>,
 }
 impl BuiltinsInteractionClaimGenerator {
+    #[allow(clippy::type_complexity)]
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
-    ) -> BuiltinsInteractionClaim {
+    ) -> (
+        Option<add_mod_builtin_claim::InteractionClaim>,
+        Option<bitwise_builtin_claim::InteractionClaim>,
+        Option<mul_mod_builtin_claim::InteractionClaim>,
+        Option<pedersen_builtin_claim::InteractionClaim>,
+        Option<poseidon_builtin_claim::InteractionClaim>,
+        Option<range_check96_builtin_claim::InteractionClaim>,
+        Option<range_check_builtin_claim::InteractionClaim>,
+    ) {
         let add_mod_builtin_interaction_claim =
             self.add_mod_builtin_interaction_gen
                 .map(|add_mod_builtin_interaction_gen| {
@@ -271,12 +294,12 @@ impl BuiltinsInteractionClaimGenerator {
                     pedersen_builtin_interaction_gen
                         .write_interaction_trace(tree_builder, common_lookup_elements)
                 });
-        let poseidon_builtin_interaction_claim = self.poseidon_builtin_interaction_gen.map(
-            |poseidon_builtin_interaction_gen: poseidon_builtin::InteractionClaimGenerator| {
-                poseidon_builtin_interaction_gen
-                    .write_interaction_trace(tree_builder, common_lookup_elements)
-            },
-        );
+        let poseidon_builtin_interaction_claim =
+            self.poseidon_builtin_interaction_gen
+                .map(|poseidon_builtin_interaction_gen| {
+                    poseidon_builtin_interaction_gen
+                        .write_interaction_trace(tree_builder, common_lookup_elements)
+                });
         let range_check_96_builtin_interaction_claim = self
             .range_check_96_builtin_interaction_gen
             .map(|range_check_96_builtin_interaction_gen| {
@@ -290,14 +313,14 @@ impl BuiltinsInteractionClaimGenerator {
                     .write_interaction_trace(tree_builder, common_lookup_elements)
             });
 
-        BuiltinsInteractionClaim {
-            add_mod_builtin: add_mod_builtin_interaction_claim,
-            bitwise_builtin: bitwise_builtin_interaction_claim,
-            mul_mod_builtin: mul_mod_builtin_interaction_claim,
-            pedersen_builtin: pedersen_builtin_interaction_claim,
-            poseidon_builtin: poseidon_builtin_interaction_claim,
-            range_check_96_builtin: range_check_96_builtin_interaction_claim,
-            range_check_128_builtin: range_check_128_builtin_interaction_claim,
-        }
+        (
+            add_mod_builtin_interaction_claim,
+            bitwise_builtin_interaction_claim,
+            mul_mod_builtin_interaction_claim,
+            pedersen_builtin_interaction_claim,
+            poseidon_builtin_interaction_claim,
+            range_check_96_builtin_interaction_claim,
+            range_check_128_builtin_interaction_claim,
+        )
     }
 }
