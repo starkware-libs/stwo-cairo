@@ -2,133 +2,36 @@ use components::partial_ec_mul_window_bits_18::InteractionClaimImpl as PartialEc
 use components::pedersen_aggregator_window_bits_18::InteractionClaimImpl as PedersenAggregatorInteractionClaimImpl;
 use components::pedersen_builtin::InteractionClaimImpl as PedersenBuiltinInteractionClaimImpl;
 use components::pedersen_points_table_window_bits_18::InteractionClaimImpl as PedersenPointsTableInteractionClaimImpl;
-use core::box::BoxImpl;
-use core::num::traits::Zero;
+use core::array::Span;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
-use stwo_cairo_air::{RelationUsesDict, components, utils};
+use stwo_cairo_air::claims::CairoClaim;
+use stwo_cairo_air::components;
+use stwo_constraint_framework::PreprocessedMaskValuesImpl;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_constraint_framework::{CommonLookupElements, PreprocessedMaskValues};
-use stwo_constraint_framework::{LookupElementsImpl, PreprocessedMaskValuesImpl};
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::TreeArray;
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
+#[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::fields::qm31::QM31;
-use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
-use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
+use stwo_verifier_core::utils::OptionImpl;
+use crate::utils;
 
-
-#[derive(Drop, Serde)]
-pub struct PedersenClaim {
-    pub pedersen_aggregator: components::pedersen_aggregator_window_bits_18::Claim,
-    pub partial_ec_mul: components::partial_ec_mul_window_bits_18::Claim,
-    pub pedersen_points_table: components::pedersen_points_table_window_bits_18::Claim,
-}
-
-pub impl PedersenClaimImpl of ClaimTrait<PedersenClaim> {
-    fn mix_into(self: @PedersenClaim, ref channel: Channel) {
-        self.pedersen_aggregator.mix_into(ref channel);
-        self.partial_ec_mul.mix_into(ref channel);
-        self.pedersen_points_table.mix_into(ref channel);
-    }
-
-    fn log_sizes(self: @PedersenClaim) -> TreeArray<Span<u32>> {
-        utils::tree_array_concat_cols(
+pub fn pedersen_context_log_sizes(claim: @CairoClaim) -> TreeArray<Span<u32>> {
+    if let Some(_) = claim.pedersen_aggregator_window_bits_18 {
+        return utils::tree_array_concat_cols(
             array![
-                self.pedersen_aggregator.log_sizes(), self.partial_ec_mul.log_sizes(),
-                self.pedersen_points_table.log_sizes(),
+                claim.pedersen_aggregator_window_bits_18.unwrap().log_sizes(),
+                claim.partial_ec_mul_window_bits_18.unwrap().log_sizes(),
+                claim.pedersen_points_table_window_bits_18.unwrap().log_sizes(),
             ],
-        )
-    }
-
-    fn accumulate_relation_uses(self: @PedersenClaim, ref relation_uses: RelationUsesDict) {
-        let PedersenClaim { pedersen_aggregator, partial_ec_mul, pedersen_points_table: _ } = self;
-
-        // NOTE: The following components do not USE relations:
-        // - pedersen_points_table
-        pedersen_aggregator.accumulate_relation_uses(ref relation_uses);
-        partial_ec_mul.accumulate_relation_uses(ref relation_uses);
-    }
+        );
+    } else {
+        return utils::tree_array_concat_cols(array![]);
+    };
 }
-
-#[derive(Drop, Serde)]
-pub struct PedersenInteractionClaim {
-    pub pedersen_aggregator: components::pedersen_aggregator_window_bits_18::InteractionClaim,
-    pub partial_ec_mul: components::partial_ec_mul_window_bits_18::InteractionClaim,
-    pub pedersen_points_table: components::pedersen_points_table_window_bits_18::InteractionClaim,
-}
-
-#[generate_trait]
-pub impl PedersenInteractionClaimImpl of PedersenInteractionClaimTrait {
-    fn mix_into(self: @PedersenInteractionClaim, ref channel: Channel) {
-        self.pedersen_aggregator.mix_into(ref channel);
-        self.partial_ec_mul.mix_into(ref channel);
-        self.pedersen_points_table.mix_into(ref channel);
-    }
-
-    fn sum(self: @PedersenInteractionClaim) -> QM31 {
-        let mut sum = Zero::zero();
-        sum += *self.pedersen_aggregator.claimed_sum;
-        sum += *self.partial_ec_mul.claimed_sum;
-        sum += *self.pedersen_points_table.claimed_sum;
-        sum
-    }
-}
-
-#[derive(Drop, Serde)]
-pub struct PedersenContextClaim {
-    pub claim: Option<PedersenClaim>,
-}
-
-pub impl PedersenContextClaimImpl of ClaimTrait<PedersenContextClaim> {
-    fn mix_into(self: @PedersenContextClaim, ref channel: Channel) {
-        if let Some(claim) = self.claim {
-            channel.mix_u64(1);
-            claim.mix_into(ref channel);
-        } else {
-            channel.mix_u64(0);
-        }
-    }
-
-    fn log_sizes(self: @PedersenContextClaim) -> TreeArray<Span<u32>> {
-        if let Option::Some(claim) = self.claim {
-            claim.log_sizes()
-        } else {
-            array![]
-        }
-    }
-
-    fn accumulate_relation_uses(self: @PedersenContextClaim, ref relation_uses: RelationUsesDict) {
-        if let Some(claim) = self.claim {
-            claim.accumulate_relation_uses(ref relation_uses);
-        }
-    }
-}
-
-#[derive(Drop, Serde)]
-pub struct PedersenContextInteractionClaim {
-    pub interaction_claim: Option<PedersenInteractionClaim>,
-}
-
-#[generate_trait]
-pub impl PedersenContextInteractionClaimImpl of PedersenContextInteractionClaimTrait {
-    fn mix_into(self: @PedersenContextInteractionClaim, ref channel: Channel) {
-        if let Some(interaction_claim) = self.interaction_claim {
-            interaction_claim.mix_into(ref channel);
-        }
-    }
-
-    fn sum(self: @PedersenContextInteractionClaim) -> QM31 {
-        if let Some(interaction_claim) = self.interaction_claim {
-            interaction_claim.sum()
-        } else {
-            Zero::zero()
-        }
-    }
-}
-
 
 #[cfg(not(feature: "poseidon252_verifier"))]
 #[derive(Drop)]
@@ -140,22 +43,40 @@ pub struct PedersenContextComponents {
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub impl PedersenContextComponentsImpl of PedersenContextComponentsTrait {
     fn new(
-        claim: @PedersenContextClaim,
+        pedersen_aggregator_claim: @Option<components::pedersen_aggregator_window_bits_18::Claim>,
+        partial_ec_mul_claim: @Option<components::partial_ec_mul_window_bits_18::Claim>,
+        pedersen_points_table_claim: @Option<
+            components::pedersen_points_table_window_bits_18::Claim,
+        >,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @PedersenContextInteractionClaim,
+        pedersen_aggregator_interaction_claim: @Option<
+            components::pedersen_aggregator_window_bits_18::InteractionClaim,
+        >,
+        partial_ec_mul_interaction_claim: @Option<
+            components::partial_ec_mul_window_bits_18::InteractionClaim,
+        >,
+        pedersen_points_table_interaction_claim: @Option<
+            components::pedersen_points_table_window_bits_18::InteractionClaim,
+        >,
     ) -> PedersenContextComponents {
-        if let Some(claim) = claim.claim {
-            PedersenContextComponents {
-                components: Some(
-                    PedersenComponentsImpl::new(
-                        claim,
-                        common_lookup_elements,
-                        interaction_claim.interaction_claim.as_snap().unwrap(),
-                    ),
-                ),
-            }
+        if let Some(_) = pedersen_aggregator_claim {
+            let components = PedersenComponentsImpl::new(
+                pedersen_aggregator_claim,
+                partial_ec_mul_claim,
+                pedersen_points_table_claim,
+                common_lookup_elements,
+                pedersen_aggregator_interaction_claim,
+                partial_ec_mul_interaction_claim,
+                pedersen_points_table_interaction_claim,
+            );
+
+            PedersenContextComponents { components: Some(components) }
         } else {
-            assert!(interaction_claim.interaction_claim.is_none());
+            assert!(partial_ec_mul_claim.is_none());
+            assert!(pedersen_points_table_claim.is_none());
+            assert!(pedersen_aggregator_interaction_claim.is_none());
+            assert!(partial_ec_mul_interaction_claim.is_none());
+            assert!(pedersen_points_table_interaction_claim.is_none());
             PedersenContextComponents { components: None }
         }
     }
@@ -193,34 +114,44 @@ pub struct PedersenComponents {
 #[generate_trait]
 pub impl PedersenComponentsImpl of PedersenComponentsTrait {
     fn new(
-        claim: @PedersenClaim,
+        pedersen_aggregator_claim: @Option<components::pedersen_aggregator_window_bits_18::Claim>,
+        partial_ec_mul_claim: @Option<components::partial_ec_mul_window_bits_18::Claim>,
+        pedersen_points_table_claim: @Option<
+            components::pedersen_points_table_window_bits_18::Claim,
+        >,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @PedersenInteractionClaim,
+        pedersen_aggregator_interaction_claim: @Option<
+            components::pedersen_aggregator_window_bits_18::InteractionClaim,
+        >,
+        partial_ec_mul_interaction_claim: @Option<
+            components::partial_ec_mul_window_bits_18::InteractionClaim,
+        >,
+        pedersen_points_table_interaction_claim: @Option<
+            components::pedersen_points_table_window_bits_18::InteractionClaim,
+        >,
     ) -> PedersenComponents {
-        let pedersen_aggregator_component =
-            components::pedersen_aggregator_window_bits_18::NewComponentImpl::new(
-            claim.pedersen_aggregator,
-            interaction_claim.pedersen_aggregator,
+        let pedersen_aggregator =
+            components::pedersen_aggregator_window_bits_18::NewComponentImpl::try_new(
+            pedersen_aggregator_claim,
+            pedersen_aggregator_interaction_claim,
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
-        let partial_ec_mul_component =
-            components::partial_ec_mul_window_bits_18::NewComponentImpl::new(
-            claim.partial_ec_mul, interaction_claim.partial_ec_mul, common_lookup_elements,
-        );
+        let partial_ec_mul = components::partial_ec_mul_window_bits_18::NewComponentImpl::try_new(
+            partial_ec_mul_claim, partial_ec_mul_interaction_claim, common_lookup_elements,
+        )
+            .unwrap();
 
-        let pedersen_points_table_component =
-            components::pedersen_points_table_window_bits_18::NewComponentImpl::new(
-            claim.pedersen_points_table,
-            interaction_claim.pedersen_points_table,
+        let pedersen_points_table =
+            components::pedersen_points_table_window_bits_18::NewComponentImpl::try_new(
+            pedersen_points_table_claim,
+            pedersen_points_table_interaction_claim,
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
-        PedersenComponents {
-            pedersen_aggregator: pedersen_aggregator_component,
-            partial_ec_mul: partial_ec_mul_component,
-            pedersen_points_table: pedersen_points_table_component,
-        }
+        PedersenComponents { pedersen_aggregator, partial_ec_mul, pedersen_points_table }
     }
 
     fn evaluate_constraints_at_point(
