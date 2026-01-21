@@ -2,7 +2,10 @@ use cairo_air::pedersen::air::{
     Claim, InteractionClaim, PedersenContextClaim, PedersenContextInteractionClaim,
 };
 use cairo_air::relations::CommonLookupElements;
+use stwo::core::fields::m31::M31;
 use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::poly::circle::CircleEvaluation;
+use stwo::prover::poly::BitReversedOrder;
 use tracing::{span, Level};
 
 use crate::witness::components::{
@@ -10,6 +13,8 @@ use crate::witness::components::{
     pedersen_points_table_window_bits_18, range_check_20, range_check_8, range_check_9_9,
 };
 use crate::witness::utils::TreeBuilder;
+
+type InteractionTraces = Vec<Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>>;
 
 pub fn pedersen_context_write_trace(
     pedersen_aggregator_trace_generator: Option<pedersen_aggregator_window_bits_18::ClaimGenerator>,
@@ -88,14 +93,16 @@ pub struct PedersenContextInteractionClaimGenerator {
 impl PedersenContextInteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
-    ) -> PedersenContextInteractionClaim {
-        PedersenContextInteractionClaim {
-            claim: self
-                .gen
-                .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements)),
-        }
+    ) -> (InteractionTraces, PedersenContextInteractionClaim) {
+        let (traces, claim) = self
+            .gen
+            .map(|gen| {
+                let (traces, claim) = gen.write_interaction_trace(common_lookup_elements);
+                (traces, Some(claim))
+            })
+            .unwrap_or_default();
+        (traces, PedersenContextInteractionClaim { claim })
     }
 }
 
@@ -109,26 +116,29 @@ struct InteractionClaimGenerator {
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
-    ) -> InteractionClaim {
+    ) -> (InteractionTraces, InteractionClaim) {
+        let mut all_traces = Vec::new();
         let (pedersen_aggregator_trace, pedersen_aggregator_interaction_claim) = self
             .pedersen_aggregator_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(pedersen_aggregator_trace);
+        all_traces.push(pedersen_aggregator_trace);
         let (partial_ec_mul_trace, partial_ec_mul_interaction_claim) = self
             .partial_ec_mul_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(partial_ec_mul_trace);
+        all_traces.push(partial_ec_mul_trace);
         let (pedersen_points_table_trace, pedersen_points_table_interaction_claim) = self
             .pedersen_points_table_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(pedersen_points_table_trace);
+        all_traces.push(pedersen_points_table_trace);
 
-        InteractionClaim {
-            pedersen_aggregator: pedersen_aggregator_interaction_claim,
-            partial_ec_mul: partial_ec_mul_interaction_claim,
-            pedersen_points_table: pedersen_points_table_interaction_claim,
-        }
+        (
+            all_traces,
+            InteractionClaim {
+                pedersen_aggregator: pedersen_aggregator_interaction_claim,
+                partial_ec_mul: partial_ec_mul_interaction_claim,
+                pedersen_points_table: pedersen_points_table_interaction_claim,
+            },
+        )
     }
 }

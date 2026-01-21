@@ -442,25 +442,40 @@ impl CairoInteractionClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
     ) -> CairoInteractionClaim {
-        let opcodes_interaction_claims = self
+        let (opcodes_traces, opcodes_interaction_claims) = self
             .opcodes_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
+            .write_interaction_trace(common_lookup_elements);
+        for trace in opcodes_traces {
+            tree_builder.extend_evals(trace);
+        }
         let (verify_instruction_trace, verify_instruction_interaction_claim) = self
             .verify_instruction_interaction_gen
             .write_interaction_trace(common_lookup_elements);
         tree_builder.extend_evals(verify_instruction_trace);
-        let blake_context_interaction_claim = self
+        let (blake_context_traces, blake_context_interaction_claim) = self
             .blake_context_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let builtins_interaction_claims = self
+            .write_interaction_trace(common_lookup_elements);
+        for trace in blake_context_traces {
+            tree_builder.extend_evals(trace);
+        }
+        let (builtins_traces, builtins_interaction_claims) = self
             .builtins_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let pedersen_context_interaction_claim = self
+            .write_interaction_trace(common_lookup_elements);
+        for trace in builtins_traces {
+            tree_builder.extend_evals(trace);
+        }
+        let (pedersen_context_traces, pedersen_context_interaction_claim) = self
             .pedersen_context_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let poseidon_context_interaction_claim = self
+            .write_interaction_trace(common_lookup_elements);
+        for trace in pedersen_context_traces {
+            tree_builder.extend_evals(trace);
+        }
+        let (poseidon_context_traces, poseidon_context_interaction_claim) = self
             .poseidon_context_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
+            .write_interaction_trace(common_lookup_elements);
+        for trace in poseidon_context_traces {
+            tree_builder.extend_evals(trace);
+        }
         let (memory_address_to_id_trace, memory_address_to_id_interaction_claim) = self
             .memory_address_to_id_interaction_gen
             .write_interaction_trace(common_lookup_elements);
@@ -477,9 +492,12 @@ impl CairoInteractionClaimGenerator {
         }
         tree_builder.extend_evals(memory_id_to_value_small_trace);
 
-        let range_checks_interaction_claim = self
+        let (range_checks_traces, range_checks_interaction_claim) = self
             .range_checks_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
+            .write_interaction_trace(common_lookup_elements);
+        for trace in range_checks_traces {
+            tree_builder.extend_evals(trace);
+        }
         let (verify_bitwise_xor_4_trace, verify_bitwise_xor_4_interaction_claim) = self
             .verify_bitwise_xor_4_interaction_gen
             .write_interaction_trace(common_lookup_elements);
