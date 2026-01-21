@@ -37,9 +37,8 @@ impl ClaimGenerator {
             .map(BaseColumn::from_simd)
             .map(|col| CircleEvaluation::new(domain, col))
             .collect_vec();
-        let lookup_data = LookupData { mults };
-
         tree_builder.extend_evals(trace);
+        let lookup_data = LookupData { mults };
 
         (Claim {}, InteractionClaimGenerator { lookup_data })
     }
@@ -71,9 +70,11 @@ pub struct InteractionClaimGenerator {
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> InteractionClaim {
+    ) -> (
+        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
+        InteractionClaim,
+    ) {
         let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
         // [0, 1, 2, ..., N_LANES - 1].
@@ -138,8 +139,7 @@ impl InteractionClaimGenerator {
         }
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
-        tree_builder.extend_evals(trace);
 
-        InteractionClaim { claimed_sum }
+        (trace, InteractionClaim { claimed_sum })
     }
 }

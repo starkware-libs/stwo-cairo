@@ -25,10 +25,13 @@ impl ClaimGenerator {
 
     pub fn write_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         pedersen_aggregator_window_bits_9_state: &pedersen_aggregator_window_bits_9::ClaimGenerator,
-    ) -> (Claim, InteractionClaimGenerator) {
+    ) -> (
+        ComponentTrace<N_TRACE_COLUMNS>,
+        Claim,
+        InteractionClaimGenerator,
+    ) {
         let log_size = self.log_size;
 
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
@@ -43,9 +46,9 @@ impl ClaimGenerator {
         for inputs in sub_component_inputs.pedersen_aggregator_window_bits_9 {
             pedersen_aggregator_window_bits_9_state.add_packed_inputs(&inputs, 0);
         }
-        tree_builder.extend_evals(trace.to_evals());
 
         (
+            trace,
             Claim {
                 log_size,
                 pedersen_builtin_segment_start: self.pedersen_builtin_segment_start,
@@ -175,9 +178,11 @@ pub struct InteractionClaimGenerator {
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> InteractionClaim {
+    ) -> (
+        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
+        InteractionClaim,
+    ) {
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         // Sum logup terms in pairs.
@@ -210,8 +215,7 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
-        tree_builder.extend_evals(trace);
 
-        InteractionClaim { claimed_sum }
+        (trace, InteractionClaim { claimed_sum })
     }
 }

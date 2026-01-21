@@ -120,77 +120,82 @@ pub fn opcodes_write_trace(
 ) -> (OpcodeClaim, OpcodesInteractionClaimGenerator) {
     let (add_claims, add_interaction_gens) = add
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
     let (add_small_claims, add_small_interaction_gens) = add_small
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
     let (add_ap_claims, add_ap_interaction_gens) = add_ap
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
                 rc_18_trace_generator.unwrap(),
                 rc_11_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
     let (assert_eq_claims, assert_eq_interaction_gens) = assert_eq
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
     let (assert_eq_imm_claims, assert_eq_imm_interaction_gens) = assert_eq_imm
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
     let (assert_eq_double_deref_claims, assert_eq_double_deref_interaction_gens) =
         assert_eq_double_deref
             .map(|gen| {
-                gen.write_trace(
-                    tree_builder,
+                let (trace, claim, interaction_gen) = gen.write_trace(
                     memory_address_to_id_trace_generator.unwrap(),
                     memory_id_to_value_trace_generator.unwrap(),
                     verify_instruction_trace_generator.unwrap(),
-                )
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
             })
             .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
             .unwrap_or_default();
     let (blake_claims, blake_interaction_gens) = blake
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
@@ -198,36 +203,39 @@ pub fn opcodes_write_trace(
                 verify_bitwise_xor_8_trace_generator.unwrap(),
                 blake_round.as_mut().unwrap(),
                 triple_xor_32.as_mut().unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
     let (call_claims, call_interaction_gens) = call
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
     let (call_rel_imm_claims, call_rel_imm_interaction_gens) = call_rel_imm
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
     let (generic_opcode_claims, generic_opcode_interaction_gens) = generic
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
@@ -235,120 +243,132 @@ pub fn opcodes_write_trace(
                 rc_20_trace_generator.unwrap(),
                 rc_18_trace_generator.unwrap(),
                 rc_11_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
     let (jnz_claims, jnz_interaction_gens) = jnz
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
     let (jnz_taken_claims, jnz_taken_interaction_gens) = jnz_taken
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
     let (jump_claims, jump_interaction_gens) = jump
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
     let (jump_double_deref_claims, jump_double_deref_interaction_gens) = jump_double_deref
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
     let (jump_rel_claims, jump_rel_interaction_gens) = jump_rel
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
     let (jump_rel_imm_claims, jump_rel_imm_interaction_gens) = jump_rel_imm
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
     let (mul_claims, mul_interaction_gens) = mul
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
                 rc_20_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
     let (mul_small_claims, mul_small_interaction_gens) = mul_small
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
                 rc_11_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
     let (qm31_claims, qm31_interaction_gens) = qm31
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
                 rc_4_4_4_4_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
     let (ret_claims, ret_interaction_gens) = ret
         .map(|gen| {
-            gen.write_trace(
-                tree_builder,
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_instruction_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
@@ -431,102 +451,182 @@ impl OpcodesInteractionClaimGenerator {
         let add_interaction_claims = self
             .add
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let add_small_interaction_claims = self
             .add_small
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let add_ap_interaction_claims = self
             .add_ap
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let assert_eq_interaction_claims = self
             .assert_eq
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let assert_eq_imm_interaction_claims = self
             .assert_eq_imm
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let assert_eq_double_deref_interaction_claims = self
             .assert_eq_double_deref
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let blake_interaction_claims = self
             .blake
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let call_interaction_claims = self
             .call
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let call_rel_imm_interaction_claims = self
             .call_rel_imm
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let generic_opcode_interaction_claims = self
             .generic_opcode_interaction_gens
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let jnz_interaction_claims = self
             .jnz
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let jnz_taken_interaction_claims = self
             .jnz_taken
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let jump_interaction_claims = self
             .jump
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let jump_double_deref_interaction_claims = self
             .jump_double_deref
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let jump_rel_interaction_claims = self
             .jump_rel
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let jump_rel_imm_interaction_claims = self
             .jump_rel_imm
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let mul_interaction_claims = self
             .mul
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let mul_small_interaction_claims = self
             .mul_small
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let qm31_interaction_claims = self
             .qm31
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         let ret_interaction_claims = self
             .ret_interaction_gens
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
+            .map(|gen| {
+                let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                claim
+            })
             .collect();
         OpcodeInteractionClaim {
             add: add_interaction_claims,

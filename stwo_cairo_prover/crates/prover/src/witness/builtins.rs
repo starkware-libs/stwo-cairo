@@ -137,75 +137,82 @@ pub fn builtins_write_trace(
     verify_bitwise_xor_9_trace_generator: Option<&verify_bitwise_xor_9::ClaimGenerator>,
 ) -> (BuiltinsClaim, BuiltinsInteractionClaimGenerator) {
     let (add_mod_builtin_claim, add_mod_builtin_interaction_gen) = add_mod_builtin
-        .map(|add_mod_builtin_trace_generator| {
-            add_mod_builtin_trace_generator.write_trace(
-                tree_builder,
+        .map(|gen| {
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .unzip();
     let (bitwise_builtin_claim, bitwise_builtin_interaction_gen) = bitwise_builtin
-        .map(|bitwise_builtin_trace_generator| {
-            bitwise_builtin_trace_generator.write_trace(
-                tree_builder,
+        .map(|gen| {
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 verify_bitwise_xor_9_trace_generator.unwrap(),
                 verify_bitwise_xor_8_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .unzip();
     let (mul_mod_builtin_claim, mul_mod_builtin_interaction_gen) = mul_mod_builtin
-        .map(|mul_mod_builtin_trace_generator| {
-            mul_mod_builtin_trace_generator.write_trace(
-                tree_builder,
+        .map(|gen| {
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
                 range_check_12_trace_generator.unwrap(),
                 range_check_3_6_6_3_trace_generator.unwrap(),
                 range_check_18_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .unzip();
     let (pedersen_builtin_claim, pedersen_builtin_interaction_gen) = pedersen_builtin
-        .map(|pedersen_builtin_trace_generator| {
-            pedersen_builtin_trace_generator.write_trace(
-                tree_builder,
+        .map(|gen| {
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 pedersen_aggregator_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .unzip();
     let (poseidon_builtin_claim, poseidon_builtin_interaction_gen) = poseidon_builtin
-        .map(|poseidon_builtin_trace_generator| {
-            poseidon_builtin_trace_generator.write_trace(
-                tree_builder,
+        .map(|gen| {
+            let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 poseidon_aggregator_trace_generator.unwrap(),
-            )
+            );
+            tree_builder.extend_evals(trace.to_evals());
+            (claim, interaction_gen)
         })
         .unzip();
 
     let (range_check_96_builtin_claim, range_check_96_builtin_interaction_gen) =
         range_check_96_builtin
-            .map(|range_check_96_builtin_trace_generator| {
-                range_check_96_builtin_trace_generator.write_trace(
-                    tree_builder,
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
                     memory_address_to_id_trace_generator.unwrap(),
                     memory_id_to_value_trace_generator.unwrap(),
                     range_check_6_trace_generator.unwrap(),
-                )
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
             })
             .unzip();
     let (range_check_128_builtin_claim, range_check_128_builtin_interaction_gen) =
         range_check_128_builtin
-            .map(|range_check_128_builtin_trace_generator| {
-                range_check_128_builtin_trace_generator.write_trace(
-                    tree_builder,
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
                     memory_address_to_id_trace_generator.unwrap(),
                     memory_id_to_value_trace_generator.unwrap(),
-                )
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
             })
             .unzip();
 
@@ -250,44 +257,58 @@ impl BuiltinsInteractionClaimGenerator {
         let add_mod_builtin_interaction_claim =
             self.add_mod_builtin_interaction_gen
                 .map(|add_mod_builtin_interaction_gen| {
-                    add_mod_builtin_interaction_gen
-                        .write_interaction_trace(tree_builder, common_lookup_elements)
+                    let (trace, interaction_claim) = add_mod_builtin_interaction_gen
+                        .write_interaction_trace(common_lookup_elements);
+                    tree_builder.extend_evals(trace);
+                    interaction_claim
                 });
         let bitwise_builtin_interaction_claim =
             self.bitwise_builtin_interaction_gen
                 .map(|bitwise_builtin_interaction_gen| {
-                    bitwise_builtin_interaction_gen
-                        .write_interaction_trace(tree_builder, common_lookup_elements)
+                    let (trace, interaction_claim) = bitwise_builtin_interaction_gen
+                        .write_interaction_trace(common_lookup_elements);
+                    tree_builder.extend_evals(trace);
+                    interaction_claim
                 });
         let mul_mod_builtin_interaction_claim =
             self.mul_mod_builtin_interaction_gen
                 .map(|mul_mod_builtin_interaction_gen| {
-                    mul_mod_builtin_interaction_gen
-                        .write_interaction_trace(tree_builder, common_lookup_elements)
+                    let (trace, interaction_claim) = mul_mod_builtin_interaction_gen
+                        .write_interaction_trace(common_lookup_elements);
+                    tree_builder.extend_evals(trace);
+                    interaction_claim
                 });
         let pedersen_builtin_interaction_claim =
             self.pedersen_builtin_interaction_gen
                 .map(|pedersen_builtin_interaction_gen| {
-                    pedersen_builtin_interaction_gen
-                        .write_interaction_trace(tree_builder, common_lookup_elements)
+                    let (trace, interaction_claim) = pedersen_builtin_interaction_gen
+                        .write_interaction_trace(common_lookup_elements);
+                    tree_builder.extend_evals(trace);
+                    interaction_claim
                 });
         let poseidon_builtin_interaction_claim = self.poseidon_builtin_interaction_gen.map(
             |poseidon_builtin_interaction_gen: poseidon_builtin::InteractionClaimGenerator| {
-                poseidon_builtin_interaction_gen
-                    .write_interaction_trace(tree_builder, common_lookup_elements)
+                let (trace, interaction_claim) = poseidon_builtin_interaction_gen
+                    .write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                interaction_claim
             },
         );
         let range_check_96_builtin_interaction_claim = self
             .range_check_96_builtin_interaction_gen
             .map(|range_check_96_builtin_interaction_gen| {
-                range_check_96_builtin_interaction_gen
-                    .write_interaction_trace(tree_builder, common_lookup_elements)
+                let (trace, interaction_claim) = range_check_96_builtin_interaction_gen
+                    .write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                interaction_claim
             });
         let range_check_128_builtin_interaction_claim = self
             .range_check_128_builtin_interaction_gen
             .map(|range_check_128_builtin_interaction_gen| {
-                range_check_128_builtin_interaction_gen
-                    .write_interaction_trace(tree_builder, common_lookup_elements)
+                let (trace, interaction_claim) = range_check_128_builtin_interaction_gen
+                    .write_interaction_trace(common_lookup_elements);
+                tree_builder.extend_evals(trace);
+                interaction_claim
             });
 
         BuiltinsInteractionClaim {

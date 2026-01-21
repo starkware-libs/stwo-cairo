@@ -22,7 +22,7 @@ use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{PreProcessedColumn, Seq};
 use stwo_constraint_framework::{LogupTraceGenerator, Relation};
 
-use crate::witness::utils::{AtomicMultiplicityColumn, TreeBuilder};
+use crate::witness::utils::AtomicMultiplicityColumn;
 
 pub type InputType = M31;
 pub type PackedInputType = PackedM31;
@@ -121,8 +121,11 @@ impl ClaimGenerator {
 
     pub fn write_trace(
         mut self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
-    ) -> (Claim, InteractionClaimGenerator) {
+    ) -> (
+        Vec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>>,
+        Claim,
+        InteractionClaimGenerator,
+    ) {
         let size = std::cmp::max(
             (self
                 .address_to_raw_id
@@ -167,9 +170,9 @@ impl ClaimGenerator {
                 CircleEvaluation::<SimdBackend, BaseField, BitReversedOrder>::new(domain, eval)
             })
             .collect_vec();
-        tree_builder.extend_evals(trace);
 
         (
+            trace,
             Claim { log_size },
             InteractionClaimGenerator {
                 ids,
@@ -186,9 +189,11 @@ pub struct InteractionClaimGenerator {
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> InteractionClaim {
+    ) -> (
+        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
+        InteractionClaim,
+    ) {
         let packed_size = self.ids[0].len();
         let log_size = packed_size.ilog2() + LOG_N_LANES;
         let n_rows = 1 << log_size;
@@ -221,9 +226,8 @@ impl InteractionClaimGenerator {
         }
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
-        tree_builder.extend_evals(trace);
 
-        InteractionClaim { claimed_sum }
+        (trace, InteractionClaim { claimed_sum })
     }
 }
 

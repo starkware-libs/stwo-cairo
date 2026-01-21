@@ -44,13 +44,13 @@ pub fn pedersen_context_write_trace(
     let pedersen_points_table_trace_generator = pedersen_points_table_trace_generator
         .expect("Should have pedersen points table trace generator at this point");
 
-    let (pedersen_aggregator_claim, pedersen_aggregator_interaction_gen) =
+    let (pedersen_aggregator_trace, pedersen_aggregator_claim, pedersen_aggregator_interaction_gen) =
         pedersen_aggregator_trace_generator.write_trace(
-            tree_builder,
             memory_id_to_big_state.unwrap(),
             rc_8_trace_generator.unwrap(),
             &mut partial_ec_mul_trace_generator,
         );
+    tree_builder.extend_evals(pedersen_aggregator_trace.to_evals());
     let (partial_ec_mul_claim, partial_ec_mul_interaction_gen) = partial_ec_mul_trace_generator
         .write_trace(
             tree_builder,
@@ -58,8 +58,12 @@ pub fn pedersen_context_write_trace(
             rc_9_9_trace_generator.unwrap(),
             rc_20_trace_generator.unwrap(),
         );
-    let (pedersen_points_table_claim, pedersen_points_table_interaction_gen) =
-        pedersen_points_table_trace_generator.write_trace(tree_builder);
+    let (
+        pedersen_points_table_trace,
+        pedersen_points_table_claim,
+        pedersen_points_table_interaction_gen,
+    ) = pedersen_points_table_trace_generator.write_trace();
+    tree_builder.extend_evals(pedersen_points_table_trace.to_evals());
     span.exit();
 
     let claim = Some(Claim {
@@ -108,15 +112,18 @@ impl InteractionClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
     ) -> InteractionClaim {
-        let pedersen_aggregator_interaction_claim = self
+        let (pedersen_aggregator_trace, pedersen_aggregator_interaction_claim) = self
             .pedersen_aggregator_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let partial_ec_mul_interaction_claim = self
+            .write_interaction_trace(common_lookup_elements);
+        tree_builder.extend_evals(pedersen_aggregator_trace);
+        let (partial_ec_mul_trace, partial_ec_mul_interaction_claim) = self
             .partial_ec_mul_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let pedersen_points_table_interaction_claim = self
+            .write_interaction_trace(common_lookup_elements);
+        tree_builder.extend_evals(partial_ec_mul_trace);
+        let (pedersen_points_table_trace, pedersen_points_table_interaction_claim) = self
             .pedersen_points_table_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
+            .write_interaction_trace(common_lookup_elements);
+        tree_builder.extend_evals(pedersen_points_table_trace);
 
         InteractionClaim {
             pedersen_aggregator: pedersen_aggregator_interaction_claim,

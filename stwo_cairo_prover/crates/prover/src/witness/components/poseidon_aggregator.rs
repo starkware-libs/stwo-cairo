@@ -28,7 +28,6 @@ impl ClaimGenerator {
 
     pub fn write_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
         poseidon_full_round_chain_state: &mut poseidon_full_round_chain::ClaimGenerator,
         range_check_252_width_27_state: &mut range_check_252_width_27::ClaimGenerator,
@@ -37,7 +36,11 @@ impl ClaimGenerator {
         range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
         range_check_4_4_state: &range_check_4_4::ClaimGenerator,
         poseidon_3_partial_rounds_chain_state: &mut poseidon_3_partial_rounds_chain::ClaimGenerator,
-    ) -> (Claim, InteractionClaimGenerator) {
+    ) -> (
+        ComponentTrace<N_TRACE_COLUMNS>,
+        Claim,
+        InteractionClaimGenerator,
+    ) {
         let mut inputs_mults = self
             .mults
             .iter()
@@ -95,9 +98,9 @@ impl ClaimGenerator {
         for inputs in sub_component_inputs.poseidon_3_partial_rounds_chain {
             poseidon_3_partial_rounds_chain_state.add_packed_inputs(&inputs, 0);
         }
-        tree_builder.extend_evals(trace.to_evals());
 
         (
+            trace,
             Claim { log_size },
             InteractionClaimGenerator {
                 log_size,
@@ -914,9 +917,11 @@ pub struct InteractionClaimGenerator {
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> InteractionClaim {
+    ) -> (
+        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
+        InteractionClaim,
+    ) {
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         // Sum logup terms in pairs.
@@ -1118,8 +1123,7 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
-        tree_builder.extend_evals(trace);
 
-        InteractionClaim { claimed_sum }
+        (trace, InteractionClaim { claimed_sum })
     }
 }

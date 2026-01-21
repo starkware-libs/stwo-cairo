@@ -106,13 +106,15 @@ mod tests {
         let mut mock_tree_builder = mock_commitment_scheme.tree_builder();
 
         // Base trace.
-        let (_, interaction_gen) = triple_xor_32_trace_gen
-            .write_trace(&mut mock_tree_builder, veirfy_bitwise_xor_8_trace_gen);
+        let (trace, _, interaction_gen) =
+            triple_xor_32_trace_gen.write_trace(veirfy_bitwise_xor_8_trace_gen);
+        mock_tree_builder.extend_evals(trace.to_evals());
         mock_tree_builder.finalize_interaction();
         let mut mock_tree_builder = mock_commitment_scheme.tree_builder();
 
         // Interaction trace.
-        interaction_gen.write_interaction_trace(&mut mock_tree_builder, &common_lookup_elements);
+        let (trace, _) = interaction_gen.write_interaction_trace(&common_lookup_elements);
+        mock_tree_builder.extend_evals(trace);
         mock_tree_builder.finalize_interaction();
         let trace = mock_commitment_scheme.trace_domain_evaluations();
 
