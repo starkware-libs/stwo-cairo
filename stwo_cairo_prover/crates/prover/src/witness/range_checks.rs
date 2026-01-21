@@ -1,6 +1,9 @@
 use cairo_air::range_checks_air::{RangeChecksClaim, RangeChecksInteractionClaim};
 use cairo_air::relations;
+use stwo::core::fields::m31::M31;
 use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::poly::circle::CircleEvaluation;
+use stwo::prover::poly::BitReversedOrder;
 
 use crate::witness::components::{
     range_check_11, range_check_12, range_check_18, range_check_20, range_check_3_3_3_3_3,
@@ -8,6 +11,8 @@ use crate::witness::components::{
     range_check_7_2_5, range_check_8, range_check_9_9,
 };
 use crate::witness::utils::TreeBuilder;
+
+type InteractionTraces = Vec<Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>>;
 
 pub fn get_range_checks() -> Vec<&'static str> {
     vec![
@@ -134,75 +139,78 @@ pub struct RangeChecksInteractionClaimGenerator {
 impl RangeChecksInteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> RangeChecksInteractionClaim {
+    ) -> (InteractionTraces, RangeChecksInteractionClaim) {
+        let mut all_traces = Vec::new();
         let (rc_6_trace, rc_6_interaction_claim) = self
             .rc_6_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(rc_6_trace);
+        all_traces.push(rc_6_trace);
         let (rc_8_trace, rc_8_interaction_claim) = self
             .rc_8_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(rc_8_trace);
+        all_traces.push(rc_8_trace);
         let (rc_11_trace, rc_11_interaction_claim) = self
             .rc_11_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(rc_11_trace);
+        all_traces.push(rc_11_trace);
         let (rc_12_trace, rc_12_interaction_claim) = self
             .rc_12_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(rc_12_trace);
+        all_traces.push(rc_12_trace);
         let (rc_18_trace, rc_18_interaction_claim) = self
             .rc_18_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(rc_18_trace);
+        all_traces.push(rc_18_trace);
         let (rc_20_trace, rc_20_interaction_claim) = self
             .rc_20_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(rc_20_trace);
+        all_traces.push(rc_20_trace);
         let (rc_4_3_trace, rc_4_3_interaction_claim) = self
             .rc_4_3_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(rc_4_3_trace);
+        all_traces.push(rc_4_3_trace);
         let (rc_4_4_trace, rc_4_4_interaction_claim) = self
             .rc_4_4_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(rc_4_4_trace);
+        all_traces.push(rc_4_4_trace);
         let (rc_9_9_trace, rc_9_9_interaction_claim) = self
             .rc_9_9_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(rc_9_9_trace);
+        all_traces.push(rc_9_9_trace);
         let (rc_7_2_5_trace, rc_7_2_5_interaction_claim) = self
             .rc_7_2_5_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(rc_7_2_5_trace);
+        all_traces.push(rc_7_2_5_trace);
         let (rc_3_6_6_3_trace, rc_3_6_6_3_interaction_claim) = self
             .rc_3_6_6_3_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(rc_3_6_6_3_trace);
+        all_traces.push(rc_3_6_6_3_trace);
         let (rc_4_4_4_4_trace, rc_4_4_4_4_interaction_claim) = self
             .rc_4_4_4_4_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(rc_4_4_4_4_trace);
+        all_traces.push(rc_4_4_4_4_trace);
         let (rc_3_3_3_3_3_trace, rc_3_3_3_3_3_interaction_claim) = self
             .rc_3_3_3_3_3_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(rc_3_3_3_3_3_trace);
-        RangeChecksInteractionClaim {
-            rc_6: rc_6_interaction_claim,
-            rc_8: rc_8_interaction_claim,
-            rc_11: rc_11_interaction_claim,
-            rc_12: rc_12_interaction_claim,
-            rc_18: rc_18_interaction_claim,
-            rc_20: rc_20_interaction_claim,
-            rc_4_3: rc_4_3_interaction_claim,
-            rc_4_4: rc_4_4_interaction_claim,
-            rc_9_9: rc_9_9_interaction_claim,
-            rc_7_2_5: rc_7_2_5_interaction_claim,
-            rc_3_6_6_3: rc_3_6_6_3_interaction_claim,
-            rc_4_4_4_4: rc_4_4_4_4_interaction_claim,
-            rc_3_3_3_3_3: rc_3_3_3_3_3_interaction_claim,
-        }
+        all_traces.push(rc_3_3_3_3_3_trace);
+        (
+            all_traces,
+            RangeChecksInteractionClaim {
+                rc_6: rc_6_interaction_claim,
+                rc_8: rc_8_interaction_claim,
+                rc_11: rc_11_interaction_claim,
+                rc_12: rc_12_interaction_claim,
+                rc_18: rc_18_interaction_claim,
+                rc_20: rc_20_interaction_claim,
+                rc_4_3: rc_4_3_interaction_claim,
+                rc_4_4: rc_4_4_interaction_claim,
+                rc_9_9: rc_9_9_interaction_claim,
+                rc_7_2_5: rc_7_2_5_interaction_claim,
+                rc_3_6_6_3: rc_3_6_6_3_interaction_claim,
+                rc_4_4_4_4: rc_4_4_4_4_interaction_claim,
+                rc_3_3_3_3_3: rc_3_3_3_3_3_interaction_claim,
+            },
+        )
     }
 }

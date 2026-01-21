@@ -1,6 +1,9 @@
 use cairo_air::opcodes_air::{OpcodeClaim, OpcodeInteractionClaim};
 use cairo_air::relations::CommonLookupElements;
+use stwo::core::fields::m31::M31;
 use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::poly::circle::CircleEvaluation;
+use stwo::prover::poly::BitReversedOrder;
 use stwo_cairo_adapter::opcodes::CasmStatesByOpcode;
 
 use crate::witness::components::{
@@ -13,6 +16,8 @@ use crate::witness::components::{
     ret_opcode, triple_xor_32, verify_bitwise_xor_8, verify_instruction,
 };
 use crate::witness::utils::TreeBuilder;
+
+type InteractionTraces = Vec<Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>>;
 
 pub fn get_opcodes(casm_states_by_opcode: &CasmStatesByOpcode) -> Vec<&'static str> {
     let mut opcodes = vec![];
@@ -445,15 +450,15 @@ pub struct OpcodesInteractionClaimGenerator {
 impl OpcodesInteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
-    ) -> OpcodeInteractionClaim {
+    ) -> (InteractionTraces, OpcodeInteractionClaim) {
+        let mut all_traces = Vec::new();
         let add_interaction_claims = self
             .add
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -462,7 +467,7 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -471,7 +476,7 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -480,7 +485,7 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -489,7 +494,7 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -498,7 +503,7 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -507,7 +512,7 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -516,7 +521,7 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -525,7 +530,7 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -534,7 +539,7 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -543,7 +548,7 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -552,7 +557,7 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -561,7 +566,7 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -570,7 +575,7 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -579,7 +584,7 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -588,7 +593,7 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -597,7 +602,7 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -606,7 +611,7 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -615,7 +620,7 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
@@ -624,31 +629,34 @@ impl OpcodesInteractionClaimGenerator {
             .into_iter()
             .map(|gen| {
                 let (trace, claim) = gen.write_interaction_trace(common_lookup_elements);
-                tree_builder.extend_evals(trace);
+                all_traces.push(trace);
                 claim
             })
             .collect();
-        OpcodeInteractionClaim {
-            add: add_interaction_claims,
-            add_small: add_small_interaction_claims,
-            add_ap: add_ap_interaction_claims,
-            assert_eq: assert_eq_interaction_claims,
-            assert_eq_imm: assert_eq_imm_interaction_claims,
-            assert_eq_double_deref: assert_eq_double_deref_interaction_claims,
-            blake: blake_interaction_claims,
-            call: call_interaction_claims,
-            call_rel_imm: call_rel_imm_interaction_claims,
-            generic: generic_opcode_interaction_claims,
-            jnz: jnz_interaction_claims,
-            jnz_taken: jnz_taken_interaction_claims,
-            jump: jump_interaction_claims,
-            jump_double_deref: jump_double_deref_interaction_claims,
-            jump_rel: jump_rel_interaction_claims,
-            jump_rel_imm: jump_rel_imm_interaction_claims,
-            mul: mul_interaction_claims,
-            mul_small: mul_small_interaction_claims,
-            qm31: qm31_interaction_claims,
-            ret: ret_interaction_claims,
-        }
+        (
+            all_traces,
+            OpcodeInteractionClaim {
+                add: add_interaction_claims,
+                add_small: add_small_interaction_claims,
+                add_ap: add_ap_interaction_claims,
+                assert_eq: assert_eq_interaction_claims,
+                assert_eq_imm: assert_eq_imm_interaction_claims,
+                assert_eq_double_deref: assert_eq_double_deref_interaction_claims,
+                blake: blake_interaction_claims,
+                call: call_interaction_claims,
+                call_rel_imm: call_rel_imm_interaction_claims,
+                generic: generic_opcode_interaction_claims,
+                jnz: jnz_interaction_claims,
+                jnz_taken: jnz_taken_interaction_claims,
+                jump: jump_interaction_claims,
+                jump_double_deref: jump_double_deref_interaction_claims,
+                jump_rel: jump_rel_interaction_claims,
+                jump_rel_imm: jump_rel_imm_interaction_claims,
+                mul: mul_interaction_claims,
+                mul_small: mul_small_interaction_claims,
+                qm31: qm31_interaction_claims,
+                ret: ret_interaction_claims,
+            },
+        )
     }
 }

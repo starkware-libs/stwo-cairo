@@ -2,7 +2,10 @@ use cairo_air::blake::air::{
     BlakeContextClaim, BlakeContextInteractionClaim, Claim, InteractionClaim,
 };
 use cairo_air::relations::CommonLookupElements;
+use stwo::core::fields::m31::M31;
 use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::poly::circle::CircleEvaluation;
+use stwo::prover::poly::BitReversedOrder;
 use tracing::{span, Level};
 
 use crate::witness::components::{
@@ -11,6 +14,8 @@ use crate::witness::components::{
     verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9,
 };
 use crate::witness::utils::TreeBuilder;
+
+type InteractionTraces = Vec<Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>>;
 
 pub fn blake_context_write_trace(
     blake_round: Option<blake_round::ClaimGenerator>,
@@ -93,14 +98,16 @@ pub struct BlakeContextInteractionClaimGenerator {
 impl BlakeContextInteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
-    ) -> BlakeContextInteractionClaim {
-        BlakeContextInteractionClaim {
-            claim: self
-                .gen
-                .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements)),
-        }
+    ) -> (InteractionTraces, BlakeContextInteractionClaim) {
+        let (traces, claim) = self
+            .gen
+            .map(|gen| {
+                let (traces, claim) = gen.write_interaction_trace(common_lookup_elements);
+                (traces, Some(claim))
+            })
+            .unwrap_or_default();
+        (traces, BlakeContextInteractionClaim { claim })
     }
 }
 
@@ -114,36 +121,39 @@ struct InteractionClaimGenerator {
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
-    ) -> InteractionClaim {
+    ) -> (InteractionTraces, InteractionClaim) {
+        let mut all_traces = Vec::new();
         let (trace, blake_round_interaction_claim) = self
             .blake_round_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(trace);
+        all_traces.push(trace);
         let (trace, blake_g_interaction_claim) = self
             .blake_g_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(trace);
+        all_traces.push(trace);
         let (trace, blake_sigma_interaction_claim) = self
             .blake_sigma_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(trace);
+        all_traces.push(trace);
         let (trace, triple_xor_32_interaction_claim) = self
             .triple_xor_32_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(trace);
+        all_traces.push(trace);
         let (trace, verify_bitwise_xor_12_interaction_claim) = self
             .verify_bitwise_xor_12_interaction_gen
             .write_interaction_trace(common_lookup_elements);
-        tree_builder.extend_evals(trace);
+        all_traces.push(trace);
 
-        InteractionClaim {
-            blake_round: blake_round_interaction_claim,
-            blake_g: blake_g_interaction_claim,
-            blake_sigma: blake_sigma_interaction_claim,
-            triple_xor_32: triple_xor_32_interaction_claim,
-            verify_bitwise_xor_12: verify_bitwise_xor_12_interaction_claim,
-        }
+        (
+            all_traces,
+            InteractionClaim {
+                blake_round: blake_round_interaction_claim,
+                blake_g: blake_g_interaction_claim,
+                blake_sigma: blake_sigma_interaction_claim,
+                triple_xor_32: triple_xor_32_interaction_claim,
+                verify_bitwise_xor_12: verify_bitwise_xor_12_interaction_claim,
+            },
+        )
     }
 }
