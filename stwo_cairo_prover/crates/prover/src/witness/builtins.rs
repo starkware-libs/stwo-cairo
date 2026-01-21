@@ -1,9 +1,5 @@
-use cairo_air::builtins_air::{BuiltinsClaim, BuiltinsInteractionClaim};
-use cairo_air::relations::CommonLookupElements;
-use stwo::core::fields::m31::M31;
+use cairo_air::builtins_air::BuiltinsClaim;
 use stwo::prover::backend::simd::SimdBackend;
-use stwo::prover::poly::circle::CircleEvaluation;
-use stwo::prover::poly::BitReversedOrder;
 use stwo_cairo_adapter::builtins::BuiltinSegments;
 use stwo_cairo_common::builtins::{
     ADD_MOD_BUILTIN_MEMORY_CELLS, BITWISE_BUILTIN_MEMORY_CELLS, MUL_MOD_BUILTIN_MEMORY_CELLS,
@@ -18,8 +14,6 @@ use crate::witness::components::{
     range_check_builtin, verify_bitwise_xor_8, verify_bitwise_xor_9,
 };
 use crate::witness::utils::TreeBuilder;
-
-type InteractionTraces = Vec<Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>>;
 
 pub fn get_builtins(builtin_segments: &BuiltinSegments) -> Vec<&'static str> {
     let mut builtins = vec![];
@@ -244,89 +238,13 @@ pub fn builtins_write_trace(
 }
 
 pub struct BuiltinsInteractionClaimGenerator {
-    add_mod_builtin_interaction_gen: Option<add_mod_builtin::InteractionClaimGenerator>,
-    bitwise_builtin_interaction_gen: Option<bitwise_builtin::InteractionClaimGenerator>,
-    mul_mod_builtin_interaction_gen: Option<mul_mod_builtin::InteractionClaimGenerator>,
-    pedersen_builtin_interaction_gen: Option<pedersen_builtin::InteractionClaimGenerator>,
-    poseidon_builtin_interaction_gen: Option<poseidon_builtin::InteractionClaimGenerator>,
-    range_check_96_builtin_interaction_gen:
+    pub add_mod_builtin_interaction_gen: Option<add_mod_builtin::InteractionClaimGenerator>,
+    pub bitwise_builtin_interaction_gen: Option<bitwise_builtin::InteractionClaimGenerator>,
+    pub mul_mod_builtin_interaction_gen: Option<mul_mod_builtin::InteractionClaimGenerator>,
+    pub pedersen_builtin_interaction_gen: Option<pedersen_builtin::InteractionClaimGenerator>,
+    pub poseidon_builtin_interaction_gen: Option<poseidon_builtin::InteractionClaimGenerator>,
+    pub range_check_96_builtin_interaction_gen:
         Option<range_check96_builtin::InteractionClaimGenerator>,
-    range_check_128_builtin_interaction_gen: Option<range_check_builtin::InteractionClaimGenerator>,
-}
-impl BuiltinsInteractionClaimGenerator {
-    pub fn write_interaction_trace(
-        self,
-        common_lookup_elements: &CommonLookupElements,
-    ) -> (InteractionTraces, BuiltinsInteractionClaim) {
-        let mut all_traces = Vec::new();
-        let add_mod_builtin_interaction_claim =
-            self.add_mod_builtin_interaction_gen
-                .map(|add_mod_builtin_interaction_gen| {
-                    let (trace, interaction_claim) = add_mod_builtin_interaction_gen
-                        .write_interaction_trace(common_lookup_elements);
-                    all_traces.push(trace);
-                    interaction_claim
-                });
-        let bitwise_builtin_interaction_claim =
-            self.bitwise_builtin_interaction_gen
-                .map(|bitwise_builtin_interaction_gen| {
-                    let (trace, interaction_claim) = bitwise_builtin_interaction_gen
-                        .write_interaction_trace(common_lookup_elements);
-                    all_traces.push(trace);
-                    interaction_claim
-                });
-        let mul_mod_builtin_interaction_claim =
-            self.mul_mod_builtin_interaction_gen
-                .map(|mul_mod_builtin_interaction_gen| {
-                    let (trace, interaction_claim) = mul_mod_builtin_interaction_gen
-                        .write_interaction_trace(common_lookup_elements);
-                    all_traces.push(trace);
-                    interaction_claim
-                });
-        let pedersen_builtin_interaction_claim =
-            self.pedersen_builtin_interaction_gen
-                .map(|pedersen_builtin_interaction_gen| {
-                    let (trace, interaction_claim) = pedersen_builtin_interaction_gen
-                        .write_interaction_trace(common_lookup_elements);
-                    all_traces.push(trace);
-                    interaction_claim
-                });
-        let poseidon_builtin_interaction_claim = self.poseidon_builtin_interaction_gen.map(
-            |poseidon_builtin_interaction_gen: poseidon_builtin::InteractionClaimGenerator| {
-                let (trace, interaction_claim) = poseidon_builtin_interaction_gen
-                    .write_interaction_trace(common_lookup_elements);
-                all_traces.push(trace);
-                interaction_claim
-            },
-        );
-        let range_check_96_builtin_interaction_claim = self
-            .range_check_96_builtin_interaction_gen
-            .map(|range_check_96_builtin_interaction_gen| {
-                let (trace, interaction_claim) = range_check_96_builtin_interaction_gen
-                    .write_interaction_trace(common_lookup_elements);
-                all_traces.push(trace);
-                interaction_claim
-            });
-        let range_check_128_builtin_interaction_claim = self
-            .range_check_128_builtin_interaction_gen
-            .map(|range_check_128_builtin_interaction_gen| {
-                let (trace, interaction_claim) = range_check_128_builtin_interaction_gen
-                    .write_interaction_trace(common_lookup_elements);
-                all_traces.push(trace);
-                interaction_claim
-            });
-
-        (
-            all_traces,
-            BuiltinsInteractionClaim {
-                add_mod_builtin: add_mod_builtin_interaction_claim,
-                bitwise_builtin: bitwise_builtin_interaction_claim,
-                mul_mod_builtin: mul_mod_builtin_interaction_claim,
-                pedersen_builtin: pedersen_builtin_interaction_claim,
-                poseidon_builtin: poseidon_builtin_interaction_claim,
-                range_check_96_builtin: range_check_96_builtin_interaction_claim,
-                range_check_128_builtin: range_check_128_builtin_interaction_claim,
-            },
-        )
-    }
+    pub range_check_128_builtin_interaction_gen:
+        Option<range_check_builtin::InteractionClaimGenerator>,
 }
