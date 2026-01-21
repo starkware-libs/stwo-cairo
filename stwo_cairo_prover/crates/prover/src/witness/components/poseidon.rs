@@ -1,11 +1,5 @@
-use cairo_air::poseidon::air::{
-    Claim, InteractionClaim, PoseidonContextClaim, PoseidonContextInteractionClaim,
-};
-use cairo_air::relations::CommonLookupElements;
-use stwo::core::fields::m31::M31;
+use cairo_air::poseidon::air::{Claim, PoseidonContextClaim};
 use stwo::prover::backend::simd::SimdBackend;
-use stwo::prover::poly::circle::CircleEvaluation;
-use stwo::prover::poly::BitReversedOrder;
 use tracing::{span, Level};
 
 use crate::witness::components::{
@@ -15,8 +9,6 @@ use crate::witness::components::{
     range_check_9_9,
 };
 use crate::witness::utils::TreeBuilder;
-
-type InteractionTraces = Vec<Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>>;
 
 pub fn poseidon_context_write_trace(
     poseidon_aggregator_trace_generator: Option<poseidon_aggregator::ClaimGenerator>,
@@ -121,7 +113,7 @@ pub fn poseidon_context_write_trace(
         poseidon_round_keys: poseidon_round_keys_claim,
         range_check_252_width_27: range_check_felt_252_width_27_claim,
     });
-    let gen = Some(InteractionClaimGenerator {
+    let gen = Some(PoseidonInteractionClaimGenerator {
         poseidon_aggregator_interaction_gen,
         poseidon_3_partial_rounds_chain_interaction_gen,
         poseidon_full_round_chain_interaction_gen,
@@ -136,78 +128,17 @@ pub fn poseidon_context_write_trace(
 }
 
 pub struct PoseidonContextInteractionClaimGenerator {
-    gen: Option<InteractionClaimGenerator>,
-}
-impl PoseidonContextInteractionClaimGenerator {
-    pub fn write_interaction_trace(
-        self,
-        common_lookup_elements: &CommonLookupElements,
-    ) -> (InteractionTraces, PoseidonContextInteractionClaim) {
-        let (traces, claim) = self
-            .gen
-            .map(|gen| {
-                let (traces, claim) = gen.write_interaction_trace(common_lookup_elements);
-                (traces, Some(claim))
-            })
-            .unwrap_or_default();
-        (traces, PoseidonContextInteractionClaim { claim })
-    }
+    pub gen: Option<PoseidonInteractionClaimGenerator>,
 }
 
-struct InteractionClaimGenerator {
-    poseidon_aggregator_interaction_gen: poseidon_aggregator::InteractionClaimGenerator,
-    poseidon_3_partial_rounds_chain_interaction_gen:
+pub struct PoseidonInteractionClaimGenerator {
+    pub poseidon_aggregator_interaction_gen: poseidon_aggregator::InteractionClaimGenerator,
+    pub poseidon_3_partial_rounds_chain_interaction_gen:
         poseidon_3_partial_rounds_chain::InteractionClaimGenerator,
-    poseidon_full_round_chain_interaction_gen: poseidon_full_round_chain::InteractionClaimGenerator,
-    cube_252_interaction_gen: cube_252::InteractionClaimGenerator,
-    poseidon_round_keys_interaction_gen: poseidon_round_keys::InteractionClaimGenerator,
-    range_check_felt_252_width_27_interaction_gen:
+    pub poseidon_full_round_chain_interaction_gen:
+        poseidon_full_round_chain::InteractionClaimGenerator,
+    pub cube_252_interaction_gen: cube_252::InteractionClaimGenerator,
+    pub poseidon_round_keys_interaction_gen: poseidon_round_keys::InteractionClaimGenerator,
+    pub range_check_felt_252_width_27_interaction_gen:
         range_check_252_width_27::InteractionClaimGenerator,
-}
-impl InteractionClaimGenerator {
-    pub fn write_interaction_trace(
-        self,
-        common_lookup_elements: &CommonLookupElements,
-    ) -> (InteractionTraces, InteractionClaim) {
-        let mut all_traces = Vec::new();
-        let (poseidon_aggregator_trace, poseidon_aggregator_interaction_claim) = self
-            .poseidon_aggregator_interaction_gen
-            .write_interaction_trace(common_lookup_elements);
-        all_traces.push(poseidon_aggregator_trace);
-        let (
-            poseidon_3_partial_rounds_chain_trace,
-            poseidon_3_partial_rounds_chain_interaction_claim,
-        ) = self
-            .poseidon_3_partial_rounds_chain_interaction_gen
-            .write_interaction_trace(common_lookup_elements);
-        all_traces.push(poseidon_3_partial_rounds_chain_trace);
-        let (poseidon_full_round_chain_trace, poseidon_full_round_chain_interaction_claim) = self
-            .poseidon_full_round_chain_interaction_gen
-            .write_interaction_trace(common_lookup_elements);
-        all_traces.push(poseidon_full_round_chain_trace);
-        let (cube_252_trace, cube_252_interaction_claim) = self
-            .cube_252_interaction_gen
-            .write_interaction_trace(common_lookup_elements);
-        all_traces.push(cube_252_trace);
-        let (poseidon_round_keys_trace, poseidon_round_keys_interaction_claim) = self
-            .poseidon_round_keys_interaction_gen
-            .write_interaction_trace(common_lookup_elements);
-        all_traces.push(poseidon_round_keys_trace);
-        let (range_check_felt_252_width_27_trace, range_check_felt_252_width_27_interaction_claim) =
-            self.range_check_felt_252_width_27_interaction_gen
-                .write_interaction_trace(common_lookup_elements);
-        all_traces.push(range_check_felt_252_width_27_trace);
-
-        (
-            all_traces,
-            InteractionClaim {
-                poseidon_aggregator: poseidon_aggregator_interaction_claim,
-                poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_interaction_claim,
-                poseidon_full_round_chain: poseidon_full_round_chain_interaction_claim,
-                cube_252: cube_252_interaction_claim,
-                poseidon_round_keys: poseidon_round_keys_interaction_claim,
-                range_check_252_width_27: range_check_felt_252_width_27_interaction_claim,
-            },
-        )
-    }
 }
