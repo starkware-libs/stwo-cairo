@@ -1,5 +1,4 @@
-use cairo_air::opcodes_air::{OpcodeClaim, OpcodeInteractionClaim};
-use cairo_air::relations::CommonLookupElements;
+use cairo_air::opcodes_air::OpcodeClaim;
 use rayon::scope;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::opcodes::CasmStatesByOpcode;
