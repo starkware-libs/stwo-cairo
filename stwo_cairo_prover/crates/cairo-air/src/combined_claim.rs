@@ -1,11 +1,7 @@
 use num_traits::Zero;
-use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
-use stwo_cairo_common::prover_types::cpu::CasmState;
 
-use crate::air::{
-    CairoClaim, CairoInteractionClaim, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange,
-};
+use crate::air::{CairoClaim, CairoInteractionClaim, PublicData};
 use crate::blake::air::{Claim as BlakeClaim, InteractionClaim as BlakeInteractionClaim};
 use crate::builtins_air::{BuiltinsClaim, BuiltinsInteractionClaim};
 use crate::components::{
@@ -26,33 +22,34 @@ pub struct CombinedClaim {
     pub component_enable_bits: Vec<bool>,
     pub component_log_sizes: Vec<u32>,
     pub component_claimed_sums: Vec<SecureField>,
-    pub public_claim: Vec<BaseField>,
+    pub public_data: PublicData,
 }
 impl CombinedClaim {
     pub fn from_cairo_claims(
         claim: &CairoClaim,
         interaction_claim: &CairoInteractionClaim,
     ) -> Self {
-        let (public_claim, component_enable_bits, component_log_sizes) = get_public_claim(claim);
+        let (public_data, component_enable_bits, component_log_sizes) = get_claim_data(claim);
         let component_claimed_sums = get_cairo_claimed_sums(interaction_claim);
         Self {
             component_log_sizes,
             component_claimed_sums,
-            public_claim,
+            public_data,
             component_enable_bits,
         }
     }
 }
 
-/// Extracts public claim data and, component enable bits and component log sizes from a
-/// [CairoClaim] and returns it as vectors of [BaseField], [bool] and [u32] respectively.
-fn get_public_claim(claim: &CairoClaim) -> (Vec<BaseField>, Vec<bool>, Vec<u32>) {
-    let mut public_claim = vec![];
+/// Extracts public data, component enable bits and component log sizes from a
+/// [CairoClaim] and returns it as a [PublicData], a vector of [bool] and a vector of [u32]
+/// respectively.
+fn get_claim_data(claim: &CairoClaim) -> (PublicData, Vec<bool>, Vec<u32>) {
+    let public_data = claim.public_data.clone();
     let mut component_enable_bits = vec![];
     let mut component_log_sizes = vec![];
 
     let CairoClaim {
-        public_data,
+        public_data: _,
         opcodes,
         verify_instruction,
         blake_context,
@@ -67,69 +64,6 @@ fn get_public_claim(claim: &CairoClaim) -> (Vec<BaseField>, Vec<bool>, Vec<u32>)
         verify_bitwise_xor_8,
         verify_bitwise_xor_9,
     } = claim;
-
-    let PublicData {
-        public_memory:
-            PublicMemory {
-                program,
-                public_segments,
-                output,
-                safe_call_ids,
-            },
-        initial_state:
-            CasmState {
-                pc: initial_pc,
-                ap: initial_ap,
-                fp: initial_fp,
-            },
-        final_state:
-            CasmState {
-                pc: final_pc,
-                ap: final_ap,
-                fp: final_fp,
-            },
-    } = public_data;
-    for (id, value) in program {
-        public_claim.push(BaseField::from_u32_unchecked(*id));
-        public_claim.extend(value.iter().map(|&v| BaseField::from_u32_unchecked(v)));
-    }
-    let PublicSegmentRanges {
-        output: output_ranges,
-        pedersen,
-        range_check_128,
-        ecdsa,
-        bitwise,
-        ec_op,
-        keccak,
-        poseidon,
-        range_check_96,
-        add_mod,
-        mul_mod,
-    } = public_segments;
-    singe_segment_range(Some(*output_ranges), &mut public_claim);
-    singe_segment_range(*pedersen, &mut public_claim);
-    singe_segment_range(*range_check_128, &mut public_claim);
-    singe_segment_range(*ecdsa, &mut public_claim);
-    singe_segment_range(*bitwise, &mut public_claim);
-    singe_segment_range(*ec_op, &mut public_claim);
-    singe_segment_range(*keccak, &mut public_claim);
-    singe_segment_range(*poseidon, &mut public_claim);
-    singe_segment_range(*range_check_96, &mut public_claim);
-    singe_segment_range(*add_mod, &mut public_claim);
-    singe_segment_range(*mul_mod, &mut public_claim);
-    for (id, value) in output {
-        public_claim.push(BaseField::from_u32_unchecked(*id));
-        public_claim.extend(value.iter().map(|&v| BaseField::from_u32_unchecked(v)));
-    }
-    for safe_call_id in safe_call_ids {
-        public_claim.push(BaseField::from_u32_unchecked(*safe_call_id));
-    }
-    public_claim.push(*initial_pc);
-    public_claim.push(*initial_ap);
-    public_claim.push(*initial_fp);
-    public_claim.push(*final_ap);
-    public_claim.push(*final_fp);
-    public_claim.push(*final_pc);
 
     // Opcodes
     let OpcodeClaim {
@@ -516,20 +450,7 @@ fn get_public_claim(claim: &CairoClaim) -> (Vec<BaseField>, Vec<bool>, Vec<u32>)
     component_log_sizes.push(verify_bitwise_xor_9::LOG_SIZE);
     component_enable_bits.push(true);
 
-    (public_claim, component_enable_bits, component_log_sizes)
-}
-
-fn singe_segment_range(segment: Option<SegmentRange>, public_claim: &mut Vec<BaseField>) {
-    if let Some(segment) = segment {
-        public_claim.extend([
-            BaseField::from_u32_unchecked(segment.start_ptr.id),
-            BaseField::from_u32_unchecked(segment.start_ptr.value),
-            BaseField::from_u32_unchecked(segment.stop_ptr.id),
-            BaseField::from_u32_unchecked(segment.stop_ptr.value),
-        ]);
-    } else {
-        public_claim.extend([BaseField::zero(); 4]);
-    }
+    (public_data, component_enable_bits, component_log_sizes)
 }
 
 /// Returns the log size from a single-element slice.
