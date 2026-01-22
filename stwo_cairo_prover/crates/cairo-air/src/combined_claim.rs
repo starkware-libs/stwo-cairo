@@ -1,6 +1,6 @@
 use num_traits::Zero;
 use stwo::core::fields::m31::BaseField;
-use stwo::core::fields::qm31::SecureField;
+use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
 use stwo_cairo_common::prover_types::cpu::CasmState;
 
 use crate::air::{
@@ -8,6 +8,7 @@ use crate::air::{
 };
 use crate::blake::air::{Claim as BlakeClaim, InteractionClaim as BlakeInteractionClaim};
 use crate::builtins_air::{BuiltinsClaim, BuiltinsInteractionClaim};
+use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
 use crate::components::{
     add_mod_builtin, bitwise_builtin, blake_round_sigma, memory_address_to_id, memory_id_to_big,
     mul_mod_builtin, pedersen_builtin, pedersen_points_table_window_bits_18, poseidon_builtin,
@@ -22,52 +23,59 @@ use crate::pedersen::air::{Claim as PedersenClaim, InteractionClaim as PedersenI
 use crate::poseidon::air::{Claim as PoseidonClaim, InteractionClaim as PoseidonInteractionClaim};
 use crate::range_checks_air::RangeChecksClaim;
 
-pub struct CombinedClaim {
+pub struct FlatClaim {
     pub component_enable_bits: Vec<bool>,
     pub component_log_sizes: Vec<u32>,
-    pub component_claimed_sums: Vec<SecureField>,
-    pub public_claim: Vec<BaseField>,
+    pub public_data: PublicData,
 }
-impl CombinedClaim {
-    pub fn from_cairo_claims(
-        claim: &CairoClaim,
-        interaction_claim: &CairoInteractionClaim,
-    ) -> Self {
-        let (public_claim, component_enable_bits, component_log_sizes) = get_public_claim(claim);
-        let component_claimed_sums = get_cairo_claimed_sums(interaction_claim);
+impl FlatClaim {
+    pub fn from_cairo_claim(claim: CairoClaim) -> Self {
+        let (component_enable_bits, component_log_sizes) = flatten_claim(&claim);
         Self {
-            component_log_sizes,
-            component_claimed_sums,
-            public_claim,
             component_enable_bits,
+            component_log_sizes,
+            public_data: claim.public_data,
         }
+    }
+
+    pub fn into_qm31s(&self) -> Vec<SecureField> {
+        let mut m31s = vec![];
+        m31s.extend(enable_bits_to_m31s(&self.component_enable_bits));
+        m31s.extend(
+            self.component_log_sizes
+                .iter()
+                .map(|&size| BaseField::from_u32_unchecked(size)),
+        );
+        m31s.extend(public_data_to_m31s(&self.public_data));
+
+        let mut res = vec![];
+        for m31_chunk in m31s.chunks(SECURE_EXTENSION_DEGREE) {
+            let mut m31_chunk = m31_chunk.to_vec();
+            if m31_chunk.len() < SECURE_EXTENSION_DEGREE {
+                m31_chunk.resize(SECURE_EXTENSION_DEGREE, BaseField::zero());
+            }
+            res.push(SecureField::from_m31_array(m31_chunk.try_into().unwrap()));
+        }
+        res
     }
 }
 
-/// Extracts public claim data and, component enable bits and component log sizes from a
-/// [CairoClaim] and returns it as vectors of [BaseField], [bool] and [u32] respectively.
-fn get_public_claim(claim: &CairoClaim) -> (Vec<BaseField>, Vec<bool>, Vec<u32>) {
+fn enable_bits_to_m31s(enable_bits: &[bool]) -> Vec<BaseField> {
+    let mut res = vec![];
+    for bits in enable_bits.chunks(31) {
+        let mut v: u32 = 0;
+        for (i, &bit) in bits.iter().enumerate() {
+            if bit {
+                v |= 1 << i;
+            }
+        }
+        res.push(BaseField::from_u32_unchecked(v));
+    }
+    res
+}
+
+fn public_data_to_m31s(public_data: &PublicData) -> Vec<BaseField> {
     let mut public_claim = vec![];
-    let mut component_enable_bits = vec![];
-    let mut component_log_sizes = vec![];
-
-    let CairoClaim {
-        public_data,
-        opcodes,
-        verify_instruction,
-        blake_context,
-        builtins,
-        pedersen_context,
-        poseidon_context,
-        memory_address_to_id,
-        memory_id_to_value,
-        range_checks,
-        verify_bitwise_xor_4,
-        verify_bitwise_xor_7,
-        verify_bitwise_xor_8,
-        verify_bitwise_xor_9,
-    } = claim;
-
     let PublicData {
         public_memory:
             PublicMemory {
@@ -106,17 +114,17 @@ fn get_public_claim(claim: &CairoClaim) -> (Vec<BaseField>, Vec<bool>, Vec<u32>)
         add_mod,
         mul_mod,
     } = public_segments;
-    singe_segment_range(Some(*output_ranges), &mut public_claim);
-    singe_segment_range(*pedersen, &mut public_claim);
-    singe_segment_range(*range_check_128, &mut public_claim);
-    singe_segment_range(*ecdsa, &mut public_claim);
-    singe_segment_range(*bitwise, &mut public_claim);
-    singe_segment_range(*ec_op, &mut public_claim);
-    singe_segment_range(*keccak, &mut public_claim);
-    singe_segment_range(*poseidon, &mut public_claim);
-    singe_segment_range(*range_check_96, &mut public_claim);
-    singe_segment_range(*add_mod, &mut public_claim);
-    singe_segment_range(*mul_mod, &mut public_claim);
+    single_segment_range(Some(*output_ranges), &mut public_claim);
+    single_segment_range(*pedersen, &mut public_claim);
+    single_segment_range(*range_check_128, &mut public_claim);
+    single_segment_range(*ecdsa, &mut public_claim);
+    single_segment_range(*bitwise, &mut public_claim);
+    single_segment_range(*ec_op, &mut public_claim);
+    single_segment_range(*keccak, &mut public_claim);
+    single_segment_range(*poseidon, &mut public_claim);
+    single_segment_range(*range_check_96, &mut public_claim);
+    single_segment_range(*add_mod, &mut public_claim);
+    single_segment_range(*mul_mod, &mut public_claim);
     for (id, value) in output {
         public_claim.push(BaseField::from_u32_unchecked(*id));
         public_claim.extend(value.iter().map(|&v| BaseField::from_u32_unchecked(v)));
@@ -130,6 +138,31 @@ fn get_public_claim(claim: &CairoClaim) -> (Vec<BaseField>, Vec<bool>, Vec<u32>)
     public_claim.push(*final_ap);
     public_claim.push(*final_fp);
     public_claim.push(*final_pc);
+    public_claim
+}
+
+/// Extracts component enable bits, and component log sizes from a [CairoClaim] and returns it as
+/// vectors of [bool] and [u32] respectively.
+fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
+    let mut component_enable_bits = vec![];
+    let mut component_log_sizes = vec![];
+
+    let CairoClaim {
+        public_data: _,
+        opcodes,
+        verify_instruction,
+        blake_context,
+        builtins,
+        pedersen_context,
+        poseidon_context,
+        memory_address_to_id,
+        memory_id_to_value,
+        range_checks,
+        verify_bitwise_xor_4,
+        verify_bitwise_xor_7,
+        verify_bitwise_xor_8,
+        verify_bitwise_xor_9,
+    } = claim;
 
     // Opcodes
     let OpcodeClaim {
@@ -434,12 +467,12 @@ fn get_public_claim(claim: &CairoClaim) -> (Vec<BaseField>, Vec<bool>, Vec<u32>)
         big_log_sizes,
         small_log_size,
     } = memory_id_to_value;
-    assert!(big_log_sizes.len() <= 4);
+    assert!(big_log_sizes.len() <= MEMORY_ADDRESS_TO_ID_SPLIT);
     for log_size in big_log_sizes {
         component_log_sizes.push(*log_size);
         component_enable_bits.push(true);
     }
-    for _ in 0..(4 - big_log_sizes.len()) {
+    for _ in 0..(MEMORY_ADDRESS_TO_ID_SPLIT - big_log_sizes.len()) {
         component_log_sizes.push(0_u32);
         component_enable_bits.push(false);
     }
@@ -516,10 +549,10 @@ fn get_public_claim(claim: &CairoClaim) -> (Vec<BaseField>, Vec<bool>, Vec<u32>)
     component_log_sizes.push(verify_bitwise_xor_9::LOG_SIZE);
     component_enable_bits.push(true);
 
-    (public_claim, component_enable_bits, component_log_sizes)
+    (component_enable_bits, component_log_sizes)
 }
 
-fn singe_segment_range(segment: Option<SegmentRange>, public_claim: &mut Vec<BaseField>) {
+fn single_segment_range(segment: Option<SegmentRange>, public_claim: &mut Vec<BaseField>) {
     if let Some(segment) = segment {
         public_claim.extend([
             BaseField::from_u32_unchecked(segment.start_ptr.id),
@@ -571,7 +604,7 @@ fn single_claimed_sum<T>(
 /// Returns a vector of all claimed sums for the logup argument, one per component.
 /// The order must match the order of components as they appear in
 /// [cairo_air::air::CairoComponents].
-fn get_cairo_claimed_sums(interaction_claim: &CairoInteractionClaim) -> Vec<SecureField> {
+pub fn flatten_interaction_claim(interaction_claim: &CairoInteractionClaim) -> Vec<SecureField> {
     let CairoInteractionClaim {
         opcodes,
         verify_instruction,
