@@ -58,6 +58,7 @@ impl PreProcessedTrace {
     /// blocks.
     pub fn canonical() -> Self {
         let canonical_without_pedersen = Self::canonical_without_pedersen().columns;
+
         let pedersen_points = (0..PEDERSEN_TABLE_N_COLUMNS)
             .map(|x| Box::new(PedersenPoints::<18>::new(x)) as Box<dyn PreProcessedColumn>);
 

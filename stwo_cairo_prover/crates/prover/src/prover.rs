@@ -287,10 +287,12 @@ pub mod tests {
         use std::io::Write;
         use std::process::Command;
 
+        use cairo_air::verifier::verify_cairo;
         use cairo_air::PreProcessedTraceVariant;
         use dev_utils::utils::get_proof_file_path;
         use stwo::core::fri::FriConfig;
         use stwo::core::pcs::PcsConfig;
+        use stwo::core::vcs_lifted::blake2_merkle::Blake2sM31MerkleChannel;
         use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
         use stwo_cairo_serialize::CairoSerialize;
         use stwo_cairo_utils::vm_utils::{run_and_adapt, ProgramType};
@@ -299,6 +301,54 @@ pub mod tests {
 
         use super::*;
         use crate::prover::{prove_cairo, to_cairo_proof_sorted, ChannelHash, ProverParameters};
+
+        #[test]
+        fn test_blake_m31_prove_cairo_verify_ret_opcode_components() {
+            let compiled_program = get_compiled_cairo_program_path("test_prove_verify_ret_opcode");
+            let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
+            let prover_params = ProverParameters {
+                channel_hash: ChannelHash::Blake2s,
+                pcs_config: PcsConfig {
+                    pow_bits: 20,
+                    fri_config: FriConfig::new(0, 1, 90),
+                },
+                preprocessed_trace: PreProcessedTraceVariant::CanonicalWithoutPedersen,
+                channel_salt: Some(42),
+                store_polynomials_coefficients: false,
+            };
+            let cairo_proof = prove_cairo::<Blake2sM31MerkleChannel>(input, prover_params).unwrap();
+            let cairo_proof_sorted =
+                to_cairo_proof_sorted(cairo_proof.clone(), prover_params.preprocessed_trace);
+            let mut proof_file = NamedTempFile::new().unwrap();
+            let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
+            CairoSerialize::serialize(&cairo_proof_sorted, &mut serialized);
+            let proof_hex: Vec<String> = serialized
+                .into_iter()
+                .map(|felt| format!("0x{felt:x}"))
+                .collect();
+            proof_file
+                .write_all(sonic_rs::to_string_pretty(&proof_hex).unwrap().as_bytes())
+                .unwrap();
+            let expected_proof_file = get_proof_file_path("test_prove_verify_for_circuit");
+
+            if std::env::var("FIX_PROOF").is_ok() {
+                std::fs::copy(proof_file.path(), &expected_proof_file)
+                    .expect("Failed to overwrite expected proof file");
+            }
+
+            // Compare the contents of proof_file and expected_proof_file
+            let proof_file_contents = std::fs::read_to_string(proof_file.path())
+                .expect("Failed to read generated proof file");
+            let expected_proof_contents = std::fs::read_to_string(&expected_proof_file)
+                .expect("Failed to read expected proof file");
+            assert!(
+                proof_file_contents == expected_proof_contents,
+                "Generated proof file does not match the expected proof file"
+            );
+
+            verify_cairo::<Blake2sM31MerkleChannel>(cairo_proof, prover_params.preprocessed_trace)
+                .unwrap();
+        }
 
         #[test]
         fn test_poseidon_e2e_prove_cairo_verify_ret_opcode_components() {
