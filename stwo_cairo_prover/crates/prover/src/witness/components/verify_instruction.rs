@@ -98,7 +98,7 @@ impl ClaimGenerator {
     pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], relation_index: usize) {
         packed_inputs.iter().for_each(|packed_input| {
             packed_input.unpack().iter().for_each(|input| {
-                self.add_input(&input, relation_index);
+                self.add_input(input, relation_index);
             });
         });
     }

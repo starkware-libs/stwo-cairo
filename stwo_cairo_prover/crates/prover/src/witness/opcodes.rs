@@ -414,9 +414,12 @@ pub fn opcodes_write_trace(
     let (call_trace, call_claims, call_interaction_gens) = call_result
         .map(|(trace, claim, interaction_gen)| (Some(trace), vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
-    let (call_rel_imm_trace, call_rel_imm_claims, call_rel_imm_interaction_gens) = call_rel_imm_result
-        .map(|(trace, claim, interaction_gen)| (Some(trace), vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+    let (call_rel_imm_trace, call_rel_imm_claims, call_rel_imm_interaction_gens) =
+        call_rel_imm_result
+            .map(|(trace, claim, interaction_gen)| {
+                (Some(trace), vec![claim], vec![interaction_gen])
+            })
+            .unwrap_or_default();
     let (generic_opcode_trace, generic_opcode_claims, generic_opcode_interaction_gens) =
         generic_result
             .map(|(trace, claim, interaction_gen)| {
@@ -441,9 +444,12 @@ pub fn opcodes_write_trace(
     let (jump_rel_trace, jump_rel_claims, jump_rel_interaction_gens) = jump_rel_result
         .map(|(trace, claim, interaction_gen)| (Some(trace), vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
-    let (jump_rel_imm_trace, jump_rel_imm_claims, jump_rel_imm_interaction_gens) = jump_rel_imm_result
-        .map(|(trace, claim, interaction_gen)| (Some(trace), vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+    let (jump_rel_imm_trace, jump_rel_imm_claims, jump_rel_imm_interaction_gens) =
+        jump_rel_imm_result
+            .map(|(trace, claim, interaction_gen)| {
+                (Some(trace), vec![claim], vec![interaction_gen])
+            })
+            .unwrap_or_default();
     let (mul_trace, mul_claims, mul_interaction_gens) = mul_result
         .map(|(trace, claim, interaction_gen)| (Some(trace), vec![claim], vec![interaction_gen]))
         .unwrap_or_default();
