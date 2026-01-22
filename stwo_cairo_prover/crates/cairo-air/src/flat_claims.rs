@@ -1,6 +1,5 @@
 use num_traits::Zero;
-use stwo::core::fields::m31::BaseField;
-use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
+use stwo::core::fields::qm31::SecureField;
 use stwo_cairo_common::prover_types::cpu::CasmState;
 
 use crate::air::{
@@ -22,6 +21,7 @@ use crate::opcodes_air::{OpcodeClaim, OpcodeInteractionClaim};
 use crate::pedersen::air::{Claim as PedersenClaim, InteractionClaim as PedersenInteractionClaim};
 use crate::poseidon::air::{Claim as PoseidonClaim, InteractionClaim as PoseidonInteractionClaim};
 use crate::range_checks_air::RangeChecksClaim;
+use crate::utils::pack_into_secure_felts;
 
 pub struct FlatClaim {
     pub component_enable_bits: Vec<bool>,
@@ -38,29 +38,16 @@ impl FlatClaim {
         }
     }
 
-    pub fn into_qm31s(&self) -> Vec<SecureField> {
-        let mut m31s = vec![];
-        m31s.extend(enable_bits_to_m31s(&self.component_enable_bits));
-        m31s.extend(
-            self.component_log_sizes
-                .iter()
-                .map(|&size| BaseField::from_u32_unchecked(size)),
-        );
-        m31s.extend(public_data_to_m31s(&self.public_data));
-
-        let mut res = vec![];
-        for m31_chunk in m31s.chunks(SECURE_EXTENSION_DEGREE) {
-            let mut m31_chunk = m31_chunk.to_vec();
-            if m31_chunk.len() < SECURE_EXTENSION_DEGREE {
-                m31_chunk.resize(SECURE_EXTENSION_DEGREE, BaseField::zero());
-            }
-            res.push(SecureField::from_m31_array(m31_chunk.try_into().unwrap()));
-        }
-        res
+    pub fn into_secure_felts(&self) -> Vec<SecureField> {
+        let mut u32s = vec![];
+        u32s.extend(enable_bits_to_u32s(&self.component_enable_bits));
+        u32s.extend(self.component_log_sizes.clone());
+        u32s.extend(public_data_to_u32s(&self.public_data));
+        pack_into_secure_felts(u32s.into_iter())
     }
 }
 
-fn enable_bits_to_m31s(enable_bits: &[bool]) -> Vec<BaseField> {
+fn enable_bits_to_u32s(enable_bits: &[bool]) -> Vec<u32> {
     let mut res = vec![];
     for bits in enable_bits.chunks(31) {
         let mut v: u32 = 0;
@@ -69,12 +56,12 @@ fn enable_bits_to_m31s(enable_bits: &[bool]) -> Vec<BaseField> {
                 v |= 1 << i;
             }
         }
-        res.push(BaseField::from_u32_unchecked(v));
+        res.push(v);
     }
     res
 }
 
-fn public_data_to_m31s(public_data: &PublicData) -> Vec<BaseField> {
+fn public_data_to_u32s(public_data: &PublicData) -> Vec<u32> {
     let mut public_claim = vec![];
     let PublicData {
         public_memory:
@@ -98,8 +85,8 @@ fn public_data_to_m31s(public_data: &PublicData) -> Vec<BaseField> {
             },
     } = public_data;
     for (id, value) in program {
-        public_claim.push(BaseField::from_u32_unchecked(*id));
-        public_claim.extend(value.iter().map(|&v| BaseField::from_u32_unchecked(v)));
+        public_claim.push(*id);
+        public_claim.extend(value);
     }
     let PublicSegmentRanges {
         output: output_ranges,
@@ -126,18 +113,16 @@ fn public_data_to_m31s(public_data: &PublicData) -> Vec<BaseField> {
     single_segment_range(*add_mod, &mut public_claim);
     single_segment_range(*mul_mod, &mut public_claim);
     for (id, value) in output {
-        public_claim.push(BaseField::from_u32_unchecked(*id));
-        public_claim.extend(value.iter().map(|&v| BaseField::from_u32_unchecked(v)));
+        public_claim.push(*id);
+        public_claim.extend(value);
     }
-    for safe_call_id in safe_call_ids {
-        public_claim.push(BaseField::from_u32_unchecked(*safe_call_id));
-    }
-    public_claim.push(*initial_pc);
-    public_claim.push(*initial_ap);
-    public_claim.push(*initial_fp);
-    public_claim.push(*final_ap);
-    public_claim.push(*final_fp);
-    public_claim.push(*final_pc);
+    public_claim.extend(safe_call_ids);
+    public_claim.push(initial_pc.0);
+    public_claim.push(initial_ap.0);
+    public_claim.push(initial_fp.0);
+    public_claim.push(final_ap.0);
+    public_claim.push(final_fp.0);
+    public_claim.push(final_pc.0);
     public_claim
 }
 
@@ -552,16 +537,16 @@ fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
     (component_enable_bits, component_log_sizes)
 }
 
-fn single_segment_range(segment: Option<SegmentRange>, public_claim: &mut Vec<BaseField>) {
+fn single_segment_range(segment: Option<SegmentRange>, public_claim: &mut Vec<u32>) {
     if let Some(segment) = segment {
         public_claim.extend([
-            BaseField::from_u32_unchecked(segment.start_ptr.id),
-            BaseField::from_u32_unchecked(segment.start_ptr.value),
-            BaseField::from_u32_unchecked(segment.stop_ptr.id),
-            BaseField::from_u32_unchecked(segment.stop_ptr.value),
+            segment.start_ptr.id,
+            segment.start_ptr.value,
+            segment.stop_ptr.id,
+            segment.stop_ptr.value,
         ]);
     } else {
-        public_claim.extend([BaseField::zero(); 4]);
+        public_claim.extend([0_u32; 4]);
     }
 }
 
