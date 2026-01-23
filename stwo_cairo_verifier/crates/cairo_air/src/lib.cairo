@@ -661,7 +661,7 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
     }
 }
 
-#[derive(Serde, Drop)]
+#[derive(Copy, Serde, Drop)]
 pub struct PublicMemory {
     pub program: MemorySection,
     pub public_segments: PublicSegmentRanges,
@@ -752,7 +752,7 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
 mod combine;
 
 
-#[derive(Drop, Serde)]
+#[derive(Clone, Drop, Serde)]
 pub struct PublicData {
     pub public_memory: PublicMemory,
     pub initial_state: CasmState,
