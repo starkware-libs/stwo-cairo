@@ -29,12 +29,12 @@ pub struct FlatClaim {
     pub public_data: PublicData,
 }
 impl FlatClaim {
-    pub fn from_cairo_claim(claim: CairoClaim) -> Self {
-        let (component_enable_bits, component_log_sizes) = flatten_claim(&claim);
+    pub fn from_cairo_claim(claim: &CairoClaim) -> Self {
+        let (component_enable_bits, component_log_sizes) = flatten_claim(claim);
         Self {
             component_enable_bits,
             component_log_sizes,
-            public_data: claim.public_data,
+            public_data: claim.public_data.clone(),
         }
     }
 
