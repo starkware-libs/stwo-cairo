@@ -35,6 +35,7 @@ use crate::components::{
     memory_address_to_id, memory_id_to_big, verify_bitwise_xor_4, verify_bitwise_xor_7,
     verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
 };
+use crate::flat_claims::{flatten_interaction_claim, FlatClaim};
 use crate::relations::{
     self, CommonLookupElements, MEMORY_ADDRESS_TO_ID_RELATION_ID, MEMORY_ID_TO_BIG_RELATION_ID,
     OPCODES_RELATION_ID,
@@ -126,36 +127,8 @@ pub struct CairoClaim {
 
 impl CairoClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        let Self {
-            public_data,
-            opcodes,
-            verify_instruction,
-            blake_context,
-            builtins,
-            pedersen_context,
-            poseidon_context,
-            memory_address_to_id,
-            memory_id_to_value,
-            range_checks,
-            verify_bitwise_xor_4,
-            verify_bitwise_xor_7,
-            verify_bitwise_xor_8,
-            verify_bitwise_xor_9,
-        } = self;
-        public_data.mix_into(channel);
-        opcodes.mix_into(channel);
-        verify_instruction.mix_into(channel);
-        blake_context.mix_into(channel);
-        builtins.mix_into(channel);
-        pedersen_context.mix_into(channel);
-        poseidon_context.mix_into(channel);
-        memory_address_to_id.mix_into(channel);
-        memory_id_to_value.mix_into(channel);
-        range_checks.mix_into(channel);
-        verify_bitwise_xor_4.mix_into(channel);
-        verify_bitwise_xor_7.mix_into(channel);
-        verify_bitwise_xor_8.mix_into(channel);
-        verify_bitwise_xor_9.mix_into(channel);
+        let claim = FlatClaim::from_cairo_claim(self);
+        channel.mix_felts(claim.into_secure_felts().as_slice());
     }
 
     /// Returns the log sizes of the components.
@@ -604,19 +577,8 @@ pub struct CairoInteractionClaim {
 }
 impl CairoInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        self.opcodes.mix_into(channel);
-        self.verify_instruction.mix_into(channel);
-        self.blake_context.mix_into(channel);
-        self.builtins.mix_into(channel);
-        self.pedersen_context.mix_into(channel);
-        self.poseidon_context.mix_into(channel);
-        self.memory_address_to_id.mix_into(channel);
-        self.memory_id_to_value.mix_into(channel);
-        self.range_checks.mix_into(channel);
-        self.verify_bitwise_xor_4.mix_into(channel);
-        self.verify_bitwise_xor_7.mix_into(channel);
-        self.verify_bitwise_xor_8.mix_into(channel);
-        self.verify_bitwise_xor_9.mix_into(channel);
+        let claim = flatten_interaction_claim(self);
+        channel.mix_felts(claim.as_slice());
     }
 }
 
