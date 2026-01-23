@@ -1,6 +1,7 @@
 use num_traits::Zero;
 use stwo::core::fields::qm31::SecureField;
-use stwo_cairo_common::prover_types::cpu::CasmState;
+use stwo_cairo_common::prover_types::cpu::{CasmState, FELT252_BITS_PER_WORD, FELT252_N_WORDS};
+use stwo_cairo_common::prover_types::felt::split;
 
 use crate::air::{
     CairoClaim, CairoInteractionClaim, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange,
@@ -29,12 +30,12 @@ pub struct FlatClaim {
     pub public_data: PublicData,
 }
 impl FlatClaim {
-    pub fn from_cairo_claim(claim: CairoClaim) -> Self {
-        let (component_enable_bits, component_log_sizes) = flatten_claim(&claim);
+    pub fn from_cairo_claim(claim: &CairoClaim) -> Self {
+        let (component_enable_bits, component_log_sizes) = flatten_claim(claim);
         Self {
             component_enable_bits,
             component_log_sizes,
-            public_data: claim.public_data,
+            public_data: claim.public_data.clone(),
         }
     }
 
@@ -48,17 +49,7 @@ impl FlatClaim {
 }
 
 fn enable_bits_to_u32s(enable_bits: &[bool]) -> Vec<u32> {
-    let mut res = vec![];
-    for bits in enable_bits.chunks(31) {
-        let mut v: u32 = 0;
-        for (i, &bit) in bits.iter().enumerate() {
-            if bit {
-                v |= 1 << i;
-            }
-        }
-        res.push(v);
-    }
-    res
+    enable_bits.iter().map(|&b| if b { 1 } else { 0 }).collect()
 }
 
 fn public_data_to_u32s(public_data: &PublicData) -> Vec<u32> {
@@ -86,7 +77,8 @@ fn public_data_to_u32s(public_data: &PublicData) -> Vec<u32> {
     } = public_data;
     for (id, value) in program {
         public_claim.push(*id);
-        public_claim.extend(value);
+        public_claim
+            .extend::<[u32; FELT252_N_WORDS]>(split(*value, (1 << FELT252_BITS_PER_WORD) - 1));
     }
     let PublicSegmentRanges {
         output: output_ranges,
@@ -114,7 +106,8 @@ fn public_data_to_u32s(public_data: &PublicData) -> Vec<u32> {
     single_segment_range(*mul_mod, &mut public_claim);
     for (id, value) in output {
         public_claim.push(*id);
-        public_claim.extend(value);
+        public_claim
+            .extend::<[u32; FELT252_N_WORDS]>(split(*value, (1 << FELT252_BITS_PER_WORD) - 1));
     }
     public_claim.extend(safe_call_ids);
     public_claim.push(initial_pc.0);
