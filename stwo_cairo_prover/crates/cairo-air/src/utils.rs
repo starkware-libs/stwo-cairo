@@ -13,7 +13,6 @@ use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
-use stwo::core::pcs::quotients::CommitmentSchemeProof;
 use stwo::core::pcs::TreeVec;
 use stwo::core::vcs::blake2_hash::Blake2sHasher;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
