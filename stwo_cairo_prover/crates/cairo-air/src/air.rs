@@ -209,9 +209,9 @@ impl CairoClaim {
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, Default, Clone)]
 pub struct PublicData {
-    pub public_memory: PublicMemory,
     pub initial_state: CasmState,
     pub final_state: CasmState,
+    pub public_memory: PublicMemory,
 }
 impl PublicData {
     /// Sums the logup of the public data.
@@ -497,10 +497,10 @@ pub type MemorySection = Vec<PubMemoryValue>;
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, Default, Clone)]
 pub struct PublicMemory {
-    pub program: MemorySection,
     pub public_segments: PublicSegmentRanges,
     pub output: MemorySection,
     pub safe_call_ids: [u32; 2],
+    pub program: MemorySection,
 }
 
 impl PublicMemory {
