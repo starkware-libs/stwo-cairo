@@ -48,20 +48,15 @@ impl FlatClaim {
     }
 }
 
+/// Converts enable bits to [u32], where each u32 is at most 2^31 - 1.
 fn enable_bits_to_u32s(enable_bits: &[bool]) -> Vec<u32> {
     enable_bits.iter().map(|&b| if b { 1 } else { 0 }).collect()
 }
 
+/// Converts public data to [u32], where each u32 is at most 2^31 - 1.
 fn public_data_to_u32s(public_data: &PublicData) -> Vec<u32> {
     let mut public_claim = vec![];
     let PublicData {
-        public_memory:
-            PublicMemory {
-                program,
-                public_segments,
-                output,
-                safe_call_ids,
-            },
         initial_state:
             CasmState {
                 pc: initial_pc,
@@ -74,12 +69,20 @@ fn public_data_to_u32s(public_data: &PublicData) -> Vec<u32> {
                 ap: final_ap,
                 fp: final_fp,
             },
+        public_memory:
+            PublicMemory {
+                public_segments,
+                output,
+                safe_call_ids,
+                program,
+            },
     } = public_data;
-    for (id, value) in program {
-        public_claim.push(*id);
-        public_claim
-            .extend::<[u32; FELT252_N_WORDS]>(split(*value, (1 << FELT252_BITS_PER_WORD) - 1));
-    }
+    public_claim.push(initial_pc.0);
+    public_claim.push(initial_ap.0);
+    public_claim.push(initial_fp.0);
+    public_claim.push(final_ap.0);
+    public_claim.push(final_fp.0);
+    public_claim.push(final_pc.0);
     let PublicSegmentRanges {
         output: output_ranges,
         pedersen,
@@ -110,12 +113,12 @@ fn public_data_to_u32s(public_data: &PublicData) -> Vec<u32> {
             .extend::<[u32; FELT252_N_WORDS]>(split(*value, (1 << FELT252_BITS_PER_WORD) - 1));
     }
     public_claim.extend(safe_call_ids);
-    public_claim.push(initial_pc.0);
-    public_claim.push(initial_ap.0);
-    public_claim.push(initial_fp.0);
-    public_claim.push(final_ap.0);
-    public_claim.push(final_fp.0);
-    public_claim.push(final_pc.0);
+    public_claim.push(program.len() as u32);
+    for (id, value) in program {
+        public_claim.push(*id);
+        public_claim
+            .extend::<[u32; FELT252_N_WORDS]>(split(*value, (1 << FELT252_BITS_PER_WORD) - 1));
+    }
     public_claim
 }
 
