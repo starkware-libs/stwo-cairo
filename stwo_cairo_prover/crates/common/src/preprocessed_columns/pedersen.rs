@@ -78,7 +78,7 @@ impl<const WINDOW_BITS: usize> PreProcessedColumn for PedersenPoints<WINDOW_BITS
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
         CircleEvaluation::new(
             CanonicCoset::new(self.log_size()).circle_domain(),
-            BaseColumn::from_cpu(self.get_data().clone()),
+            BaseColumn::from_cpu(self.get_data()),
         )
     }
 }

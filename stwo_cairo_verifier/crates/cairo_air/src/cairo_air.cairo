@@ -136,7 +136,7 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
 
     fn mix_into(self: @CairoClaim, ref channel: Channel) {
         let claim: FlatClaim = FlatClaimTrait::from_cairo_claim(self);
-        channel.mix_felts(claim.into_qm31s());
+        claim.mix_into(ref channel);
     }
 
     fn accumulate_relation_uses(self: @CairoClaim, ref relation_uses: RelationUsesDict) {
