@@ -4,7 +4,7 @@ use core::num::traits::WrappingMul;
 use core::traits::DivRem;
 use stwo_verifier_core::TreeArray;
 use stwo_verifier_core::fields::m31::M31;
-use stwo_verifier_core::fields::qm31::{QM31, QM31Trait};
+use stwo_verifier_core::fields::qm31::{QM31, QM31Trait, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::utils::pow2;
 #[cfg(not(feature: "qm31_opcode"))]
 use crate::{Invertible, Zero};
@@ -26,6 +26,40 @@ pub impl UsizeImpl of UsizeExTrait {
             d
         }
     }
+}
+
+/// Assumes all values are reduced mod M31 and packs them into QM31 elements.
+pub fn pack_into_qm31s(mut values: Span<u32>) -> Span<QM31> {
+    let mut res = array![];
+
+    while let Some(chunk) = values.multi_pop_front::<QM31_EXTENSION_DEGREE>() {
+        append_chunk(ref res, chunk.unbox());
+    }
+
+    if !values.is_empty() {
+        let mut chunk = array![];
+        let chunk_size = values.len();
+        chunk.append_span(values);
+        for _ in chunk_size..QM31_EXTENSION_DEGREE {
+            chunk.append(0_u32);
+        }
+        let fixed_arr: [u32; QM31_EXTENSION_DEGREE] = (*chunk.span().try_into().unwrap()).unbox();
+        append_chunk(ref res, fixed_arr);
+    }
+
+    res.span()
+}
+
+fn append_chunk(ref array: Array<QM31>, chunk: [u32; QM31_EXTENSION_DEGREE]) {
+    let [v0, v1, v2, v3] = chunk;
+
+    let new_qm31 = QM31Trait::from_fixed_array(
+        [
+            v0.try_into().unwrap(), v1.try_into().unwrap(), v2.try_into().unwrap(),
+            v3.try_into().unwrap(),
+        ],
+    );
+    array.append(new_qm31);
 }
 
 pub fn tree_array_concat_cols(tree_array: Array<TreeArray<Span<u32>>>) -> TreeArray<Span<u32>> {
