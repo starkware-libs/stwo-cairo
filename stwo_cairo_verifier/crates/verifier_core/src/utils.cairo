@@ -6,8 +6,9 @@ use core::num::traits::BitSize;
 use core::traits::{DivRem, PanicDestruct};
 use crate::fields::SecureField;
 use crate::fields::m31::M31_SHIFT;
-use crate::fields::qm31::QM31Trait;
+use crate::fields::qm31::{QM31, QM31Trait, QM31_EXTENSION_DEGREE};
 use crate::{ColumnSpan, TreeSpan};
+
 
 /// Returns `2^n`, n in range [0, 32).
 /// Will panic (with index out of bounds) if n >= 32.
@@ -186,6 +187,39 @@ pub fn bit_reverse_index(mut index: usize, mut n_bits: u32) -> usize {
         n_bits -= 1;
     }
     result
+}
+
+/// Assumes all values are reduced mod M31 and packs them into QM31 elements.
+pub fn pack_into_qm31s(mut values: Span<u32>) -> Span<QM31> {
+    let mut res = array![];
+
+    while let Some(chunk) = values.multi_pop_front::<QM31_EXTENSION_DEGREE>() {
+        append_chunk(ref res, chunk.unbox());
+    }
+
+    if !values.is_empty() {
+        let mut chunk = array![];
+        let chunk_size = values.len();
+        chunk.append_span(values);
+        for _ in chunk_size..QM31_EXTENSION_DEGREE {
+            chunk.append(0_u32);
+        }
+        let fixed_arr: [u32; QM31_EXTENSION_DEGREE] = (*chunk.span().try_into().unwrap()).unbox();
+        append_chunk(ref res, fixed_arr);
+    }
+
+    res.span()
+}
+
+fn append_chunk(ref array: Array<QM31>, chunk: [u32; QM31_EXTENSION_DEGREE]) {
+    let [v0, v1, v2, v3] = chunk;
+    let new_qm31 = QM31Trait::from_fixed_array(
+        [
+            v0.try_into().unwrap(), v1.try_into().unwrap(), v2.try_into().unwrap(),
+            v3.try_into().unwrap(),
+        ],
+    );
+    array.append(new_qm31);
 }
 
 /// A span in which each element relates (by index) to the log 2 of a degree bound.

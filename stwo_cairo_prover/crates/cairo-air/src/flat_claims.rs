@@ -1,11 +1,8 @@
 use num_traits::Zero;
+use stwo::core::channel::Channel;
 use stwo::core::fields::qm31::SecureField;
-use stwo_cairo_common::prover_types::cpu::{CasmState, FELT252_BITS_PER_WORD, FELT252_N_WORDS};
-use stwo_cairo_common::prover_types::felt::split;
 
-use crate::air::{
-    CairoClaim, CairoInteractionClaim, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange,
-};
+use crate::air::{CairoClaim, CairoInteractionClaim, PublicData};
 use crate::blake::air::{Claim as BlakeClaim, InteractionClaim as BlakeInteractionClaim};
 use crate::builtins_air::{BuiltinsClaim, BuiltinsInteractionClaim};
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
@@ -39,84 +36,26 @@ impl FlatClaim {
         }
     }
 
-    pub fn into_secure_felts(&self) -> Vec<SecureField> {
-        let mut u32s = vec![];
-        u32s.extend(enable_bits_to_u32s(&self.component_enable_bits));
-        u32s.extend(self.component_log_sizes.clone());
-        u32s.extend(public_data_to_u32s(&self.public_data));
-        pack_into_secure_felts(u32s.into_iter())
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        channel.mix_felts(&pack_into_secure_felts(
+            [self.component_enable_bits.len() as u32].into_iter(),
+        ));
+        channel.mix_felts(&pack_into_secure_felts(
+            enable_bits_to_u32s(&self.component_enable_bits).into_iter(),
+        ));
+        channel.mix_felts(&pack_into_secure_felts(
+            self.component_log_sizes.iter().cloned(),
+        ));
+        channel.mix_felts(&pack_into_secure_felts(
+            [self.public_data.public_memory.program.len() as u32].into_iter(),
+        ));
+        self.public_data.mix_into(channel);
     }
 }
 
+/// Converts enable bits to [u32], where each u32 is at most 2^31 - 1.
 fn enable_bits_to_u32s(enable_bits: &[bool]) -> Vec<u32> {
     enable_bits.iter().map(|&b| if b { 1 } else { 0 }).collect()
-}
-
-fn public_data_to_u32s(public_data: &PublicData) -> Vec<u32> {
-    let mut public_claim = vec![];
-    let PublicData {
-        public_memory:
-            PublicMemory {
-                program,
-                public_segments,
-                output,
-                safe_call_ids,
-            },
-        initial_state:
-            CasmState {
-                pc: initial_pc,
-                ap: initial_ap,
-                fp: initial_fp,
-            },
-        final_state:
-            CasmState {
-                pc: final_pc,
-                ap: final_ap,
-                fp: final_fp,
-            },
-    } = public_data;
-    for (id, value) in program {
-        public_claim.push(*id);
-        public_claim
-            .extend::<[u32; FELT252_N_WORDS]>(split(*value, (1 << FELT252_BITS_PER_WORD) - 1));
-    }
-    let PublicSegmentRanges {
-        output: output_ranges,
-        pedersen,
-        range_check_128,
-        ecdsa,
-        bitwise,
-        ec_op,
-        keccak,
-        poseidon,
-        range_check_96,
-        add_mod,
-        mul_mod,
-    } = public_segments;
-    single_segment_range(Some(*output_ranges), &mut public_claim);
-    single_segment_range(*pedersen, &mut public_claim);
-    single_segment_range(*range_check_128, &mut public_claim);
-    single_segment_range(*ecdsa, &mut public_claim);
-    single_segment_range(*bitwise, &mut public_claim);
-    single_segment_range(*ec_op, &mut public_claim);
-    single_segment_range(*keccak, &mut public_claim);
-    single_segment_range(*poseidon, &mut public_claim);
-    single_segment_range(*range_check_96, &mut public_claim);
-    single_segment_range(*add_mod, &mut public_claim);
-    single_segment_range(*mul_mod, &mut public_claim);
-    for (id, value) in output {
-        public_claim.push(*id);
-        public_claim
-            .extend::<[u32; FELT252_N_WORDS]>(split(*value, (1 << FELT252_BITS_PER_WORD) - 1));
-    }
-    public_claim.extend(safe_call_ids);
-    public_claim.push(initial_pc.0);
-    public_claim.push(initial_ap.0);
-    public_claim.push(initial_fp.0);
-    public_claim.push(final_ap.0);
-    public_claim.push(final_fp.0);
-    public_claim.push(final_pc.0);
-    public_claim
 }
 
 /// Extracts component enable bits, and component log sizes from a [CairoClaim] and returns it as
@@ -528,19 +467,6 @@ fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
     component_enable_bits.push(true);
 
     (component_enable_bits, component_log_sizes)
-}
-
-fn single_segment_range(segment: Option<SegmentRange>, public_claim: &mut Vec<u32>) {
-    if let Some(segment) = segment {
-        public_claim.extend([
-            segment.start_ptr.id,
-            segment.start_ptr.value,
-            segment.stop_ptr.id,
-            segment.stop_ptr.value,
-        ]);
-    } else {
-        public_claim.extend([0_u32; 4]);
-    }
 }
 
 /// Returns the log size from a single-element slice.
