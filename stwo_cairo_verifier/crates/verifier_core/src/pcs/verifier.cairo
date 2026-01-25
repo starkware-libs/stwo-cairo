@@ -7,8 +7,8 @@ use crate::fields::qm31::{QM31, QM31Serde};
 use crate::fri::{FriProof, FriVerifierTrait};
 use crate::pcs::quotients::fri_answers;
 use crate::utils::{
-    ArrayImpl, ColumnsIndicesPerTreeByLogDegreeBound, DictImpl, group_columns_by_degree_bound,
-    pad_and_transpose_columns_by_log_deg_bound_per_tree, pow2,
+    ArrayImpl, ColumnsIndicesPerTreeByLogDegreeBound, DictImpl, SpanExTrait,
+    group_columns_by_degree_bound, pad_and_transpose_columns_by_log_deg_bound_per_tree, pow2,
 };
 use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
@@ -82,7 +82,8 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     ) -> ColumnsIndicesPerTreeByLogDegreeBound {
         let mut columns_by_log_deg_bound_per_tree = array![];
         for tree in self.trees.span() {
-            columns_by_log_deg_bound_per_tree.append(*tree.column_indices_by_log_deg_bound);
+            columns_by_log_deg_bound_per_tree
+                .append(group_columns_by_degree_bound(*tree.column_log_deg_bounds));
         }
 
         pad_and_transpose_columns_by_log_deg_bound_per_tree(
@@ -109,15 +110,14 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     ) {
         // Mix the commitment root into the Fiat-Shamir channel.
         channel.mix_commitment(commitment);
-
-        let column_indices_by_log_deg_bound = group_columns_by_degree_bound(degree_bound_by_column);
+        let max_log_degree_bound = *degree_bound_by_column.max().unwrap_or_default();
         self
             .trees
             .append(
                 MerkleVerifier {
                     root: commitment,
-                    tree_height: log_blowup_factor + column_indices_by_log_deg_bound.len() - 1,
-                    column_indices_by_log_deg_bound,
+                    tree_height: log_blowup_factor + max_log_degree_bound,
+                    column_log_deg_bounds: degree_bound_by_column,
                 },
             );
     }

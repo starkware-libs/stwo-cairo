@@ -11,9 +11,7 @@ use crate::poly::circle::{CanonicCosetImpl, CircleDomain, CircleDomainImpl};
 use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly};
 use crate::poly::utils::fri_fold;
 use crate::queries::{Queries, QueriesImpl};
-use crate::utils::{
-    ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, group_columns_by_degree_bound, pow2,
-};
+use crate::utils::{ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, pow2};
 use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 
@@ -290,11 +288,10 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
         let degree_bound_by_column = ArrayImpl::new_repeated(
             n: QM31_EXTENSION_DEGREE, v: *self.log_bound,
         );
-        let column_indices_by_log_deg_bound = group_columns_by_degree_bound(
-            degree_bound_by_column.span(),
-        );
         let merkle_verifier = MerkleVerifier {
-            root: *self.proof.commitment, tree_height: log_size, column_indices_by_log_deg_bound,
+            root: *self.proof.commitment,
+            tree_height: log_size,
+            column_log_deg_bounds: degree_bound_by_column.span(),
         };
 
         merkle_verifier
@@ -357,13 +354,10 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
         let degree_bound_by_column = ArrayImpl::new_repeated(
             n: QM31_EXTENSION_DEGREE, v: *self.log_degree_bound,
         );
-        let column_indices_by_log_deg_bound = group_columns_by_degree_bound(
-            degree_bound_by_column.span(),
-        );
         let merkle_verifier = MerkleVerifier {
             root: **self.proof.commitment,
             tree_height: column_log_size,
-            column_indices_by_log_deg_bound,
+            column_log_deg_bounds: degree_bound_by_column.span(),
         };
 
         merkle_verifier
