@@ -61,7 +61,7 @@ fn enable_bits_to_u32s(enable_bits: &[bool]) -> Vec<u32> {
     res
 }
 
-fn public_data_to_u32s(public_data: &PublicData) -> Vec<u32> {
+pub fn public_data_to_u32s(public_data: &PublicData) -> Vec<u32> {
     let mut public_claim = vec![];
     let PublicData {
         public_memory:
@@ -128,7 +128,7 @@ fn public_data_to_u32s(public_data: &PublicData) -> Vec<u32> {
 
 /// Extracts component enable bits, and component log sizes from a [CairoClaim] and returns it as
 /// vectors of [bool] and [u32] respectively.
-fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
+pub fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
     let mut component_enable_bits = vec![];
     let mut component_log_sizes = vec![];
 
