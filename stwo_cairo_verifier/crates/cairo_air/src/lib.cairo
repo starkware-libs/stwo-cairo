@@ -663,10 +663,10 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
 
 #[derive(Copy, Serde, Drop)]
 pub struct PublicMemory {
-    pub program: MemorySection,
     pub public_segments: PublicSegmentRanges,
     pub output: MemorySection,
     pub safe_call_ids: [u32; 2],
+    pub program: MemorySection,
 }
 
 
@@ -754,9 +754,9 @@ mod combine;
 
 #[derive(Clone, Drop, Serde)]
 pub struct PublicData {
-    pub public_memory: PublicMemory,
     pub initial_state: CasmState,
     pub final_state: CasmState,
+    pub public_memory: PublicMemory,
 }
 
 #[generate_trait]

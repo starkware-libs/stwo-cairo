@@ -80,7 +80,7 @@ pub impl FlatClaimImpl of FlatClaimTrait {
     }
 }
 
-
+/// Converts enable bits to [u32], where each u32 is at most 2^31 - 1.
 fn enable_bits_to_u32s(enable_bits: Span<bool>) -> Span<u32> {
     let mut res = array![];
     for bit in enable_bits {
@@ -93,24 +93,24 @@ fn enable_bits_to_u32s(enable_bits: Span<bool>) -> Span<u32> {
     res.span()
 }
 
+/// Converts public data to [u32], where each u32 is at most 2^31 - 1.
 fn public_data_to_u32s(public_data: @PublicData) -> Span<u32> {
     let mut public_claim = array![];
     let PublicData {
-        public_memory: PublicMemory {
-            program, public_segments, output, safe_call_ids,
-            }, initial_state: CasmState {
+        initial_state: CasmState {
             pc: initial_pc, ap: initial_ap, fp: initial_fp,
             }, final_state: CasmState {
             pc: final_pc, ap: final_ap, fp: final_fp,
+            }, public_memory: PublicMemory {
+            public_segments, output, safe_call_ids, program,
         },
     } = public_data;
-    for (id, value) in program {
-        public_claim.append(*id);
-        let fixed_arr: [u32; 8] = (*value).try_into().unwrap();
-        let new_value: [u32; N_M31_IN_FELT252] = split(fixed_arr);
-        let arr: Array<u32> = new_value.span().into_iter().map(|x| *x).collect();
-        public_claim.extend(arr);
-    }
+    public_claim.append((*initial_pc).into());
+    public_claim.append((*initial_ap).into());
+    public_claim.append((*initial_fp).into());
+    public_claim.append((*final_ap).into());
+    public_claim.append((*final_fp).into());
+    public_claim.append((*final_pc).into());
     let PublicSegmentRanges {
         output: output_ranges,
         pedersen,
@@ -211,12 +211,13 @@ fn public_data_to_u32s(public_data: @PublicData) -> Span<u32> {
     }
     let arr: Array<u32> = safe_call_ids.into_iter().map(|x| *x).collect();
     public_claim.extend(arr);
-    public_claim.append((*initial_pc).into());
-    public_claim.append((*initial_ap).into());
-    public_claim.append((*initial_fp).into());
-    public_claim.append((*final_ap).into());
-    public_claim.append((*final_fp).into());
-    public_claim.append((*final_pc).into());
+    for (id, value) in program {
+        public_claim.append(*id);
+        let fixed_arr: [u32; 8] = (*value).try_into().unwrap();
+        let new_value: [u32; N_M31_IN_FELT252] = split(fixed_arr);
+        let arr: Array<u32> = new_value.span().into_iter().map(|x| *x).collect();
+        public_claim.extend(arr);
+    }
 
     public_claim.span()
 }
