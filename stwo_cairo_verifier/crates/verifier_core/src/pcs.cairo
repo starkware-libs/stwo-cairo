@@ -8,10 +8,12 @@
 //! Note: Opened points cannot come from the commitment domain.
 
 use crate::channel::{Channel, ChannelTrait};
+use crate::fields::m31::M31Trait;
+use crate::fields::qm31::QM31Trait;
 use crate::fri::FriConfig;
+
 mod quotients;
 pub mod verifier;
-use crate::fri::FriConfigTrait;
 
 #[derive(Drop, Serde, Copy)]
 pub struct PcsConfig {
@@ -22,9 +24,24 @@ pub struct PcsConfig {
 pub impl PcsConfigImpl of PcsConfigTrait {
     fn mix_into(self: @PcsConfig, ref channel: Channel) {
         let PcsConfig { pow_bits, fri_config } = self;
-        channel.mix_u64((*pow_bits).into());
-        fri_config.mix_into(ref channel);
+        let FriConfig { log_blowup_factor, log_last_layer_degree_bound, n_queries } = fri_config;
+
+        channel
+            .mix_felts(
+                array![
+                    QM31Trait::from_fixed_array(
+                        [
+                            M31Trait::reduce_u32(*pow_bits),
+                            M31Trait::reduce_u32(*log_blowup_factor),
+                            M31Trait::reduce_u32(*n_queries),
+                            M31Trait::reduce_u32(*log_last_layer_degree_bound),
+                        ],
+                    ),
+                ]
+                    .span(),
+            );
     }
+
     fn security_bits(self: @PcsConfig) -> u32 {
         let PcsConfig {
             pow_bits, fri_config: FriConfig {

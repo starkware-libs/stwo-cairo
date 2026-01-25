@@ -1,10 +1,8 @@
 use core::iter::{Extend, Iterator};
 use core::num::traits::Zero;
-use core::traits::TryInto;
 use stwo_verifier_core::TreeArray;
-use stwo_verifier_core::channel::Channel;
-use stwo_verifier_core::fields::m31::{M31, M31Trait};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Trait, QM31_EXTENSION_DEGREE};
+use stwo_verifier_core::channel::{Channel, ChannelTrait};
+use stwo_verifier_core::fields::qm31::QM31;
 use crate::blake::*;
 use crate::builtins::*;
 use crate::cairo_air::{CairoClaim, CairoInteractionClaim};
@@ -13,10 +11,8 @@ use crate::components::memory_id_to_big::*;
 use crate::opcodes::*;
 use crate::pedersen::*;
 use crate::poseidon::*;
-use crate::utils::split;
-use crate::{
-    CasmState, PublicData, PublicDataImpl, PublicMemory, PublicSegmentRanges, RelationUsesDict,
-};
+use crate::utils::pack_into_qm31s;
+use crate::{PublicData, PublicDataImpl, RelationUsesDict};
 
 /// Trait that defines the functionality required by a "claim",
 /// where a "claim" is an object that holds public information about
@@ -51,36 +47,24 @@ pub impl FlatClaimImpl of FlatClaimTrait {
         }
     }
 
-    fn into_qm31s(self: @FlatClaim) -> Span<QM31> {
-        let mut u32s = array![];
-        u32s.extend(enable_bits_to_u32s(*self.component_enable_bits));
-        u32s.extend(self.component_log_sizes);
-        u32s.extend(public_data_to_u32s(self.public_data));
-
-        let mut res = array![];
-        let mut chunk = array![];
-        for v in u32s {
-            if chunk.len() == QM31_EXTENSION_DEGREE {
-                let fixed_arr: [M31; QM31_EXTENSION_DEGREE] = (*chunk.span().try_into().unwrap())
-                    .unbox();
-                res.append(QM31Trait::from_fixed_array(fixed_arr));
-                chunk = array![];
-            }
-            chunk.append(M31Trait::reduce_u32(*v));
-        }
-        if !chunk.is_empty() {
-            for _ in chunk.len()..QM31_EXTENSION_DEGREE {
-                chunk.append(Zero::zero());
-            }
-            let fixed_arr: [M31; QM31_EXTENSION_DEGREE] = (*chunk.span().try_into().unwrap())
-                .unbox();
-            res.append(QM31Trait::from_fixed_array(fixed_arr));
-        }
-        res.span()
+    fn mix_into(self: @FlatClaim, ref channel: Channel) {
+        channel
+            .mix_felts(
+                pack_into_qm31s(
+                    array![
+                        self.component_enable_bits.len().into(),
+                        self.public_data.public_memory.program.len().into(),
+                    ]
+                        .span(),
+                ),
+            );
+        channel.mix_felts(pack_into_qm31s(enable_bits_to_u32s(*self.component_enable_bits)));
+        channel.mix_felts(pack_into_qm31s(*self.component_log_sizes));
+        self.public_data.mix_into(ref channel);
     }
 }
 
-
+/// Converts enable bits to [u32], where each u32 is at most 2^31 - 1.
 fn enable_bits_to_u32s(enable_bits: Span<bool>) -> Span<u32> {
     let mut res = array![];
     for bit in enable_bits {
@@ -91,134 +75,6 @@ fn enable_bits_to_u32s(enable_bits: Span<bool>) -> Span<u32> {
         }
     }
     res.span()
-}
-
-fn public_data_to_u32s(public_data: @PublicData) -> Span<u32> {
-    let mut public_claim = array![];
-    let PublicData {
-        public_memory: PublicMemory {
-            program, public_segments, output, safe_call_ids,
-            }, initial_state: CasmState {
-            pc: initial_pc, ap: initial_ap, fp: initial_fp,
-            }, final_state: CasmState {
-            pc: final_pc, ap: final_ap, fp: final_fp,
-        },
-    } = public_data;
-    for (id, value) in program {
-        public_claim.append(*id);
-        let fixed_arr: [u32; 8] = (*value).try_into().unwrap();
-        let new_value: [u32; N_M31_IN_FELT252] = split(fixed_arr);
-        let arr: Array<u32> = new_value.span().into_iter().map(|x| *x).collect();
-        public_claim.extend(arr);
-    }
-    let PublicSegmentRanges {
-        output: output_ranges,
-        pedersen,
-        range_check_128,
-        ecdsa,
-        bitwise,
-        ec_op,
-        keccak,
-        poseidon,
-        range_check_96,
-        add_mod,
-        mul_mod,
-    } = public_segments;
-    public_claim
-        .extend(
-            array![
-                *output_ranges.start_ptr.id, *output_ranges.start_ptr.value,
-                *output_ranges.stop_ptr.id, *output_ranges.stop_ptr.value,
-            ],
-        );
-    public_claim
-        .extend(
-            array![
-                *pedersen.start_ptr.id, *pedersen.start_ptr.value, *pedersen.stop_ptr.id,
-                *pedersen.stop_ptr.value,
-            ],
-        );
-    public_claim
-        .extend(
-            array![
-                *range_check_128.start_ptr.id, *range_check_128.start_ptr.value,
-                *range_check_128.stop_ptr.id, *range_check_128.stop_ptr.value,
-            ],
-        );
-    public_claim
-        .extend(
-            array![
-                *ecdsa.start_ptr.id, *ecdsa.start_ptr.value, *ecdsa.stop_ptr.id,
-                *ecdsa.stop_ptr.value,
-            ],
-        );
-    public_claim
-        .extend(
-            array![
-                *bitwise.start_ptr.id, *bitwise.start_ptr.value, *bitwise.stop_ptr.id,
-                *bitwise.stop_ptr.value,
-            ],
-        );
-    public_claim
-        .extend(
-            array![
-                *ec_op.start_ptr.id, *ec_op.start_ptr.value, *ec_op.stop_ptr.id,
-                *ec_op.stop_ptr.value,
-            ],
-        );
-    public_claim
-        .extend(
-            array![
-                *keccak.start_ptr.id, *keccak.start_ptr.value, *keccak.stop_ptr.id,
-                *keccak.stop_ptr.value,
-            ],
-        );
-    public_claim
-        .extend(
-            array![
-                *poseidon.start_ptr.id, *poseidon.start_ptr.value, *poseidon.stop_ptr.id,
-                *poseidon.stop_ptr.value,
-            ],
-        );
-    public_claim
-        .extend(
-            array![
-                *range_check_96.start_ptr.id, *range_check_96.start_ptr.value,
-                *range_check_96.stop_ptr.id, *range_check_96.stop_ptr.value,
-            ],
-        );
-    public_claim
-        .extend(
-            array![
-                *add_mod.start_ptr.id, *add_mod.start_ptr.value, *add_mod.stop_ptr.id,
-                *add_mod.stop_ptr.value,
-            ],
-        );
-    public_claim
-        .extend(
-            array![
-                *mul_mod.start_ptr.id, *mul_mod.start_ptr.value, *mul_mod.stop_ptr.id,
-                *mul_mod.stop_ptr.value,
-            ],
-        );
-
-    for (id, value) in output {
-        public_claim.append(*id);
-        let fixed_arr: [u32; 8] = (*value).try_into().unwrap();
-        let new_value: [u32; N_M31_IN_FELT252] = split(fixed_arr);
-        let arr: Array<u32> = new_value.span().into_iter().map(|x| *x).collect();
-        public_claim.extend(arr);
-    }
-    let arr: Array<u32> = safe_call_ids.into_iter().map(|x| *x).collect();
-    public_claim.extend(arr);
-    public_claim.append((*initial_pc).into());
-    public_claim.append((*initial_ap).into());
-    public_claim.append((*initial_fp).into());
-    public_claim.append((*final_ap).into());
-    public_claim.append((*final_fp).into());
-    public_claim.append((*final_pc).into());
-
-    public_claim.span()
 }
 
 /// Extracts component enable bits, and component log sizes from a [CairoClaim] and returns it as
