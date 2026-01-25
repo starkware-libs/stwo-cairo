@@ -145,200 +145,314 @@ pub fn opcodes_write_trace(
     scope(|s| {
         s.spawn(|_| {
             add_result = add.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                    )
+                })
             });
         });
 
         s.spawn(|_| {
             add_small_result = add_small.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                    )
+                })
             });
         });
 
         s.spawn(|_| {
             add_ap_result = add_ap.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                    rc_18_trace_generator.unwrap(),
-                    rc_11_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                        rc_18_trace_generator.unwrap(),
+                        rc_11_trace_generator.unwrap(),
+                    )
+                })
             });
         });
 
         s.spawn(|_| {
             assert_eq_result = assert_eq.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                    )
+                })
             });
         });
 
         s.spawn(|_| {
             assert_eq_imm_result = assert_eq_imm.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                    )
+                })
             });
         });
 
         s.spawn(|_| {
             assert_eq_double_deref_result = assert_eq_double_deref.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                    )
+                })
             });
         });
 
         s.spawn(|_| {
             call_result = call.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                    )
+                })
             });
         });
 
         s.spawn(|_| {
             call_rel_imm_result = call_rel_imm.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                    )
+                })
             });
         });
 
         s.spawn(|_| {
             generic_result = generic.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                    rc_9_9_trace_generator.unwrap(),
-                    rc_20_trace_generator.unwrap(),
-                    rc_18_trace_generator.unwrap(),
-                    rc_11_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                        rc_9_9_trace_generator.unwrap(),
+                        rc_20_trace_generator.unwrap(),
+                        rc_18_trace_generator.unwrap(),
+                        rc_11_trace_generator.unwrap(),
+                    )
+                })
             });
         });
 
         s.spawn(|_| {
             jnz_result = jnz.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                    )
+                })
             });
         });
 
         s.spawn(|_| {
             jnz_taken_result = jnz_taken.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                    )
+                })
             });
         });
 
         s.spawn(|_| {
             jump_result = jump.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                    )
+                })
             });
         });
 
         s.spawn(|_| {
             jump_double_deref_result = jump_double_deref.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                    )
+                })
             });
         });
 
         s.spawn(|_| {
             jump_rel_result = jump_rel.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                    )
+                })
             });
         });
 
         s.spawn(|_| {
             jump_rel_imm_result = jump_rel_imm.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                    )
+                })
             });
         });
 
         s.spawn(|_| {
             mul_result = mul.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                    rc_20_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                        rc_20_trace_generator.unwrap(),
+                    )
+                })
             });
         });
 
         s.spawn(|_| {
             mul_small_result = mul_small.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                    rc_11_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                        rc_11_trace_generator.unwrap(),
+                    )
+                })
             });
         });
 
         s.spawn(|_| {
             qm31_result = qm31.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                    rc_4_4_4_4_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                        rc_4_4_4_4_trace_generator.unwrap(),
+                    )
+                })
             });
         });
 
         s.spawn(|_| {
             ret_result = ret.map(|gen| {
-                gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                )
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(4)
+                    .build()
+                    .unwrap();
+                pool.install(|| {
+                    gen.write_trace(
+                        memory_address_to_id_trace_generator.unwrap(),
+                        memory_id_to_value_trace_generator.unwrap(),
+                        verify_instruction_trace_generator.unwrap(),
+                    )
+                })
             });
         });
     });
