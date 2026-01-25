@@ -10,21 +10,17 @@ use itertools::Itertools;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use stwo::core::fields::m31::BaseField;
-use stwo::core::fields::qm31::SECURE_EXTENSION_DEGREE;
-use stwo::core::pcs::quotients::CommitmentSchemeProof;
 use stwo::core::pcs::TreeVec;
-use stwo::core::proof::StarkProof;
 use stwo::core::vcs::blake2_hash::Blake2sHasher;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
-use stwo::core::verifier::COMPOSITION_LOG_SPLIT;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
-use stwo_constraint_framework::{INTERACTION_TRACE_IDX, PREPROCESSED_TRACE_IDX};
+use stwo_constraint_framework::{
+    INTERACTION_TRACE_IDX, ORIGINAL_TRACE_IDX, PREPROCESSED_TRACE_IDX,
+};
 use tracing::{span, Level};
 
-use crate::air::{
-    CairoProofSorted, CommitmentSchemeProofSorted, MemorySection, PublicMemory, StarkProofSorted,
-};
-use crate::{CairoProof, PreProcessedTraceVariant};
+use crate::air::{CairoProof, MemorySection, PublicMemory};
+use crate::CairoProofForRustVerifier;
 
 mod json {
     #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
@@ -51,7 +47,7 @@ pub enum ProofFormat {
 
 /// Serializes Cairo proof given the desired format and writes it to a file.
 pub fn serialize_proof_to_file<H: MerkleHasherLifted + Serialize>(
-    proof: &CairoProofSorted<H>,
+    proof: &CairoProof<H>,
     proof_path: &Path,
     proof_format: ProofFormat,
 ) -> Result<(), std::io::Error>
@@ -64,7 +60,8 @@ where
 
     match proof_format {
         ProofFormat::Json => {
-            proof_file.write_all(json::to_string_pretty(proof)?.as_bytes())?;
+            let proof_for_rust_verifier: CairoProofForRustVerifier<_> = proof.clone().into();
+            proof_file.write_all(json::to_string_pretty(&proof_for_rust_verifier)?.as_bytes())?;
         }
         ProofFormat::CairoSerde => {
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
@@ -78,7 +75,9 @@ where
             proof_file.write_all(json::to_string_pretty(&hex_strings)?.as_bytes())?;
         }
         ProofFormat::Binary => {
-            let serialized_bytes = bincode::serialize(proof).map_err(std::io::Error::other)?;
+            let proof_for_rust_verifier: CairoProofForRustVerifier<_> = proof.clone().into();
+            let serialized_bytes =
+                bincode::serialize(&proof_for_rust_verifier).map_err(std::io::Error::other)?;
 
             let mut bz_encoder = BzEncoder::new(proof_file, Compression::best());
             bz_encoder.write_all(&serialized_bytes)?;
@@ -90,11 +89,11 @@ where
     Ok(())
 }
 
-/// Deserializes Cairo proof from a file given the desired format.
+/// Deserializes a proof into a Rust verifier cairo proof.
 pub fn deserialize_proof_from_file<H: MerkleHasherLifted + DeserializeOwned>(
     proof_path: &Path,
     proof_format: ProofFormat,
-) -> Result<CairoProofSorted<H>, std::io::Error>
+) -> Result<CairoProofForRustVerifier<H>, std::io::Error>
 where
     H::Hash: CairoDeserialize,
 {
@@ -104,10 +103,7 @@ where
             json::from_str(&proof_str).map_err(std::io::Error::other)
         }
         ProofFormat::CairoSerde => {
-            let proof_str = std::fs::read_to_string(proof_path)?;
-            let felts: Vec<starknet_ff::FieldElement> =
-                json::from_str(&proof_str).map_err(std::io::Error::other)?;
-            Ok(CairoDeserialize::deserialize(&mut felts.iter()))
+            panic!("Deserialization from a Cairo-serialized proof is not supported.");
         }
         ProofFormat::Binary => {
             let proof_file = File::open(proof_path)?;
@@ -196,23 +192,29 @@ pub fn encode_felt_in_limbs(felt: [u32; 8]) -> Vec<u32> {
 /// according to the format expected by the Cairo verifier.
 pub fn sort_and_transpose_queried_values(
     queried_values: &TreeVec<Vec<Vec<BaseField>>>,
-    preprocessed_trace_log_sizes: &[u32],
     trace_and_interaction_trace_log_sizes: Vec<&[u32]>,
 ) -> TreeVec<Vec<BaseField>> {
     debug_assert!(trace_and_interaction_trace_log_sizes[PREPROCESSED_TRACE_IDX].is_empty());
     debug_assert!(trace_and_interaction_trace_log_sizes.len() == 3);
-    // `all_log_sizes` contains the column log sizes for the preprocessed trace, base trace and
-    // interaction trace.
-    let mut all_log_sizes = trace_and_interaction_trace_log_sizes;
-    all_log_sizes[0] = preprocessed_trace_log_sizes;
 
     let mut new_queried_values_per_tree = vec![];
     let n_queries = queried_values[0][0].len();
-    // Sort and transpose the queried values for interaction phases 0, 1, 2, i.e. preprocessed, base
-    // trace, interaction trace.
-    for (queried_values, col_sizes) in queried_values[..=INTERACTION_TRACE_IDX]
+    // Transpose the preprocessed queried values. The preprocessed columns are already sorted in
+    // ascending order so there is no need to sort the values.
+    let pp_queried_values = &queried_values.first().unwrap();
+    let mut new_queried_values: Vec<BaseField> = vec![];
+    for row_idx in 0..n_queries {
+        new_queried_values.extend(pp_queried_values.iter().map(|vals| vals[row_idx]));
+    }
+    new_queried_values_per_tree.push(new_queried_values);
+
+    // Sort and transpose the queried values of the base trace and interaction trace.
+    for (queried_values, col_sizes) in queried_values[ORIGINAL_TRACE_IDX..=INTERACTION_TRACE_IDX]
         .iter()
-        .zip_eq(all_log_sizes.iter())
+        .zip_eq(
+            trace_and_interaction_trace_log_sizes[ORIGINAL_TRACE_IDX..=INTERACTION_TRACE_IDX]
+                .iter(),
+        )
     {
         let mut new_queried_values = vec![];
         let mut sorted_queries: Vec<_> = queried_values
@@ -231,7 +233,7 @@ pub fn sort_and_transpose_queried_values(
         new_queried_values_per_tree.push(new_queried_values)
     }
 
-    // Sort and transpose the queried values of the composition polynomial commitment. All columns
+    // Transpose the queried values of the composition polynomial commitment. All columns
     // in the composition commitment are of the same length so there is no need to sort.
     let composition_queried_values = &queried_values.last().unwrap();
     let mut new_queried_values: Vec<BaseField> = vec![];
@@ -242,186 +244,8 @@ pub fn sort_and_transpose_queried_values(
     TreeVec(new_queried_values_per_tree)
 }
 
-/// A utility function which transforms the order and layout of the queried values from the format
-/// expected by the Cairo verifier to the format expected by the stwo verifier. This transformation
-/// is the inverse transformation of [`sort_and_transpose_queried_values`].
-pub fn unsort_and_transpose_queried_values(
-    queried_values_per_tree: &TreeVec<Vec<BaseField>>,
-    preprocessed_trace_log_sizes: &[u32],
-    trace_and_interaction_trace_log_sizes: Vec<&[u32]>,
-) -> TreeVec<Vec<Vec<BaseField>>> {
-    debug_assert!(trace_and_interaction_trace_log_sizes[PREPROCESSED_TRACE_IDX].is_empty());
-    debug_assert!(trace_and_interaction_trace_log_sizes.len() == 3);
-    // `all_log_sizes` contains the column log sizes for the preprocessed trace, base trace and
-    // interaction trace.
-    let mut all_log_sizes = trace_and_interaction_trace_log_sizes;
-    all_log_sizes[0] = preprocessed_trace_log_sizes;
-
-    // For each tree of until (and including) the interaction trace tree, change the order of the
-    // of the queried values: from ascending by column size to column index.
-    let mut new_queried_values_per_tree = vec![];
-    for (queried_values, col_sizes) in queried_values_per_tree[..=INTERACTION_TRACE_IDX]
-        .iter()
-        .zip_eq(all_log_sizes.iter())
-    {
-        let n_cols = col_sizes.len();
-        let mut new_queried_values = vec![];
-
-        for i in 0..n_cols {
-            new_queried_values.push(
-                queried_values
-                    .iter()
-                    .skip(i)
-                    .step_by(n_cols)
-                    .copied()
-                    .collect(),
-            )
-        }
-        let permutation: Vec<usize> = col_sizes
-            .iter()
-            .enumerate()
-            .sorted_by_key(|(_, log_size)| *log_size)
-            .map(|(i, _)| i)
-            .collect();
-        new_queried_values_per_tree.push(
-            new_queried_values
-                .into_iter()
-                .enumerate()
-                .sorted_by_key(|(i, _)| permutation[*i])
-                .map(|(_, vals)| vals)
-                .collect(),
-        );
-    }
-
-    // For the composition polynomial commitment, all the columns have the same size so we don't
-    // need to compute the sorting permutation. The number of columns in this tree is
-    // 2^{COMPOSITION_LOG_SPLIT} * 4.
-    let queried_values = queried_values_per_tree.last().unwrap();
-    let n_cols = (1 << COMPOSITION_LOG_SPLIT) * SECURE_EXTENSION_DEGREE;
-    let mut new_queried_values = vec![];
-    for i in 0..n_cols {
-        new_queried_values.push(
-            queried_values
-                .iter()
-                .skip(i)
-                .step_by(n_cols)
-                .copied()
-                .collect(),
-        )
-    }
-    new_queried_values_per_tree.push(new_queried_values);
-
-    TreeVec(new_queried_values_per_tree)
-}
-
-/// Transforms a `CairoProof` into a `CairoProofSorted` by sorting the queried values.
-pub fn to_cairo_proof_sorted<H: MerkleHasherLifted>(
-    cairo_proof: CairoProof<H>,
-    pp_trace_variant: PreProcessedTraceVariant,
-) -> CairoProofSorted<H> {
-    let CairoProof {
-        claim,
-        interaction_pow,
-        interaction_claim,
-        stark_proof,
-        channel_salt,
-    } = cairo_proof;
-
-    let CommitmentSchemeProof {
-        config,
-        commitments,
-        sampled_values,
-        decommitments,
-        queried_values,
-        proof_of_work,
-        fri_proof,
-    } = stark_proof.0;
-
-    let preprocessed_trace_log_sizes = pp_trace_variant.to_preprocessed_trace().log_sizes();
-    let trace_and_interaction_trace_log_sizes = claim.log_sizes();
-
-    let sorted_queried_values = sort_and_transpose_queried_values(
-        &queried_values,
-        &preprocessed_trace_log_sizes,
-        trace_and_interaction_trace_log_sizes
-            .iter()
-            .map(|c| c.as_slice())
-            .collect(),
-    );
-    let sorted_stark_proof = CommitmentSchemeProofSorted {
-        config,
-        commitments,
-        sampled_values,
-        decommitments,
-        queried_values: sorted_queried_values,
-        proof_of_work,
-        fri_proof,
-    };
-    CairoProofSorted {
-        claim,
-        interaction_pow,
-        interaction_claim,
-        stark_proof: StarkProofSorted(sorted_stark_proof),
-        channel_salt,
-    }
-}
-
-/// Transforms a `CairoProofSorted` into a `CairoProof` by un-sorting the queried values.
-pub fn to_cairo_proof<H: MerkleHasherLifted>(
-    cairo_proof_sorted: CairoProofSorted<H>,
-    pp_trace_variant: PreProcessedTraceVariant,
-) -> CairoProof<H> {
-    let CairoProofSorted {
-        claim,
-        interaction_pow,
-        interaction_claim,
-        stark_proof,
-        channel_salt,
-    } = cairo_proof_sorted;
-
-    let CommitmentSchemeProofSorted {
-        config,
-        commitments,
-        sampled_values,
-        decommitments,
-        queried_values,
-        proof_of_work,
-        fri_proof,
-    } = stark_proof.0;
-
-    let preprocessed_trace_log_sizes = pp_trace_variant.to_preprocessed_trace().log_sizes();
-    let trace_and_interaction_trace_log_sizes = claim.log_sizes();
-
-    let unsorted_queried_values = unsort_and_transpose_queried_values(
-        &queried_values,
-        &preprocessed_trace_log_sizes,
-        trace_and_interaction_trace_log_sizes
-            .iter()
-            .map(|c| c.as_slice())
-            .collect(),
-    );
-    let stark_proof = CommitmentSchemeProof {
-        config,
-        commitments,
-        sampled_values,
-        decommitments,
-        queried_values: unsorted_queried_values,
-        proof_of_work,
-        fri_proof,
-    };
-    CairoProof {
-        claim,
-        interaction_pow,
-        interaction_claim,
-        stark_proof: StarkProof(stark_proof),
-        channel_salt,
-    }
-}
-
 #[cfg(test)]
 mod tests {
-    use rand::rngs::SmallRng;
-    use rand::{Rng, SeedableRng};
     use stwo::core::fields::m31::M31;
 
     use super::*;
@@ -482,66 +306,9 @@ mod tests {
         .unwrap();
         assert_eq!(construct_f252(&limbs), expected);
     }
-    #[test]
-    fn test_sort_unsort_are_inverses() {
-        const N_COLS_PER_TREE: usize = 10;
-        const N_QUERIES: usize = 7;
-        let mut rng = SmallRng::seed_from_u64(0);
-
-        let preprocessed_columns_log_sizes: Vec<_> =
-            (0..N_COLS_PER_TREE).map(|_| rng.gen_range(1..20)).collect();
-        let trace_and_interaction_trace_log_sizes = [
-            vec![],
-            (0..N_COLS_PER_TREE).map(|_| rng.gen_range(1..20)).collect(),
-            (0..N_COLS_PER_TREE).map(|_| rng.gen_range(1..20)).collect(),
-        ];
-        let trace_and_interaction_trace_log_sizes: Vec<&[u32]> =
-            trace_and_interaction_trace_log_sizes
-                .iter()
-                .map(|v| v.as_slice())
-                .collect();
-        let mut queried_vals = (0..3)
-            .map(|_| {
-                (0..N_COLS_PER_TREE * N_QUERIES)
-                    .map(BaseField::from)
-                    .collect()
-            })
-            .collect::<Vec<_>>();
-        queried_vals.push((0..(8 * N_QUERIES)).map(BaseField::from).collect());
-        let queried_vals = TreeVec(queried_vals);
-        let sort_unsort_queried_vals = sort_and_transpose_queried_values(
-            &unsort_and_transpose_queried_values(
-                &queried_vals,
-                &preprocessed_columns_log_sizes,
-                trace_and_interaction_trace_log_sizes.clone(),
-            ),
-            &preprocessed_columns_log_sizes,
-            trace_and_interaction_trace_log_sizes.clone(),
-        );
-        // Check that x = sort(unsort(x)).
-        assert_eq!(queried_vals.0, sort_unsort_queried_vals.0);
-
-        let queried_vals = unsort_and_transpose_queried_values(
-            &queried_vals,
-            &preprocessed_columns_log_sizes,
-            trace_and_interaction_trace_log_sizes.clone(),
-        );
-        let unsort_sort_queried_vals = unsort_and_transpose_queried_values(
-            &sort_and_transpose_queried_values(
-                &queried_vals,
-                &preprocessed_columns_log_sizes,
-                trace_and_interaction_trace_log_sizes.clone(),
-            ),
-            &preprocessed_columns_log_sizes,
-            trace_and_interaction_trace_log_sizes,
-        );
-        // Check that x = unsort(sort(x)).
-        assert_eq!(queried_vals.0, unsort_sort_queried_vals.0);
-    }
 
     #[test]
-    fn test_sort_unsort() {
-        let preprocessed_trace_log_sizes = vec![6, 5, 7];
+    fn test_sort_queried_values() {
         let trace_and_interaction_trace_log_sizes = [vec![], vec![4, 3, 2, 1], vec![4, 1, 3, 2]];
         let trace_and_interaction_trace_log_sizes: Vec<&[u32]> =
             trace_and_interaction_trace_log_sizes
@@ -570,11 +337,11 @@ mod tests {
         ]);
         let sorted_queried_values = TreeVec(vec![
             vec![
-                M31::from(3),
                 M31::from(1),
+                M31::from(3),
                 M31::from(5),
-                M31::from(4),
                 M31::from(2),
+                M31::from(4),
                 M31::from(6),
             ],
             vec![
@@ -601,89 +368,12 @@ mod tests {
         ]);
 
         assert_eq!(
-            unsorted_queried_values.0,
-            unsort_and_transpose_queried_values(
-                &sorted_queried_values,
-                &preprocessed_trace_log_sizes,
-                trace_and_interaction_trace_log_sizes.clone()
-            )
-            .0
-        );
-        assert_eq!(
             sorted_queried_values.0,
             sort_and_transpose_queried_values(
                 &unsorted_queried_values,
-                &preprocessed_trace_log_sizes,
                 trace_and_interaction_trace_log_sizes
             )
             .0
-        );
-    }
-}
-
-#[cfg(test)]
-#[cfg(feature = "slow-tests")]
-mod slow_tests {
-    use dev_utils::utils::get_proof_file_path;
-    use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleHasher;
-    use tempfile::NamedTempFile;
-
-    use super::*;
-
-    #[test]
-    fn test_serialize_and_deserialize_proof() {
-        let proof_path = get_proof_file_path("test_prove_verify_all_opcode_components");
-        let mut proof = deserialize_proof_from_file::<Blake2sMerkleHasher>(
-            &proof_path,
-            ProofFormat::CairoSerde,
-        )
-        .expect("Failed to deserialize proof (CairoSerde)");
-
-        let temp_json_file = NamedTempFile::new().expect("Failed to create temp file");
-        serialize_proof_to_file::<Blake2sMerkleHasher>(
-            &proof,
-            temp_json_file.path(),
-            ProofFormat::Json,
-        )
-        .expect("Failed to serialize proof (Json)");
-
-        proof = deserialize_proof_from_file::<Blake2sMerkleHasher>(
-            temp_json_file.path(),
-            ProofFormat::Json,
-        )
-        .expect("Failed to deserialize proof (Json)");
-
-        let temp_binary_file = NamedTempFile::new().expect("Failed to create temp file");
-        serialize_proof_to_file::<Blake2sMerkleHasher>(
-            &proof,
-            temp_binary_file.path(),
-            ProofFormat::Binary,
-        )
-        .expect("Failed to serialize proof (Binary)");
-
-        proof = deserialize_proof_from_file::<Blake2sMerkleHasher>(
-            temp_binary_file.path(),
-            ProofFormat::Binary,
-        )
-        .expect("Failed to deserialize proof (Binary)");
-
-        let temp_serde_file = NamedTempFile::new().expect("Failed to create temp file");
-        serialize_proof_to_file::<Blake2sMerkleHasher>(
-            &proof,
-            temp_serde_file.path(),
-            ProofFormat::CairoSerde,
-        )
-        .expect("Failed to serialize proof (CairoSerde)");
-
-        // Verify the final serialized proof matches the original by comparing JSON strings
-        let final_json = std::fs::read_to_string(temp_serde_file.path())
-            .expect("Failed to read final proof file");
-        let original_json =
-            std::fs::read_to_string(&proof_path).expect("Failed to read original proof file");
-
-        assert_eq!(
-            final_json, original_json,
-            "Final serialized proof should match the original proof"
         );
     }
 }

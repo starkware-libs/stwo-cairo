@@ -26,7 +26,7 @@ use crate::air::{
 use crate::builtins_air::BuiltinsClaim;
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
 use crate::relations::CommonLookupElements;
-use crate::{CairoProof, PreProcessedTraceVariant};
+use crate::CairoProofForRustVerifier;
 
 fn verify_claim(claim: &CairoClaim) {
     let PublicData {
@@ -272,14 +272,14 @@ fn check_builtin(
 pub const INTERACTION_POW_BITS: u32 = 24;
 
 pub fn verify_cairo<MC: MerkleChannel>(
-    CairoProof {
+    CairoProofForRustVerifier {
         claim,
         interaction_pow,
         interaction_claim,
         stark_proof,
         channel_salt,
-    }: CairoProof<MC::H>,
-    preprocessed_trace: PreProcessedTraceVariant,
+        preprocessed_trace_variant,
+    }: CairoProofForRustVerifier<MC::H>,
 ) -> Result<(), CairoVerificationError> {
     let _span = span!(Level::INFO, "verify_cairo").entered();
 
@@ -301,7 +301,9 @@ pub fn verify_cairo<MC: MerkleChannel>(
     let commitment_scheme_verifier = &mut CommitmentSchemeVerifier::<MC>::new(pcs_config);
 
     let mut log_sizes = claim.log_sizes();
-    log_sizes[PREPROCESSED_TRACE_IDX] = preprocessed_trace.to_preprocessed_trace().log_sizes();
+    log_sizes[PREPROCESSED_TRACE_IDX] = preprocessed_trace_variant
+        .to_preprocessed_trace()
+        .log_sizes();
 
     // Preproccessed trace.
     commitment_scheme_verifier.commit(stark_proof.commitments[0], &log_sizes[0], channel);
@@ -327,7 +329,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
         &claim,
         &interaction_elements,
         &interaction_claim,
-        &preprocessed_trace.to_preprocessed_trace().ids(),
+        &preprocessed_trace_variant.to_preprocessed_trace().ids(),
     );
     let components = component_generator.components();
 
