@@ -1,12 +1,12 @@
-use core::array::SpanTrait;
+use core::array::{SpanTrait, ToSpanTrait};
 use core::box::BoxTrait;
 use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait, SquashedFelt252DictTrait};
 use core::nullable::{FromNullableResult, NullableTrait, match_nullable};
-use core::num::traits::BitSize;
+use core::num::traits::{BitSize, Zero};
 use core::traits::{DivRem, PanicDestruct};
 use crate::fields::SecureField;
-use crate::fields::m31::M31_SHIFT;
-use crate::fields::qm31::QM31Trait;
+use crate::fields::m31::{M31, M31Trait, M31_SHIFT};
+use crate::fields::qm31::{QM31, QM31Trait, QM31_EXTENSION_DEGREE};
 use crate::{ColumnSpan, TreeSpan};
 
 /// Returns `2^n`, n in range [0, 32).
@@ -294,4 +294,27 @@ pub fn pad_and_transpose_columns_by_log_deg_bound_per_tree(
     }
 
     columns_per_tree_by_log_deg_bound.span()
+}
+
+/// Assumes all values are reduced mod M31 and packs them into QM31 elements.
+pub fn pack_into_qm31s(values: Span<u32>) -> Span<QM31> {
+    let mut res = array![];
+    let mut chunk = array![];
+    for v in values {
+        if chunk.len() == QM31_EXTENSION_DEGREE {
+            let fixed_arr: [M31; QM31_EXTENSION_DEGREE] = (*chunk.span().try_into().unwrap())
+                .unbox();
+            res.append(QM31Trait::from_fixed_array(fixed_arr));
+            chunk = array![];
+        }
+        chunk.append(M31Trait::reduce_u32(*v));
+    }
+    if !chunk.is_empty() {
+        for _ in chunk.len()..QM31_EXTENSION_DEGREE {
+            chunk.append(Zero::zero());
+        }
+        let fixed_arr: [M31; QM31_EXTENSION_DEGREE] = (*chunk.span().try_into().unwrap()).unbox();
+        res.append(QM31Trait::from_fixed_array(fixed_arr));
+    }
+    res.span()
 }
