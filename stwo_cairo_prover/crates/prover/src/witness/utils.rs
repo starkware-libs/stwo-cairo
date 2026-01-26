@@ -14,7 +14,8 @@ use stwo::prover::backend::simd::column::BaseColumn;
 use stwo::prover::backend::simd::conversion::Pack;
 use stwo::prover::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
 use stwo::prover::backend::{Backend, BackendForChannel};
-use stwo::prover::poly::circle::CircleEvaluation;
+use stwo::prover::poly::circle::{CircleCoefficients, CircleEvaluation};
+use stwo::prover::poly::twiddles::TwiddleTree;
 use stwo::prover::poly::BitReversedOrder;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
@@ -92,12 +93,29 @@ impl Enabler {
     }
 }
 
-/// Extenders of a commitment-tree with evaluations.
+/// Extenders of a commitment-tree with evaluations or polynomials.
 pub trait TreeBuilder<B: Backend> {
     fn extend_evals(
         &mut self,
         columns: Vec<CircleEvaluation<B, M31, BitReversedOrder>>,
     ) -> TreeSubspan;
+}
+
+/// Extended trait for tree builders that support polynomial operations.
+pub trait TreeBuilderWithPolys<B: Backend>: TreeBuilder<B> {
+    fn extend_polys(
+        &mut self,
+        columns: impl IntoIterator<Item = CircleCoefficients<B>>,
+    ) -> TreeSubspan;
+}
+
+/// Computes polynomials from evaluations using interpolation.
+/// This can be called in parallel since it doesn't require mutable access to tree_builder.
+pub fn compute_polys<B: BackendForChannel<MC>, MC: MerkleChannel>(
+    columns: Vec<CircleEvaluation<B, M31, BitReversedOrder>>,
+    twiddles: &TwiddleTree<B>,
+) -> Vec<CircleCoefficients<B>> {
+    B::interpolate_columns(columns, twiddles)
 }
 
 impl<B: BackendForChannel<MC>, MC: MerkleChannel> TreeBuilder<B>
@@ -108,6 +126,17 @@ impl<B: BackendForChannel<MC>, MC: MerkleChannel> TreeBuilder<B>
         columns: Vec<CircleEvaluation<B, M31, BitReversedOrder>>,
     ) -> TreeSubspan {
         self.extend_evals(columns)
+    }
+}
+
+impl<B: BackendForChannel<MC>, MC: MerkleChannel> TreeBuilderWithPolys<B>
+    for stwo::prover::TreeBuilder<'_, '_, B, MC>
+{
+    fn extend_polys(
+        &mut self,
+        columns: impl IntoIterator<Item = CircleCoefficients<B>>,
+    ) -> TreeSubspan {
+        self.extend_polys(columns)
     }
 }
 

@@ -15,7 +15,10 @@ use cairo_air::relations::CommonLookupElements;
 use indexmap::IndexSet;
 use itertools::Itertools;
 use rayon::scope;
+use stwo::core::channel::MerkleChannel;
 use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::BackendForChannel;
+use stwo::prover::poly::twiddles::TwiddleTree;
 use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_adapter::{ProverInput, PublicSegmentContext};
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::MAX_SEQUENCE_LOG_SIZE;
@@ -42,7 +45,7 @@ use crate::witness::components::{
 use crate::witness::opcodes::{get_opcodes, opcodes_write_trace};
 use crate::witness::prelude::{PreProcessedTrace, M31};
 use crate::witness::range_checks::{get_range_checks, range_checks_write_trace};
-use crate::witness::utils::TreeBuilder;
+use crate::witness::utils::{compute_polys, TreeBuilder, TreeBuilderWithPolys};
 
 fn extract_public_segments(
     memory: &Memory,
@@ -444,11 +447,15 @@ pub struct CairoInteractionClaimGenerator {
     // ...
 }
 impl CairoInteractionClaimGenerator {
-    pub fn write_interaction_trace(
+    pub fn write_interaction_trace<MC: MerkleChannel>(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilderWithPolys<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
-    ) -> CairoInteractionClaim {
+        twiddles: &TwiddleTree<SimdBackend>,
+    ) -> CairoInteractionClaim
+    where
+        SimdBackend: BackendForChannel<MC>,
+    {
         // Destructure optional context generators before the scope.
         let (
             blake_round_gen,
@@ -1266,120 +1273,482 @@ impl CairoInteractionClaimGenerator {
         let (verify_bitwise_xor_9_trace, verify_bitwise_xor_9_interaction_claim) =
             verify_bitwise_xor_9_result.unwrap();
 
-        // Extend tree_builder with all traces in order
-        for trace in add_traces {
-            tree_builder.extend_evals(trace);
+        // Compute polynomials from traces in parallel
+        let mut add_polys = None;
+        let mut add_small_polys = None;
+        let mut add_ap_polys = None;
+        let mut assert_eq_polys = None;
+        let mut assert_eq_imm_polys = None;
+        let mut assert_eq_double_deref_polys = None;
+        let mut blake_opcode_polys = None;
+        let mut call_polys = None;
+        let mut call_rel_imm_polys = None;
+        let mut generic_opcode_polys = None;
+        let mut jnz_polys = None;
+        let mut jnz_taken_polys = None;
+        let mut jump_polys = None;
+        let mut jump_double_deref_polys = None;
+        let mut jump_rel_polys = None;
+        let mut jump_rel_imm_polys = None;
+        let mut mul_polys = None;
+        let mut mul_small_polys = None;
+        let mut qm31_polys = None;
+        let mut ret_polys = None;
+        let mut verify_instruction_polys = None;
+        let mut blake_context_polys = None;
+        let mut add_mod_builtin_polys = None;
+        let mut bitwise_builtin_polys = None;
+        let mut mul_mod_builtin_polys = None;
+        let mut pedersen_builtin_polys = None;
+        let mut poseidon_builtin_polys = None;
+        let mut range_check_96_builtin_polys = None;
+        let mut range_check_128_builtin_polys = None;
+        let mut pedersen_context_polys = None;
+        let mut poseidon_context_polys = None;
+        let mut memory_address_to_id_polys = None;
+        let mut memory_id_to_value_big_polys = None;
+        let mut memory_id_to_value_small_polys = None;
+        let mut rc_6_polys = None;
+        let mut rc_8_polys = None;
+        let mut rc_11_polys = None;
+        let mut rc_12_polys = None;
+        let mut rc_18_polys = None;
+        let mut rc_20_polys = None;
+        let mut rc_4_3_polys = None;
+        let mut rc_4_4_polys = None;
+        let mut rc_9_9_polys = None;
+        let mut rc_7_2_5_polys = None;
+        let mut rc_3_6_6_3_polys = None;
+        let mut rc_4_4_4_4_polys = None;
+        let mut rc_3_3_3_3_3_polys = None;
+        let mut verify_bitwise_xor_4_polys = None;
+        let mut verify_bitwise_xor_7_polys = None;
+        let mut verify_bitwise_xor_8_polys = None;
+        let mut verify_bitwise_xor_9_polys = None;
+
+        scope(|s| {
+            s.spawn(|_| {
+                add_polys = Some(
+                    add_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                add_small_polys = Some(
+                    add_small_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                add_ap_polys = Some(
+                    add_ap_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                assert_eq_polys = Some(
+                    assert_eq_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                assert_eq_imm_polys = Some(
+                    assert_eq_imm_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                assert_eq_double_deref_polys = Some(
+                    assert_eq_double_deref_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                blake_opcode_polys = Some(
+                    blake_opcode_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                call_polys = Some(
+                    call_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                call_rel_imm_polys = Some(
+                    call_rel_imm_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                generic_opcode_polys = Some(
+                    generic_opcode_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                jnz_polys = Some(
+                    jnz_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                jnz_taken_polys = Some(
+                    jnz_taken_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                jump_polys = Some(
+                    jump_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                jump_double_deref_polys = Some(
+                    jump_double_deref_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                jump_rel_polys = Some(
+                    jump_rel_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                jump_rel_imm_polys = Some(
+                    jump_rel_imm_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                mul_polys = Some(
+                    mul_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                mul_small_polys = Some(
+                    mul_small_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                qm31_polys = Some(
+                    qm31_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                ret_polys = Some(
+                    ret_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                verify_instruction_polys =
+                    Some(compute_polys::<SimdBackend, MC>(verify_instruction_trace, twiddles));
+            });
+            s.spawn(|_| {
+                blake_context_polys = Some(
+                    blake_context_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                add_mod_builtin_polys = Some(
+                    add_mod_builtin_trace
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles)),
+                );
+            });
+            s.spawn(|_| {
+                bitwise_builtin_polys = Some(
+                    bitwise_builtin_trace
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles)),
+                );
+            });
+            s.spawn(|_| {
+                mul_mod_builtin_polys = Some(
+                    mul_mod_builtin_trace
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles)),
+                );
+            });
+            s.spawn(|_| {
+                pedersen_builtin_polys = Some(
+                    pedersen_builtin_trace
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles)),
+                );
+            });
+            s.spawn(|_| {
+                poseidon_builtin_polys = Some(
+                    poseidon_builtin_trace
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles)),
+                );
+            });
+            s.spawn(|_| {
+                range_check_96_builtin_polys = Some(
+                    range_check_96_builtin_trace
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles)),
+                );
+            });
+            s.spawn(|_| {
+                range_check_128_builtin_polys = Some(
+                    range_check_128_builtin_trace
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles)),
+                );
+            });
+            s.spawn(|_| {
+                pedersen_context_polys = Some(
+                    pedersen_context_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                poseidon_context_polys = Some(
+                    poseidon_context_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                memory_address_to_id_polys =
+                    Some(compute_polys::<SimdBackend, MC>(memory_address_to_id_trace, twiddles));
+            });
+            s.spawn(|_| {
+                memory_id_to_value_big_polys = Some(
+                    memory_id_to_value_big_traces
+                        .into_iter()
+                        .map(|t| compute_polys::<SimdBackend, MC>(t, twiddles))
+                        .collect::<Vec<_>>(),
+                );
+            });
+            s.spawn(|_| {
+                memory_id_to_value_small_polys = Some(compute_polys::<SimdBackend, MC>(
+                    memory_id_to_value_small_trace,
+                    twiddles,
+                ));
+            });
+            s.spawn(|_| {
+                rc_6_polys = Some(compute_polys::<SimdBackend, MC>(rc_6_trace, twiddles));
+            });
+            s.spawn(|_| {
+                rc_8_polys = Some(compute_polys::<SimdBackend, MC>(rc_8_trace, twiddles));
+            });
+            s.spawn(|_| {
+                rc_11_polys = Some(compute_polys::<SimdBackend, MC>(rc_11_trace, twiddles));
+            });
+            s.spawn(|_| {
+                rc_12_polys = Some(compute_polys::<SimdBackend, MC>(rc_12_trace, twiddles));
+            });
+            s.spawn(|_| {
+                rc_18_polys = Some(compute_polys::<SimdBackend, MC>(rc_18_trace, twiddles));
+            });
+            s.spawn(|_| {
+                rc_20_polys = Some(compute_polys::<SimdBackend, MC>(rc_20_trace, twiddles));
+            });
+            s.spawn(|_| {
+                rc_4_3_polys = Some(compute_polys::<SimdBackend, MC>(rc_4_3_trace, twiddles));
+            });
+            s.spawn(|_| {
+                rc_4_4_polys = Some(compute_polys::<SimdBackend, MC>(rc_4_4_trace, twiddles));
+            });
+            s.spawn(|_| {
+                rc_9_9_polys = Some(compute_polys::<SimdBackend, MC>(rc_9_9_trace, twiddles));
+            });
+            s.spawn(|_| {
+                rc_7_2_5_polys = Some(compute_polys::<SimdBackend, MC>(rc_7_2_5_trace, twiddles));
+            });
+            s.spawn(|_| {
+                rc_3_6_6_3_polys =
+                    Some(compute_polys::<SimdBackend, MC>(rc_3_6_6_3_trace, twiddles));
+            });
+            s.spawn(|_| {
+                rc_4_4_4_4_polys =
+                    Some(compute_polys::<SimdBackend, MC>(rc_4_4_4_4_trace, twiddles));
+            });
+            s.spawn(|_| {
+                rc_3_3_3_3_3_polys =
+                    Some(compute_polys::<SimdBackend, MC>(rc_3_3_3_3_3_trace, twiddles));
+            });
+            s.spawn(|_| {
+                verify_bitwise_xor_4_polys =
+                    Some(compute_polys::<SimdBackend, MC>(verify_bitwise_xor_4_trace, twiddles));
+            });
+            s.spawn(|_| {
+                verify_bitwise_xor_7_polys =
+                    Some(compute_polys::<SimdBackend, MC>(verify_bitwise_xor_7_trace, twiddles));
+            });
+            s.spawn(|_| {
+                verify_bitwise_xor_8_polys =
+                    Some(compute_polys::<SimdBackend, MC>(verify_bitwise_xor_8_trace, twiddles));
+            });
+            s.spawn(|_| {
+                verify_bitwise_xor_9_polys =
+                    Some(compute_polys::<SimdBackend, MC>(verify_bitwise_xor_9_trace, twiddles));
+            });
+        });
+
+        // Extend tree_builder with all polys in order
+        for polys in add_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in add_small_traces {
-            tree_builder.extend_evals(trace);
+        for polys in add_small_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in add_ap_traces {
-            tree_builder.extend_evals(trace);
+        for polys in add_ap_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in assert_eq_traces {
-            tree_builder.extend_evals(trace);
+        for polys in assert_eq_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in assert_eq_imm_traces {
-            tree_builder.extend_evals(trace);
+        for polys in assert_eq_imm_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in assert_eq_double_deref_traces {
-            tree_builder.extend_evals(trace);
+        for polys in assert_eq_double_deref_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in blake_opcode_traces {
-            tree_builder.extend_evals(trace);
+        for polys in blake_opcode_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in call_traces {
-            tree_builder.extend_evals(trace);
+        for polys in call_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in call_rel_imm_traces {
-            tree_builder.extend_evals(trace);
+        for polys in call_rel_imm_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in generic_opcode_traces {
-            tree_builder.extend_evals(trace);
+        for polys in generic_opcode_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in jnz_traces {
-            tree_builder.extend_evals(trace);
+        for polys in jnz_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in jnz_taken_traces {
-            tree_builder.extend_evals(trace);
+        for polys in jnz_taken_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in jump_traces {
-            tree_builder.extend_evals(trace);
+        for polys in jump_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in jump_double_deref_traces {
-            tree_builder.extend_evals(trace);
+        for polys in jump_double_deref_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in jump_rel_traces {
-            tree_builder.extend_evals(trace);
+        for polys in jump_rel_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in jump_rel_imm_traces {
-            tree_builder.extend_evals(trace);
+        for polys in jump_rel_imm_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in mul_traces {
-            tree_builder.extend_evals(trace);
+        for polys in mul_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in mul_small_traces {
-            tree_builder.extend_evals(trace);
+        for polys in mul_small_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in qm31_traces {
-            tree_builder.extend_evals(trace);
+        for polys in qm31_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in ret_traces {
-            tree_builder.extend_evals(trace);
+        for polys in ret_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        tree_builder.extend_evals(verify_instruction_trace);
-        for trace in blake_context_traces {
-            tree_builder.extend_evals(trace);
+        tree_builder.extend_polys(verify_instruction_polys.unwrap());
+        for polys in blake_context_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        if let Some(trace) = add_mod_builtin_trace {
-            tree_builder.extend_evals(trace);
+        if let Some(polys) = add_mod_builtin_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        if let Some(trace) = bitwise_builtin_trace {
-            tree_builder.extend_evals(trace);
+        if let Some(polys) = bitwise_builtin_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        if let Some(trace) = mul_mod_builtin_trace {
-            tree_builder.extend_evals(trace);
+        if let Some(polys) = mul_mod_builtin_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        if let Some(trace) = pedersen_builtin_trace {
-            tree_builder.extend_evals(trace);
+        if let Some(polys) = pedersen_builtin_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        if let Some(trace) = poseidon_builtin_trace {
-            tree_builder.extend_evals(trace);
+        if let Some(polys) = poseidon_builtin_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        if let Some(trace) = range_check_96_builtin_trace {
-            tree_builder.extend_evals(trace);
+        if let Some(polys) = range_check_96_builtin_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        if let Some(trace) = range_check_128_builtin_trace {
-            tree_builder.extend_evals(trace);
+        if let Some(polys) = range_check_128_builtin_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in pedersen_context_traces {
-            tree_builder.extend_evals(trace);
+        for polys in pedersen_context_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        for trace in poseidon_context_traces {
-            tree_builder.extend_evals(trace);
+        for polys in poseidon_context_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        tree_builder.extend_evals(memory_address_to_id_trace);
-        for big_trace in memory_id_to_value_big_traces {
-            tree_builder.extend_evals(big_trace);
+        tree_builder.extend_polys(memory_address_to_id_polys.unwrap());
+        for polys in memory_id_to_value_big_polys.unwrap() {
+            tree_builder.extend_polys(polys);
         }
-        tree_builder.extend_evals(memory_id_to_value_small_trace);
-        tree_builder.extend_evals(rc_6_trace);
-        tree_builder.extend_evals(rc_8_trace);
-        tree_builder.extend_evals(rc_11_trace);
-        tree_builder.extend_evals(rc_12_trace);
-        tree_builder.extend_evals(rc_18_trace);
-        tree_builder.extend_evals(rc_20_trace);
-        tree_builder.extend_evals(rc_4_3_trace);
-        tree_builder.extend_evals(rc_4_4_trace);
-        tree_builder.extend_evals(rc_9_9_trace);
-        tree_builder.extend_evals(rc_7_2_5_trace);
-        tree_builder.extend_evals(rc_3_6_6_3_trace);
-        tree_builder.extend_evals(rc_4_4_4_4_trace);
-        tree_builder.extend_evals(rc_3_3_3_3_3_trace);
-        tree_builder.extend_evals(verify_bitwise_xor_4_trace);
-        tree_builder.extend_evals(verify_bitwise_xor_7_trace);
-        tree_builder.extend_evals(verify_bitwise_xor_8_trace);
-        tree_builder.extend_evals(verify_bitwise_xor_9_trace);
+        tree_builder.extend_polys(memory_id_to_value_small_polys.unwrap());
+        tree_builder.extend_polys(rc_6_polys.unwrap());
+        tree_builder.extend_polys(rc_8_polys.unwrap());
+        tree_builder.extend_polys(rc_11_polys.unwrap());
+        tree_builder.extend_polys(rc_12_polys.unwrap());
+        tree_builder.extend_polys(rc_18_polys.unwrap());
+        tree_builder.extend_polys(rc_20_polys.unwrap());
+        tree_builder.extend_polys(rc_4_3_polys.unwrap());
+        tree_builder.extend_polys(rc_4_4_polys.unwrap());
+        tree_builder.extend_polys(rc_9_9_polys.unwrap());
+        tree_builder.extend_polys(rc_7_2_5_polys.unwrap());
+        tree_builder.extend_polys(rc_3_6_6_3_polys.unwrap());
+        tree_builder.extend_polys(rc_4_4_4_4_polys.unwrap());
+        tree_builder.extend_polys(rc_3_3_3_3_3_polys.unwrap());
+        tree_builder.extend_polys(verify_bitwise_xor_4_polys.unwrap());
+        tree_builder.extend_polys(verify_bitwise_xor_7_polys.unwrap());
+        tree_builder.extend_polys(verify_bitwise_xor_8_polys.unwrap());
+        tree_builder.extend_polys(verify_bitwise_xor_9_polys.unwrap());
 
         CairoInteractionClaim {
             opcodes: opcodes_interaction_claims,

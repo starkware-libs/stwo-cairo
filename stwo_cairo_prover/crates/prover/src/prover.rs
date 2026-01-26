@@ -103,7 +103,7 @@ where
     let span = span!(Level::INFO, "Interaction trace").entered();
     let mut tree_builder = commitment_scheme.tree_builder();
     let interaction_claim =
-        interaction_generator.write_interaction_trace(&mut tree_builder, &interaction_elements);
+        interaction_generator.write_interaction_trace::<MC>(&mut tree_builder, &interaction_elements, &twiddles);
     span.exit();
 
     tracing::info!(
