@@ -12,6 +12,7 @@ use cairo_air::components::{
     mul_opcode as mul_opcode_claim, mul_opcode_small as mul_opcode_small_claim,
     qm_31_add_mul_opcode as qm_31_add_mul_opcode_claim, ret_opcode as ret_opcode_claim,
 };
+use rayon::scope;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::opcodes::CasmStatesByOpcode;
 
@@ -153,240 +154,363 @@ pub fn opcodes_write_trace(
     Option<ret_opcode_claim::Claim>,
     OpcodesInteractionClaimGenerator,
 ) {
-    let (add_claims, add_interaction_gens) = add
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-            );
+    // Result holders for parallel execution
+    let mut add_result = None;
+    let mut add_small_result = None;
+    let mut add_ap_result = None;
+    let mut assert_eq_result = None;
+    let mut assert_eq_imm_result = None;
+    let mut assert_eq_double_deref_result = None;
+    let mut call_result = None;
+    let mut call_rel_imm_result = None;
+    let mut generic_result = None;
+    let mut jnz_result = None;
+    let mut jnz_taken_result = None;
+    let mut jump_result = None;
+    let mut jump_double_deref_result = None;
+    let mut jump_rel_result = None;
+    let mut jump_rel_imm_result = None;
+    let mut mul_result = None;
+    let mut mul_small_result = None;
+    let mut qm31_result = None;
+    let mut ret_result = None;
+
+    // Run all non-blake opcodes in parallel.
+    scope(|s| {
+        s.spawn(|_| {
+            add_result = add.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                )
+            });
+        });
+
+        s.spawn(|_| {
+            add_small_result = add_small.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                )
+            });
+        });
+
+        s.spawn(|_| {
+            add_ap_result = add_ap.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                    rc_18_trace_generator.unwrap(),
+                    rc_11_trace_generator.unwrap(),
+                )
+            });
+        });
+
+        s.spawn(|_| {
+            assert_eq_result = assert_eq.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                )
+            });
+        });
+
+        s.spawn(|_| {
+            assert_eq_imm_result = assert_eq_imm.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                )
+            });
+        });
+
+        s.spawn(|_| {
+            assert_eq_double_deref_result = assert_eq_double_deref.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                )
+            });
+        });
+
+        s.spawn(|_| {
+            call_result = call.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                )
+            });
+        });
+
+        s.spawn(|_| {
+            call_rel_imm_result = call_rel_imm.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                )
+            });
+        });
+
+        s.spawn(|_| {
+            generic_result = generic.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                    rc_9_9_trace_generator.unwrap(),
+                    rc_20_trace_generator.unwrap(),
+                    rc_18_trace_generator.unwrap(),
+                    rc_11_trace_generator.unwrap(),
+                )
+            });
+        });
+
+        s.spawn(|_| {
+            jnz_result = jnz.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                )
+            });
+        });
+
+        s.spawn(|_| {
+            jnz_taken_result = jnz_taken.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                )
+            });
+        });
+
+        s.spawn(|_| {
+            jump_result = jump.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                )
+            });
+        });
+
+        s.spawn(|_| {
+            jump_double_deref_result = jump_double_deref.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                )
+            });
+        });
+
+        s.spawn(|_| {
+            jump_rel_result = jump_rel.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                )
+            });
+        });
+
+        s.spawn(|_| {
+            jump_rel_imm_result = jump_rel_imm.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                )
+            });
+        });
+
+        s.spawn(|_| {
+            mul_result = mul.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                    rc_20_trace_generator.unwrap(),
+                )
+            });
+        });
+
+        s.spawn(|_| {
+            mul_small_result = mul_small.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                    rc_11_trace_generator.unwrap(),
+                )
+            });
+        });
+
+        s.spawn(|_| {
+            qm31_result = qm31.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                    rc_4_4_4_4_trace_generator.unwrap(),
+                )
+            });
+        });
+
+        s.spawn(|_| {
+            ret_result = ret.map(|gen| {
+                gen.write_trace(
+                    memory_address_to_id_trace_generator.unwrap(),
+                    memory_id_to_value_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.unwrap(),
+                )
+            });
+        });
+    });
+
+    let blake_result = blake.map(|gen| {
+        gen.write_trace(
+            memory_address_to_id_trace_generator.unwrap(),
+            memory_id_to_value_trace_generator.unwrap(),
+            verify_instruction_trace_generator.unwrap(),
+            rc_7_2_5_trace_generator.unwrap(),
+            verify_bitwise_xor_8_trace_generator.unwrap(),
+            blake_round.as_mut().unwrap(),
+            triple_xor_32.as_mut().unwrap(),
+        )
+    });
+
+    let (add_claims, add_interaction_gens) = add_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
-    let (add_small_claims, add_small_interaction_gens) = add_small
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-            );
+    let (add_small_claims, add_small_interaction_gens) = add_small_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
-    let (add_ap_claims, add_ap_interaction_gens) = add_ap
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-                rc_18_trace_generator.unwrap(),
-                rc_11_trace_generator.unwrap(),
-            );
+    let (add_ap_claims, add_ap_interaction_gens) = add_ap_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
-    let (assert_eq_claims, assert_eq_interaction_gens) = assert_eq
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-            );
+    let (assert_eq_claims, assert_eq_interaction_gens) = assert_eq_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
-    let (assert_eq_imm_claims, assert_eq_imm_interaction_gens) = assert_eq_imm
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-            );
+    let (assert_eq_imm_claims, assert_eq_imm_interaction_gens) = assert_eq_imm_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
     let (assert_eq_double_deref_claims, assert_eq_double_deref_interaction_gens) =
-        assert_eq_double_deref
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
-                    memory_address_to_id_trace_generator.unwrap(),
-                    memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
-                );
+        assert_eq_double_deref_result
+            .map(|(trace, claim, interaction_gen)| {
                 tree_builder.extend_evals(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
-    let (blake_claims, blake_interaction_gens) = blake
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-                rc_7_2_5_trace_generator.unwrap(),
-                verify_bitwise_xor_8_trace_generator.unwrap(),
-                blake_round.as_mut().unwrap(),
-                triple_xor_32.as_mut().unwrap(),
-            );
+    let (blake_claims, blake_interaction_gens) = blake_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
-    let (call_claims, call_interaction_gens) = call
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-            );
+    let (call_claims, call_interaction_gens) = call_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
-    let (call_rel_imm_claims, call_rel_imm_interaction_gens) = call_rel_imm
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-            );
+    let (call_rel_imm_claims, call_rel_imm_interaction_gens) = call_rel_imm_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
-    let (generic_opcode_claims, generic_opcode_interaction_gens) = generic
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-                rc_9_9_trace_generator.unwrap(),
-                rc_20_trace_generator.unwrap(),
-                rc_18_trace_generator.unwrap(),
-                rc_11_trace_generator.unwrap(),
-            );
+    let (generic_opcode_claims, generic_opcode_interaction_gens) = generic_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
-    let (jnz_claims, jnz_interaction_gens) = jnz
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-            );
+    let (jnz_claims, jnz_interaction_gens) = jnz_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
-    let (jnz_taken_claims, jnz_taken_interaction_gens) = jnz_taken
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-            );
+    let (jnz_taken_claims, jnz_taken_interaction_gens) = jnz_taken_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
-    let (jump_claims, jump_interaction_gens) = jump
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-            );
+    let (jump_claims, jump_interaction_gens) = jump_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
-    let (jump_double_deref_claims, jump_double_deref_interaction_gens) = jump_double_deref
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-            );
+    let (jump_double_deref_claims, jump_double_deref_interaction_gens) = jump_double_deref_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
-    let (jump_rel_claims, jump_rel_interaction_gens) = jump_rel
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-            );
+    let (jump_rel_claims, jump_rel_interaction_gens) = jump_rel_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
-    let (jump_rel_imm_claims, jump_rel_imm_interaction_gens) = jump_rel_imm
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-            );
+    let (jump_rel_imm_claims, jump_rel_imm_interaction_gens) = jump_rel_imm_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
-    let (mul_claims, mul_interaction_gens) = mul
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-                rc_20_trace_generator.unwrap(),
-            );
+    let (mul_claims, mul_interaction_gens) = mul_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
-    let (mul_small_claims, mul_small_interaction_gens) = mul_small
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-                rc_11_trace_generator.unwrap(),
-            );
+    let (mul_small_claims, mul_small_interaction_gens) = mul_small_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
-    let (qm31_claims, qm31_interaction_gens) = qm31
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-                rc_4_4_4_4_trace_generator.unwrap(),
-            );
+    let (qm31_claims, qm31_interaction_gens) = qm31_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
-    let (ret_claims, ret_interaction_gens) = ret
-        .map(|gen| {
-            let (trace, claim, interaction_gen) = gen.write_trace(
-                memory_address_to_id_trace_generator.unwrap(),
-                memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
-            );
+    let (ret_claims, ret_interaction_gens) = ret_result
+        .map(|(trace, claim, interaction_gen)| {
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
         })
         .unzip();
+
     (
         add_claims,
         add_small_claims,
