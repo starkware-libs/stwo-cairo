@@ -1,7 +1,10 @@
 [package]
 name = "stwo-cairo-adapter"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Adapter for converting Cairo VM execution traces to Stwo prover format"
 
 [features]
 default = []
@@ -17,7 +20,7 @@ itertools.workspace = true
 log.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-stwo-cairo-common.workspace = true
+stwo-cairo-common = { path = "../common", version = "~1.0.0" }
 tracing.workspace = true
 thiserror.workspace = true
 stwo.workspace = true
@@ -30,8 +33,8 @@ crypto-bigint = "0.5.1"
 anyhow.workspace = true
 
 [dev-dependencies]
-stwo_cairo_utils.workspace = true
+stwo_cairo_utils = { path = "../utils", version = "~1.0.0" }
 cairo-lang-casm.workspace = true
 rand.workspace = true
 test-case.workspace = true
-dev-utils.workspace = true
+dev-utils = { path = "../dev_utils", version = "~1.0.0" }
