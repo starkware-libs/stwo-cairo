@@ -2,7 +2,6 @@
 
 Prove Cairo programs with the blazing-fast [S-Two prover](https://github.com/starkware-libs/stwo), powered by the cryptographic breakthrough of [Circle STARKs](https://eprint.iacr.org/2024/278).
 
-* [Disclaimer](#disclaimer)
 * [Prerequisites](#prerequisites)
 * [Usage](#usage)
   * [Example](#example)
@@ -13,11 +12,6 @@ Prove Cairo programs with the blazing-fast [S-Two prover](https://github.com/sta
   * [Padding](#padding)
   * [Pedersen](#pedersen)
 * [`scarb-prove`](#scarb-prove)
-
-## Disclaimer
-
-S-two is not yet production-ready, but getting close.
-Early adopters are welcome—but we don't recommend using it in a production setting just yet.
 
 ## Prerequisites
 

@@ -96,8 +96,8 @@ mod tests {
 
     use bincode::deserialize;
     use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
-    use dev_utils::utils::get_compiled_cairo_program_path;
     use stwo_cairo_adapter::memory::MemoryEntry;
+    use stwo_cairo_dev_utils::utils::get_compiled_cairo_program_path;
     use stwo_cairo_utils::vm_utils::{run_and_adapt, ProgramType};
     use tempfile::NamedTempFile;
 

@@ -134,7 +134,7 @@ jobs:
           components: rust-src
       - uses: Swatinem/rust-cache@v2
       - name: Build stwo_cairo_prover for wasm64
-        run: RUSTFLAGS='--cfg getrandom_backend="custom"' cargo check --target wasm64-unknown-unknown -Z build-std=std,panic_abort --package stwo_cairo_prover --release 
+        run: RUSTFLAGS='--cfg getrandom_backend="custom"' cargo check --target wasm64-unknown-unknown -Z build-std=std,panic_abort --package stwo-cairo-prover --release 
 
   cairo-air-wasm:
     runs-on: ubuntu-latest
