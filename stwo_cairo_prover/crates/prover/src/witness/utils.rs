@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU32, Ordering};
 
+use rayon::prelude::*;
+
 use cairo_air::air::CairoClaim;
 use cairo_air::PreProcessedTraceVariant;
 use itertools::Itertools;
@@ -197,8 +199,6 @@ pub fn make_input_to_row<const N: usize>(
     preprocessed_trace: &PreProcessedTrace,
     column_ids: [PreProcessedColumnId; N],
 ) -> HashMap<[M31; N], usize> {
-    let mut result: HashMap<[M31; N], usize> = HashMap::new();
-
     let columns = column_ids
         .iter()
         .map(|id| preprocessed_trace.get_column(id))
@@ -209,23 +209,26 @@ pub fn make_input_to_row<const N: usize>(
         "input_to_row columns of different sizes"
     );
 
-    for packed_row in 0..(1 << (log_size - LOG_N_LANES)) {
-        let packed_values = columns
-            .iter()
-            .map(|c| c.packed_at(packed_row).to_array())
-            .collect_vec();
-        for i in 0..N_LANES {
-            let key: [M31; N] = packed_values
+    let entries: Vec<_> = (0..(1 << (log_size - LOG_N_LANES)))
+        .into_par_iter()
+        .flat_map_iter(|packed_row| {
+            let packed_values = columns
                 .iter()
-                .map(|pv| pv[i])
-                .collect_vec()
-                .try_into()
-                .expect("Unexpected number of column values");
-            result.insert(key, packed_row * N_LANES + i);
-        }
-    }
+                .map(|c| c.packed_at(packed_row).to_array())
+                .collect_vec();
+            (0..N_LANES).map(move |i| {
+                let key: [M31; N] = packed_values
+                    .iter()
+                    .map(|pv| pv[i])
+                    .collect_vec()
+                    .try_into()
+                    .expect("Unexpected number of column values");
+                (key, packed_row * N_LANES + i)
+            })
+        })
+        .collect();
 
-    result
+    entries.into_iter().collect()
 }
 
 #[cfg(test)]

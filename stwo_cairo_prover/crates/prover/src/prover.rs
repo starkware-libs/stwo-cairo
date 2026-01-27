@@ -77,18 +77,36 @@ where
     if store_polynomials_coefficients {
         commitment_scheme.set_store_polynomials_coefficients();
     }
+
     // Preprocessed trace.
     let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace());
+
+    // Create claim generator early to enable parallelization.
+    let cairo_claim_generator = create_cairo_claim_generator(input, preprocessed_trace.clone());
+
+    // PARALLEL: Run gen_trace(preprocessed_trace) in parallel with pre-blake opcode generation.
+    // This is safe because:
+    // - gen_trace only reads from preprocessed_trace
+    // - generate_pre_blake_traces reads from claim_generator components (which are separate data)
+    // The preprocessed trace must be committed BEFORE the base trace, but we can generate both
+    // in parallel and then extend/commit them in the correct order.
+    let parallel_span = span!(Level::INFO, "Parallel trace generation").entered();
+    let (preprocessed_evals, pre_blake_result) = rayon::join(
+        || gen_trace(preprocessed_trace.clone()),
+        || cairo_claim_generator.generate_pre_blake_traces(),
+    );
+    parallel_span.exit();
+
+    // SEQUENTIAL: Commit preprocessed trace first (protocol requirement).
     let mut tree_builder = commitment_scheme.tree_builder();
-    tree_builder.extend_evals(gen_trace(preprocessed_trace.clone()));
+    tree_builder.extend_evals(preprocessed_evals);
     tree_builder.commit(channel);
 
-    // Run Cairo.
-    let cairo_claim_generator = create_cairo_claim_generator(input, preprocessed_trace.clone());
-    // Base trace.
+    // SEQUENTIAL: Complete remaining trace generation (blake onwards) and extend to tree_builder.
     let mut tree_builder = commitment_scheme.tree_builder();
     let span = span!(Level::INFO, "Base trace").entered();
-    let (claim, interaction_generator) = cairo_claim_generator.write_trace(&mut tree_builder);
+    let (claim, interaction_generator) =
+        pre_blake_result.complete_trace_generation(&mut tree_builder);
     span.exit();
 
     claim.mix_into(channel);
