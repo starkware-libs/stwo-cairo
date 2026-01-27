@@ -28,7 +28,8 @@ struct Args {
     /// The path to the JSON file containing the prover parameters (optional).
     /// The expected file format is:
     ///     {
-    ///         "channel_hash":"blake2s",Sd
+    ///         "channel_hash":"blake2s",
+    ///         "channel_salt": 0,
     ///         "pcs_config": {
     ///             "pow_bits": 26,
     ///             "fri_config": {

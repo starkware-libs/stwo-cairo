@@ -67,8 +67,8 @@ pub struct CairoProof<H: MerkleHasherLifted> {
     pub interaction_pow: u64,
     pub interaction_claim: CairoInteractionClaim,
     pub extended_stark_proof: ExtendedStarkProof<H>,
-    /// Optional salt used in the channel initialization.
-    pub channel_salt: Option<u64>,
+    /// Salt used in the channel initialization.
+    pub channel_salt: u32,
     pub preprocessed_trace_variant: PreProcessedTraceVariant,
 }
 
@@ -84,8 +84,8 @@ pub struct CairoProofForRustVerifier<H: MerkleHasherLifted> {
     pub interaction_pow: u64,
     pub interaction_claim: CairoInteractionClaim,
     pub stark_proof: StarkProof<H>,
-    /// Optional salt used in the channel initialization.
-    pub channel_salt: Option<u64>,
+    /// Salt used in the channel initialization.
+    pub channel_salt: u32,
     pub preprocessed_trace_variant: PreProcessedTraceVariant,
 }
 

@@ -68,9 +68,9 @@ where
 
     // Setup protocol.
     let channel = &mut MC::C::default();
-    if let Some(salt) = channel_salt {
-        channel.mix_u64(salt);
-    }
+
+    // Mix channel salt. Note that we first reduce it modulo `M31::P`, then cast it as QM31.
+    channel.mix_felts(&[channel_salt.into()]);
     pcs_config.mix_into(channel);
     let mut commitment_scheme =
         CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
@@ -164,11 +164,11 @@ where
 pub struct ProverParameters {
     /// Channel hash function.
     pub channel_hash: ChannelHash,
-    /// Optional salt for the channel initialization. If `None`, no salt is used.
+    /// Salt for the channel initialization.
     /// Note that the salt is only used to allow recomputation of the proof with other draws
     /// of the randomness, in case of failure due to unprovable draws (e.g. a zero in the
     /// denominator).
-    pub channel_salt: Option<u64>,
+    pub channel_salt: u32,
     /// Parameters of the commitment scheme.
     pub pcs_config: PcsConfig,
     /// Preprocessed trace.
@@ -208,7 +208,7 @@ pub fn create_and_serialize_proof(
         // The formula is `security_bits = pow_bits + log_blowup_factor * n_queries`.
         ProverParameters {
             channel_hash: ChannelHash::Blake2s,
-            channel_salt: None,
+            channel_salt: 0,
             pcs_config: PcsConfig {
                 // Stay within 500ms on M3.
                 pow_bits: 26,
@@ -301,7 +301,7 @@ pub mod tests {
                     fri_config: FriConfig::new(0, 1, 90),
                 },
                 preprocessed_trace: PreProcessedTraceVariant::CanonicalWithoutPedersen,
-                channel_salt: Some(42),
+                channel_salt: 42,
                 store_polynomials_coefficients: false,
             };
             let cairo_proof =
@@ -403,7 +403,7 @@ pub mod tests {
                 channel_hash: ChannelHash::Blake2s,
                 pcs_config: PcsConfig::default(),
                 preprocessed_trace: PreProcessedTraceVariant::CanonicalWithoutPedersen,
-                channel_salt: None,
+                channel_salt: 0,
                 store_polynomials_coefficients: true,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
@@ -422,7 +422,7 @@ pub mod tests {
                     fri_config: FriConfig::new(0, 1, 70),
                 },
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
-                channel_salt: None,
+                channel_salt: 0,
                 store_polynomials_coefficients: false,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
@@ -483,7 +483,7 @@ pub mod tests {
                     fri_config: FriConfig::new(0, 1, 70),
                 },
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
-                channel_salt: None,
+                channel_salt: 0,
                 store_polynomials_coefficients: false,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
@@ -522,7 +522,7 @@ pub mod tests {
                 channel_hash: ChannelHash::Blake2s,
                 pcs_config: PcsConfig::default(),
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
-                channel_salt: None,
+                channel_salt: 0,
                 store_polynomials_coefficients: false,
             };
             let proofs = (0..n_proofs_to_compare)
@@ -583,7 +583,7 @@ pub mod tests {
                     channel_hash: ChannelHash::Blake2s,
                     pcs_config: PcsConfig::default(),
                     preprocessed_trace: PreProcessedTraceVariant::Canonical,
-                    channel_salt: None,
+                    channel_salt: 0,
                     store_polynomials_coefficients: false,
                 };
                 let cairo_proof =
@@ -658,7 +658,7 @@ pub mod tests {
                     channel_hash: ChannelHash::Blake2s,
                     pcs_config: PcsConfig::default(),
                     preprocessed_trace: PreProcessedTraceVariant::Canonical,
-                    channel_salt: None,
+                    channel_salt: 0,
                     store_polynomials_coefficients: false,
                 };
 
@@ -721,7 +721,7 @@ pub mod tests {
                     channel_hash: ChannelHash::Blake2s,
                     pcs_config: PcsConfig::default(),
                     preprocessed_trace: PreProcessedTraceVariant::Canonical,
-                    channel_salt: None,
+                    channel_salt: 0,
                     store_polynomials_coefficients: false,
                 };
 

@@ -34,7 +34,7 @@ struct Args {
     /// The expected file format is:
     ///     {
     ///         "channel_hash":"blake2s",
-    ///         "channel_salt": 12345
+    ///         "channel_salt": 0
     ///         "pcs_config": {
     ///             "pow_bits": 26,
     ///             "fri_config": {
@@ -46,7 +46,6 @@ struct Args {
     ///         "preprocessed_trace": "canonical_without_pedersen",
     ///     }
     ///
-    /// The `channel_salt` field is optional. If not provided, no salt will be used.
     /// Default parameters are chosen to ensure 96 bits of security.
     proof_params_json: Option<PathBuf>,
     /// The output file path for the proof.
