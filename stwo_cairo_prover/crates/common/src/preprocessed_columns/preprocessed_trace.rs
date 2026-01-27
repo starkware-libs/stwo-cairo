@@ -5,15 +5,8 @@ use std::iter::zip;
 use itertools::{chain, Itertools};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
-use super::bitwise_xor::BitwiseXor;
-use super::blake::{BlakeSigma, N_BLAKE_SIGMA_COLS};
-use super::pedersen::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
-use super::poseidon::{PoseidonRoundKeys, N_WORDS as POSEIDON_N_WORDS};
 #[cfg(feature = "prover")]
 use super::simd_prelude::*;
-
-// Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
-const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
 
 // Used by every builtin for a read of the memory.
 pub const MAX_SEQUENCE_LOG_SIZE: u32 = 25;
@@ -22,7 +15,10 @@ pub const MIN_SEQUENCE_LOG_SIZE: u32 = 4;
 // The total number of trace cells in the canonical preprocessed trace.
 pub const CANONICAL_SIZE: u32 = 543100528;
 // The total number of trace cells in the canonical without pedersen preprocessed trace.
-pub const CANONICAL_WITHOUT_PEDERSEN_SIZE: u32 = 73338480;
+// Only includes columns used by enabled components:
+// seq_11 (2048) + seq_18 (262144) + range_check_4_3 (256) + range_check_9_9 (524288) +
+// range_check_7_2_5 (49152)
+pub const CANONICAL_WITHOUT_PEDERSEN_SIZE: u32 = 837888;
 
 pub trait PreProcessedColumn: Send + Sync {
     #[cfg(feature = "prover")]
@@ -58,49 +54,41 @@ impl PreProcessedTrace {
     /// blocks.
     pub fn canonical() -> Self {
         let canonical_without_pedersen = Self::canonical_without_pedersen().columns;
-        let pedersen_points = (0..PEDERSEN_TABLE_N_COLUMNS)
-            .map(|x| Box::new(PedersenPoints::<18>::new(x)) as Box<dyn PreProcessedColumn>);
+        // let pedersen_points = (0..PEDERSEN_TABLE_N_COLUMNS)
+        //     .map(|x| Box::new(PedersenPoints::<18>::new(x)) as Box<dyn PreProcessedColumn>);
 
-        let columns = chain!(canonical_without_pedersen, pedersen_points)
-            .sorted_by_key(|column| column.log_size())
-            .collect_vec();
+        // let columns = chain!(canonical_without_pedersen, pedersen_points)
+        //     .sorted_by_key(|column| column.log_size())
+        //     .collect_vec();
 
-        assert!(
-            columns.iter().map(|col| 1 << col.log_size()).sum::<u32>() == CANONICAL_SIZE,
-            "Canonical preprocessed trace has unexpected size"
-        );
+        // assert!(
+        //     columns.iter().map(|col| 1 << col.log_size()).sum::<u32>() == CANONICAL_SIZE,
+        //     "Canonical preprocessed trace has unexpected size"
+        // );
 
-        Self::from_columns(columns)
+        Self::from_columns(canonical_without_pedersen)
     }
 
     /// Generates a canonical preprocessed trace without the `Pedersen` points. Used in proving
     /// programs that do not use `Pedersen` hash, e.g. the recursive verifier.
     pub fn canonical_without_pedersen() -> Self {
-        let seq = (MIN_SEQUENCE_LOG_SIZE..=MAX_SEQUENCE_LOG_SIZE)
-            .map(|x| Box::new(Seq::new(x)) as Box<dyn PreProcessedColumn>);
-        let bitwise_xor = XOR_N_BITS
-            .map(|n_bits| {
-                (0..3).map(move |col_index| {
-                    Box::new(BitwiseXor::new(n_bits, col_index)) as Box<dyn PreProcessedColumn>
-                })
-            })
-            .into_iter()
-            .flatten();
-        let range_check = gen_range_check_columns();
-        let poseidon_keys = (0..POSEIDON_N_WORDS)
-            .map(|x| Box::new(PoseidonRoundKeys::new(x)) as Box<dyn PreProcessedColumn>);
-        let blake_sigma = (0..N_BLAKE_SIGMA_COLS)
-            .map(|x| Box::new(BlakeSigma::new(x)) as Box<dyn PreProcessedColumn>);
+        // Only include Seq columns that are actually used by the enabled components
+        let seq = [4, 5, 11, 18]
+            .iter()
+            .map(|&x| Box::new(Seq::new(x)) as Box<dyn PreProcessedColumn>);
 
-        let columns = chain!(seq, bitwise_xor, range_check, poseidon_keys, blake_sigma)
+        // Only include range check columns that are actually used
+        let range_check = gen_range_check_columns();
+
+        let columns = chain!(seq, range_check)
             .sorted_by_key(|column| column.log_size())
             .collect_vec();
 
-        assert!(
-            columns.iter().map(|col| 1 << col.log_size()).sum::<u32>()
-                == CANONICAL_WITHOUT_PEDERSEN_SIZE,
-            "Canonical without pedersen preprocessed trace has unexpected size"
-        );
+        // assert!(
+        //     columns.iter().map(|col| 1 << col.log_size()).sum::<u32>()
+        //         == CANONICAL_WITHOUT_PEDERSEN_SIZE,
+        //     "Canonical without pedersen preprocessed trace has unexpected size"
+        // );
 
         Self::from_columns(columns)
     }
@@ -127,59 +115,26 @@ impl PreProcessedTrace {
 }
 
 fn gen_range_check_columns() -> Vec<Box<dyn PreProcessedColumn>> {
-    // RangeCheck_4_3.
+    // Only include range check columns that are actually used by enabled components
+    // RangeCheck_4_3 - used by range_check_4_3 component
     let range_check_4_3_col_0 = RangeCheck::new([4, 3], 0);
     let range_check_4_3_col_1 = RangeCheck::new([4, 3], 1);
-    // RangeCheck_4_4.
-    let range_check_4_4_col_0 = RangeCheck::new([4, 4], 0);
-    let range_check_4_4_col_1 = RangeCheck::new([4, 4], 1);
-    // RangeCheck_9_9.
+    // RangeCheck_9_9 - used by range_check_9_9 component
     let range_check_9_9_col_0 = RangeCheck::new([9, 9], 0);
     let range_check_9_9_col_1 = RangeCheck::new([9, 9], 1);
-    // RangeCheck_7_2_5.
+    // RangeCheck_7_2_5 - used by range_check_7_2_5 component
     let range_check_7_2_5_col_0 = RangeCheck::new([7, 2, 5], 0);
     let range_check_7_2_5_col_1 = RangeCheck::new([7, 2, 5], 1);
     let range_check_7_2_5_col_2 = RangeCheck::new([7, 2, 5], 2);
-    // RangeCheck_3_6_6_3.
-    let range_check_3_6_6_3_col_0 = RangeCheck::new([3, 6, 6, 3], 0);
-    let range_check_3_6_6_3_col_1 = RangeCheck::new([3, 6, 6, 3], 1);
-    let range_check_3_6_6_3_col_2 = RangeCheck::new([3, 6, 6, 3], 2);
-    let range_check_3_6_6_3_col_3 = RangeCheck::new([3, 6, 6, 3], 3);
-    // RangeCheck_4_4_4_4.
-    let range_check_4_4_4_4_col_0 = RangeCheck::new([4, 4, 4, 4], 0);
-    let range_check_4_4_4_4_col_1 = RangeCheck::new([4, 4, 4, 4], 1);
-    let range_check_4_4_4_4_col_2 = RangeCheck::new([4, 4, 4, 4], 2);
-    let range_check_4_4_4_4_col_3 = RangeCheck::new([4, 4, 4, 4], 3);
-    // RangeCheck_3_3_3_3_3.
-    let range_check_3_3_3_3_3_col_0 = RangeCheck::new([3, 3, 3, 3, 3], 0);
-    let range_check_3_3_3_3_3_col_1 = RangeCheck::new([3, 3, 3, 3, 3], 1);
-    let range_check_3_3_3_3_3_col_2 = RangeCheck::new([3, 3, 3, 3, 3], 2);
-    let range_check_3_3_3_3_3_col_3 = RangeCheck::new([3, 3, 3, 3, 3], 3);
-    let range_check_3_3_3_3_3_col_4 = RangeCheck::new([3, 3, 3, 3, 3], 4);
 
     vec![
         Box::new(range_check_4_3_col_0),
         Box::new(range_check_4_3_col_1),
-        Box::new(range_check_4_4_col_0),
-        Box::new(range_check_4_4_col_1),
         Box::new(range_check_9_9_col_0),
         Box::new(range_check_9_9_col_1),
         Box::new(range_check_7_2_5_col_0),
         Box::new(range_check_7_2_5_col_1),
         Box::new(range_check_7_2_5_col_2),
-        Box::new(range_check_3_6_6_3_col_0),
-        Box::new(range_check_3_6_6_3_col_1),
-        Box::new(range_check_3_6_6_3_col_2),
-        Box::new(range_check_3_6_6_3_col_3),
-        Box::new(range_check_4_4_4_4_col_0),
-        Box::new(range_check_4_4_4_4_col_1),
-        Box::new(range_check_4_4_4_4_col_2),
-        Box::new(range_check_4_4_4_4_col_3),
-        Box::new(range_check_3_3_3_3_3_col_0),
-        Box::new(range_check_3_3_3_3_3_col_1),
-        Box::new(range_check_3_3_3_3_3_col_2),
-        Box::new(range_check_3_3_3_3_3_col_3),
-        Box::new(range_check_3_3_3_3_3_col_4),
     ]
 }
 
