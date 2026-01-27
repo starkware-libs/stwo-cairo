@@ -14,6 +14,7 @@ resolver = "2"
 [workspace.package]
 version = "0.1.1"
 edition = "2021"
+license = "Apache-2.0"
 
 [workspace.dependencies]
 indexmap = "2.2.6"
@@ -24,8 +25,6 @@ cairo-lang-casm = "=2.14.1-dev.0"
 cairo-lang-runner = "=2.14.1-dev.0"
 cairo-lang-executable = "=2.14.1-dev.0"
 cairo-lang-utils = "=2.14.1-dev.0"
-# TODO(yuval): Use an official version, not a specific commit.
-# Note: This revision does not originate from the main branch but from 'starkware-development'.
 cairo-vm = { version = "3.0.0", features = [
     "extensive_hints",
     "mod_builtin",
@@ -59,11 +58,10 @@ dev-utils = { path = "crates/dev_utils" }
 stwo-cairo-common = { path = "crates/common" }
 cairo-air = { path = "crates/cairo-air" }
 stwo-cairo-serialize = { path = "crates/cairo-serialize", version = "~0.1.0" }
-# TODO(Ohad): re export stwo from constraint-framework.
-stwo = { git = "https://github.com/starkware-libs/stwo", rev = "0bcb6836" }
-stwo-constraint-framework = { git = "https://github.com/starkware-libs/stwo", rev = "0bcb6836" }
-stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "0bcb6836" }
-stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "0bcb6836" }
+stwo = "2.0.0"
+stwo-constraint-framework = "2.0.0"
+stwo-air-utils-derive = "2.0.0"
+stwo-air-utils = "2.0.0"
 test-case = "3.3.1"
 thiserror = { version = "2.0.12", default-features = false }
 tracing = "0.1.40"
