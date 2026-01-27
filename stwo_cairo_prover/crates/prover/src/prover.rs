@@ -79,16 +79,29 @@ where
     }
     // Preprocessed trace.
     let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace());
+
+    // Create claim generator and extract pre-blake opcode generators for parallel execution.
+    let mut cairo_claim_generator =
+        create_cairo_claim_generator(input, preprocessed_trace.clone());
+
+    // Run gen_trace in parallel with pre-blake opcode trace generation.
+    let span = span!(Level::INFO, "Parallel preprocessed + pre-blake").entered();
+    let (preprocessed_evals, pre_blake_result) = rayon::join(
+        || gen_trace(preprocessed_trace.clone()),
+        || cairo_claim_generator.generate_pre_blake_opcode_traces(),
+    );
+    span.exit();
+
+    // Commit preprocessed trace first (protocol requirement).
     let mut tree_builder = commitment_scheme.tree_builder();
-    tree_builder.extend_evals(gen_trace(preprocessed_trace.clone()));
+    tree_builder.extend_evals(preprocessed_evals);
     tree_builder.commit(channel);
 
-    // Run Cairo.
-    let cairo_claim_generator = create_cairo_claim_generator(input, preprocessed_trace.clone());
-    // Base trace.
+    // Complete base trace with blake and remaining components.
     let mut tree_builder = commitment_scheme.tree_builder();
     let span = span!(Level::INFO, "Base trace").entered();
-    let (claim, interaction_generator) = cairo_claim_generator.write_trace(&mut tree_builder);
+    let (claim, interaction_generator) =
+        cairo_claim_generator.write_trace_with_pre_blake(pre_blake_result, &mut tree_builder);
     span.exit();
 
     claim.mix_into(channel);
