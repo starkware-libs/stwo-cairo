@@ -32,7 +32,7 @@ use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::fields::Invertible;
 #[cfg(not(feature: "qm31_opcode"))]
 use stwo_verifier_core::fields::m31::{AddM31Trait, MulByM31Trait};
-use stwo_verifier_core::fields::m31::{M31, P_U32};
+use stwo_verifier_core::fields::m31::{M31, P_U32, M31Trait};
 use stwo_verifier_core::fields::qm31::QM31;
 #[cfg(not(feature: "qm31_opcode"))]
 use stwo_verifier_core::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait};
@@ -136,7 +136,7 @@ pub struct CairoProof {
     pub interaction_claim: CairoInteractionClaim,
     pub stark_proof: StarkProof,
     /// Optional salt used in the channel initialization.
-    pub channel_salt: Option<u64>,
+    pub channel_salt: u32,
 }
 
 /// The output of a verification.
@@ -195,9 +195,10 @@ pub fn verify_cairo(proof: CairoProof) {
     verify_claim(@claim);
 
     let mut channel: Channel = Default::default();
-    if let Some(salt) = channel_salt {
-        channel.mix_u64(salt);
-    }
+    // Mix channel salt. Note that we first reduce it modulo `M31::P` then cast it as QM31.
+    let channel_salt_as_felt: QM31 = M31Trait::reduce_u32(channel_salt).into();
+    channel.mix_felts([channel_salt_as_felt].span());
+    
     pcs_config.mix_into(ref channel);
     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new();
 

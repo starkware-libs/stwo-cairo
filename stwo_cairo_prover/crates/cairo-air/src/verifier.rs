@@ -293,9 +293,8 @@ pub fn verify_cairo<MC: MerkleChannel>(
     verify_claim(&claim);
 
     let channel = &mut MC::C::default();
-    if let Some(salt) = channel_salt {
-        channel.mix_u64(salt);
-    }
+    channel.mix_felts(&[channel_salt.into()]);
+
     let pcs_config = stark_proof.config;
     pcs_config.mix_into(channel);
     let commitment_scheme_verifier = &mut CommitmentSchemeVerifier::<MC>::new(pcs_config);
