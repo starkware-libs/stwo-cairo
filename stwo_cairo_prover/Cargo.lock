@@ -600,12 +600,11 @@ dependencies = [
 
 [[package]]
 name = "cairo-air"
-version = "0.1.1"
+version = "1.0.0"
 dependencies = [
  "bincode 1.3.3",
  "bzip2",
  "clap",
- "dev-utils",
  "expect-test",
  "itertools 0.12.1",
  "log",
@@ -621,6 +620,7 @@ dependencies = [
  "starknet-types-core",
  "stwo",
  "stwo-cairo-common",
+ "stwo-cairo-dev-utils",
  "stwo-cairo-serialize",
  "stwo-constraint-framework",
  "tempfile",
@@ -1471,36 +1471,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 1.0.109",
-]
-
-[[package]]
-name = "dev-utils"
-version = "0.1.1"
-dependencies = [
- "anyhow",
- "bincode 1.3.3",
- "cairo-air",
- "cairo-lang-executable",
- "cairo-lang-runner",
- "cairo-lang-utils",
- "cairo-vm",
- "clap",
- "log",
- "num-bigint",
- "regex",
- "serde",
- "serde_json",
- "sonic-rs",
- "starknet-ff",
- "stwo",
- "stwo-cairo-adapter",
- "stwo-cairo-serialize",
- "stwo_cairo_prover",
- "stwo_cairo_utils",
- "tempfile",
- "thiserror",
- "tracing",
- "tracing-subscriber",
 ]
 
 [[package]]
@@ -3455,7 +3425,7 @@ dependencies = [
 
 [[package]]
 name = "stwo-cairo-adapter"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "anyhow",
  "bincode 2.0.1",
@@ -3465,7 +3435,6 @@ dependencies = [
  "clap",
  "crypto-bigint",
  "dashmap",
- "dev-utils",
  "indoc",
  "itertools 0.12.1",
  "log",
@@ -3476,7 +3445,8 @@ dependencies = [
  "serde_json",
  "stwo",
  "stwo-cairo-common",
- "stwo_cairo_utils",
+ "stwo-cairo-dev-utils",
+ "stwo-cairo-utils",
  "test-case",
  "thiserror",
  "tracing",
@@ -3484,7 +3454,7 @@ dependencies = [
 
 [[package]]
 name = "stwo-cairo-common"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -3502,8 +3472,77 @@ dependencies = [
 ]
 
 [[package]]
+name = "stwo-cairo-dev-utils"
+version = "1.0.0"
+dependencies = [
+ "anyhow",
+ "bincode 1.3.3",
+ "cairo-air",
+ "cairo-lang-executable",
+ "cairo-lang-runner",
+ "cairo-lang-utils",
+ "cairo-vm",
+ "clap",
+ "log",
+ "num-bigint",
+ "regex",
+ "serde",
+ "serde_json",
+ "sonic-rs",
+ "starknet-ff",
+ "stwo",
+ "stwo-cairo-adapter",
+ "stwo-cairo-prover",
+ "stwo-cairo-serialize",
+ "stwo-cairo-utils",
+ "tempfile",
+ "thiserror",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "stwo-cairo-prover"
+version = "1.0.0"
+dependencies = [
+ "anyhow",
+ "bytemuck",
+ "cairo-air",
+ "dashmap",
+ "generic-tests",
+ "getrandom 0.2.16",
+ "getrandom 0.3.4",
+ "hex",
+ "indexmap",
+ "itertools 0.12.1",
+ "num-traits",
+ "paste",
+ "rand 0.8.5",
+ "rayon",
+ "serde",
+ "serde_json",
+ "sonic-rs",
+ "starknet-curve 0.6.0",
+ "starknet-ff",
+ "starknet-types-core",
+ "stwo",
+ "stwo-air-utils",
+ "stwo-air-utils-derive",
+ "stwo-cairo-adapter",
+ "stwo-cairo-common",
+ "stwo-cairo-dev-utils",
+ "stwo-cairo-serialize",
+ "stwo-cairo-utils",
+ "stwo-constraint-framework",
+ "tempfile",
+ "test-log",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "stwo-cairo-serialize"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "starknet-ff",
  "stwo",
@@ -3512,10 +3551,30 @@ dependencies = [
 
 [[package]]
 name = "stwo-cairo-serialize-derive"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "quote",
  "syn 2.0.107",
+]
+
+[[package]]
+name = "stwo-cairo-utils"
+version = "1.0.0"
+dependencies = [
+ "anyhow",
+ "cairo-lang-executable",
+ "cairo-lang-runner",
+ "cairo-lang-utils",
+ "cairo-vm",
+ "clap",
+ "env_logger",
+ "log",
+ "serde",
+ "serde_json",
+ "stwo-cairo-adapter",
+ "thiserror",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -3539,65 +3598,6 @@ name = "stwo-std-shims"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5c21e2c707fb8926e6c4355a87494c29e8e46640ff4796aa8fbb74952327dfdc"
-
-[[package]]
-name = "stwo_cairo_prover"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "bytemuck",
- "cairo-air",
- "dashmap",
- "dev-utils",
- "generic-tests",
- "getrandom 0.2.16",
- "getrandom 0.3.4",
- "hex",
- "indexmap",
- "itertools 0.12.1",
- "num-traits",
- "paste",
- "rand 0.8.5",
- "rayon",
- "serde",
- "serde_json",
- "sonic-rs",
- "starknet-curve 0.6.0",
- "starknet-ff",
- "starknet-types-core",
- "stwo",
- "stwo-air-utils",
- "stwo-air-utils-derive",
- "stwo-cairo-adapter",
- "stwo-cairo-common",
- "stwo-cairo-serialize",
- "stwo-constraint-framework",
- "stwo_cairo_utils",
- "tempfile",
- "test-log",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "stwo_cairo_utils"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "cairo-lang-executable",
- "cairo-lang-runner",
- "cairo-lang-utils",
- "cairo-vm",
- "clap",
- "env_logger",
- "log",
- "serde",
- "serde_json",
- "stwo-cairo-adapter",
- "thiserror",
- "tracing",
- "tracing-subscriber",
-]
 
 [[package]]
 name = "subtle"

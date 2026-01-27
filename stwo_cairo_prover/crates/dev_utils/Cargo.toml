@@ -1,7 +1,10 @@
 [package]
-name = "dev-utils"
+name = "stwo-cairo-dev-utils"
 version.workspace = true
 edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Development utilities and tools for Stwo Cairo prover"
 
 [[bin]]
 name = "extract_mem_trace"
@@ -9,16 +12,16 @@ required-features = ["stwo-cairo-adapter/extract-mem-trace"]
 
 [dependencies]
 anyhow.workspace = true
-cairo-air.workspace = true
+cairo-air = { path = "../cairo-air", version = "~1.0.0" }
 clap.workspace = true
 serde.workspace = true
 starknet-ff.workspace = true
 sonic-rs.workspace = true
-stwo-cairo-adapter.workspace = true
-stwo-cairo-serialize.workspace = true
-stwo_cairo_utils.workspace = true
+stwo-cairo-adapter = { path = "../adapter", version = "~1.0.0" }
+stwo-cairo-serialize = { path = "../cairo-serialize", version = "~1.0.0" }
+stwo-cairo-utils = { path = "../utils", version = "~1.0.0" }
 stwo.workspace = true
-stwo_cairo_prover.workspace = true
+stwo-cairo-prover = { path = "../prover", version = "~1.0.0" }
 tracing-subscriber.workspace = true
 thiserror.workspace = true
 tracing.workspace = true

@@ -1,14 +1,17 @@
 [package]
-name = "stwo_cairo_utils"
-version = "0.1.0"
-edition = "2021"
+name = "stwo-cairo-utils"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Utility functions for Stwo Cairo prover"
 
 [dependencies]
 cairo-lang-executable.workspace = true
 cairo-lang-runner.workspace = true
 cairo-lang-utils.workspace = true
 cairo-vm = { workspace = true, default_features = true }
-stwo-cairo-adapter.workspace = true
+stwo-cairo-adapter = { path = "../adapter", version = "~1.0.0" }
 anyhow.workspace = true
 clap.workspace = true
 env_logger.workspace = true

@@ -624,8 +624,8 @@ mod tests {
 #[cfg(test)]
 #[cfg(feature = "slow-tests")]
 mod slow_tests {
-    use dev_utils::utils::get_proof_file_path;
     use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleHasher;
+    use stwo_cairo_dev_utils::utils::get_proof_file_path;
     use tempfile::NamedTempFile;
 
     use super::*;
