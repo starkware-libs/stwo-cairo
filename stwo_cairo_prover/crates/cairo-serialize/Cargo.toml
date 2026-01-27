@@ -1,9 +1,12 @@
 [package]
 name = "stwo-cairo-serialize"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Serialization utilities for Stwo Cairo proofs"
 
 [dependencies]
 starknet-ff.workspace = true
-stwo-cairo-serialize-derive = { path = "../cairo-serialize-derive" }
+stwo-cairo-serialize-derive = { path = "../cairo-serialize-derive", version = "~1.0.0" }
 stwo.workspace = true

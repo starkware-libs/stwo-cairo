@@ -1,7 +1,10 @@
 [package]
 name = "stwo-cairo-serialize-derive"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Derive macros for Stwo Cairo serialization"
 
 [lib]
 proc-macro = true
