@@ -3,9 +3,13 @@ use std::sync::Arc;
 
 use cairo_air::components::memory_id_to_big::{Claim, InteractionClaim, MEMORY_ID_SIZE};
 use cairo_air::relations::{
-    self, MEMORY_ID_TO_BIG_RELATION_ID, RANGE_CHECK_9_9_B_RELATION_ID,
-    RANGE_CHECK_9_9_C_RELATION_ID, RANGE_CHECK_9_9_D_RELATION_ID, RANGE_CHECK_9_9_E_RELATION_ID,
-    RANGE_CHECK_9_9_F_RELATION_ID, RANGE_CHECK_9_9_G_RELATION_ID, RANGE_CHECK_9_9_H_RELATION_ID,
+    self,
+    MEMORY_ID_TO_BIG_RELATION_ID,
+    RANGE_CHECK_9_9_B_RELATION_ID,
+    RANGE_CHECK_9_9_C_RELATION_ID,
+    RANGE_CHECK_9_9_D_RELATION_ID,
+    // RANGE_CHECK_9_9_E_RELATION_ID,
+    // RANGE_CHECK_9_9_F_RELATION_ID, RANGE_CHECK_9_9_G_RELATION_ID, RANGE_CHECK_9_9_H_RELATION_ID,
     RANGE_CHECK_9_9_RELATION_ID,
 };
 use itertools::{chain, Itertools};
@@ -13,8 +17,8 @@ use rayon::iter::{
     IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelIterator,
 };
 use stwo_cairo_adapter::memory::{u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId};
-use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, N_M31_IN_SMALL_FELT252};
-use stwo_cairo_common::prover_types::cpu::FELT252_N_WORDS;
+use stwo_cairo_common::memory::N_M31_IN_SMALL_FELT252;
+// use stwo_cairo_common::prover_types::cpu::FELT252_N_WORDS;
 use stwo_cairo_common::prover_types::felt::split_f252_simd;
 use stwo_cairo_common::prover_types::simd::{PackedFelt252, SIMD_ENUMERATION_0};
 
@@ -25,7 +29,7 @@ use crate::witness::utils::AtomicMultiplicityColumn;
 pub type InputType = M31;
 pub type PackedInputType = PackedM31;
 
-type BigTraces = Vec<Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>>;
+// type BigTraces = Vec<Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>>;
 type SmallTrace = Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>;
 
 /// Generates the trace and the claim for the id -> f252 memory table.
@@ -118,87 +122,92 @@ impl ClaimGenerator {
     pub fn write_trace(
         self,
         range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
-        log_max_big_size: u32,
-    ) -> (BigTraces, SmallTrace, Claim, InteractionClaimGenerator) {
-        let big_table_traces = gen_big_memory_traces(
-            self.big_values,
-            self.big_mults.into_simd_vec(),
-            log_max_big_size,
-        );
+        // log_max_big_size: u32,
+    ) -> (
+        // BigTraces,
+        SmallTrace,
+        Claim,
+        InteractionClaimGenerator,
+    ) {
+        // let big_table_traces = gen_big_memory_traces(
+        //     self.big_values,
+        //     self.big_mults.into_simd_vec(),
+        //     log_max_big_size,
+        // );
         let small_table_trace =
             gen_small_memory_trace(self.small_values, self.small_mults.into_simd_vec());
 
         // Lookup data.
-        let big_components_values: Vec<[_; FELT252_N_WORDS]> = big_table_traces
-            .iter()
-            .map(|trace| std::array::from_fn(|i| trace[i].data.clone()))
-            .collect_vec();
-        let big_multiplicities = big_table_traces
-            .iter()
-            .map(|trace| trace.last().unwrap().data.clone())
-            .collect_vec();
+        // let big_components_values: Vec<[_; FELT252_N_WORDS]> = big_table_traces
+        //     .iter()
+        //     .map(|trace| std::array::from_fn(|i| trace[i].data.clone()))
+        //     .collect_vec();
+        // let big_multiplicities = big_table_traces
+        //     .iter()
+        //     .map(|trace| trace.last().unwrap().data.clone())
+        //     .collect_vec();
         let small_values: [_; N_M31_IN_SMALL_FELT252] =
             std::array::from_fn(|i| small_table_trace[i].data.clone());
         let small_multiplicities = small_table_trace.last().unwrap().data.clone();
 
         // Add inputs to range check that all the values are 9-bit felts.
-        for values in &big_components_values {
-            for (i, (col0, col1)) in values.iter().tuples().enumerate() {
-                match i % 8 {
-                    0 => col0
-                        .par_iter()
-                        .zip(col1.par_iter())
-                        .for_each(|(val0, val1)| {
-                            range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 0);
-                        }),
-                    1 => col0
-                        .par_iter()
-                        .zip(col1.par_iter())
-                        .for_each(|(val0, val1)| {
-                            range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 1);
-                        }),
-                    2 => col0
-                        .par_iter()
-                        .zip(col1.par_iter())
-                        .for_each(|(val0, val1)| {
-                            range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 2);
-                        }),
-                    3 => col0
-                        .par_iter()
-                        .zip(col1.par_iter())
-                        .for_each(|(val0, val1)| {
-                            range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 3);
-                        }),
-                    4 => col0
-                        .par_iter()
-                        .zip(col1.par_iter())
-                        .for_each(|(val0, val1)| {
-                            range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 4);
-                        }),
-                    5 => col0
-                        .par_iter()
-                        .zip(col1.par_iter())
-                        .for_each(|(val0, val1)| {
-                            range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 5);
-                        }),
-                    6 => col0
-                        .par_iter()
-                        .zip(col1.par_iter())
-                        .for_each(|(val0, val1)| {
-                            range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 6);
-                        }),
-                    7 => col0
-                        .par_iter()
-                        .zip(col1.par_iter())
-                        .for_each(|(val0, val1)| {
-                            range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 7);
-                        }),
-                    _ => {
-                        unreachable!("There are only 8 possible values for i % 8.",)
-                    }
-                };
-            }
-        }
+        // for values in &big_components_values {
+        //     for (i, (col0, col1)) in values.iter().tuples().enumerate() {
+        //         match i % 8 {
+        //             0 => col0
+        //                 .par_iter()
+        //                 .zip(col1.par_iter())
+        //                 .for_each(|(val0, val1)| {
+        //                     range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]],
+        // 0);                 }),
+        //             1 => col0
+        //                 .par_iter()
+        //                 .zip(col1.par_iter())
+        //                 .for_each(|(val0, val1)| {
+        //                     range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]],
+        // 1);                 }),
+        //             2 => col0
+        //                 .par_iter()
+        //                 .zip(col1.par_iter())
+        //                 .for_each(|(val0, val1)| {
+        //                     range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]],
+        // 2);                 }),
+        //             3 => col0
+        //                 .par_iter()
+        //                 .zip(col1.par_iter())
+        //                 .for_each(|(val0, val1)| {
+        //                     range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]],
+        // 3);                 }),
+        //             4 => col0
+        //                 .par_iter()
+        //                 .zip(col1.par_iter())
+        //                 .for_each(|(val0, val1)| {
+        //                     range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]],
+        // 4);                 }),
+        //             5 => col0
+        //                 .par_iter()
+        //                 .zip(col1.par_iter())
+        //                 .for_each(|(val0, val1)| {
+        //                     range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]],
+        // 5);                 }),
+        //             6 => col0
+        //                 .par_iter()
+        //                 .zip(col1.par_iter())
+        //                 .for_each(|(val0, val1)| {
+        //                     range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]],
+        // 6);                 }),
+        //             7 => col0
+        //                 .par_iter()
+        //                 .zip(col1.par_iter())
+        //                 .for_each(|(val0, val1)| {
+        //                     range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]],
+        // 7);                 }),
+        //             _ => {
+        //                 unreachable!("There are only 8 possible values for i % 8.",)
+        //             }
+        //         };
+        //     }
+        // }
 
         for (i, (col0, col1)) in small_values.iter().tuples().enumerate() {
             match i % 4 {
@@ -233,22 +242,22 @@ impl ClaimGenerator {
         }
 
         // Extend trace.
-        let mut big_log_sizes = vec![];
-        let mut big_traces = vec![];
-        for big_table_trace in big_table_traces {
-            let big_log_size = big_table_trace[0].length.ilog2();
-            big_log_sizes.push(big_log_size);
-            let trace = big_table_trace
-                .into_iter()
-                .map(|eval| {
-                    CircleEvaluation::<SimdBackend, M31, BitReversedOrder>::new(
-                        CanonicCoset::new(big_log_size).circle_domain(),
-                        eval,
-                    )
-                })
-                .collect_vec();
-            big_traces.push(trace);
-        }
+        // let mut big_log_sizes = vec![];
+        // let mut big_traces = vec![];
+        // for big_table_trace in big_table_traces {
+        //     let big_log_size = big_table_trace[0].length.ilog2();
+        //     big_log_sizes.push(big_log_size);
+        //     let trace = big_table_trace
+        //         .into_iter()
+        //         .map(|eval| {
+        //             CircleEvaluation::<SimdBackend, M31, BitReversedOrder>::new(
+        //                 CanonicCoset::new(big_log_size).circle_domain(),
+        //                 eval,
+        //             )
+        //         })
+        //         .collect_vec();
+        //     big_traces.push(trace);
+        // }
         let small_log_size = small_table_trace[0].len().ilog2();
         let small_trace = small_table_trace
             .into_iter()
@@ -261,15 +270,15 @@ impl ClaimGenerator {
             .collect_vec();
 
         (
-            big_traces,
+            // big_traces,
             small_trace,
             Claim {
-                big_log_sizes,
+                // big_log_sizes,
                 small_log_size,
             },
             InteractionClaimGenerator {
-                big_components_values,
-                big_multiplicities,
+                // big_components_values,
+                // big_multiplicities,
                 small_values,
                 small_multiplicities,
             },
@@ -277,61 +286,58 @@ impl ClaimGenerator {
     }
 }
 
-/// Generates the trace for the id -> f252 `big` tables. Splits the table to multiple traces
-/// according to `log_max_big_size`.
-fn gen_big_memory_traces(
-    values: Vec<[u32; 8]>,
-    mults: Vec<PackedM31>,
-    log_max_big_size: u32,
-) -> Vec<Vec<BaseColumn>> {
-    assert!(log_max_big_size >= LOG_N_LANES);
-    let max_big_size = 1 << log_max_big_size;
-    assert_eq!(values.len() / N_LANES, mults.len());
-    let mut traces = vec![];
+// /// Generates the trace for the id -> f252 `big` tables. Splits the table to multiple traces
+// /// according to `log_max_big_size`.
+// fn gen_big_memory_traces(
+//     values: Vec<[u32; 8]>,
+//     mults: Vec<PackedM31>,
+//     log_max_big_size: u32,
+// ) -> Vec<Vec<BaseColumn>> { assert!(log_max_big_size >= LOG_N_LANES); let max_big_size = 1 <<
+//   log_max_big_size; assert_eq!(values.len() / N_LANES, mults.len()); let mut traces = vec![];
 
-    for (values, mults) in values
-        .chunks(max_big_size)
-        .zip(mults.chunks(max_big_size / N_LANES))
-    {
-        let trace = gen_single_big_memory_trace(values, mults);
-        traces.push(trace);
-    }
+//     for (values, mults) in values
+//         .chunks(max_big_size)
+//         .zip(mults.chunks(max_big_size / N_LANES))
+//     {
+//         let trace = gen_single_big_memory_trace(values, mults);
+//         traces.push(trace);
+//     }
 
-    traces
-}
+//     traces
+// }
 
-// Generates the trace of the large value memory table.
-fn gen_single_big_memory_trace(values: &[[u32; 8]], mults: &[PackedM31]) -> Vec<BaseColumn> {
-    assert_eq!(values.len(), mults.len() * N_LANES);
-    let column_length = values.len().next_power_of_two();
+// // Generates the trace of the large value memory table.
+// fn gen_single_big_memory_trace(values: &[[u32; 8]], mults: &[PackedM31]) -> Vec<BaseColumn> {
+//     assert_eq!(values.len(), mults.len() * N_LANES);
+//     let column_length = values.len().next_power_of_two();
 
-    let mut mults = mults.to_vec();
-    mults.resize(column_length / N_LANES, PackedM31::zero());
-    let multiplicities = BaseColumn::from_simd(mults);
+//     let mut mults = mults.to_vec();
+//     mults.resize(column_length / N_LANES, PackedM31::zero());
+//     let multiplicities = BaseColumn::from_simd(mults);
 
-    let packed_values = values
-        .iter()
-        .chain(std::iter::repeat(&[0; 8]))
-        .take(column_length)
-        .array_chunks::<N_LANES>()
-        .map(|chunk| {
-            std::array::from_fn(|i| Simd::from_array(std::array::from_fn(|j| chunk[j][i])))
-        })
-        .collect_vec();
+//     let packed_values = values
+//         .iter()
+//         .chain(std::iter::repeat(&[0; 8]))
+//         .take(column_length)
+//         .array_chunks::<N_LANES>()
+//         .map(|chunk| {
+//             std::array::from_fn(|i| Simd::from_array(std::array::from_fn(|j| chunk[j][i])))
+//         })
+//         .collect_vec();
 
-    let mut value_trace =
-        std::iter::repeat_with(|| unsafe { BaseColumn::uninitialized(column_length) })
-            .take(FELT252_N_WORDS)
-            .collect_vec();
-    for (i, values) in packed_values.iter().enumerate() {
-        let values = split_f252_simd(*values);
-        for (j, value) in values.iter().enumerate() {
-            value_trace[j].data[i] = *value;
-        }
-    }
+//     let mut value_trace =
+//         std::iter::repeat_with(|| unsafe { BaseColumn::uninitialized(column_length) })
+//             .take(FELT252_N_WORDS)
+//             .collect_vec();
+//     for (i, values) in packed_values.iter().enumerate() {
+//         let values = split_f252_simd(*values);
+//         for (j, value) in values.iter().enumerate() {
+//             value_trace[j].data[i] = *value;
+//         }
+//     }
 
-    chain!(value_trace, [multiplicities]).collect_vec()
-}
+//     chain!(value_trace, [multiplicities]).collect_vec()
+// }
 
 // Generates the trace of the small value memory table.
 fn gen_small_memory_trace(values: Vec<u128>, mut mults: Vec<PackedM31>) -> Vec<BaseColumn> {
@@ -377,8 +383,8 @@ fn gen_small_memory_trace(values: Vec<u128>, mut mults: Vec<PackedM31>) -> Vec<B
 
 #[derive(Debug)]
 pub struct InteractionClaimGenerator {
-    pub big_components_values: Vec<[Vec<PackedM31>; FELT252_N_WORDS]>,
-    pub big_multiplicities: Vec<Vec<PackedM31>>,
+    // pub big_components_values: Vec<[Vec<PackedM31>; FELT252_N_WORDS]>,
+    // pub big_multiplicities: Vec<Vec<PackedM31>>,
     pub small_values: [Vec<PackedM31>; N_M31_IN_SMALL_FELT252],
     pub small_multiplicities: Vec<PackedM31>,
 }
@@ -386,142 +392,137 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (BigTraces, SmallTrace, InteractionClaim) {
-        let mut offset = 0;
-        let (big_traces, big_claimed_sums): (Vec<_>, Vec<_>) = self
-            .big_components_values
-            .iter()
-            .zip(self.big_multiplicities.iter())
-            .map(|(big_components_values, big_multiplicities)| {
-                let res = Self::gen_big_memory_interaction_trace(
-                    big_components_values,
-                    big_multiplicities,
-                    offset,
-                    common_lookup_elements,
-                );
-                offset += big_multiplicities.len() as u32 * N_LANES as u32;
-                res
-            })
-            .unzip();
+    ) -> (/* BigTraces, */ SmallTrace, InteractionClaim) {
+        // let mut offset = 0;
+        // let (big_traces, big_claimed_sums): (Vec<_>, Vec<_>) = self
+        //     .big_components_values
+        //     .iter()
+        //     .zip(self.big_multiplicities.iter())
+        //     .map(|(big_components_values, big_multiplicities)| {
+        //         let res = Self::gen_big_memory_interaction_trace(
+        //             big_components_values,
+        //             big_multiplicities,
+        //             offset,
+        //             common_lookup_elements,
+        //         );
+        //         offset += big_multiplicities.len() as u32 * N_LANES as u32;
+        //         res
+        //     })
+        //     .unzip();
 
         let (small_trace, small_claimed_sum) =
             self.gen_small_memory_interaction_trace(common_lookup_elements);
 
         (
-            big_traces,
+            // big_traces,
             small_trace,
             InteractionClaim {
                 small_claimed_sum,
-                big_claimed_sums,
+                // big_claimed_sums,
             },
         )
     }
 
-    fn gen_big_memory_interaction_trace(
-        big_components_values: &[Vec<PackedM31>; FELT252_N_WORDS],
-        big_multiplicities: &[PackedM31],
-        offset: u32,
-        common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        QM31,
-    ) {
-        assert!(big_components_values
-            .iter()
-            .all(|v| v.len() == big_multiplicities.len()));
-        let big_table_log_size = big_components_values[0].len().ilog2() + LOG_N_LANES;
-        let mut big_values_logup_gen = LogupTraceGenerator::new(big_table_log_size);
+    // fn gen_big_memory_interaction_trace(
+    //     big_components_values: &[Vec<PackedM31>; FELT252_N_WORDS],
+    //     big_multiplicities: &[PackedM31],
+    //     offset: u32,
+    //     common_lookup_elements: &relations::CommonLookupElements,
+    // ) -> ( Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, QM31,
+    // ) { assert!(big_components_values .iter() .all(|v| v.len() == big_multiplicities.len())); let
+    //   big_table_log_size = big_components_values[0].len().ilog2() + LOG_N_LANES; let mut
+    //   big_values_logup_gen = LogupTraceGenerator::new(big_table_log_size);
 
-        // Every element is 9-bit.
-        for (i, (limb0, limb1, limb2, limb3)) in big_components_values.iter().tuples().enumerate() {
-            let mut col_gen = big_values_logup_gen.new_col();
-            (col_gen.par_iter_mut(), limb0, limb1, limb2, limb3)
-                .into_par_iter()
-                .for_each(|(writer, limb0, limb1, limb2, limb3)| {
-                    let (denom0, denom1): (PackedQM31, PackedQM31) = match i % 4 {
-                        0 => (
-                            common_lookup_elements.combine(&[
-                                RANGE_CHECK_9_9_RELATION_ID.into(),
-                                *limb0,
-                                *limb1,
-                            ]),
-                            common_lookup_elements.combine(&[
-                                RANGE_CHECK_9_9_B_RELATION_ID.into(),
-                                *limb2,
-                                *limb3,
-                            ]),
-                        ),
-                        1 => (
-                            common_lookup_elements.combine(&[
-                                RANGE_CHECK_9_9_C_RELATION_ID.into(),
-                                *limb0,
-                                *limb1,
-                            ]),
-                            common_lookup_elements.combine(&[
-                                RANGE_CHECK_9_9_D_RELATION_ID.into(),
-                                *limb2,
-                                *limb3,
-                            ]),
-                        ),
-                        2 => (
-                            common_lookup_elements.combine(&[
-                                RANGE_CHECK_9_9_E_RELATION_ID.into(),
-                                *limb0,
-                                *limb1,
-                            ]),
-                            common_lookup_elements.combine(&[
-                                RANGE_CHECK_9_9_F_RELATION_ID.into(),
-                                *limb2,
-                                *limb3,
-                            ]),
-                        ),
-                        3 => (
-                            common_lookup_elements.combine(&[
-                                RANGE_CHECK_9_9_G_RELATION_ID.into(),
-                                *limb0,
-                                *limb1,
-                            ]),
-                            common_lookup_elements.combine(&[
-                                RANGE_CHECK_9_9_H_RELATION_ID.into(),
-                                *limb2,
-                                *limb3,
-                            ]),
-                        ),
-                        _ => {
-                            unreachable!("There are only 4 possible values for i % 4.",)
-                        }
-                    };
-                    writer.write_frac(denom0 + denom1, denom0 * denom1);
-                });
-            col_gen.finalize_col();
-        }
+    //     // Every element is 9-bit.
+    //     for (i, (limb0, limb1, limb2, limb3)) in
+    // big_components_values.iter().tuples().enumerate() {         let mut col_gen =
+    // big_values_logup_gen.new_col();         (col_gen.par_iter_mut(), limb0, limb1, limb2,
+    // limb3)             .into_par_iter()
+    //             .for_each(|(writer, limb0, limb1, limb2, limb3)| {
+    //                 let (denom0, denom1): (PackedQM31, PackedQM31) = match i % 4 {
+    //                     0 => (
+    //                         common_lookup_elements.combine(&[
+    //                             RANGE_CHECK_9_9_RELATION_ID.into(),
+    //                             *limb0,
+    //                             *limb1,
+    //                         ]),
+    //                         common_lookup_elements.combine(&[
+    //                             RANGE_CHECK_9_9_B_RELATION_ID.into(),
+    //                             *limb2,
+    //                             *limb3,
+    //                         ]),
+    //                     ),
+    //                     1 => (
+    //                         common_lookup_elements.combine(&[
+    //                             RANGE_CHECK_9_9_C_RELATION_ID.into(),
+    //                             *limb0,
+    //                             *limb1,
+    //                         ]),
+    //                         common_lookup_elements.combine(&[
+    //                             RANGE_CHECK_9_9_D_RELATION_ID.into(),
+    //                             *limb2,
+    //                             *limb3,
+    //                         ]),
+    //                     ),
+    //                     2 => (
+    //                         common_lookup_elements.combine(&[
+    //                             RANGE_CHECK_9_9_E_RELATION_ID.into(),
+    //                             *limb0,
+    //                             *limb1,
+    //                         ]),
+    //                         common_lookup_elements.combine(&[
+    //                             RANGE_CHECK_9_9_F_RELATION_ID.into(),
+    //                             *limb2,
+    //                             *limb3,
+    //                         ]),
+    //                     ),
+    //                     3 => (
+    //                         common_lookup_elements.combine(&[
+    //                             RANGE_CHECK_9_9_G_RELATION_ID.into(),
+    //                             *limb0,
+    //                             *limb1,
+    //                         ]),
+    //                         common_lookup_elements.combine(&[
+    //                             RANGE_CHECK_9_9_H_RELATION_ID.into(),
+    //                             *limb2,
+    //                             *limb3,
+    //                         ]),
+    //                     ),
+    //                     _ => {
+    //                         unreachable!("There are only 4 possible values for i % 4.",)
+    //                     }
+    //                 };
+    //                 writer.write_frac(denom0 + denom1, denom0 * denom1);
+    //             });
+    //         col_gen.finalize_col();
+    //     }
 
-        // Yield large values.
-        let mut col_gen = big_values_logup_gen.new_col();
-        let large_memory_value_id_tag = Simd::splat(LARGE_MEMORY_VALUE_ID_BASE);
-        #[allow(clippy::needless_range_loop)]
-        for vec_row in 0..1 << (big_table_log_size - LOG_N_LANES) {
-            let id_and_value: [_; FELT252_N_WORDS + MEMORY_ID_SIZE] = std::array::from_fn(|i| {
-                if i == 0 {
-                    unsafe {
-                        PackedM31::from_simd_unchecked(
-                            (SIMD_ENUMERATION_0 + Simd::splat((vec_row * N_LANES) as u32 + offset))
-                                | large_memory_value_id_tag,
-                        )
-                    }
-                } else {
-                    big_components_values[i - 1][vec_row]
-                }
-            });
-            let denom: PackedQM31 = common_lookup_elements.combine(
-                &chain!([MEMORY_ID_TO_BIG_RELATION_ID.into()], id_and_value).collect_vec(),
-            );
-            col_gen.write_frac(vec_row, (-big_multiplicities[vec_row]).into(), denom);
-        }
-        col_gen.finalize_col();
+    //     // Yield large values.
+    //     let mut col_gen = big_values_logup_gen.new_col();
+    //     let large_memory_value_id_tag = Simd::splat(LARGE_MEMORY_VALUE_ID_BASE);
+    //     #[allow(clippy::needless_range_loop)]
+    //     for vec_row in 0..1 << (big_table_log_size - LOG_N_LANES) {
+    //         let id_and_value: [_; FELT252_N_WORDS + MEMORY_ID_SIZE] = std::array::from_fn(|i| {
+    //             if i == 0 {
+    //                 unsafe {
+    //                     PackedM31::from_simd_unchecked(
+    //                         (SIMD_ENUMERATION_0 + Simd::splat((vec_row * N_LANES) as u32 +
+    // offset))                             | large_memory_value_id_tag,
+    //                     )
+    //                 }
+    //             } else {
+    //                 big_components_values[i - 1][vec_row]
+    //             }
+    //         });
+    //         let denom: PackedQM31 = common_lookup_elements.combine(
+    //             &chain!([MEMORY_ID_TO_BIG_RELATION_ID.into()], id_and_value).collect_vec(),
+    //         );
+    //         col_gen.write_frac(vec_row, (-big_multiplicities[vec_row]).into(), denom);
+    //     }
+    //     col_gen.finalize_col();
 
-        big_values_logup_gen.finalize_last()
-    }
+    //     big_values_logup_gen.finalize_last()
+    // }
 
     fn gen_small_memory_interaction_trace(
         &self,
@@ -657,11 +658,11 @@ mod tests {
         let preprocessed_trace = Arc::new(PreProcessedTrace::canonical_without_pedersen());
         let id_to_big = super::ClaimGenerator::new(Arc::clone(&memory));
         let range_check_9_9 = range_check_9_9::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let (big_traces, small_trace, claim, interaction_generator) =
-            id_to_big.write_trace(&range_check_9_9, log_max_seq_size);
-        for big_trace in big_traces {
-            tree_builder.extend_evals(big_trace);
-        }
+        let (/* big_traces, */ small_trace, claim, interaction_generator) =
+            id_to_big.write_trace(&range_check_9_9 /* log_max_seq_size */);
+        // for big_trace in big_traces {
+        //     tree_builder.extend_evals(big_trace);
+        // }
         tree_builder.extend_evals(small_trace);
         tree_builder.finalize_interaction();
 
@@ -669,22 +670,22 @@ mod tests {
         let mut dummy_channel = Blake2sChannel::default();
         let interaction_elements = CommonLookupElements::draw(&mut dummy_channel);
         let mut tree_builder = commitment_scheme.tree_builder();
-        let (big_traces, small_trace, interaction_claim) =
+        let (/* big_traces, */ small_trace, interaction_claim) =
             interaction_generator.write_interaction_trace(&interaction_elements);
-        for big_trace in big_traces {
-            tree_builder.extend_evals(big_trace);
-        }
+        // for big_trace in big_traces {
+        //     tree_builder.extend_evals(big_trace);
+        // }
         tree_builder.extend_evals(small_trace);
         tree_builder.finalize_interaction();
 
         let mut location_allocator =
             TraceLocationAllocator::new_with_preprocessed_columns(&preprocessed_trace.ids());
-        let big_components = memory_id_to_big::big_components_from_claim(
-            &claim.big_log_sizes,
-            &interaction_claim.big_claimed_sums,
-            &interaction_elements,
-            &mut location_allocator,
-        );
+        // let big_components = memory_id_to_big::big_components_from_claim(
+        //     &claim.big_log_sizes,
+        //     &interaction_claim.big_claimed_sums,
+        //     &interaction_elements,
+        //     &mut location_allocator,
+        // );
 
         let small_component = memory_id_to_big::SmallComponent::new(
             &mut location_allocator,
@@ -697,9 +698,9 @@ mod tests {
 
         let trace_domain_evaluations = commitment_scheme.trace_domain_evaluations();
 
-        for component in big_components {
-            assert_component(&component, &trace_domain_evaluations);
-        }
+        // for component in big_components {
+        //     assert_component(&component, &trace_domain_evaluations);
+        // }
         assert_component(&small_component, &trace_domain_evaluations);
     }
 
@@ -724,19 +725,20 @@ mod tests {
         let id_to_big = super::ClaimGenerator::new(Arc::clone(&memory));
         let range_check_9_9 = range_check_9_9::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
         let expected_small_log_size = log_max_seq_size;
-        let expected_first_big_log_size = log_max_seq_size;
-        let big_value_overflow = n_large_values - (1 << log_max_seq_size);
-        let small_value_overflow = n_small_values - (1 << log_max_seq_size);
-        let expected_second_big_log_size = (big_value_overflow + small_value_overflow)
-            .next_power_of_two()
-            .ilog2();
-        let expected_big_log_sizes =
-            vec![expected_first_big_log_size, expected_second_big_log_size];
+        // let expected_first_big_log_size = log_max_seq_size;
+        // let big_value_overflow = n_large_values - (1 << log_max_seq_size);
+        // let small_value_overflow = n_small_values - (1 << log_max_seq_size);
+        // let expected_second_big_log_size = (big_value_overflow + small_value_overflow)
+        //     .next_power_of_two()
+        //     .ilog2();
+        // let expected_big_log_sizes =
+        //     vec![expected_first_big_log_size, expected_second_big_log_size];
 
-        let (_, _, claim, _) = id_to_big.write_trace(&range_check_9_9, log_max_seq_size);
+        let (/* _, */ _, claim, _) =
+            id_to_big.write_trace(&range_check_9_9 /* log_max_seq_size */);
 
         assert_eq!(claim.small_log_size, expected_small_log_size);
-        assert_eq!(claim.big_log_sizes, expected_big_log_sizes);
+        // assert_eq!(claim.big_log_sizes, expected_big_log_sizes);
     }
 
     #[test]

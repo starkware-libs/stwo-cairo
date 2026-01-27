@@ -193,8 +193,8 @@ fn cairo_relation_entries(
         add_to_relation_entries(verify_bitwise_xor_8, trace),
         add_to_relation_entries(verify_bitwise_xor_9, trace),
         add_to_relation_entries(memory_address_to_id, trace),
-        add_to_relation_entries_many(&memory_id_to_value.0, trace),
-        add_to_relation_entries(&memory_id_to_value.1, trace),
+        // add_to_relation_entries_many(&memory_id_to_value.0, trace),
+        add_to_relation_entries(&memory_id_to_value.0, trace),
     )
     .collect_vec();
 

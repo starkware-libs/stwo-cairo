@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use anyhow::Result;
-use cairo_air::air::{CairoComponents, ExtendedCairoProof, lookup_sum};
+use cairo_air::air::{lookup_sum, CairoComponents, ExtendedCairoProof};
 use cairo_air::relations::CommonLookupElements;
 use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
 use cairo_air::verifier::{verify_cairo, INTERACTION_POW_BITS};
@@ -20,7 +20,7 @@ use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
 use stwo::prover::poly::circle::PolyOps;
-use stwo::prover::{CommitmentSchemeProver, ProvingError, prove, prove_ex};
+use stwo::prover::{prove, prove_ex, CommitmentSchemeProver, ProvingError};
 use stwo_cairo_adapter::ProverInput;
 use tracing::{event, span, Level};
 
@@ -231,7 +231,7 @@ where
         witness_trace_cells(&claim, &preprocessed_trace)
     );
     // Validate lookup argument.
-    debug_assert_eq!(
+    assert_eq!(
         lookup_sum(&claim, &interaction_elements, &interaction_claim),
         SecureField::zero()
     );
@@ -389,6 +389,28 @@ pub mod tests {
         let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
         let pp_tree = Arc::new(testing_preprocessed_tree(24));
         assert_cairo_constraints(input, pp_tree);
+    }
+    use cairo_air::PreProcessedTraceVariant;
+    use stwo::core::fri::FriConfig;
+    use stwo::core::pcs::PcsConfig;
+    use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
+
+    use crate::prover::{prove_cairo, ChannelHash, ProverParameters};
+    #[test]
+    fn test_blake_prove_cairo_ret_opcode_components() {
+        let compiled_program = get_compiled_cairo_program_path("test_prove_verify_ret_opcode");
+        let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
+        let prover_params = ProverParameters {
+            channel_hash: ChannelHash::Blake2s,
+            pcs_config: PcsConfig {
+                pow_bits: 20,
+                fri_config: FriConfig::new(0, 1, 90),
+            },
+            preprocessed_trace: PreProcessedTraceVariant::Canonical,
+            channel_salt: None,
+            store_polynomials_coefficients: false,
+        };
+        prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
     }
 
     #[cfg(test)]
