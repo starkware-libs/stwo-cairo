@@ -12,9 +12,10 @@ members = [
 resolver = "2"
 
 [workspace.package]
-version = "0.1.1"
+version = "1.0.0"
 edition = "2021"
 license = "Apache-2.0"
+repository = "https://github.com/starkware-libs/stwo-cairo"
 
 [workspace.dependencies]
 indexmap = "2.2.6"
@@ -51,13 +52,14 @@ starknet-types-core = { version = "=0.2.4", features = [
     "curve",
     "num-traits",
 ] }
-stwo_cairo_prover = { path = "crates/prover", version = "~0.1.0" }
-stwo_cairo_utils = { path = "crates/utils", version = "~0.1.0" }
-stwo-cairo-adapter = { path = "crates/adapter" }
-dev-utils = { path = "crates/dev_utils" }
-stwo-cairo-common = { path = "crates/common" }
-cairo-air = { path = "crates/cairo-air" }
-stwo-cairo-serialize = { path = "crates/cairo-serialize", version = "~0.1.0" }
+stwo-cairo-prover = { path = "crates/prover", version = "~1.0.0" }
+stwo-cairo-utils = { path = "crates/utils", version = "~1.0.0" }
+stwo-cairo-adapter = { path = "crates/adapter", version = "~1.0.0" }
+dev-utils = { path = "crates/dev_utils", version = "~1.0.0" }
+stwo-cairo-common = { path = "crates/common", version = "~1.0.0" }
+cairo-air = { path = "crates/cairo-air", version = "~1.0.0" }
+stwo-cairo-serialize = { path = "crates/cairo-serialize", version = "~1.0.0" }
+stwo-cairo-serialize-derive = { path = "crates/cairo-serialize-derive", version = "~1.0.0" }
 stwo = "2.0.0"
 stwo-constraint-framework = "2.0.0"
 stwo-air-utils-derive = "2.0.0"
@@ -83,7 +85,7 @@ lto = true
 # See cairo-ci.yaml for an example command.
 [profile.witness-opt-1]
 inherits = "dev"
-package = { "stwo_cairo_prover" = { opt-level = 1 }, "stwo" = { opt-level = 1 } }
+package = { "stwo-cairo-prover" = { opt-level = 1 }, "stwo" = { opt-level = 1 } }
 
 [profile.adapter-release]
 inherits = "dev"

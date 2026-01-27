@@ -1,7 +1,10 @@
 [package]
 name = "stwo-cairo-common"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Common types and utilities shared across Stwo Cairo crates"
 
 [features]
 prover = ["stwo/parallel", "stwo/prover", "stwo-constraint-framework/parallel", "stwo-constraint-framework/prover"]
@@ -13,7 +16,7 @@ ruint.workspace = true
 serde.workspace = true
 starknet-ff.workspace = true
 starknet-types-core.workspace = true
-stwo-cairo-serialize = { path = "../cairo-serialize" }
+stwo-cairo-serialize = { path = "../cairo-serialize", version = "~1.0.0" }
 stwo.workspace = true
 stwo-constraint-framework.workspace = true
 serde_arrays.workspace = true
