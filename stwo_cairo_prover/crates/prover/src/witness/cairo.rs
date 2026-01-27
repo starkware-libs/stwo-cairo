@@ -30,10 +30,12 @@ use crate::witness::blake_context::{
 use crate::witness::builtins::{builtins_write_trace, get_builtins};
 use crate::witness::cairo_claim_generator::{get_sub_components, CairoClaimGenerator};
 use crate::witness::components::pedersen::{
-    pedersen_context_write_trace, PedersenContextInteractionClaimGenerator,
+    extend_pedersen_context_traces, pedersen_context_write_trace_gen,
+    PedersenContextInteractionClaimGenerator,
 };
 use crate::witness::components::poseidon::{
-    poseidon_context_write_trace, PoseidonContextInteractionClaimGenerator,
+    extend_poseidon_context_traces, poseidon_context_write_trace_gen,
+    PoseidonContextInteractionClaimGenerator,
 };
 use crate::witness::components::{
     memory_address_to_id, memory_id_to_big, verify_bitwise_xor_4, verify_bitwise_xor_7,
@@ -303,39 +305,72 @@ impl CairoClaimGenerator {
             self.verify_bitwise_xor_8.as_ref(),
             self.verify_bitwise_xor_9.as_ref(),
         );
-        let (pedersen_context_claim, pedersen_context_interaction_gen) =
-            pedersen_context_write_trace(
-                self.pedersen_aggregator_window_bits_18,
-                self.partial_ec_mul_window_bits_18,
-                self.pedersen_points_table_window_bits_18,
-                tree_builder,
-                self.memory_id_to_big.as_ref(),
-                self.range_check_8.as_ref(),
-                self.range_check_9_9.as_ref(),
-                self.range_check_20.as_ref(),
-            );
-        let (poseidon_context_claim, poseidon_context_interaction_gen) =
-            poseidon_context_write_trace(
-                self.poseidon_aggregator,
-                self.poseidon_3_partial_rounds_chain,
-                self.poseidon_full_round_chain,
-                self.cube_252,
-                self.poseidon_round_keys,
-                self.range_check_252_width_27,
-                tree_builder,
-                self.memory_id_to_big.as_ref(),
-                self.range_check_3_3_3_3_3.as_ref(),
-                self.range_check_4_4_4_4.as_ref(),
-                self.range_check_4_4.as_ref(),
-                self.range_check_9_9.as_ref(),
-                self.range_check_18.as_ref(),
-                self.range_check_20.as_ref(),
-            );
-        let (
-            memory_address_to_id_trace,
-            memory_address_to_id_claim,
-            memory_address_to_id_interaction_gen,
-        ) = self.memory_address_to_id.unwrap().write_trace();
+        // Run pedersen, poseidon, and memory_address_to_id trace generation in parallel.
+        // Note: memory_id_to_big.write_trace() must run after since it takes ownership.
+        let memory_address_to_id_gen = self.memory_address_to_id.take().unwrap();
+        let pedersen_aggregator = self.pedersen_aggregator_window_bits_18.take();
+        let partial_ec_mul = self.partial_ec_mul_window_bits_18.take();
+        let pedersen_points_table = self.pedersen_points_table_window_bits_18.take();
+        let poseidon_aggregator = self.poseidon_aggregator.take();
+        let poseidon_3_partial = self.poseidon_3_partial_rounds_chain.take();
+        let poseidon_full_round = self.poseidon_full_round_chain.take();
+        let cube_252 = self.cube_252.take();
+        let poseidon_round_keys = self.poseidon_round_keys.take();
+        let range_check_252_width_27 = self.range_check_252_width_27.take();
+
+        let span_parallel = span!(Level::INFO, "parallel pedersen+poseidon+memory_addr").entered();
+        let mut pedersen_result = None;
+        let mut poseidon_result = None;
+        let mut memory_addr_result = None;
+        scope(|s| {
+            s.spawn(|_| {
+                pedersen_result = Some(pedersen_context_write_trace_gen(
+                    pedersen_aggregator,
+                    partial_ec_mul,
+                    pedersen_points_table,
+                    self.memory_id_to_big.as_ref(),
+                    self.range_check_8.as_ref(),
+                    self.range_check_9_9.as_ref(),
+                    self.range_check_20.as_ref(),
+                ));
+            });
+            s.spawn(|_| {
+                poseidon_result = Some(poseidon_context_write_trace_gen(
+                    poseidon_aggregator,
+                    poseidon_3_partial,
+                    poseidon_full_round,
+                    cube_252,
+                    poseidon_round_keys,
+                    range_check_252_width_27,
+                    self.memory_id_to_big.as_ref(),
+                    self.range_check_3_3_3_3_3.as_ref(),
+                    self.range_check_4_4_4_4.as_ref(),
+                    self.range_check_4_4.as_ref(),
+                    self.range_check_9_9.as_ref(),
+                    self.range_check_18.as_ref(),
+                    self.range_check_20.as_ref(),
+                ));
+            });
+            s.spawn(|_| {
+                memory_addr_result = Some(memory_address_to_id_gen.write_trace());
+            });
+        });
+        span_parallel.exit();
+
+        let (pedersen_traces, pedersen_context_claim, pedersen_context_interaction_gen) =
+            pedersen_result.unwrap();
+        let (poseidon_traces, poseidon_context_claim, poseidon_context_interaction_gen) =
+            poseidon_result.unwrap();
+        let (memory_address_to_id_trace, memory_address_to_id_claim, memory_address_to_id_interaction_gen) =
+            memory_addr_result.unwrap();
+
+        // Extend traces in the correct order
+        if let Some(traces) = pedersen_traces {
+            extend_pedersen_context_traces(traces, tree_builder);
+        }
+        if let Some(traces) = poseidon_traces {
+            extend_poseidon_context_traces(traces, tree_builder);
+        }
         tree_builder.extend_evals(memory_address_to_id_trace);
 
         // Memory uses "Sequence", split it according to `MAX_SEQUENCE_LOG_SIZE`.
@@ -347,6 +382,7 @@ impl CairoClaimGenerator {
             memory_id_to_value_interaction_gen,
         ) = self
             .memory_id_to_big
+            .take()
             .unwrap()
             .write_trace(self.range_check_9_9.as_ref().unwrap(), LOG_MAX_BIG_SIZE);
         for big_trace in memory_id_to_value_big_traces {
@@ -531,39 +567,72 @@ impl CairoClaimGenerator {
             self.verify_bitwise_xor_8.as_ref(),
             self.verify_bitwise_xor_9.as_ref(),
         );
-        let (pedersen_context_claim, pedersen_context_interaction_gen) =
-            pedersen_context_write_trace(
-                self.pedersen_aggregator_window_bits_18,
-                self.partial_ec_mul_window_bits_18,
-                self.pedersen_points_table_window_bits_18,
-                tree_builder,
-                self.memory_id_to_big.as_ref(),
-                self.range_check_8.as_ref(),
-                self.range_check_9_9.as_ref(),
-                self.range_check_20.as_ref(),
-            );
-        let (poseidon_context_claim, poseidon_context_interaction_gen) =
-            poseidon_context_write_trace(
-                self.poseidon_aggregator,
-                self.poseidon_3_partial_rounds_chain,
-                self.poseidon_full_round_chain,
-                self.cube_252,
-                self.poseidon_round_keys,
-                self.range_check_252_width_27,
-                tree_builder,
-                self.memory_id_to_big.as_ref(),
-                self.range_check_3_3_3_3_3.as_ref(),
-                self.range_check_4_4_4_4.as_ref(),
-                self.range_check_4_4.as_ref(),
-                self.range_check_9_9.as_ref(),
-                self.range_check_18.as_ref(),
-                self.range_check_20.as_ref(),
-            );
-        let (
-            memory_address_to_id_trace,
-            memory_address_to_id_claim,
-            memory_address_to_id_interaction_gen,
-        ) = self.memory_address_to_id.unwrap().write_trace();
+        // Run pedersen, poseidon, and memory_address_to_id trace generation in parallel.
+        // Note: memory_id_to_big.write_trace() must run after since it takes ownership.
+        let memory_address_to_id_gen = self.memory_address_to_id.take().unwrap();
+        let pedersen_aggregator = self.pedersen_aggregator_window_bits_18.take();
+        let partial_ec_mul = self.partial_ec_mul_window_bits_18.take();
+        let pedersen_points_table = self.pedersen_points_table_window_bits_18.take();
+        let poseidon_aggregator = self.poseidon_aggregator.take();
+        let poseidon_3_partial = self.poseidon_3_partial_rounds_chain.take();
+        let poseidon_full_round = self.poseidon_full_round_chain.take();
+        let cube_252 = self.cube_252.take();
+        let poseidon_round_keys = self.poseidon_round_keys.take();
+        let range_check_252_width_27 = self.range_check_252_width_27.take();
+
+        let span_parallel = span!(Level::INFO, "parallel pedersen+poseidon+memory_addr").entered();
+        let mut pedersen_result = None;
+        let mut poseidon_result = None;
+        let mut memory_addr_result = None;
+        scope(|s| {
+            s.spawn(|_| {
+                pedersen_result = Some(pedersen_context_write_trace_gen(
+                    pedersen_aggregator,
+                    partial_ec_mul,
+                    pedersen_points_table,
+                    self.memory_id_to_big.as_ref(),
+                    self.range_check_8.as_ref(),
+                    self.range_check_9_9.as_ref(),
+                    self.range_check_20.as_ref(),
+                ));
+            });
+            s.spawn(|_| {
+                poseidon_result = Some(poseidon_context_write_trace_gen(
+                    poseidon_aggregator,
+                    poseidon_3_partial,
+                    poseidon_full_round,
+                    cube_252,
+                    poseidon_round_keys,
+                    range_check_252_width_27,
+                    self.memory_id_to_big.as_ref(),
+                    self.range_check_3_3_3_3_3.as_ref(),
+                    self.range_check_4_4_4_4.as_ref(),
+                    self.range_check_4_4.as_ref(),
+                    self.range_check_9_9.as_ref(),
+                    self.range_check_18.as_ref(),
+                    self.range_check_20.as_ref(),
+                ));
+            });
+            s.spawn(|_| {
+                memory_addr_result = Some(memory_address_to_id_gen.write_trace());
+            });
+        });
+        span_parallel.exit();
+
+        let (pedersen_traces, pedersen_context_claim, pedersen_context_interaction_gen) =
+            pedersen_result.unwrap();
+        let (poseidon_traces, poseidon_context_claim, poseidon_context_interaction_gen) =
+            poseidon_result.unwrap();
+        let (memory_address_to_id_trace, memory_address_to_id_claim, memory_address_to_id_interaction_gen) =
+            memory_addr_result.unwrap();
+
+        // Extend traces in the correct order
+        if let Some(traces) = pedersen_traces {
+            extend_pedersen_context_traces(traces, tree_builder);
+        }
+        if let Some(traces) = poseidon_traces {
+            extend_poseidon_context_traces(traces, tree_builder);
+        }
         tree_builder.extend_evals(memory_address_to_id_trace);
 
         // Memory uses "Sequence", split it according to `MAX_SEQUENCE_LOG_SIZE`.
@@ -575,6 +644,7 @@ impl CairoClaimGenerator {
             memory_id_to_value_interaction_gen,
         ) = self
             .memory_id_to_big
+            .take()
             .unwrap()
             .write_trace(self.range_check_9_9.as_ref().unwrap(), LOG_MAX_BIG_SIZE);
         for big_trace in memory_id_to_value_big_traces {
