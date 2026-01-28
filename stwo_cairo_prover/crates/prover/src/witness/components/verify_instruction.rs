@@ -89,24 +89,26 @@ impl ClaimGenerator {
     }
 
     pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], _relation_index: usize) {
-        packed_inputs
+        let merged: HashMap<InputType, u32> = packed_inputs
             .par_iter()
-            .flat_map(|packed_input| packed_input.unpack())
-            .fold(
-                HashMap::<InputType, u32>::new,
-                |mut local, input| {
-                    *local.entry(input).or_insert(0) += 1;
-                    local
-                },
-            )
-            .for_each(|local| {
-                for (k, v) in local {
-                    self.mults
-                        .entry(k)
-                        .or_insert_with(|| AtomicU32::new(0))
-                        .fetch_add(v, Ordering::Relaxed);
+            .flat_map(|p| p.unpack())
+            .fold_with(HashMap::new(), |mut local, input| {
+                *local.entry(input).or_insert(0) += 1;
+                local
+            })
+            .reduce(HashMap::new, |mut a, b| {
+                for (k, v) in b {
+                    *a.entry(k).or_insert(0) += v;
                 }
+                a
             });
+
+        for (k, v) in merged {
+            self.mults
+                .entry(k)
+                .or_insert_with(|| AtomicU32::new(0))
+                .fetch_add(v, Ordering::Relaxed);
+        }
     }
 }
 
