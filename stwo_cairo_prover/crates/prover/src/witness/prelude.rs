@@ -38,6 +38,7 @@ pub use stwo_constraint_framework::{LogupTraceGenerator, Relation};
 pub use crate::witness::fast_deduction::blake::{
     BlakeRound, PackedBlakeG, PackedBlakeRoundSigma, PackedTripleXor32,
 };
+pub use crate::witness::fast_deduction::ec_op::PackedPartialEcMulGeneric;
 pub use crate::witness::fast_deduction::pedersen::{
     PackedPartialEcMulWindowBits18, PackedPartialEcMulWindowBits9,
     PackedPedersenPointsTableWindowBits18, PackedPedersenPointsTableWindowBits9,
