@@ -45,6 +45,9 @@ pub const CALL_OPCODE_ABS: Expect = expect![[r#"
 pub const CUBE_252: Expect = expect![[r#"
     (1037973223 + 1298605477i) + (275158739 + 558974209i)u
 "#]];
+pub const EC_OP_BUILTIN: Expect = expect![[r#"
+    (791429500 + 1720267412i) + (1336427407 + 1936025114i)u
+"#]];
 pub const GENERIC_OPCODE: Expect = expect![[r#"
     (940022209 + 222333129i) + (209213476 + 1471105611i)u
 "#]];
@@ -86,6 +89,9 @@ pub const MUL_OPCODE: Expect = expect![[r#"
 "#]];
 pub const PEDERSEN_AGGREGATOR_WINDOW_BITS_18: Expect = expect![[r#"
     (41079903 + 1702994602i) + (1706854790 + 402437045i)u
+"#]];
+pub const PARTIAL_EC_MUL_GENERIC: Expect = expect![[r#"
+    (948772201 + 745414702i) + (524026178 + 1356512515i)u
 "#]];
 pub const PARTIAL_EC_MUL_WINDOW_BITS_18: Expect = expect![[r#"
     (1954805293 + 896111510i) + (804571916 + 695208153i)u
