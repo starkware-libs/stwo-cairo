@@ -60,6 +60,12 @@ impl AtomicMultiplicityColumn {
         )
         .data
     }
+
+    #[inline]
+    pub fn add_at(&self, idx: usize, delta: u32) {
+        // If increase_at is already doing fetch_add(1), this is the generalization.
+        self.data[idx].fetch_add(delta, Ordering::Relaxed);
+    }
 }
 
 /// The enabler column is a column of length `padding_offset.next_power_of_two()` where

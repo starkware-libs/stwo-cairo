@@ -56,17 +56,30 @@ impl ClaimGenerator {
         (trace, Claim {}, InteractionClaimGenerator { lookup_data })
     }
 
-    pub fn add_input(&self, input: &InputType, relation_index: usize) {
-        self.mults[relation_index]
-            .increase_at((*self.input_to_row.get(input).unwrap()).try_into().unwrap());
-    }
-
     pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], relation_index: usize) {
-        packed_inputs.into_par_iter().for_each(|packed_input| {
-            packed_input.unpack().iter().for_each(|input| {
-                self.add_input(input, relation_index);
+        // 1) Count row hits locally per Rayon worker
+        let merged: HashMap<usize, u32> = packed_inputs
+            .par_iter()
+            .fold_with(HashMap::<usize, u32>::new(), |mut local, packed_input| {
+                // Ideally unpack() returns something iterable without allocating.
+                for input in packed_input.unpack().iter() {
+                    let row = *self.input_to_row.get(input).unwrap();
+                    *local.entry(row).or_insert(0) += 1;
+                }
+                local
+            })
+            // 2) Merge the per-worker maps into one map (still no atomics)
+            .reduce(HashMap::new, |mut a, b| {
+                for (row, cnt) in b {
+                    *a.entry(row).or_insert(0) += cnt;
+                }
+                a
             });
-        });
+
+        // 3) Apply the final counts to the global atomic column
+        for (row, cnt) in merged {
+            self.mults[relation_index].add_at(row, cnt); // <- add this API if possible
+        }
     }
 }
 
