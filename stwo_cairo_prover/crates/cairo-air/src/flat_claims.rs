@@ -1,6 +1,8 @@
 use num_traits::Zero;
+use stwo::core::channel::Channel;
 use stwo::core::fields::qm31::SecureField;
-use stwo_cairo_common::prover_types::cpu::CasmState;
+use stwo_cairo_common::prover_types::cpu::{CasmState, FELT252_BITS_PER_WORD, FELT252_N_WORDS};
+use stwo_cairo_common::prover_types::felt::split;
 
 use crate::air::{
     CairoClaim, CairoInteractionClaim, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange,
@@ -54,11 +56,23 @@ impl FlatClaim {
         u32s.extend(public_data_to_u32s(&self.public_data));
         pack_into_secure_felts(u32s.into_iter())
     }
+
+    pub fn mix_into(&self, channel: &mut impl Channel) {
+        channel.mix_felts(&pack_into_secure_felts(
+            enable_bits_to_u32s(&self.component_enable_bits).into_iter(),
+        ));
+        channel.mix_felts(&pack_into_secure_felts(
+            self.component_log_sizes.iter().cloned(),
+        ));
+        channel.mix_felts(&pack_into_secure_felts(
+            public_data_to_u32s(&self.public_data).into_iter(),
+        ));
+    }
 }
 
 fn enable_bits_to_u32s(enable_bits: &[bool]) -> Vec<u32> {
     let mut res = vec![];
-    for bits in enable_bits.chunks(31) {
+    for bits in enable_bits.chunks(1) {
         let mut v: u32 = 0;
         for (i, &bit) in bits.iter().enumerate() {
             if bit {
@@ -72,6 +86,7 @@ fn enable_bits_to_u32s(enable_bits: &[bool]) -> Vec<u32> {
 
 pub fn public_data_to_u32s(public_data: &PublicData) -> Vec<u32> {
     let mut public_claim = vec![];
+
     let PublicData {
         public_memory:
             PublicMemory {
@@ -93,10 +108,13 @@ pub fn public_data_to_u32s(public_data: &PublicData) -> Vec<u32> {
                 fp: final_fp,
             },
     } = public_data;
-    for (id, value) in program {
-        public_claim.push(*id);
-        public_claim.extend(value);
-    }
+    public_claim.push(initial_pc.0);
+    public_claim.push(initial_ap.0);
+    public_claim.push(initial_fp.0);
+    public_claim.push(final_pc.0);
+    public_claim.push(final_ap.0);
+    public_claim.push(final_fp.0);
+
     let PublicSegmentRanges {
         output: output_ranges,
         pedersen,
@@ -121,17 +139,21 @@ pub fn public_data_to_u32s(public_data: &PublicData) -> Vec<u32> {
     single_segment_range(*range_check_96, &mut public_claim);
     single_segment_range(*add_mod, &mut public_claim);
     single_segment_range(*mul_mod, &mut public_claim);
+    public_claim.extend(safe_call_ids);
+
     for (id, value) in output {
         public_claim.push(*id);
-        public_claim.extend(value);
+        public_claim
+            .extend::<[u32; FELT252_N_WORDS]>(split(*value, (1 << FELT252_BITS_PER_WORD) - 1));
     }
-    public_claim.extend(safe_call_ids);
-    public_claim.push(initial_pc.0);
-    public_claim.push(initial_ap.0);
-    public_claim.push(initial_fp.0);
-    public_claim.push(final_ap.0);
-    public_claim.push(final_fp.0);
-    public_claim.push(final_pc.0);
+
+    for (id, value) in program {
+        public_claim.push(*id);
+        let limbs = split(*value, (1 << FELT252_BITS_PER_WORD) - 1);
+        eprintln!("program: {:?}", (*id, limbs));
+        public_claim.extend::<[u32; FELT252_N_WORDS]>(limbs);
+    }
+
     public_claim
 }
 
@@ -201,20 +223,14 @@ pub fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    println!(
-        "component enable bit for add_ap: {}",
-        component_enable_bits.last().unwrap()
-    );
+
     single_log_size(
         assert_eq,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    println!(
-        "component enable bit for assert_eq: {}",
-        component_enable_bits.last().unwrap()
-    );
+
     // single_log_size(
     //     assert_eq_imm,
     //     |c| c.log_size,
@@ -245,10 +261,7 @@ pub fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    println!(
-        "component enable bit for call_rel_imm: {}",
-        component_enable_bits.last().unwrap()
-    );
+
     // single_log_size(
     //     generic,
     //     |c| c.log_size,
@@ -327,18 +340,10 @@ pub fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    println!(
-        "component enable bit for ret: {}",
-        component_enable_bits.last().unwrap()
-    );
 
     // Verify instruction
     component_log_sizes.push(verify_instruction.log_size);
     component_enable_bits.push(true);
-    println!(
-        "component enable bit for verify_instruction: {}",
-        component_enable_bits.last().unwrap()
-    );
 
     // Blake context
     // if let Some(BlakeClaim {
@@ -490,10 +495,7 @@ pub fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
     let memory_address_to_id::Claim { log_size } = memory_address_to_id;
     component_log_sizes.push(*log_size);
     component_enable_bits.push(true);
-    println!(
-        "component enable bit for memory_address_to_id: {}",
-        component_enable_bits.last().unwrap()
-    );
+
     let memory_id_to_big::Claim {
         // big_log_sizes,
         small_log_size,
