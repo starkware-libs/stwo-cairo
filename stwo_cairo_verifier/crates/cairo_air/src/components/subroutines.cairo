@@ -33,6 +33,7 @@ pub mod decode_small_sign;
 pub mod double_karatsuba_1454b;
 pub mod double_karatsuba_b1daa;
 pub mod ec_add;
+pub mod ec_double;
 pub mod encode_offsets;
 pub mod eval_operands;
 pub mod felt_252_unpack_from_27;

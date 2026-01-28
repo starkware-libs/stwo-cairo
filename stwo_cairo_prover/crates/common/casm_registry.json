@@ -1,5 +1,5 @@
 {
-  "air_version": "8495ecc0",
+  "air_version": "90bedee8",
   "canonical_ppt_n_trace_cells": 543100528,
   "canonical_without_pedersen_ppt_n_trace_cells": 73338480,
   "air_fns": {
@@ -2322,6 +2322,126 @@
       },
       "max_instances_uses_limit": 2796202,
       "max_instances_rows_limit": 4194304
+    },
+    "partial_ec_mul_generic": {
+      "trace_type": "ChainRound",
+      "log_height": null,
+      "num_state_cols": 623,
+      "use_lookup_cols": {
+        "RangeCheck_8": 4,
+        "RangeCheck_9_9": 16,
+        "RangeCheck_9_9_B": 16,
+        "RangeCheck_9_9_C": 16,
+        "RangeCheck_9_9_D": 16,
+        "RangeCheck_9_9_E": 16,
+        "RangeCheck_9_9_F": 16,
+        "RangeCheck_9_9_G": 8,
+        "RangeCheck_9_9_H": 8,
+        "RangeCheck_20": 28,
+        "RangeCheck_20_B": 28,
+        "RangeCheck_20_C": 28,
+        "RangeCheck_20_D": 28,
+        "RangeCheck_20_E": 21,
+        "RangeCheck_20_F": 21,
+        "RangeCheck_20_G": 21,
+        "RangeCheck_20_H": 21,
+        "PartialEcMulGeneric": 1
+      },
+      "yield_lookup_cols": {
+        "PartialEcMulGeneric": 1
+      },
+      "lookup_rows": {
+        "RangeCheck_8": 4,
+        "RangeCheck_9_9": 16,
+        "RangeCheck_9_9_B": 16,
+        "RangeCheck_9_9_C": 16,
+        "RangeCheck_9_9_D": 16,
+        "RangeCheck_9_9_E": 16,
+        "RangeCheck_9_9_F": 16,
+        "RangeCheck_9_9_G": 8,
+        "RangeCheck_9_9_H": 8,
+        "RangeCheck_20": 28,
+        "RangeCheck_20_B": 28,
+        "RangeCheck_20_C": 28,
+        "RangeCheck_20_D": 28,
+        "RangeCheck_20_E": 21,
+        "RangeCheck_20_F": 21,
+        "RangeCheck_20_G": 21,
+        "RangeCheck_20_H": 21
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 1252,
+      "trace_cells_upper_bound": 1252,
+      "uses_upper_bound": {
+        "range_check_8": 4,
+        "range_check_9_9": 16,
+        "range_check_9_9_b": 16,
+        "range_check_9_9_c": 16,
+        "range_check_9_9_d": 16,
+        "range_check_9_9_e": 16,
+        "range_check_9_9_f": 16,
+        "range_check_9_9_g": 8,
+        "range_check_9_9_h": 8,
+        "range_check_20": 28,
+        "range_check_20_b": 28,
+        "range_check_20_c": 28,
+        "range_check_20_d": 28,
+        "range_check_20_e": 21,
+        "range_check_20_f": 21,
+        "range_check_20_g": 21,
+        "range_check_20_h": 21
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 76695844,
+      "max_instances_rows_limit": 268435456
+    },
+    "ec_op_builtin": {
+      "trace_type": "Builtin",
+      "log_height": null,
+      "num_state_cols": 273,
+      "use_lookup_cols": {
+        "MemoryAddressToId": 7,
+        "MemoryIdToBig": 7,
+        "RangeCheck_8": 2,
+        "PartialEcMulGeneric": 1
+      },
+      "yield_lookup_cols": {
+        "PartialEcMulGeneric": 1
+      },
+      "lookup_rows": {
+        "MemoryAddressToId": 7,
+        "MemoryIdToBig": 7,
+        "RangeCheck_8": 2,
+        "PartialEcMulGeneric": 252
+      },
+      "padding_type": "None",
+      "total_num_trace_cols": 309,
+      "trace_cells_upper_bound": 320821,
+      "uses_upper_bound": {
+        "memory_address_to_id": 7,
+        "range_check_9_9": 4112,
+        "range_check_9_9_b": 4112,
+        "range_check_9_9_c": 4112,
+        "range_check_9_9_d": 4112,
+        "range_check_9_9_e": 4112,
+        "range_check_9_9_f": 4112,
+        "range_check_9_9_g": 2056,
+        "range_check_9_9_h": 2056,
+        "range_check_8": 1026,
+        "range_check_20": 7168,
+        "range_check_20_b": 7168,
+        "range_check_20_c": 7168,
+        "range_check_20_d": 7168,
+        "range_check_20_e": 5376,
+        "range_check_20_f": 5376,
+        "range_check_20_g": 5376,
+        "range_check_20_h": 5376
+      },
+      "rows_upper_bound": {
+        "partial_ec_mul_generic": 252
+      },
+      "max_instances_uses_limit": 299593,
+      "max_instances_rows_limit": 1048576
     }
   }
 }
