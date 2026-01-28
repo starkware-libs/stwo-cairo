@@ -909,7 +909,16 @@ impl<H: MerkleHasherLifted> From<CairoProof<H>> for CairoProofForRustVerifier<H>
 mod tests {
     use std::collections::HashMap;
 
-    use crate::air::accumulate_relation_uses;
+    use stwo::core::fields::cm31::CM31;
+    use stwo::core::fields::m31::M31;
+    use stwo::core::fields::qm31::QM31;
+    use stwo_cairo_common::prover_types::cpu::CasmState;
+
+    use crate::air::{
+        accumulate_relation_uses, MemorySmallValue, PubMemoryValue, PublicData, PublicMemory,
+        PublicSegmentRanges, SegmentRange,
+    };
+    use crate::relations::CommonLookupElements;
     use crate::verifier::RelationUse;
 
     #[test]
@@ -932,5 +941,161 @@ mod tests {
         assert_eq!(relation_uses.len(), 2);
         assert_eq!(relation_uses.get("relation_1"), Some(&12));
         assert_eq!(relation_uses.get("relation_2"), Some(&26));
+    }
+
+    #[test]
+    fn test_public_data_logup_sum() {
+        let program: Vec<PubMemoryValue> = vec![
+            (0, [2147450879, 67600385, 0, 0, 0, 0, 0, 0]),
+            (1, [11, 0, 0, 0, 0, 0, 0, 0]),
+            (2, [2147581952, 285507585, 0, 0, 0, 0, 0, 0]),
+            (3, [4, 0, 0, 0, 0, 0, 0, 0]),
+            (4, [2147450879, 17268737, 0, 0, 0, 0, 0, 0]),
+            (5, [0, 0, 0, 0, 0, 0, 0, 0]),
+            (6, [2147450880, 1208647667, 0, 0, 0, 0, 0, 0]),
+            (7, [2147450880, 1208647668, 0, 0, 0, 0, 0, 0]),
+            (8, [2147450880, 1208647669, 0, 0, 0, 0, 0, 0]),
+            (9, [2147450880, 1208647670, 0, 0, 0, 0, 0, 0]),
+            (10, [2147450880, 1208647671, 0, 0, 0, 0, 0, 0]),
+            (11, [2147450880, 1208647672, 0, 0, 0, 0, 0, 0]),
+            (12, [2147450880, 1208647673, 0, 0, 0, 0, 0, 0]),
+            (13, [2147450880, 1208647674, 0, 0, 0, 0, 0, 0]),
+            (14, [2147450880, 1208647675, 0, 0, 0, 0, 0, 0]),
+            (15, [2147450880, 1208647676, 0, 0, 0, 0, 0, 0]),
+            (16, [2147450880, 1208647677, 0, 0, 0, 0, 0, 0]),
+            (17, [2147450878, 546013183, 0, 0, 0, 0, 0, 0]),
+        ];
+
+        let dummy_lookup_elements = CommonLookupElements::dummy();
+        let public_data = PublicData {
+            public_memory: PublicMemory {
+                program: program,
+                public_segments: PublicSegmentRanges {
+                    output: SegmentRange {
+                        start_ptr: MemorySmallValue {
+                            id: 228,
+                            value: 2520,
+                        },
+                        stop_ptr: MemorySmallValue {
+                            id: 228,
+                            value: 2520,
+                        },
+                    },
+                    pedersen: Some(SegmentRange {
+                        start_ptr: MemorySmallValue {
+                            id: 228,
+                            value: 2520,
+                        },
+                        stop_ptr: MemorySmallValue {
+                            id: 228,
+                            value: 2520,
+                        },
+                    }),
+                    range_check_128: Some(SegmentRange {
+                        start_ptr: MemorySmallValue {
+                            id: 228,
+                            value: 2520,
+                        },
+                        stop_ptr: MemorySmallValue {
+                            id: 228,
+                            value: 2520,
+                        },
+                    }),
+                    ecdsa: Some(SegmentRange {
+                        start_ptr: MemorySmallValue { id: 5, value: 0 },
+                        stop_ptr: MemorySmallValue { id: 5, value: 0 },
+                    }),
+                    bitwise: Some(SegmentRange {
+                        start_ptr: MemorySmallValue {
+                            id: 228,
+                            value: 2520,
+                        },
+                        stop_ptr: MemorySmallValue {
+                            id: 228,
+                            value: 2520,
+                        },
+                    }),
+                    ec_op: Some(SegmentRange {
+                        start_ptr: MemorySmallValue { id: 5, value: 0 },
+                        stop_ptr: MemorySmallValue { id: 5, value: 0 },
+                    }),
+                    keccak: Some(SegmentRange {
+                        start_ptr: MemorySmallValue { id: 5, value: 0 },
+                        stop_ptr: MemorySmallValue { id: 5, value: 0 },
+                    }),
+                    poseidon: Some(SegmentRange {
+                        start_ptr: MemorySmallValue {
+                            id: 228,
+                            value: 2520,
+                        },
+                        stop_ptr: MemorySmallValue {
+                            id: 228,
+                            value: 2520,
+                        },
+                    }),
+                    range_check_96: Some(SegmentRange {
+                        start_ptr: MemorySmallValue {
+                            id: 228,
+                            value: 2520,
+                        },
+                        stop_ptr: MemorySmallValue {
+                            id: 228,
+                            value: 2520,
+                        },
+                    }),
+                    add_mod: Some(SegmentRange {
+                        start_ptr: MemorySmallValue {
+                            id: 228,
+                            value: 2520,
+                        },
+                        stop_ptr: MemorySmallValue {
+                            id: 228,
+                            value: 2520,
+                        },
+                    }),
+                    mul_mod: Some(SegmentRange {
+                        start_ptr: MemorySmallValue {
+                            id: 228,
+                            value: 2520,
+                        },
+                        stop_ptr: MemorySmallValue {
+                            id: 228,
+                            value: 2520,
+                        },
+                    }),
+                },
+                output: vec![],
+                safe_call_ids: [227, 5],
+            },
+            initial_state: CasmState {
+                pc: M31::from_u32_unchecked(1),
+                ap: M31::from_u32_unchecked(1336),
+                fp: M31::from_u32_unchecked(1336),
+            },
+            final_state: CasmState {
+                pc: M31::from_u32_unchecked(5),
+                ap: M31::from_u32_unchecked(2520),
+                fp: M31::from_u32_unchecked(1336),
+            },
+        };
+
+        let sum = public_data.logup_sum(&dummy_lookup_elements);
+
+        // Expected value with the new program data:
+
+        let expected = QM31(
+            CM31(
+                M31::from_u32_unchecked(908842852),
+                M31::from_u32_unchecked(42171643),
+            ),
+            CM31(
+                M31::from_u32_unchecked(313383432),
+                M31::from_u32_unchecked(1019452808),
+            ),
+        );
+        assert_eq!(
+            sum, expected,
+            "public_logup_sum result should match expected value with new program data"
+        );
     }
 }

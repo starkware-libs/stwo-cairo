@@ -1,5 +1,4 @@
 use core::num::traits::Zero;
-use core::num::traits::one::One;
 use stwo_constraint_framework::{
     CommonLookupElements, LookupElementsTrait, PreprocessedColumnIdx, PreprocessedMaskValues,
 };
@@ -12,7 +11,7 @@ use super::{MemorySmallValue, PublicDataImpl, PublicMemory, PublicSegmentRanges,
 #[generate_trait]
 pub impl LookupElementsDummyImpl of LookupElementsDummyTrait {
     fn dummy() -> CommonLookupElements {
-        LookupElementsTrait::from_z_alpha(z: qm31_const::<1, 2, 3, 4>(), alpha: One::one())
+        LookupElementsTrait::from_z_alpha(z: qm31_const::<1, 2, 3, 4>(), alpha: qm31_const::<4, 3, 2, 1>())
     }
 }
 
