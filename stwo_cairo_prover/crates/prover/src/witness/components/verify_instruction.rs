@@ -89,6 +89,12 @@ impl ClaimGenerator {
     }
 
     pub fn add_input(&self, input: &InputType, _relation_index: usize) {
+        // Fast path: try to get an existing entry with a read lock.
+        if let Some(entry) = self.mults.get(input) {
+            entry.fetch_add(1, Ordering::Relaxed);
+            return;
+        }
+        // Slow path: entry doesn't exist, need to insert it.
         self.mults
             .entry(*input)
             .or_insert_with(|| AtomicU32::new(0))
