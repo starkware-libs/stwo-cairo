@@ -14,10 +14,10 @@ use core::num::traits::Zero;
 use stwo_cairo_air::blake::*;
 use stwo_cairo_air::builtins::*;
 use stwo_cairo_air::cairo_component::CairoComponent;
-use stwo_cairo_air::claim::ClaimTrait;
+use stwo_cairo_air::claim::{ClaimTrait, FlatClaim, FlatClaimTrait, flatten_interaction_claim};
 use stwo_cairo_air::opcodes::*;
 use stwo_verifier_core::fields::m31::M31;
-use crate::P_U32;
+use crate::{ChannelTrait, P_U32};
 
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub mod pedersen_context_imports {
@@ -135,37 +135,8 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
     }
 
     fn mix_into(self: @CairoClaim, ref channel: Channel) {
-        let CairoClaim {
-            public_data,
-            opcodes,
-            verify_instruction,
-            blake_context,
-            builtins,
-            pedersen_context,
-            poseidon_context,
-            memory_address_to_id,
-            memory_id_to_value,
-            range_checks,
-            verify_bitwise_xor_4,
-            verify_bitwise_xor_7,
-            verify_bitwise_xor_8,
-            verify_bitwise_xor_9,
-        } = self;
-
-        public_data.mix_into(ref channel);
-        opcodes.mix_into(ref channel);
-        verify_instruction.mix_into(ref channel);
-        blake_context.mix_into(ref channel);
-        builtins.mix_into(ref channel);
-        pedersen_context.mix_into(ref channel);
-        poseidon_context.mix_into(ref channel);
-        memory_address_to_id.mix_into(ref channel);
-        memory_id_to_value.mix_into(ref channel);
-        range_checks.mix_into(ref channel);
-        verify_bitwise_xor_4.mix_into(ref channel);
-        verify_bitwise_xor_7.mix_into(ref channel);
-        verify_bitwise_xor_8.mix_into(ref channel);
-        verify_bitwise_xor_9.mix_into(ref channel);
+        let claim: FlatClaim = FlatClaimTrait::from_cairo_claim(self);
+        channel.mix_felts(claim.into_qm31s());
     }
 
     fn accumulate_relation_uses(self: @CairoClaim, ref relation_uses: RelationUsesDict) {
@@ -219,37 +190,9 @@ pub struct CairoInteractionClaim {
 }
 
 #[generate_trait]
-pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
+pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrait {
     fn mix_into(self: @CairoInteractionClaim, ref channel: Channel) {
-        let CairoInteractionClaim {
-            opcodes,
-            verify_instruction,
-            blake_context,
-            builtins,
-            pedersen_context,
-            poseidon_context,
-            memory_address_to_id,
-            memory_id_to_value,
-            range_checks,
-            verify_bitwise_xor_4,
-            verify_bitwise_xor_7,
-            verify_bitwise_xor_8,
-            verify_bitwise_xor_9,
-        } = self;
-
-        opcodes.mix_into(ref channel);
-        verify_instruction.mix_into(ref channel);
-        blake_context.mix_into(ref channel);
-        builtins.mix_into(ref channel);
-        pedersen_context.mix_into(ref channel);
-        poseidon_context.mix_into(ref channel);
-        memory_address_to_id.mix_into(ref channel);
-        memory_id_to_value.mix_into(ref channel);
-        range_checks.mix_into(ref channel);
-        verify_bitwise_xor_4.mix_into(ref channel);
-        verify_bitwise_xor_7.mix_into(ref channel);
-        verify_bitwise_xor_8.mix_into(ref channel);
-        verify_bitwise_xor_9.mix_into(ref channel);
+        channel.mix_felts(flatten_interaction_claim(self));
     }
 }
 
