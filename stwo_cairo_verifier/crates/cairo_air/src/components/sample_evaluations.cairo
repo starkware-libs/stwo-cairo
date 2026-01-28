@@ -1,4 +1,4 @@
-// AIR version 699e06bc
+// AIR version 72ccbaa0
 use stwo_verifier_core::fields::m31::M31;
 pub const ADD_AP_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1747787077 }, M31 { inner: 7677051 }, M31 { inner: 1790902331 },
@@ -60,6 +60,10 @@ pub const CUBE_252_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1593583862 }, M31 { inner: 1988351005 }, M31 { inner: 270186883 },
     M31 { inner: 1073920497 },
 ];
+pub const EC_OP_BUILTIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
+    M31 { inner: 1878001749 }, M31 { inner: 1448958833 }, M31 { inner: 661841698 },
+    M31 { inner: 202205134 },
+];
 pub const GENERIC_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 67859657 }, M31 { inner: 1033604772 }, M31 { inner: 1337665250 },
     M31 { inner: 365166224 },
@@ -111,6 +115,10 @@ pub const MUL_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
 pub const MUL_OPCODE_SMALL_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 60691802 }, M31 { inner: 2134274529 }, M31 { inner: 1874302147 },
     M31 { inner: 958734423 },
+];
+pub const PARTIAL_EC_MUL_GENERIC_SAMPLE_EVAL_RESULT: [M31; 4] = [
+    M31 { inner: 1335048765 }, M31 { inner: 660608730 }, M31 { inner: 499564977 },
+    M31 { inner: 1857312722 },
 ];
 pub const PARTIAL_EC_MUL_WINDOW_BITS_18_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 422508539 }, M31 { inner: 315894763 }, M31 { inner: 1621376112 },
