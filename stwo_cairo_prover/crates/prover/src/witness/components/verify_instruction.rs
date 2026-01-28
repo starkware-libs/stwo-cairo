@@ -88,19 +88,25 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_input(&self, input: &InputType, _relation_index: usize) {
-        self.mults
-            .entry(*input)
-            .or_insert_with(|| AtomicU32::new(0))
-            .fetch_add(1, Ordering::Relaxed);
-    }
-
-    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], relation_index: usize) {
-        packed_inputs.into_par_iter().for_each(|packed_input| {
-            packed_input.unpack().into_par_iter().for_each(|input| {
-                self.add_input(&input, relation_index);
+    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], _relation_index: usize) {
+        packed_inputs
+            .par_iter()
+            .flat_map(|packed_input| packed_input.unpack())
+            .fold(
+                HashMap::<InputType, u32>::new,
+                |mut local, input| {
+                    *local.entry(input).or_insert(0) += 1;
+                    local
+                },
+            )
+            .for_each(|local| {
+                for (k, v) in local {
+                    self.mults
+                        .entry(k)
+                        .or_insert_with(|| AtomicU32::new(0))
+                        .fetch_add(v, Ordering::Relaxed);
+                }
             });
-        });
     }
 }
 
