@@ -4,6 +4,7 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use cairo_air::air::{lookup_sum, CairoComponents, ExtendedCairoProof};
+use cairo_air::flat_claims::FlatClaim;
 use cairo_air::relations::CommonLookupElements;
 use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
 use cairo_air::verifier::{verify_cairo, INTERACTION_POW_BITS};
@@ -191,7 +192,7 @@ where
     if let Some(salt) = channel_salt {
         channel.mix_u64(salt);
     }
-    pcs_config.mix_into(channel);
+    // pcs_config.mix_into(channel);
     let mut commitment_scheme =
         CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
     if store_polynomials_coefficients {
@@ -211,7 +212,8 @@ where
     let (claim, interaction_generator) = cairo_claim_generator.write_trace(&mut tree_builder);
     span.exit();
 
-    claim.mix_into(channel);
+    let flat_claim = FlatClaim::from_cairo_claim(&claim);
+    flat_claim.mix_into(channel);
     tree_builder.commit(channel);
 
     // Draw interaction elements.
