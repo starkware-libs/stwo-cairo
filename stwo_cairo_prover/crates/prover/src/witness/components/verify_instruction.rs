@@ -11,9 +11,16 @@ use crate::witness::prelude::*;
 pub type InputType = (M31, [M31; 3], [M31; 2], M31);
 pub type PackedInputType = (PackedM31, [PackedM31; 3], [PackedM31; 2], PackedM31);
 
-#[derive(Default)]
 pub struct ClaimGenerator {
-    pub mults: DashMap<InputType, AtomicU32>,
+    pub mults: Mutex<HashMap<InputType, u32>>,
+}
+
+impl Default for ClaimGenerator {
+    fn default() -> Self {
+        Self {
+            mults: Mutex::new(HashMap::new()),
+        }
+    }
 }
 
 impl ClaimGenerator {
@@ -22,7 +29,7 @@ impl ClaimGenerator {
     }
 
     pub fn is_empty(&self) -> bool {
-        self.mults.is_empty()
+        self.mults.lock().unwrap().is_empty()
     }
 
     pub fn write_trace(
@@ -38,8 +45,10 @@ impl ClaimGenerator {
     ) {
         let mut inputs_mults = self
             .mults
-            .iter()
-            .map(|entry| (*entry.key(), M31(entry.value().load(Ordering::Relaxed))))
+            .into_inner()
+            .unwrap()
+            .into_iter()
+            .map(|(k, v)| (k, M31(v)))
             .collect::<Vec<_>>();
 
         inputs_mults.sort_by_key(|(input, _)| input.0);
@@ -103,11 +112,9 @@ impl ClaimGenerator {
                 a
             });
 
+        let mut mults = self.mults.lock().unwrap();
         for (k, v) in merged {
-            self.mults
-                .entry(k)
-                .or_insert_with(|| AtomicU32::new(0))
-                .fetch_add(v, Ordering::Relaxed);
+            *mults.entry(k).or_insert(0) += v;
         }
     }
 }
