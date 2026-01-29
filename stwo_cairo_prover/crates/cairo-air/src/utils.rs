@@ -1,3 +1,4 @@
+use std::array;
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::Path;
@@ -7,9 +8,11 @@ use bzip2::write::BzEncoder;
 use bzip2::Compression;
 use clap::ValueEnum;
 use itertools::Itertools;
+use num_traits::Zero;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use stwo::core::fields::m31::BaseField;
+use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
 use stwo::core::pcs::TreeVec;
 use stwo::core::vcs::blake2_hash::Blake2sHasher;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
@@ -43,6 +46,20 @@ pub enum ProofFormat {
     /// Binary format.
     /// Additionally compressed to minimize the proof size.
     Binary,
+}
+
+pub fn pack_into_secure_felts<T: Into<BaseField>>(
+    values: impl Iterator<Item = T>,
+) -> Vec<SecureField> {
+    values
+        .chunks(SECURE_EXTENSION_DEGREE)
+        .into_iter()
+        .map(|mut chunk| {
+            SecureField::from_m31_array(array::from_fn(|_| {
+                chunk.next().map(|v| v.into()).unwrap_or(BaseField::zero())
+            }))
+        })
+        .collect_vec()
 }
 
 /// Serializes Cairo proof given the desired format and writes it to a file.

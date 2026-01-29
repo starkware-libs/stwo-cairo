@@ -16,7 +16,7 @@ use super::cpu::{FELT252_BITS_PER_WORD, FELT252_N_WORDS};
 /// - `TU32`: the type of the input and output words.
 /// - `x`: the input dense representation.
 /// - `mask`: (1 << FELT252_BITS_PER_WORD) - 1.
-fn split<const N: usize, const M: usize, TU32>(x: [TU32; N], mask: TU32) -> [TU32; M]
+pub fn split<const N: usize, const M: usize, TU32>(x: [TU32; N], mask: TU32) -> [TU32; M]
 where
     TU32: BitAnd<Output = TU32>
         + BitOrAssign

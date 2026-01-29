@@ -3,7 +3,7 @@
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-const LOG_SIZE: u32 = 6;
+pub const LOG_SIZE: u32 = 6;
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {}

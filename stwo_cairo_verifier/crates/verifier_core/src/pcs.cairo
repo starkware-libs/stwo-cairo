@@ -7,11 +7,12 @@
 //! the existence of such polynomials, and are ok with having a small decoding list.
 //! Note: Opened points cannot come from the commitment domain.
 
+use stwo_verifier_core::utils::pack_into_qm31s;
 use crate::channel::{Channel, ChannelTrait};
 use crate::fri::FriConfig;
+
 mod quotients;
 pub mod verifier;
-use crate::fri::FriConfigTrait;
 
 #[derive(Drop, Serde, Copy)]
 pub struct PcsConfig {
@@ -21,10 +22,18 @@ pub struct PcsConfig {
 #[generate_trait]
 pub impl PcsConfigImpl of PcsConfigTrait {
     fn mix_into(self: @PcsConfig, ref channel: Channel) {
-        let PcsConfig { pow_bits, fri_config } = self;
-        channel.mix_u64((*pow_bits).into());
-        fri_config.mix_into(ref channel);
+        channel
+            .mix_felts(
+                pack_into_qm31s(
+                    array![
+                        *self.pow_bits, *self.fri_config.log_blowup_factor,
+                        *self.fri_config.n_queries, *self.fri_config.log_last_layer_degree_bound,
+                    ]
+                        .span(),
+                ),
+            );
     }
+
     fn security_bits(self: @PcsConfig) -> u32 {
         let PcsConfig {
             pow_bits, fri_config: FriConfig {
