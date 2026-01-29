@@ -1,15 +1,10 @@
 use itertools::{chain, Itertools};
-use num_traits::Zero;
-use serde::{Deserialize, Serialize};
 use stwo::core::air::Component;
-use stwo::core::channel::Channel;
-use stwo::core::fields::qm31::{SecureField, QM31};
 use stwo::core::pcs::TreeVec;
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::TraceLocationAllocator;
 
 use super::components::display_components;
-use crate::air::{accumulate_relation_uses, RelationUsesDict};
+use crate::claims::{CairoClaim, CairoInteractionClaim};
 use crate::components::{
     add_ap_opcode, add_opcode, add_opcode_small, assert_eq_opcode, assert_eq_opcode_double_deref,
     assert_eq_opcode_imm, blake_compress_opcode, call_opcode_abs, call_opcode_rel_imm,
@@ -19,260 +14,32 @@ use crate::components::{
 };
 use crate::relations::CommonLookupElements;
 
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct OpcodeClaim {
-    pub add: Vec<add_opcode::Claim>,
-    pub add_small: Vec<add_opcode_small::Claim>,
-    pub add_ap: Vec<add_ap_opcode::Claim>,
-    pub assert_eq: Vec<assert_eq_opcode::Claim>,
-    pub assert_eq_imm: Vec<assert_eq_opcode_imm::Claim>,
-    pub assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::Claim>,
-    pub blake: Vec<blake_compress_opcode::Claim>,
-    pub call: Vec<call_opcode_abs::Claim>,
-    pub call_rel_imm: Vec<call_opcode_rel_imm::Claim>,
-    pub generic: Vec<generic_opcode::Claim>,
-    pub jnz: Vec<jnz_opcode_non_taken::Claim>,
-    pub jnz_taken: Vec<jnz_opcode_taken::Claim>,
-    pub jump: Vec<jump_opcode_abs::Claim>,
-    pub jump_double_deref: Vec<jump_opcode_double_deref::Claim>,
-    pub jump_rel: Vec<jump_opcode_rel::Claim>,
-    pub jump_rel_imm: Vec<jump_opcode_rel_imm::Claim>,
-    pub mul: Vec<mul_opcode::Claim>,
-    pub mul_small: Vec<mul_opcode_small::Claim>,
-    pub qm31: Vec<qm_31_add_mul_opcode::Claim>,
-    pub ret: Vec<ret_opcode::Claim>,
-}
-impl OpcodeClaim {
-    /// For each opcode component vector, mixes the length and then the claims.
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        macro_rules! mix_component_vector {
-            ($field:ident) => {
-                channel.mix_u64(self.$field.len() as u64);
-                self.$field.iter().for_each(|c| c.mix_into(channel));
-            };
-        }
-
-        mix_component_vector!(add);
-        mix_component_vector!(add_small);
-        mix_component_vector!(add_ap);
-        mix_component_vector!(assert_eq);
-        mix_component_vector!(assert_eq_imm);
-        mix_component_vector!(assert_eq_double_deref);
-        mix_component_vector!(blake);
-        mix_component_vector!(call);
-        mix_component_vector!(call_rel_imm);
-        mix_component_vector!(generic);
-        mix_component_vector!(jnz);
-        mix_component_vector!(jnz_taken);
-        mix_component_vector!(jump);
-        mix_component_vector!(jump_double_deref);
-        mix_component_vector!(jump_rel);
-        mix_component_vector!(jump_rel_imm);
-        mix_component_vector!(mul);
-        mix_component_vector!(mul_small);
-        mix_component_vector!(qm31);
-        mix_component_vector!(ret);
-    }
-
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        TreeVec::concat_cols(chain!(
-            self.add.iter().map(|c| c.log_sizes()),
-            self.add_small.iter().map(|c| c.log_sizes()),
-            self.add_ap.iter().map(|c| c.log_sizes()),
-            self.assert_eq.iter().map(|c| c.log_sizes()),
-            self.assert_eq_imm.iter().map(|c| c.log_sizes()),
-            self.assert_eq_double_deref.iter().map(|c| c.log_sizes()),
-            self.blake.iter().map(|c| c.log_sizes()),
-            self.call.iter().map(|c| c.log_sizes()),
-            self.call_rel_imm.iter().map(|c| c.log_sizes()),
-            self.generic.iter().map(|c| c.log_sizes()),
-            self.jnz.iter().map(|c| c.log_sizes()),
-            self.jnz_taken.iter().map(|c| c.log_sizes()),
-            self.jump.iter().map(|c| c.log_sizes()),
-            self.jump_double_deref.iter().map(|c| c.log_sizes()),
-            self.jump_rel.iter().map(|c| c.log_sizes()),
-            self.jump_rel_imm.iter().map(|c| c.log_sizes()),
-            self.mul.iter().map(|c| c.log_sizes()),
-            self.mul_small.iter().map(|c| c.log_sizes()),
-            self.qm31.iter().map(|c| c.log_sizes()),
-            self.ret.iter().map(|c| c.log_sizes()),
-        ))
-    }
-
-    pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
-        let Self {
-            add,
-            add_small,
-            add_ap,
-            assert_eq,
-            assert_eq_imm,
-            assert_eq_double_deref,
-            blake,
-            call,
-            call_rel_imm,
-            generic,
-            jnz,
-            jnz_taken,
-            jump,
-            jump_double_deref,
-            jump_rel,
-            jump_rel_imm,
-            mul,
-            mul_small,
-            qm31,
-            ret,
-        } = self;
-
-        // TODO(alonf): canonicalize the name of field and module.
-        macro_rules! relation_uses {
-            ($field:ident, $module:ident) => {
-                $field.iter().for_each(|c| {
-                    accumulate_relation_uses(
-                        relation_uses,
-                        $module::RELATION_USES_PER_ROW,
-                        c.log_size,
-                    )
-                });
-            };
-        }
-        relation_uses!(add, add_opcode);
-        relation_uses!(add_small, add_opcode_small);
-        relation_uses!(add_ap, add_ap_opcode);
-        relation_uses!(assert_eq, assert_eq_opcode);
-        relation_uses!(assert_eq_imm, assert_eq_opcode_imm);
-        relation_uses!(assert_eq_double_deref, assert_eq_opcode_double_deref);
-        relation_uses!(blake, blake_compress_opcode);
-        relation_uses!(call, call_opcode_abs);
-        relation_uses!(call_rel_imm, call_opcode_rel_imm);
-        relation_uses!(generic, generic_opcode);
-        relation_uses!(jnz, jnz_opcode_non_taken);
-        relation_uses!(jnz_taken, jnz_opcode_taken);
-        relation_uses!(jump, jump_opcode_abs);
-        relation_uses!(jump_double_deref, jump_opcode_double_deref);
-        relation_uses!(jump_rel, jump_opcode_rel);
-        relation_uses!(jump_rel_imm, jump_opcode_rel_imm);
-        relation_uses!(mul, mul_opcode);
-        relation_uses!(mul_small, mul_opcode_small);
-        relation_uses!(qm31, qm_31_add_mul_opcode);
-        relation_uses!(ret, ret_opcode);
-    }
-}
-
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct OpcodeInteractionClaim {
-    pub add: Vec<add_opcode::InteractionClaim>,
-    pub add_small: Vec<add_opcode_small::InteractionClaim>,
-    pub add_ap: Vec<add_ap_opcode::InteractionClaim>,
-    pub assert_eq: Vec<assert_eq_opcode::InteractionClaim>,
-    pub assert_eq_imm: Vec<assert_eq_opcode_imm::InteractionClaim>,
-    pub assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::InteractionClaim>,
-    pub blake: Vec<blake_compress_opcode::InteractionClaim>,
-    pub call: Vec<call_opcode_abs::InteractionClaim>,
-    pub call_rel_imm: Vec<call_opcode_rel_imm::InteractionClaim>,
-    pub generic: Vec<generic_opcode::InteractionClaim>,
-    pub jnz: Vec<jnz_opcode_non_taken::InteractionClaim>,
-    pub jnz_taken: Vec<jnz_opcode_taken::InteractionClaim>,
-    pub jump: Vec<jump_opcode_abs::InteractionClaim>,
-    pub jump_double_deref: Vec<jump_opcode_double_deref::InteractionClaim>,
-    pub jump_rel: Vec<jump_opcode_rel::InteractionClaim>,
-    pub jump_rel_imm: Vec<jump_opcode_rel_imm::InteractionClaim>,
-    pub mul: Vec<mul_opcode::InteractionClaim>,
-    pub mul_small: Vec<mul_opcode_small::InteractionClaim>,
-    pub qm31: Vec<qm_31_add_mul_opcode::InteractionClaim>,
-    pub ret: Vec<ret_opcode::InteractionClaim>,
-}
-impl OpcodeInteractionClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        self.add.iter().for_each(|c| c.mix_into(channel));
-        self.add_small.iter().for_each(|c| c.mix_into(channel));
-        self.add_ap.iter().for_each(|c| c.mix_into(channel));
-        self.assert_eq.iter().for_each(|c| c.mix_into(channel));
-        self.assert_eq_imm.iter().for_each(|c| c.mix_into(channel));
-        self.assert_eq_double_deref
+pub fn opcodes_log_sizes(claim: &CairoClaim) -> TreeVec<Vec<u32>> {
+    TreeVec::concat_cols(chain!(
+        claim.add_opcode.iter().map(|c| c.log_sizes()),
+        claim.add_opcode_small.iter().map(|c| c.log_sizes()),
+        claim.add_ap_opcode.iter().map(|c| c.log_sizes()),
+        claim.assert_eq_opcode.iter().map(|c| c.log_sizes()),
+        claim.assert_eq_opcode_imm.iter().map(|c| c.log_sizes()),
+        claim
+            .assert_eq_opcode_double_deref
             .iter()
-            .for_each(|c| c.mix_into(channel));
-        self.blake.iter().for_each(|c| c.mix_into(channel));
-        self.call.iter().for_each(|c| c.mix_into(channel));
-        self.call_rel_imm.iter().for_each(|c| c.mix_into(channel));
-        self.generic.iter().for_each(|c| c.mix_into(channel));
-        self.jnz.iter().for_each(|c| c.mix_into(channel));
-        self.jnz_taken.iter().for_each(|c| c.mix_into(channel));
-        self.jump.iter().for_each(|c| c.mix_into(channel));
-        self.jump_double_deref
-            .iter()
-            .for_each(|c| c.mix_into(channel));
-        self.jump_rel.iter().for_each(|c| c.mix_into(channel));
-        self.jump_rel_imm.iter().for_each(|c| c.mix_into(channel));
-        self.mul.iter().for_each(|c| c.mix_into(channel));
-        self.mul_small.iter().for_each(|c| c.mix_into(channel));
-        self.qm31.iter().for_each(|c| c.mix_into(channel));
-        self.ret.iter().for_each(|c| c.mix_into(channel));
-    }
-
-    pub fn sum(&self) -> SecureField {
-        let mut sum = QM31::zero();
-        for interaction_claim in &self.add {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.add_small {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.add_ap {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.assert_eq {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.assert_eq_imm {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.assert_eq_double_deref {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.blake {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.call {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.call_rel_imm {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.generic {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.jnz {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.jnz_taken {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.jump {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.jump_double_deref {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.jump_rel {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.jump_rel_imm {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.mul {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.mul_small {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.qm31 {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.ret {
-            sum += interaction_claim.claimed_sum;
-        }
-        sum
-    }
+            .map(|c| c.log_sizes()),
+        claim.blake_compress_opcode.iter().map(|c| c.log_sizes()),
+        claim.call_opcode_abs.iter().map(|c| c.log_sizes()),
+        claim.call_opcode_rel_imm.iter().map(|c| c.log_sizes()),
+        claim.generic_opcode.iter().map(|c| c.log_sizes()),
+        claim.jnz_opcode_non_taken.iter().map(|c| c.log_sizes()),
+        claim.jnz_opcode_taken.iter().map(|c| c.log_sizes()),
+        claim.jump_opcode_abs.iter().map(|c| c.log_sizes()),
+        claim.jump_opcode_double_deref.iter().map(|c| c.log_sizes()),
+        claim.jump_opcode_rel.iter().map(|c| c.log_sizes()),
+        claim.jump_opcode_rel_imm.iter().map(|c| c.log_sizes()),
+        claim.mul_opcode.iter().map(|c| c.log_sizes()),
+        claim.mul_opcode_small.iter().map(|c| c.log_sizes()),
+        claim.qm_31_add_mul_opcode.iter().map(|c| c.log_sizes()),
+        claim.ret_opcode.iter().map(|c| c.log_sizes()),
+    ))
 }
 
 pub struct OpcodeComponents {
@@ -300,14 +67,14 @@ pub struct OpcodeComponents {
 impl OpcodeComponents {
     pub fn new(
         tree_span_provider: &mut TraceLocationAllocator,
-        claim: &OpcodeClaim,
+        cairo_claim: &CairoClaim,
         common_lookup_elements: &CommonLookupElements,
-        interaction_claim: &OpcodeInteractionClaim,
+        interaction_claim: &CairoInteractionClaim,
     ) -> Self {
-        let add_components = claim
-            .add
+        let add_components = cairo_claim
+            .add_opcode
             .iter()
-            .zip(interaction_claim.add.iter())
+            .zip(interaction_claim.add_opcode.iter())
             .map(|(&claim, &interaction_claim)| {
                 add_opcode::Component::new(
                     tree_span_provider,
@@ -319,10 +86,10 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
-        let add_small_components = claim
-            .add_small
+        let add_small_components = cairo_claim
+            .add_opcode_small
             .iter()
-            .zip(interaction_claim.add_small.iter())
+            .zip(interaction_claim.add_opcode_small.iter())
             .map(|(&claim, &interaction_claim)| {
                 add_opcode_small::Component::new(
                     tree_span_provider,
@@ -334,10 +101,10 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
-        let add_ap_components = claim
-            .add_ap
+        let add_ap_components = cairo_claim
+            .add_ap_opcode
             .iter()
-            .zip(interaction_claim.add_ap.iter())
+            .zip(interaction_claim.add_ap_opcode.iter())
             .map(|(&claim, &interaction_claim)| {
                 add_ap_opcode::Component::new(
                     tree_span_provider,
@@ -349,10 +116,10 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
-        let assert_eq_components = claim
-            .assert_eq
+        let assert_eq_components = cairo_claim
+            .assert_eq_opcode
             .iter()
-            .zip(interaction_claim.assert_eq.iter())
+            .zip(interaction_claim.assert_eq_opcode.iter())
             .map(|(&claim, &interaction_claim)| {
                 assert_eq_opcode::Component::new(
                     tree_span_provider,
@@ -364,10 +131,10 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
-        let assert_eq_imm_components = claim
-            .assert_eq_imm
+        let assert_eq_imm_components = cairo_claim
+            .assert_eq_opcode_imm
             .iter()
-            .zip(interaction_claim.assert_eq_imm.iter())
+            .zip(interaction_claim.assert_eq_opcode_imm.iter())
             .map(|(&claim, &interaction_claim)| {
                 assert_eq_opcode_imm::Component::new(
                     tree_span_provider,
@@ -379,10 +146,10 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
-        let assert_eq_double_deref_components = claim
-            .assert_eq_double_deref
+        let assert_eq_double_deref_components = cairo_claim
+            .assert_eq_opcode_double_deref
             .iter()
-            .zip(interaction_claim.assert_eq_double_deref.iter())
+            .zip(interaction_claim.assert_eq_opcode_double_deref.iter())
             .map(|(&claim, &interaction_claim)| {
                 assert_eq_opcode_double_deref::Component::new(
                     tree_span_provider,
@@ -394,10 +161,10 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
-        let blake_components = claim
-            .blake
+        let blake_components = cairo_claim
+            .blake_compress_opcode
             .iter()
-            .zip(interaction_claim.blake.iter())
+            .zip(interaction_claim.blake_compress_opcode.iter())
             .map(|(&claim, &interaction_claim)| {
                 blake_compress_opcode::Component::new(
                     tree_span_provider,
@@ -409,10 +176,10 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
-        let call_components = claim
-            .call
+        let call_components = cairo_claim
+            .call_opcode_abs
             .iter()
-            .zip(interaction_claim.call.iter())
+            .zip(interaction_claim.call_opcode_abs.iter())
             .map(|(&claim, &interaction_claim)| {
                 call_opcode_abs::Component::new(
                     tree_span_provider,
@@ -424,10 +191,10 @@ impl OpcodeComponents {
                 )
             })
             .collect();
-        let call_rel_imm_components = claim
-            .call_rel_imm
+        let call_rel_imm_components = cairo_claim
+            .call_opcode_rel_imm
             .iter()
-            .zip(interaction_claim.call_rel_imm.iter())
+            .zip(interaction_claim.call_opcode_rel_imm.iter())
             .map(|(&claim, &interaction_claim)| {
                 call_opcode_rel_imm::Component::new(
                     tree_span_provider,
@@ -439,10 +206,10 @@ impl OpcodeComponents {
                 )
             })
             .collect();
-        let generic_components = claim
-            .generic
+        let generic_components = cairo_claim
+            .generic_opcode
             .iter()
-            .zip(interaction_claim.generic.iter())
+            .zip(interaction_claim.generic_opcode.iter())
             .map(|(&claim, &interaction_claim)| {
                 generic_opcode::Component::new(
                     tree_span_provider,
@@ -454,10 +221,10 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
-        let jnz_components = claim
-            .jnz
+        let jnz_components = cairo_claim
+            .jnz_opcode_non_taken
             .iter()
-            .zip(interaction_claim.jnz.iter())
+            .zip(interaction_claim.jnz_opcode_non_taken.iter())
             .map(|(&claim, &interaction_claim)| {
                 jnz_opcode_non_taken::Component::new(
                     tree_span_provider,
@@ -469,10 +236,10 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
-        let jnz_taken_components = claim
-            .jnz_taken
+        let jnz_taken_components = cairo_claim
+            .jnz_opcode_taken
             .iter()
-            .zip(interaction_claim.jnz_taken.iter())
+            .zip(interaction_claim.jnz_opcode_taken.iter())
             .map(|(&claim, &interaction_claim)| {
                 jnz_opcode_taken::Component::new(
                     tree_span_provider,
@@ -484,10 +251,10 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
-        let jump_components = claim
-            .jump
+        let jump_components = cairo_claim
+            .jump_opcode_abs
             .iter()
-            .zip(interaction_claim.jump.iter())
+            .zip(interaction_claim.jump_opcode_abs.iter())
             .map(|(&claim, &interaction_claim)| {
                 jump_opcode_abs::Component::new(
                     tree_span_provider,
@@ -499,10 +266,10 @@ impl OpcodeComponents {
                 )
             })
             .collect();
-        let jump_double_deref_components = claim
-            .jump_double_deref
+        let jump_double_deref_components = cairo_claim
+            .jump_opcode_double_deref
             .iter()
-            .zip(interaction_claim.jump_double_deref.iter())
+            .zip(interaction_claim.jump_opcode_double_deref.iter())
             .map(|(&claim, &interaction_claim)| {
                 jump_opcode_double_deref::Component::new(
                     tree_span_provider,
@@ -514,10 +281,10 @@ impl OpcodeComponents {
                 )
             })
             .collect();
-        let jump_rel_components = claim
-            .jump_rel
+        let jump_rel_components = cairo_claim
+            .jump_opcode_rel
             .iter()
-            .zip(interaction_claim.jump_rel.iter())
+            .zip(interaction_claim.jump_opcode_rel.iter())
             .map(|(&claim, &interaction_claim)| {
                 jump_opcode_rel::Component::new(
                     tree_span_provider,
@@ -529,10 +296,10 @@ impl OpcodeComponents {
                 )
             })
             .collect();
-        let jump_rel_imm_components = claim
-            .jump_rel_imm
+        let jump_rel_imm_components = cairo_claim
+            .jump_opcode_rel_imm
             .iter()
-            .zip(interaction_claim.jump_rel_imm.iter())
+            .zip(interaction_claim.jump_opcode_rel_imm.iter())
             .map(|(&claim, &interaction_claim)| {
                 jump_opcode_rel_imm::Component::new(
                     tree_span_provider,
@@ -544,10 +311,10 @@ impl OpcodeComponents {
                 )
             })
             .collect();
-        let mul_components = claim
-            .mul
+        let mul_components = cairo_claim
+            .mul_opcode
             .iter()
-            .zip(interaction_claim.mul.iter())
+            .zip(interaction_claim.mul_opcode.iter())
             .map(|(&claim, &interaction_claim)| {
                 mul_opcode::Component::new(
                     tree_span_provider,
@@ -559,10 +326,10 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
-        let mul_small_components = claim
-            .mul_small
+        let mul_small_components = cairo_claim
+            .mul_opcode_small
             .iter()
-            .zip(interaction_claim.mul_small.iter())
+            .zip(interaction_claim.mul_opcode_small.iter())
             .map(|(&claim, &interaction_claim)| {
                 mul_opcode_small::Component::new(
                     tree_span_provider,
@@ -574,10 +341,10 @@ impl OpcodeComponents {
                 )
             })
             .collect_vec();
-        let qm31_components = claim
-            .qm31
+        let qm31_components = cairo_claim
+            .qm_31_add_mul_opcode
             .iter()
-            .zip(interaction_claim.qm31.iter())
+            .zip(interaction_claim.qm_31_add_mul_opcode.iter())
             .map(|(&claim, &interaction_claim)| {
                 qm_31_add_mul_opcode::Component::new(
                     tree_span_provider,
@@ -589,10 +356,10 @@ impl OpcodeComponents {
                 )
             })
             .collect();
-        let ret_components = claim
-            .ret
+        let ret_components = cairo_claim
+            .ret_opcode
             .iter()
-            .zip(interaction_claim.ret.iter())
+            .zip(interaction_claim.ret_opcode.iter())
             .map(|(&claim, &interaction_claim)| {
                 ret_opcode::Component::new(
                     tree_span_provider,

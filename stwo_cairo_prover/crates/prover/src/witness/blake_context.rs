@@ -1,4 +1,8 @@
-use cairo_air::blake::air::{BlakeContextClaim, Claim};
+use cairo_air::components::{
+    blake_g as blake_g_claim, blake_round as blake_round_claim,
+    blake_round_sigma as blake_round_sigma_claim, triple_xor_32 as triple_xor_32_claim,
+    verify_bitwise_xor_12 as verify_bitwise_xor_12_claim,
+};
 use stwo::prover::backend::simd::SimdBackend;
 use tracing::{span, Level};
 
@@ -9,6 +13,7 @@ use crate::witness::components::{
 };
 use crate::witness::utils::TreeBuilder;
 
+#[allow(clippy::type_complexity)]
 pub fn blake_context_write_trace(
     blake_round: Option<blake_round::ClaimGenerator>,
     blake_g: Option<blake_g::ClaimGenerator>,
@@ -23,11 +28,23 @@ pub fn blake_context_write_trace(
     verify_bitwise_xor_7_trace_generator: Option<&verify_bitwise_xor_7::ClaimGenerator>,
     verify_bitwise_xor_8_trace_generator: Option<&verify_bitwise_xor_8::ClaimGenerator>,
     verify_bitwise_xor_9_trace_generator: Option<&verify_bitwise_xor_9::ClaimGenerator>,
-) -> (BlakeContextClaim, BlakeContextInteractionClaimGenerator) {
+) -> (
+    Option<blake_round_claim::Claim>,
+    Option<blake_g_claim::Claim>,
+    Option<blake_round_sigma_claim::Claim>,
+    Option<triple_xor_32_claim::Claim>,
+    Option<verify_bitwise_xor_12_claim::Claim>,
+    BlakeContextInteractionClaimGenerator,
+) {
     let span = span!(Level::INFO, "write blake context trace").entered();
     if blake_round.as_ref().is_none_or(|tg| tg.is_empty()) {
+        span.exit();
         return (
-            BlakeContextClaim { claim: None },
+            None,
+            None,
+            None,
+            None,
+            None,
             BlakeContextInteractionClaimGenerator { gen: None },
         );
     }
@@ -64,13 +81,6 @@ pub fn blake_context_write_trace(
         verify_bitwise_xor_12.write_trace(tree_builder);
     span.exit();
 
-    let claim = Some(Claim {
-        blake_round: blake_round_claim,
-        blake_g: blake_g_claim,
-        blake_sigma: blake_sigma_claim,
-        triple_xor_32: triple_xor_32_claim,
-        verify_bitwise_xor_12: verify_bitwise_xor_12_claim,
-    });
     let gen = Some(BlakeInteractionClaimGenerator {
         blake_round_interaction_gen,
         blake_g_interaction_gen,
@@ -78,8 +88,13 @@ pub fn blake_context_write_trace(
         triple_xor_32_interaction_gen,
         verify_bitwise_xor_12_interaction_gen,
     });
+
     (
-        BlakeContextClaim { claim },
+        Some(blake_round_claim),
+        Some(blake_g_claim),
+        Some(blake_sigma_claim),
+        Some(triple_xor_32_claim),
+        Some(verify_bitwise_xor_12_claim),
         BlakeContextInteractionClaimGenerator { gen },
     )
 }

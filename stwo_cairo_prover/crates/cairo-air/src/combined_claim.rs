@@ -3,24 +3,15 @@ use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo_cairo_common::prover_types::cpu::CasmState;
 
-use crate::air::{
-    CairoClaim, CairoInteractionClaim, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange,
-};
-use crate::blake::air::{Claim as BlakeClaim, InteractionClaim as BlakeInteractionClaim};
-use crate::builtins_air::{BuiltinsClaim, BuiltinsInteractionClaim};
+use crate::air::{PublicData, PublicMemory, PublicSegmentRanges, SegmentRange};
+use crate::claims::{CairoClaim, CairoInteractionClaim};
 use crate::components::{
-    add_mod_builtin, bitwise_builtin, blake_round_sigma, memory_address_to_id, memory_id_to_big,
-    mul_mod_builtin, pedersen_builtin, pedersen_points_table_window_bits_18, poseidon_builtin,
-    poseidon_round_keys, range_check96_builtin, range_check_11, range_check_12, range_check_18,
-    range_check_20, range_check_3_3_3_3_3, range_check_3_6_6_3, range_check_4_3, range_check_4_4,
-    range_check_4_4_4_4, range_check_6, range_check_7_2_5, range_check_8, range_check_9_9,
-    range_check_builtin, verify_bitwise_xor_12, verify_bitwise_xor_4, verify_bitwise_xor_7,
-    verify_bitwise_xor_8, verify_bitwise_xor_9,
+    blake_round_sigma, memory_id_to_big, pedersen_points_table_window_bits_18, poseidon_round_keys,
+    range_check_11, range_check_12, range_check_18, range_check_20, range_check_3_3_3_3_3,
+    range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4, range_check_6,
+    range_check_7_2_5, range_check_8, range_check_9_9, verify_bitwise_xor_12, verify_bitwise_xor_4,
+    verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9,
 };
-use crate::opcodes_air::{OpcodeClaim, OpcodeInteractionClaim};
-use crate::pedersen::air::{Claim as PedersenClaim, InteractionClaim as PedersenInteractionClaim};
-use crate::poseidon::air::{Claim as PoseidonClaim, InteractionClaim as PoseidonInteractionClaim};
-use crate::range_checks_air::RangeChecksClaim;
 
 pub struct CombinedClaim {
     pub component_enable_bits: Vec<bool>,
@@ -51,23 +42,6 @@ fn get_public_claim(claim: &CairoClaim) -> (Vec<BaseField>, Vec<bool>, Vec<u32>)
     let mut component_enable_bits = vec![];
     let mut component_log_sizes = vec![];
 
-    let CairoClaim {
-        public_data,
-        opcodes,
-        verify_instruction,
-        blake_context,
-        builtins,
-        pedersen_context,
-        poseidon_context,
-        memory_address_to_id,
-        memory_id_to_value,
-        range_checks,
-        verify_bitwise_xor_4,
-        verify_bitwise_xor_7,
-        verify_bitwise_xor_8,
-        verify_bitwise_xor_9,
-    } = claim;
-
     let PublicData {
         public_memory:
             PublicMemory {
@@ -88,7 +62,7 @@ fn get_public_claim(claim: &CairoClaim) -> (Vec<BaseField>, Vec<bool>, Vec<u32>)
                 ap: final_ap,
                 fp: final_fp,
             },
-    } = public_data;
+    } = &claim.public_data;
     for (id, value) in program {
         public_claim.push(BaseField::from_u32_unchecked(*id));
         public_claim.extend(value.iter().map(|&v| BaseField::from_u32_unchecked(v)));
@@ -132,308 +106,281 @@ fn get_public_claim(claim: &CairoClaim) -> (Vec<BaseField>, Vec<bool>, Vec<u32>)
     public_claim.push(*final_pc);
 
     // Opcodes
-    let OpcodeClaim {
-        add,
-        add_small,
-        add_ap,
-        assert_eq,
-        assert_eq_imm,
-        assert_eq_double_deref,
-        blake,
-        call,
-        call_rel_imm,
-        generic,
-        jnz,
-        jnz_taken,
-        jump,
-        jump_double_deref,
-        jump_rel,
-        jump_rel_imm,
-        mul,
-        mul_small,
-        qm31,
-        ret,
-    } = opcodes;
-
-    single_log_size(
-        add,
+    option_log_size(
+        &claim.add_opcode,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        add_small,
+    option_log_size(
+        &claim.add_opcode_small,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        add_ap,
+    option_log_size(
+        &claim.add_ap_opcode,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        assert_eq,
+    option_log_size(
+        &claim.assert_eq_opcode,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        assert_eq_imm,
+    option_log_size(
+        &claim.assert_eq_opcode_imm,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        assert_eq_double_deref,
+    option_log_size(
+        &claim.assert_eq_opcode_double_deref,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        blake,
+    option_log_size(
+        &claim.blake_compress_opcode,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        call,
+    option_log_size(
+        &claim.call_opcode_abs,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        call_rel_imm,
+    option_log_size(
+        &claim.call_opcode_rel_imm,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        generic,
+    option_log_size(
+        &claim.generic_opcode,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        jnz,
+    option_log_size(
+        &claim.jnz_opcode_non_taken,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        jnz_taken,
+    option_log_size(
+        &claim.jnz_opcode_taken,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        jump,
+    option_log_size(
+        &claim.jump_opcode_abs,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        jump_double_deref,
+    option_log_size(
+        &claim.jump_opcode_double_deref,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        jump_rel,
+    option_log_size(
+        &claim.jump_opcode_rel,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        jump_rel_imm,
+    option_log_size(
+        &claim.jump_opcode_rel_imm,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        mul,
+    option_log_size(
+        &claim.mul_opcode,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        mul_small,
+    option_log_size(
+        &claim.mul_opcode_small,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        qm31,
+    option_log_size(
+        &claim.qm_31_add_mul_opcode,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    single_log_size(
-        ret,
+    option_log_size(
+        &claim.ret_opcode,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
 
     // Verify instruction
-    component_log_sizes.push(verify_instruction.log_size);
-    component_enable_bits.push(true);
+    option_log_size(
+        &claim.verify_instruction,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
 
-    // Blake context
-    if let Some(BlakeClaim {
-        blake_g,
-        triple_xor_32,
-        blake_sigma: blake_round_sigma::Claim {},
-        blake_round,
-        verify_bitwise_xor_12: verify_bitwise_xor_12::Claim {},
-    }) = &blake_context.claim
-    {
-        component_log_sizes.push(blake_g.log_size);
-        component_log_sizes.push(triple_xor_32.log_size);
-        component_log_sizes.push(blake_round_sigma::LOG_SIZE);
-        component_log_sizes.push(blake_round.log_size);
-        component_log_sizes.push(verify_bitwise_xor_12::LOG_SIZE);
-        component_enable_bits.extend([true; 5]);
-    } else {
-        component_log_sizes.extend([0; 5]);
-        component_enable_bits.extend([false; 5]);
-    }
+    // Blake
+    option_log_size(
+        &claim.blake_g,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.triple_xor_32,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.blake_round_sigma,
+        |_| blake_round_sigma::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.blake_round,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.verify_bitwise_xor_12,
+        |_| verify_bitwise_xor_12::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
 
     // Builtins
-    let BuiltinsClaim {
-        range_check_128_builtin,
-        range_check_96_builtin,
-        bitwise_builtin,
-        add_mod_builtin,
-        mul_mod_builtin,
-        pedersen_builtin,
-        poseidon_builtin,
-    } = builtins;
-    if let Some(range_check_builtin::Claim {
-        log_size,
-        range_check_builtin_segment_start: _,
-    }) = range_check_128_builtin
-    {
-        component_log_sizes.push(*log_size);
-        component_enable_bits.push(true);
-    } else {
-        component_log_sizes.push(0_u32);
-        component_enable_bits.push(false);
-    }
-    if let Some(range_check96_builtin::Claim {
-        log_size,
-        range_check96_builtin_segment_start: _,
-    }) = range_check_96_builtin
-    {
-        component_log_sizes.push(*log_size);
-        component_enable_bits.push(true);
-    } else {
-        component_log_sizes.push(0_u32);
-        component_enable_bits.push(false);
-    }
-    if let Some(bitwise_builtin::Claim {
-        log_size,
-        bitwise_builtin_segment_start: _,
-    }) = bitwise_builtin
-    {
-        component_log_sizes.push(*log_size);
-        component_enable_bits.push(true);
-    } else {
-        component_log_sizes.push(0_u32);
-        component_enable_bits.push(false);
-    }
-    if let Some(add_mod_builtin::Claim {
-        log_size,
-        add_mod_builtin_segment_start: _,
-    }) = add_mod_builtin
-    {
-        component_log_sizes.push(*log_size);
-        component_enable_bits.push(true);
-    } else {
-        component_log_sizes.push(0_u32);
-        component_enable_bits.push(false);
-    }
-    if let Some(mul_mod_builtin::Claim {
-        log_size,
-        mul_mod_builtin_segment_start: _,
-    }) = mul_mod_builtin
-    {
-        component_log_sizes.push(*log_size);
-        component_enable_bits.push(true);
-    } else {
-        component_log_sizes.push(0_u32);
-        component_enable_bits.push(false);
-    }
-    if let Some(pedersen_builtin::Claim {
-        log_size,
-        pedersen_builtin_segment_start: _,
-    }) = pedersen_builtin
-    {
-        component_log_sizes.push(*log_size);
-        component_enable_bits.push(true);
-    } else {
-        component_log_sizes.push(0_u32);
-        component_enable_bits.push(false);
-    }
-    if let Some(poseidon_builtin::Claim {
-        log_size,
-        poseidon_builtin_segment_start: _,
-    }) = poseidon_builtin
-    {
-        component_log_sizes.push(*log_size);
-        component_enable_bits.push(true);
-    } else {
-        component_log_sizes.push(0_u32);
-        component_enable_bits.push(false);
-    }
+    option_log_size(
+        &claim.range_check_builtin,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check96_builtin,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.bitwise_builtin,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.add_mod_builtin,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.mul_mod_builtin,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.pedersen_builtin,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.poseidon_builtin,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
 
     // Pedersen context
-    if let Some(PedersenClaim {
-        pedersen_aggregator,
-        partial_ec_mul,
-        pedersen_points_table: pedersen_points_table_window_bits_18::Claim {},
-    }) = &pedersen_context.claim
-    {
-        component_log_sizes.push(pedersen_aggregator.log_size);
-        component_log_sizes.push(partial_ec_mul.log_size);
-        component_log_sizes.push(pedersen_points_table_window_bits_18::LOG_SIZE);
-        component_enable_bits.extend([true; 3]);
-    } else {
-        component_log_sizes.extend([0; 3]);
-        component_enable_bits.extend([false; 3]);
-    }
+    option_log_size(
+        &claim.pedersen_aggregator_window_bits_18,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.partial_ec_mul_window_bits_18,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.pedersen_points_table_window_bits_18,
+        |_| pedersen_points_table_window_bits_18::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
 
     // Poseidon context
-    if let Some(PoseidonClaim {
-        poseidon_aggregator,
-        poseidon_3_partial_rounds_chain,
-        poseidon_full_round_chain,
-        cube_252,
-        poseidon_round_keys: poseidon_round_keys::Claim {},
-        range_check_252_width_27,
-    }) = &poseidon_context.claim
-    {
-        component_log_sizes.push(poseidon_aggregator.log_size);
-        component_log_sizes.push(poseidon_3_partial_rounds_chain.log_size);
-        component_log_sizes.push(poseidon_full_round_chain.log_size);
-        component_log_sizes.push(cube_252.log_size);
-        component_log_sizes.push(poseidon_round_keys::LOG_SIZE);
-        component_log_sizes.push(range_check_252_width_27.log_size);
-        component_enable_bits.extend([true; 6]);
-    } else {
-        component_log_sizes.extend([0; 6]);
-        component_enable_bits.extend([false; 6]);
-    }
+    option_log_size(
+        &claim.poseidon_aggregator,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.poseidon_3_partial_rounds_chain,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.poseidon_full_round_chain,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.cube_252,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.poseidon_round_keys,
+        |_| poseidon_round_keys::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check_252_width_27,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
 
     // Memory
-    let memory_address_to_id::Claim { log_size } = memory_address_to_id;
-    component_log_sizes.push(*log_size);
-    component_enable_bits.push(true);
+    option_log_size(
+        &claim.memory_address_to_id,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+
     let memory_id_to_big::Claim {
         big_log_sizes,
         small_log_size,
-    } = memory_id_to_value;
+    } = claim.memory_id_to_big.as_ref().unwrap();
     assert!(big_log_sizes.len() <= 4);
     for log_size in big_log_sizes {
         component_log_sizes.push(*log_size);
@@ -447,74 +394,111 @@ fn get_public_claim(claim: &CairoClaim) -> (Vec<BaseField>, Vec<bool>, Vec<u32>)
 
     component_enable_bits.push(true);
 
-    let RangeChecksClaim {
-        rc_6,
-        rc_8,
-        rc_11,
-        rc_12,
-        rc_18,
-        rc_20,
-        rc_4_3,
-        rc_4_4,
-        rc_9_9,
-        rc_7_2_5,
-        rc_3_6_6_3,
-        rc_4_4_4_4,
-        rc_3_3_3_3_3,
-    } = range_checks;
-    let range_check_6::Claim {} = rc_6;
-    component_log_sizes.push(range_check_6::LOG_SIZE);
-    component_enable_bits.push(true);
-    let range_check_8::Claim {} = rc_8;
-    component_log_sizes.push(range_check_8::LOG_SIZE);
-    component_enable_bits.push(true);
-    let range_check_11::Claim {} = rc_11;
-    component_log_sizes.push(range_check_11::LOG_SIZE);
-    component_enable_bits.push(true);
-    let range_check_12::Claim {} = rc_12;
-    component_log_sizes.push(range_check_12::LOG_SIZE);
-    component_enable_bits.push(true);
-    let range_check_18::Claim {} = rc_18;
-    component_log_sizes.push(range_check_18::LOG_SIZE);
-    component_enable_bits.push(true);
-    let range_check_20::Claim {} = rc_20;
-    component_log_sizes.push(range_check_20::LOG_SIZE);
-    component_enable_bits.push(true);
-    let range_check_4_3::Claim {} = rc_4_3;
-    component_log_sizes.push(range_check_4_3::LOG_SIZE);
-    component_enable_bits.push(true);
-    let range_check_4_4::Claim {} = rc_4_4;
-    component_log_sizes.push(range_check_4_4::LOG_SIZE);
-    component_enable_bits.push(true);
-    let range_check_9_9::Claim {} = rc_9_9;
-    component_log_sizes.push(range_check_9_9::LOG_SIZE);
-    component_enable_bits.push(true);
-    let range_check_7_2_5::Claim {} = rc_7_2_5;
-    component_log_sizes.push(range_check_7_2_5::LOG_SIZE);
-    component_enable_bits.push(true);
-    let range_check_3_6_6_3::Claim {} = rc_3_6_6_3;
-    component_log_sizes.push(range_check_3_6_6_3::LOG_SIZE);
-    component_enable_bits.push(true);
-    let range_check_4_4_4_4::Claim {} = rc_4_4_4_4;
-    component_log_sizes.push(range_check_4_4_4_4::LOG_SIZE);
-    component_enable_bits.push(true);
-    let range_check_3_3_3_3_3::Claim {} = rc_3_3_3_3_3;
-    component_log_sizes.push(range_check_3_3_3_3_3::LOG_SIZE);
-    component_enable_bits.push(true);
+    // Range checks
+    option_log_size(
+        &claim.range_check_6,
+        |_| range_check_6::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check_8,
+        |_| range_check_8::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check_11,
+        |_| range_check_11::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check_12,
+        |_| range_check_12::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check_18,
+        |_| range_check_18::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check_20,
+        |_| range_check_20::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check_4_3,
+        |_| range_check_4_3::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check_4_4,
+        |_| range_check_4_4::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check_9_9,
+        |_| range_check_9_9::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check_7_2_5,
+        |_| range_check_7_2_5::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check_3_6_6_3,
+        |_| range_check_3_6_6_3::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check_4_4_4_4,
+        |_| range_check_4_4_4_4::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check_3_3_3_3_3,
+        |_| range_check_3_3_3_3_3::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
 
     // Verify bitwise xor
-    let verify_bitwise_xor_4::Claim {} = verify_bitwise_xor_4;
-    component_log_sizes.push(verify_bitwise_xor_4::LOG_SIZE);
-    component_enable_bits.push(true);
-    let verify_bitwise_xor_7::Claim {} = verify_bitwise_xor_7;
-    component_log_sizes.push(verify_bitwise_xor_7::LOG_SIZE);
-    component_enable_bits.push(true);
-    let verify_bitwise_xor_8::Claim {} = verify_bitwise_xor_8;
-    component_log_sizes.push(verify_bitwise_xor_8::LOG_SIZE);
-    component_enable_bits.push(true);
-    let verify_bitwise_xor_9::Claim {} = verify_bitwise_xor_9;
-    component_log_sizes.push(verify_bitwise_xor_9::LOG_SIZE);
-    component_enable_bits.push(true);
+    option_log_size(
+        &claim.verify_bitwise_xor_4,
+        |_| verify_bitwise_xor_4::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.verify_bitwise_xor_7,
+        |_| verify_bitwise_xor_7::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.verify_bitwise_xor_8,
+        |_| verify_bitwise_xor_8::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.verify_bitwise_xor_9,
+        |_| verify_bitwise_xor_9::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
 
     (public_claim, component_enable_bits, component_log_sizes)
 }
@@ -532,37 +516,32 @@ fn singe_segment_range(segment: Option<SegmentRange>, public_claim: &mut Vec<Bas
     }
 }
 
-/// Returns the log size from a single-element slice.
-/// Panics if the slice does not contain exactly one element.
-fn single_log_size<T>(
-    claims: &[T],
+/// Update the `component_log_sizes` and `component_enable_bits` with the log size of the given
+/// option if it is some.
+fn option_log_size<T>(
+    claims: &Option<T>,
     get_log_size: impl FnOnce(&T) -> u32,
     component_log_sizes: &mut Vec<u32>,
     component_enable_bits: &mut Vec<bool>,
 ) {
-    if claims.is_empty() {
-        component_log_sizes.push(0_u32);
-        component_enable_bits.push(false);
-    } else if let [claim] = claims {
+    if let Some(claim) = claims {
         component_log_sizes.push(get_log_size(claim));
         component_enable_bits.push(true);
     } else {
-        panic!("expected up to one component")
+        component_log_sizes.push(0_u32);
+        component_enable_bits.push(false);
     }
 }
 
-/// Returns the claimed sum from a single-element slice.
-/// Panics if the slice does not contain exactly one element.
-fn single_claimed_sum<T>(
-    claims: &[T],
+/// Returns the claimed sum of an option.
+fn option_claimed_sum<T>(
+    claims: &Option<T>,
     get_claimed_sum: impl FnOnce(&T) -> SecureField,
 ) -> SecureField {
-    if claims.is_empty() {
-        SecureField::zero()
-    } else if let [claim] = claims {
+    if let Some(claim) = claims {
         get_claimed_sum(claim)
     } else {
-        panic!("expected up to one component")
+        SecureField::zero()
     }
 }
 
@@ -572,197 +551,254 @@ fn single_claimed_sum<T>(
 /// The order must match the order of components as they appear in
 /// [cairo_air::air::CairoComponents].
 fn get_cairo_claimed_sums(interaction_claim: &CairoInteractionClaim) -> Vec<SecureField> {
-    let CairoInteractionClaim {
-        opcodes,
-        verify_instruction,
-        blake_context,
-        builtins,
-        pedersen_context,
-        poseidon_context,
-        memory_address_to_id,
-        memory_id_to_value,
-        range_checks,
-        verify_bitwise_xor_4,
-        verify_bitwise_xor_7,
-        verify_bitwise_xor_8,
-        verify_bitwise_xor_9,
-    } = interaction_claim;
     let mut claimed_sums = Vec::new();
 
-    // Opcodes
-    let OpcodeInteractionClaim {
-        add,
-        add_small,
-        add_ap,
-        assert_eq,
-        assert_eq_imm,
-        assert_eq_double_deref,
-        blake,
-        call,
-        call_rel_imm,
-        generic,
-        jnz,
-        jnz_taken,
-        jump,
-        jump_double_deref,
-        jump_rel,
-        jump_rel_imm,
-        mul,
-        mul_small,
-        qm31,
-        ret,
-    } = opcodes;
-    claimed_sums.push(single_claimed_sum(add, |c| c.claimed_sum));
-    claimed_sums.push(single_claimed_sum(add_small, |c| c.claimed_sum));
-    claimed_sums.push(single_claimed_sum(add_ap, |c| c.claimed_sum));
-    claimed_sums.push(single_claimed_sum(assert_eq, |c| c.claimed_sum));
-    claimed_sums.push(single_claimed_sum(assert_eq_imm, |c| c.claimed_sum));
-    claimed_sums.push(single_claimed_sum(assert_eq_double_deref, |c| {
+    claimed_sums.push(option_claimed_sum(&interaction_claim.add_opcode, |c| {
         c.claimed_sum
     }));
-    claimed_sums.push(single_claimed_sum(blake, |c| c.claimed_sum));
-    claimed_sums.push(single_claimed_sum(call, |c| c.claimed_sum));
-    claimed_sums.push(single_claimed_sum(call_rel_imm, |c| c.claimed_sum));
-    claimed_sums.push(single_claimed_sum(generic, |c| c.claimed_sum));
-    claimed_sums.push(single_claimed_sum(jnz, |c| c.claimed_sum));
-    claimed_sums.push(single_claimed_sum(jnz_taken, |c| c.claimed_sum));
-    claimed_sums.push(single_claimed_sum(jump, |c| c.claimed_sum));
-    claimed_sums.push(single_claimed_sum(jump_double_deref, |c| c.claimed_sum));
-    claimed_sums.push(single_claimed_sum(jump_rel, |c| c.claimed_sum));
-    claimed_sums.push(single_claimed_sum(jump_rel_imm, |c| c.claimed_sum));
-    claimed_sums.push(single_claimed_sum(mul, |c| c.claimed_sum));
-    claimed_sums.push(single_claimed_sum(mul_small, |c| c.claimed_sum));
-    claimed_sums.push(single_claimed_sum(qm31, |c| c.claimed_sum));
-    claimed_sums.push(single_claimed_sum(ret, |c| c.claimed_sum));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.add_opcode_small,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(&interaction_claim.add_ap_opcode, |c| {
+        c.claimed_sum
+    }));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.assert_eq_opcode,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.assert_eq_opcode_imm,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.assert_eq_opcode_double_deref,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.blake_compress_opcode,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.call_opcode_abs,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.call_opcode_rel_imm,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(&interaction_claim.generic_opcode, |c| {
+        c.claimed_sum
+    }));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.jnz_opcode_non_taken,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.jnz_opcode_taken,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.jump_opcode_abs,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.jump_opcode_double_deref,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.jump_opcode_rel,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.jump_opcode_rel_imm,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(&interaction_claim.mul_opcode, |c| {
+        c.claimed_sum
+    }));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.mul_opcode_small,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.qm_31_add_mul_opcode,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(&interaction_claim.ret_opcode, |c| {
+        c.claimed_sum
+    }));
 
     // Verify instruction
-    claimed_sums.push(verify_instruction.claimed_sum);
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.verify_instruction,
+        |c| c.claimed_sum,
+    ));
 
     // Blake context
-    if let Some(BlakeInteractionClaim {
-        blake_g,
-        triple_xor_32,
-        blake_sigma,
-        blake_round,
-        verify_bitwise_xor_12,
-    }) = &blake_context.claim
-    {
-        claimed_sums.push(blake_g.claimed_sum);
-        claimed_sums.push(triple_xor_32.claimed_sum);
-        claimed_sums.push(blake_sigma.claimed_sum);
-        claimed_sums.push(blake_round.claimed_sum);
-        claimed_sums.push(verify_bitwise_xor_12.claimed_sum);
-    } else {
-        claimed_sums.extend([SecureField::zero(); 5]);
-    }
+    claimed_sums.push(option_claimed_sum(&interaction_claim.blake_g, |c| {
+        c.claimed_sum
+    }));
+    claimed_sums.push(option_claimed_sum(&interaction_claim.triple_xor_32, |c| {
+        c.claimed_sum
+    }));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.blake_round_sigma,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(&interaction_claim.blake_round, |c| {
+        c.claimed_sum
+    }));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.verify_bitwise_xor_12,
+        |c| c.claimed_sum,
+    ));
 
     // Builtins
-    let BuiltinsInteractionClaim {
-        range_check_128_builtin,
-        range_check_96_builtin,
-        bitwise_builtin,
-        add_mod_builtin,
-        mul_mod_builtin,
-        pedersen_builtin,
-        poseidon_builtin,
-    } = builtins;
-    claimed_sums.push(
-        range_check_128_builtin
-            .as_ref()
-            .map_or(SecureField::zero(), |c| c.claimed_sum),
-    );
-    claimed_sums.push(
-        range_check_96_builtin
-            .as_ref()
-            .map_or(SecureField::zero(), |c| c.claimed_sum),
-    );
-    claimed_sums.push(
-        bitwise_builtin
-            .as_ref()
-            .map_or(SecureField::zero(), |c| c.claimed_sum),
-    );
-    claimed_sums.push(
-        add_mod_builtin
-            .as_ref()
-            .map_or(SecureField::zero(), |c| c.claimed_sum),
-    );
-    claimed_sums.push(
-        mul_mod_builtin
-            .as_ref()
-            .map_or(SecureField::zero(), |c| c.claimed_sum),
-    );
-    claimed_sums.push(
-        pedersen_builtin
-            .as_ref()
-            .map_or(SecureField::zero(), |c| c.claimed_sum),
-    );
-    claimed_sums.push(
-        poseidon_builtin
-            .as_ref()
-            .map_or(SecureField::zero(), |c| c.claimed_sum),
-    );
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.range_check_builtin,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.range_check96_builtin,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.bitwise_builtin,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.add_mod_builtin,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.mul_mod_builtin,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.pedersen_builtin,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.poseidon_builtin,
+        |c| c.claimed_sum,
+    ));
 
     // Pedersen context
-    if let Some(PedersenInteractionClaim {
-        pedersen_aggregator,
-        partial_ec_mul,
-        pedersen_points_table,
-    }) = &pedersen_context.claim
-    {
-        claimed_sums.push(pedersen_aggregator.claimed_sum);
-        claimed_sums.push(partial_ec_mul.claimed_sum);
-        claimed_sums.push(pedersen_points_table.claimed_sum);
-    } else {
-        claimed_sums.extend([SecureField::zero(); 3]);
-    }
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.pedersen_aggregator_window_bits_18,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.partial_ec_mul_window_bits_18,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.pedersen_points_table_window_bits_18,
+        |c| c.claimed_sum,
+    ));
 
     // Poseidon context
-    if let Some(PoseidonInteractionClaim {
-        poseidon_aggregator,
-        poseidon_3_partial_rounds_chain,
-        poseidon_full_round_chain,
-        cube_252,
-        poseidon_round_keys,
-        range_check_252_width_27,
-    }) = &poseidon_context.claim
-    {
-        claimed_sums.push(poseidon_aggregator.claimed_sum);
-        claimed_sums.push(poseidon_3_partial_rounds_chain.claimed_sum);
-        claimed_sums.push(poseidon_full_round_chain.claimed_sum);
-        claimed_sums.push(cube_252.claimed_sum);
-        claimed_sums.push(poseidon_round_keys.claimed_sum);
-        claimed_sums.push(range_check_252_width_27.claimed_sum);
-    } else {
-        claimed_sums.extend([SecureField::zero(); 6]);
-    }
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.poseidon_aggregator,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.poseidon_3_partial_rounds_chain,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.poseidon_full_round_chain,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(&interaction_claim.cube_252, |c| {
+        c.claimed_sum
+    }));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.poseidon_round_keys,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.range_check_252_width_27,
+        |c| c.claimed_sum,
+    ));
 
     // Memory address to id
-    claimed_sums.push(memory_address_to_id.claimed_sum);
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.memory_address_to_id,
+        |c| c.claimed_sum,
+    ));
 
-    // Memory id to value
+    // Memory id to big
+    let memory_id_to_value = interaction_claim.memory_id_to_big.as_ref().unwrap();
     claimed_sums.extend(memory_id_to_value.big_claimed_sums.iter().copied());
     claimed_sums.push(memory_id_to_value.small_claimed_sum);
 
     // Range checks
-    claimed_sums.push(range_checks.rc_6.claimed_sum);
-    claimed_sums.push(range_checks.rc_8.claimed_sum);
-    claimed_sums.push(range_checks.rc_11.claimed_sum);
-    claimed_sums.push(range_checks.rc_12.claimed_sum);
-    claimed_sums.push(range_checks.rc_18.claimed_sum);
-    claimed_sums.push(range_checks.rc_20.claimed_sum);
-    claimed_sums.push(range_checks.rc_4_3.claimed_sum);
-    claimed_sums.push(range_checks.rc_4_4.claimed_sum);
-    claimed_sums.push(range_checks.rc_9_9.claimed_sum);
-    claimed_sums.push(range_checks.rc_7_2_5.claimed_sum);
-    claimed_sums.push(range_checks.rc_3_6_6_3.claimed_sum);
-    claimed_sums.push(range_checks.rc_4_4_4_4.claimed_sum);
-    claimed_sums.push(range_checks.rc_3_3_3_3_3.claimed_sum);
+    claimed_sums.push(option_claimed_sum(&interaction_claim.range_check_6, |c| {
+        c.claimed_sum
+    }));
+    claimed_sums.push(option_claimed_sum(&interaction_claim.range_check_8, |c| {
+        c.claimed_sum
+    }));
+    claimed_sums.push(option_claimed_sum(&interaction_claim.range_check_11, |c| {
+        c.claimed_sum
+    }));
+    claimed_sums.push(option_claimed_sum(&interaction_claim.range_check_12, |c| {
+        c.claimed_sum
+    }));
+    claimed_sums.push(option_claimed_sum(&interaction_claim.range_check_18, |c| {
+        c.claimed_sum
+    }));
+    claimed_sums.push(option_claimed_sum(&interaction_claim.range_check_20, |c| {
+        c.claimed_sum
+    }));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.range_check_4_3,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.range_check_4_4,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.range_check_9_9,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.range_check_7_2_5,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.range_check_3_6_6_3,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.range_check_4_4_4_4,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.range_check_3_3_3_3_3,
+        |c| c.claimed_sum,
+    ));
 
     // Verify bitwise xor
-    claimed_sums.push(verify_bitwise_xor_4.claimed_sum);
-    claimed_sums.push(verify_bitwise_xor_7.claimed_sum);
-    claimed_sums.push(verify_bitwise_xor_8.claimed_sum);
-    claimed_sums.push(verify_bitwise_xor_9.claimed_sum);
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.verify_bitwise_xor_4,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.verify_bitwise_xor_7,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.verify_bitwise_xor_8,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.verify_bitwise_xor_9,
+        |c| c.claimed_sum,
+    ));
 
     claimed_sums
 }

@@ -1,4 +1,3 @@
-use core::num::traits::Zero;
 use stwo_constraint_framework::{PreprocessedMaskValues, PreprocessedMaskValuesImpl};
 use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::fields::qm31::{QM31, QM31Serde, QM31_EXTENSION_DEGREE};
@@ -106,6 +105,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
 pub struct InteractionClaim {
     pub big_claimed_sums: Array<QM31>,
     pub small_claimed_sum: QM31,
+    pub claimed_sum: QM31,
 }
 
 #[generate_trait]
@@ -113,15 +113,6 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
     fn mix_into(self: @InteractionClaim, ref channel: Channel) {
         channel.mix_felts(self.big_claimed_sums.span());
         channel.mix_felts([*self.small_claimed_sum].span());
-    }
-
-    fn sum(self: @InteractionClaim) -> QM31 {
-        let mut sum = Zero::zero();
-        for big_claimed_sum in self.big_claimed_sums.span() {
-            sum += *big_claimed_sum;
-        }
-        sum += *self.small_claimed_sum;
-        sum
     }
 }
 

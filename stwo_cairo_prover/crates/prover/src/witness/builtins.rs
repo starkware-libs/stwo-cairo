@@ -1,4 +1,10 @@
-use cairo_air::builtins_air::BuiltinsClaim;
+use cairo_air::components::{
+    add_mod_builtin as add_mod_builtin_claim, bitwise_builtin as bitwise_builtin_claim,
+    mul_mod_builtin as mul_mod_builtin_claim, pedersen_builtin as pedersen_builtin_claim,
+    poseidon_builtin as poseidon_builtin_claim,
+    range_check96_builtin as range_check96_builtin_claim,
+    range_check_builtin as range_check_builtin_claim,
+};
 use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::builtins::BuiltinSegments;
 use stwo_cairo_common::builtins::{
@@ -113,6 +119,7 @@ pub fn get_builtins(builtin_segments: &BuiltinSegments) -> Vec<&'static str> {
     builtins
 }
 
+#[allow(clippy::type_complexity)]
 pub fn builtins_write_trace(
     add_mod_builtin: Option<add_mod_builtin::ClaimGenerator>,
     bitwise_builtin: Option<bitwise_builtin::ClaimGenerator>,
@@ -134,7 +141,16 @@ pub fn builtins_write_trace(
     range_check_3_6_6_3_trace_generator: Option<&range_check_3_6_6_3::ClaimGenerator>,
     verify_bitwise_xor_8_trace_generator: Option<&verify_bitwise_xor_8::ClaimGenerator>,
     verify_bitwise_xor_9_trace_generator: Option<&verify_bitwise_xor_9::ClaimGenerator>,
-) -> (BuiltinsClaim, BuiltinsInteractionClaimGenerator) {
+) -> (
+    Option<add_mod_builtin_claim::Claim>,
+    Option<bitwise_builtin_claim::Claim>,
+    Option<mul_mod_builtin_claim::Claim>,
+    Option<pedersen_builtin_claim::Claim>,
+    Option<poseidon_builtin_claim::Claim>,
+    Option<range_check96_builtin_claim::Claim>,
+    Option<range_check_builtin_claim::Claim>,
+    BuiltinsInteractionClaimGenerator,
+) {
     let (add_mod_builtin_claim, add_mod_builtin_interaction_gen) = add_mod_builtin
         .map(|gen| {
             let (trace, claim, interaction_gen) = gen.write_trace(
@@ -216,15 +232,13 @@ pub fn builtins_write_trace(
             .unzip();
 
     (
-        BuiltinsClaim {
-            add_mod_builtin: add_mod_builtin_claim,
-            bitwise_builtin: bitwise_builtin_claim,
-            mul_mod_builtin: mul_mod_builtin_claim,
-            pedersen_builtin: pedersen_builtin_claim,
-            poseidon_builtin: poseidon_builtin_claim,
-            range_check_96_builtin: range_check_96_builtin_claim,
-            range_check_128_builtin: range_check_128_builtin_claim,
-        },
+        add_mod_builtin_claim,
+        bitwise_builtin_claim,
+        mul_mod_builtin_claim,
+        pedersen_builtin_claim,
+        poseidon_builtin_claim,
+        range_check_96_builtin_claim,
+        range_check_128_builtin_claim,
         BuiltinsInteractionClaimGenerator {
             add_mod_builtin_interaction_gen,
             bitwise_builtin_interaction_gen,

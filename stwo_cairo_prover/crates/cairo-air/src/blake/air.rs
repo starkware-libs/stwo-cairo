@@ -1,147 +1,26 @@
-use num_traits::Zero;
-use serde::{Deserialize, Serialize};
 use stwo::core::air::Component;
-use stwo::core::channel::Channel;
-use stwo::core::fields::qm31::QM31;
 use stwo::core::pcs::TreeVec;
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::TraceLocationAllocator;
 
-use crate::air::{accumulate_relation_uses, RelationUsesDict};
+use crate::claims::{CairoClaim, CairoInteractionClaim};
 use crate::components::{
     blake_g, blake_round, blake_round_sigma, triple_xor_32, verify_bitwise_xor_12,
 };
 use crate::relations::CommonLookupElements;
 
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct BlakeContextClaim {
-    pub claim: Option<Claim>,
-}
-impl BlakeContextClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_u64(self.claim.is_some() as u64);
-        if let Some(claim) = &self.claim {
-            claim.mix_into(channel);
-        }
-    }
-
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        self.claim
-            .as_ref()
-            .map(|claim| claim.log_sizes())
-            .unwrap_or_default()
-    }
-
-    pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
-        if let Some(claim) = &self.claim {
-            claim.accumulate_relation_uses(relation_uses);
-        }
-    }
-}
-
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct Claim {
-    pub blake_round: blake_round::Claim,
-    pub blake_g: blake_g::Claim,
-    pub blake_sigma: blake_round_sigma::Claim,
-    pub triple_xor_32: triple_xor_32::Claim,
-    pub verify_bitwise_xor_12: verify_bitwise_xor_12::Claim,
-}
-impl Claim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        self.blake_round.mix_into(channel);
-        self.blake_g.mix_into(channel);
-        self.blake_sigma.mix_into(channel);
-        self.triple_xor_32.mix_into(channel);
-        self.verify_bitwise_xor_12.mix_into(channel);
-    }
-
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
+pub fn blake_context_log_sizes(claim: &CairoClaim) -> TreeVec<Vec<u32>> {
+    if claim.blake_round.is_some() {
         let log_sizes = [
-            self.blake_round.log_sizes(),
-            self.blake_g.log_sizes(),
-            self.blake_sigma.log_sizes(),
-            self.triple_xor_32.log_sizes(),
-            self.verify_bitwise_xor_12.log_sizes(),
+            claim.blake_round.unwrap().log_sizes(),
+            claim.blake_g.unwrap().log_sizes(),
+            claim.blake_round_sigma.unwrap().log_sizes(),
+            claim.triple_xor_32.unwrap().log_sizes(),
+            claim.verify_bitwise_xor_12.unwrap().log_sizes(),
         ]
         .into_iter();
-
         TreeVec::concat_cols(log_sizes)
-    }
-
-    pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
-        let Self {
-            blake_round,
-            blake_g,
-            blake_sigma: _,
-            triple_xor_32,
-            verify_bitwise_xor_12: _,
-        } = self;
-
-        // NOTE: The following components do not USE relations:
-        // - blake_sigma
-        // - verify_bitwise_xor_12
-
-        accumulate_relation_uses(
-            relation_uses,
-            blake_round::RELATION_USES_PER_ROW,
-            blake_round.log_size,
-        );
-        accumulate_relation_uses(
-            relation_uses,
-            blake_g::RELATION_USES_PER_ROW,
-            blake_g.log_size,
-        );
-        accumulate_relation_uses(
-            relation_uses,
-            triple_xor_32::RELATION_USES_PER_ROW,
-            triple_xor_32.log_size,
-        );
-    }
-}
-
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct BlakeContextInteractionClaim {
-    pub claim: Option<InteractionClaim>,
-}
-impl BlakeContextInteractionClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        if let Some(claim) = &self.claim {
-            claim.mix_into(channel);
-        }
-    }
-
-    pub fn sum(&self) -> QM31 {
-        self.claim
-            .as_ref()
-            .map(|claim| claim.sum())
-            .unwrap_or_else(QM31::zero)
-    }
-}
-
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct InteractionClaim {
-    pub blake_round: blake_round::InteractionClaim,
-    pub blake_g: blake_g::InteractionClaim,
-    pub blake_sigma: blake_round_sigma::InteractionClaim,
-    pub triple_xor_32: triple_xor_32::InteractionClaim,
-    pub verify_bitwise_xor_12: verify_bitwise_xor_12::InteractionClaim,
-}
-impl InteractionClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        self.blake_round.mix_into(channel);
-        self.blake_g.mix_into(channel);
-        self.blake_sigma.mix_into(channel);
-        self.triple_xor_32.mix_into(channel);
-        self.verify_bitwise_xor_12.mix_into(channel);
-    }
-
-    pub fn sum(&self) -> QM31 {
-        self.blake_round.claimed_sum
-            + self.blake_g.claimed_sum
-            + self.blake_sigma.claimed_sum
-            + self.triple_xor_32.claimed_sum
-            + self.verify_bitwise_xor_12.claimed_sum
+    } else {
+        TreeVec::concat_cols(vec![].into_iter())
     }
 }
 
@@ -151,14 +30,18 @@ pub struct BlakeContextComponents {
 impl BlakeContextComponents {
     pub fn new(
         tree_span_provider: &mut TraceLocationAllocator,
-        claim: &BlakeContextClaim,
+        cairo_claim: &CairoClaim,
         common_lookup_elements: &CommonLookupElements,
-        interaction_claim: &BlakeContextInteractionClaim,
+        interaction_claim: &CairoInteractionClaim,
     ) -> Self {
-        let components = interaction_claim
-            .claim
-            .as_ref()
-            .map(|ic| Components::new(tree_span_provider, claim, common_lookup_elements, ic));
+        let components = interaction_claim.blake_round.as_ref().map(|_| {
+            Components::new(
+                tree_span_provider,
+                cairo_claim,
+                common_lookup_elements,
+                interaction_claim,
+            )
+        });
         Self { components }
     }
 
@@ -189,52 +72,52 @@ pub struct Components {
 impl Components {
     fn new(
         tree_span_provider: &mut TraceLocationAllocator,
-        claim: &BlakeContextClaim,
+        cairo_claim: &CairoClaim,
         common_lookup_elements: &CommonLookupElements,
-        interaction_claim: &InteractionClaim,
+        interaction_claim: &CairoInteractionClaim,
     ) -> Self {
         let blake_round_component = blake_round::Component::new(
             tree_span_provider,
             blake_round::Eval {
-                claim: claim.claim.as_ref().unwrap().blake_round,
+                claim: cairo_claim.blake_round.unwrap(),
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.blake_round.claimed_sum,
+            interaction_claim.blake_round.unwrap().claimed_sum,
         );
 
         let blake_g_component = blake_g::Component::new(
             tree_span_provider,
             blake_g::Eval {
-                claim: claim.claim.as_ref().unwrap().blake_g,
+                claim: cairo_claim.blake_g.unwrap(),
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.blake_g.claimed_sum,
+            interaction_claim.blake_g.unwrap().claimed_sum,
         );
 
         let blake_sigma_component = blake_round_sigma::Component::new(
             tree_span_provider,
             blake_round_sigma::Eval {
-                claim: claim.claim.as_ref().unwrap().blake_sigma,
+                claim: cairo_claim.blake_round_sigma.unwrap(),
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.blake_sigma.claimed_sum,
+            interaction_claim.blake_round_sigma.unwrap().claimed_sum,
         );
 
         let triple_xor_32_component = triple_xor_32::Component::new(
             tree_span_provider,
             triple_xor_32::Eval {
-                claim: claim.claim.as_ref().unwrap().triple_xor_32,
+                claim: cairo_claim.triple_xor_32.unwrap(),
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.triple_xor_32.claimed_sum,
+            interaction_claim.triple_xor_32.unwrap().claimed_sum,
         );
         let verify_bitwise_xor_12_component = verify_bitwise_xor_12::Component::new(
             tree_span_provider,
             verify_bitwise_xor_12::Eval {
-                claim: claim.claim.as_ref().unwrap().verify_bitwise_xor_12,
+                claim: cairo_claim.verify_bitwise_xor_12.unwrap(),
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.verify_bitwise_xor_12.claimed_sum,
+            interaction_claim.verify_bitwise_xor_12.unwrap().claimed_sum,
         );
         Self {
             blake_round: blake_round_component,
