@@ -10,14 +10,32 @@ use stwo_cairo_air::{
 use stwo_verifier_core::fields::m31::M31Trait;
 use stwo_verifier_core::fields::qm31::qm31_const;
 use stwo_verifier_core::utils::ArrayImpl;
-use crate::pow2;
+use crate::{PubMemoryValue, pow2};
 use super::test_utils::LookupElementsDummyImpl;
 
 #[test]
 fn test_public_data_logup_sum() {
+    let program: Array<PubMemoryValue> = array![
+        (0, [2147450879, 67600385, 0, 0, 0, 0, 0, 0]), (1, [11, 0, 0, 0, 0, 0, 0, 0]),
+        (2, [2147581952, 285507585, 0, 0, 0, 0, 0, 0]), (3, [4, 0, 0, 0, 0, 0, 0, 0]),
+        (4, [2147450879, 17268737, 0, 0, 0, 0, 0, 0]), (5, [0, 0, 0, 0, 0, 0, 0, 0]),
+        (6, [2147450880, 1208647667, 0, 0, 0, 0, 0, 0]),
+        (7, [2147450880, 1208647668, 0, 0, 0, 0, 0, 0]),
+        (8, [2147450880, 1208647669, 0, 0, 0, 0, 0, 0]),
+        (9, [2147450880, 1208647670, 0, 0, 0, 0, 0, 0]),
+        (10, [2147450880, 1208647671, 0, 0, 0, 0, 0, 0]),
+        (11, [2147450880, 1208647672, 0, 0, 0, 0, 0, 0]),
+        (12, [2147450880, 1208647673, 0, 0, 0, 0, 0, 0]),
+        (13, [2147450880, 1208647674, 0, 0, 0, 0, 0, 0]),
+        (14, [2147450880, 1208647675, 0, 0, 0, 0, 0, 0]),
+        (15, [2147450880, 1208647676, 0, 0, 0, 0, 0, 0]),
+        (16, [2147450880, 1208647677, 0, 0, 0, 0, 0, 0]),
+        (17, [2147450878, 546013183, 0, 0, 0, 0, 0, 0]),
+    ];
+
     let public_data = PublicData {
         public_memory: PublicMemory {
-            program: [].span(),
+            program: program.span(),
             public_segments: PublicSegmentRanges {
                 output: SegmentRange {
                     start_ptr: MemorySmallValue { id: 228, value: 2520 },
@@ -79,7 +97,7 @@ fn test_public_data_logup_sum() {
 
     let sum = public_data.logup_sum(@dummy_lookup_elements);
 
-    assert_eq!(sum, qm31_const::<1553510278, 1990190377, 918519607, 1802790922>());
+    assert_eq!(sum, qm31_const::<908842852, 42171643, 313383432, 1019452808>());
 }
 
 #[test]
