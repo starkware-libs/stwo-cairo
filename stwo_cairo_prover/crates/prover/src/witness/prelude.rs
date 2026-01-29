@@ -3,7 +3,7 @@ pub use std::collections::HashMap;
 pub use std::iter::zip;
 pub use std::simd::Simd;
 pub use std::sync::atomic::{AtomicU32, Ordering};
-pub use std::sync::{Arc, Mutex};
+pub use std::sync::Arc;
 
 pub(crate) use cairo_air::relations;
 pub use dashmap::DashMap;

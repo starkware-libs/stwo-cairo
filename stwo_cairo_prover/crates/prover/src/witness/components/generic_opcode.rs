@@ -24,7 +24,7 @@ impl ClaimGenerator {
         mut self,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
 memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-verify_instruction_state: &verify_instruction::ClaimGenerator,
+verify_instruction_state: &mut verify_instruction::ClaimGenerator,
 range_check_9_9_state: &range_check_9_9::ClaimGenerator,
 range_check_20_state: &range_check_20::ClaimGenerator,
 range_check_18_state: &range_check_18::ClaimGenerator,
@@ -67,7 +67,7 @@ struct SubComponentInputs {
 fn write_trace_simd(
     inputs: Vec<PackedInputType>,n_rows: usize,memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
 memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-verify_instruction_state: &verify_instruction::ClaimGenerator,
+verify_instruction_state: &mut verify_instruction::ClaimGenerator,
 range_check_9_9_state: &range_check_9_9::ClaimGenerator,
 range_check_20_state: &range_check_20::ClaimGenerator,
 range_check_18_state: &range_check_18::ClaimGenerator,

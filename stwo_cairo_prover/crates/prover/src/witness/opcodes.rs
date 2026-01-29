@@ -114,7 +114,7 @@ pub fn opcodes_write_trace(
     rc_20_trace_generator: Option<&range_check_20::ClaimGenerator>,
     rc_4_4_4_4_trace_generator: Option<&range_check_4_4_4_4::ClaimGenerator>,
     rc_9_9_trace_generator: Option<&range_check_9_9::ClaimGenerator>,
-    verify_instruction_trace_generator: Option<&verify_instruction::ClaimGenerator>,
+    verify_instruction_trace_generator: &mut Option<verify_instruction::ClaimGenerator>,
     verify_bitwise_xor_8_trace_generator: Option<&mut verify_bitwise_xor_8::ClaimGenerator>,
 ) -> (OpcodeClaim, OpcodesInteractionClaimGenerator) {
     let (add_claims, add_interaction_gens) = add
@@ -122,7 +122,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
             );
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
@@ -134,7 +134,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
             );
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
@@ -146,7 +146,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
                 rc_18_trace_generator.unwrap(),
                 rc_11_trace_generator.unwrap(),
             );
@@ -160,7 +160,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
             );
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
@@ -172,7 +172,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
             );
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
@@ -185,7 +185,7 @@ pub fn opcodes_write_trace(
                 let (trace, claim, interaction_gen) = gen.write_trace(
                     memory_address_to_id_trace_generator.unwrap(),
                     memory_id_to_value_trace_generator.unwrap(),
-                    verify_instruction_trace_generator.unwrap(),
+                    verify_instruction_trace_generator.as_mut().unwrap(),
                 );
                 tree_builder.extend_evals(trace.to_evals());
                 (claim, interaction_gen)
@@ -197,7 +197,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
                 rc_7_2_5_trace_generator.unwrap(),
                 verify_bitwise_xor_8_trace_generator.unwrap(),
                 blake_round.as_mut().unwrap(),
@@ -213,7 +213,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
             );
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
@@ -225,7 +225,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
             );
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
@@ -237,7 +237,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
                 rc_9_9_trace_generator.unwrap(),
                 rc_20_trace_generator.unwrap(),
                 rc_18_trace_generator.unwrap(),
@@ -253,7 +253,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
             );
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
@@ -265,7 +265,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
             );
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
@@ -277,7 +277,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
             );
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
@@ -289,7 +289,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
             );
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
@@ -301,7 +301,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
             );
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
@@ -313,7 +313,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
             );
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)
@@ -325,7 +325,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
                 rc_20_trace_generator.unwrap(),
             );
             tree_builder.extend_evals(trace.to_evals());
@@ -338,7 +338,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
                 rc_11_trace_generator.unwrap(),
             );
             tree_builder.extend_evals(trace.to_evals());
@@ -351,7 +351,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
                 rc_4_4_4_4_trace_generator.unwrap(),
             );
             tree_builder.extend_evals(trace.to_evals());
@@ -364,7 +364,7 @@ pub fn opcodes_write_trace(
             let (trace, claim, interaction_gen) = gen.write_trace(
                 memory_address_to_id_trace_generator.unwrap(),
                 memory_id_to_value_trace_generator.unwrap(),
-                verify_instruction_trace_generator.unwrap(),
+                verify_instruction_trace_generator.as_mut().unwrap(),
             );
             tree_builder.extend_evals(trace.to_evals());
             (claim, interaction_gen)

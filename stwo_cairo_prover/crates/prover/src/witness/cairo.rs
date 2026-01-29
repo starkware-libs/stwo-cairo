@@ -249,7 +249,7 @@ impl CairoClaimGenerator {
             self.range_check_20.as_ref(),
             self.range_check_4_4_4_4.as_ref(),
             self.range_check_9_9.as_ref(),
-            self.verify_instruction.as_ref(),
+            &mut self.verify_instruction,
             self.verify_bitwise_xor_8.as_mut(),
         );
         span.exit();

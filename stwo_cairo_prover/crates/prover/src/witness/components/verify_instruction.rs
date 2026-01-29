@@ -11,16 +11,9 @@ use crate::witness::prelude::*;
 pub type InputType = (M31, [M31; 3], [M31; 2], M31);
 pub type PackedInputType = (PackedM31, [PackedM31; 3], [PackedM31; 2], PackedM31);
 
+#[derive(Default)]
 pub struct ClaimGenerator {
-    pub mults: Mutex<HashMap<InputType, u32>>,
-}
-
-impl Default for ClaimGenerator {
-    fn default() -> Self {
-        Self {
-            mults: Mutex::new(HashMap::new()),
-        }
-    }
+    pub mults: HashMap<InputType, u32>,
 }
 
 impl ClaimGenerator {
@@ -29,7 +22,7 @@ impl ClaimGenerator {
     }
 
     pub fn is_empty(&self) -> bool {
-        self.mults.lock().unwrap().is_empty()
+        self.mults.is_empty()
     }
 
     pub fn write_trace(
@@ -45,8 +38,6 @@ impl ClaimGenerator {
     ) {
         let mut inputs_mults = self
             .mults
-            .into_inner()
-            .unwrap()
             .into_iter()
             .map(|(k, v)| (k, M31(v)))
             .collect::<Vec<_>>();
@@ -97,7 +88,7 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], _relation_index: usize) {
+    pub fn add_packed_inputs(&mut self, packed_inputs: &[PackedInputType], _relation_index: usize) {
         let merged: HashMap<InputType, u32> = packed_inputs
             .par_iter()
             .flat_map(|p| p.unpack())
@@ -112,9 +103,8 @@ impl ClaimGenerator {
                 a
             });
 
-        let mut mults = self.mults.lock().unwrap();
         for (k, v) in merged {
-            *mults.entry(k).or_insert(0) += v;
+            *self.mults.entry(k).or_insert(0) += v;
         }
     }
 }
