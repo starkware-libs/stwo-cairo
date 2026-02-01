@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use anyhow::Result;
-use cairo_air::air::{lookup_sum, CairoComponents, CairoProof};
+use cairo_air::air::{CairoComponents, CairoProof, ExtendedCairoProof, lookup_sum};
 use cairo_air::relations::CommonLookupElements;
 use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
 use cairo_air::verifier::{verify_cairo, INTERACTION_POW_BITS};
@@ -149,6 +149,126 @@ where
     event!(name: "component_info", Level::DEBUG, "Components: {}", component_builder);
 
     Ok(CairoProof {
+        claim,
+        interaction_pow,
+        interaction_claim,
+        extended_stark_proof: proof,
+        channel_salt,
+        preprocessed_trace_variant: prover_params.preprocessed_trace,
+    })
+}
+
+pub fn prove_cairo_ex<MC: MerkleChannel>(
+    input: ProverInput,
+    prover_params: ProverParameters,
+) -> Result<ExtendedCairoProof<MC::H>, ProvingError>
+where
+    SimdBackend: BackendForChannel<MC>,
+{
+    let _span = span!(Level::INFO, "prove_cairo").entered();
+    let ProverParameters {
+        channel_hash: _,
+        channel_salt,
+        pcs_config,
+        preprocessed_trace,
+        store_polynomials_coefficients,
+    } = prover_params;
+
+    let cairo_air_log_degree_bound = 1;
+    let max_domain_size = LOG_MAX_ROWS
+        + std::cmp::max(
+            cairo_air_log_degree_bound,
+            pcs_config.fri_config.log_blowup_factor,
+        );
+    let twiddles = SimdBackend::precompute_twiddles(
+        CanonicCoset::new(max_domain_size)
+            .circle_domain()
+            .half_coset,
+    );
+
+    // Setup protocol.
+    let channel = &mut MC::C::default();
+    if let Some(salt) = channel_salt {
+        channel.mix_u64(salt);
+    }
+    pcs_config.mix_into(channel);
+    let mut commitment_scheme =
+        CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
+    if store_polynomials_coefficients {
+        commitment_scheme.set_store_polynomials_coefficients();
+    }
+    // Preprocessed trace.
+    let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace());
+    let mut tree_builder = commitment_scheme.tree_builder();
+    tree_builder.extend_evals(gen_trace(preprocessed_trace.clone()));
+    tree_builder.commit(channel);
+
+    // Run Cairo.
+    let cairo_claim_generator = create_cairo_claim_generator(input, preprocessed_trace.clone());
+    // Base trace.
+    let mut tree_builder = commitment_scheme.tree_builder();
+    let span = span!(Level::INFO, "Base trace").entered();
+    let (claim, interaction_generator) = cairo_claim_generator.write_trace(&mut tree_builder);
+    span.exit();
+
+    claim.mix_into(channel);
+    tree_builder.commit(channel);
+
+    // Draw interaction elements.
+    let interaction_pow = SimdBackend::grind(channel, INTERACTION_POW_BITS);
+    channel.mix_u64(interaction_pow);
+    let interaction_elements = CommonLookupElements::draw(channel);
+
+    // Interaction trace.
+    let span = span!(Level::INFO, "Interaction trace").entered();
+    let mut tree_builder = commitment_scheme.tree_builder();
+    let interaction_claim =
+        interaction_generator.write_interaction_trace(&mut tree_builder, &interaction_elements);
+    span.exit();
+
+    tracing::info!(
+        "Witness trace cells: {:?}",
+        witness_trace_cells(&claim, &preprocessed_trace)
+    );
+    // Validate lookup argument.
+    debug_assert_eq!(
+        lookup_sum(&claim, &interaction_elements, &interaction_claim),
+        SecureField::zero()
+    );
+
+    interaction_claim.mix_into(channel);
+    tree_builder.commit(channel);
+
+    // Component provers.
+    let component_builder = CairoComponents::new(
+        &claim,
+        &interaction_elements,
+        &interaction_claim,
+        &preprocessed_trace.ids(),
+    );
+
+    // TODO(Ohad): move to a testing routine.
+    #[cfg(feature = "relation-tracker")]
+    {
+        use crate::debug_tools::relation_tracker::track_and_summarize_cairo_relations;
+        let summary = track_and_summarize_cairo_relations(
+            &commitment_scheme,
+            &component_builder,
+            &claim.public_data,
+        );
+        tracing::info!("Relations summary: {:?}", summary);
+    }
+
+    let components = cairo_provers(&component_builder);
+
+    // Prove stark.
+    let span = span!(Level::INFO, "Prove STARKs").entered();
+    let proof = prove_ex::<SimdBackend, _>(&components, channel, commitment_scheme)?;
+    span.exit();
+
+    event!(name: "component_info", Level::DEBUG, "Components: {}", component_builder);
+
+    Ok(ExtendedCairoProof {
         claim,
         interaction_pow,
         interaction_claim,

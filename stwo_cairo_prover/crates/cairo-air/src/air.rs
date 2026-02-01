@@ -74,6 +74,19 @@ pub struct CairoProof<H: MerkleHasherLifted> {
     pub preprocessed_trace_variant: PreProcessedTraceVariant,
 }
 
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct ExtendedCairoProof<H: MerkleHasherLifted> {
+    pub claim: CairoClaim,
+    pub interaction_pow: u64,
+    pub interaction_claim: CairoInteractionClaim,
+    pub extended_stark_proof: ExtendedStarkProof<H>,
+    /// Optional salt used in the channel initialization.
+    pub channel_salt: Option<u64>,
+    pub preprocessed_trace_variant: PreProcessedTraceVariant,
+}
+
+
 /// Proof format optimized for the Rust verifier.
 ///
 /// This struct contains the proof data in a format tailored to the Rust verifier's requirements.
