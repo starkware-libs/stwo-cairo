@@ -293,7 +293,7 @@ impl PublicData {
 
     /// Converts public data to [u32], where each u32 is at most 2^31 - 1.
     /// Returns the output and program values separately.
-    fn pack_into_u32s(&self) -> (Vec<u32>, Vec<u32>, Vec<u32>) {
+    pub fn pack_into_u32s(&self) -> (Vec<u32>, Vec<u32>, Vec<u32>) {
         let PublicData {
             initial_state:
                 CasmState {
