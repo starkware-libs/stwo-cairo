@@ -31,13 +31,16 @@ impl ClaimGenerator {
 
     pub fn write_trace(
         mut self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         blake_round_sigma_state: &blake_round_sigma::ClaimGenerator,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
         range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
         blake_g_state: &mut blake_g::ClaimGenerator,
-    ) -> (Claim, InteractionClaimGenerator) {
+    ) -> (
+        ComponentTrace<N_TRACE_COLUMNS>,
+        Claim,
+        InteractionClaimGenerator,
+    ) {
         assert!(!self.packed_inputs.is_empty());
         let n_vec_rows = self.packed_inputs.len();
         let n_rows = n_vec_rows * N_LANES;
@@ -82,9 +85,9 @@ impl ClaimGenerator {
         sub_component_inputs.blake_g.iter().for_each(|inputs| {
             blake_g_state.add_packed_inputs(inputs, 0);
         });
-        tree_builder.extend_evals(trace.to_evals());
 
         (
+            trace,
             Claim { log_size },
             InteractionClaimGenerator {
                 n_rows,

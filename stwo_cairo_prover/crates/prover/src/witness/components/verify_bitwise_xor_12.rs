@@ -7,6 +7,7 @@ use cairo_air::components::verify_bitwise_xor_12::{
 };
 use cairo_air::relations::VERIFY_BITWISE_XOR_12_RELATION_ID;
 use itertools::{chain, Itertools};
+use stwo::core::fields::m31::BaseField;
 
 use crate::witness::prelude::*;
 
@@ -26,9 +27,12 @@ impl ClaimGenerator {
 
     pub fn write_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
-    ) -> (Claim, InteractionClaimGenerator) {
-        let mults = self.mults.map(AtomicMultiplicityColumn::into_simd_vec);
+    ) -> (
+        Vec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>>,
+        Claim,
+        InteractionClaimGenerator,
+    ) {
+        let mults: [Vec<PackedM31>; 16] = self.mults.map(AtomicMultiplicityColumn::into_simd_vec);
 
         let domain = CanonicCoset::new(LOG_SIZE).circle_domain();
         let trace = mults
@@ -37,10 +41,9 @@ impl ClaimGenerator {
             .map(BaseColumn::from_simd)
             .map(|col| CircleEvaluation::new(domain, col))
             .collect_vec();
-        tree_builder.extend_evals(trace);
         let lookup_data = LookupData { mults };
 
-        (Claim {}, InteractionClaimGenerator { lookup_data })
+        (trace, Claim {}, InteractionClaimGenerator { lookup_data })
     }
 
     pub fn add_input(&self, [M31(a), M31(b), ..]: &InputType) {
