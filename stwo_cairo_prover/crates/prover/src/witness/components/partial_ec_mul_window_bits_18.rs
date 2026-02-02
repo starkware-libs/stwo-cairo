@@ -26,11 +26,10 @@ impl ClaimGenerator {
 
     pub fn write_trace(
         mut self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
         pedersen_points_table_window_bits_18_state: &pedersen_points_table_window_bits_18::ClaimGenerator,
         range_check_9_9_state: &range_check_9_9::ClaimGenerator,
         range_check_20_state: &range_check_20::ClaimGenerator,
-    ) -> (Claim, InteractionClaimGenerator) {
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator) {
         assert!(!self.packed_inputs.is_empty());
         let n_vec_rows = self.packed_inputs.len();
         let n_rows = n_vec_rows * N_LANES;
@@ -158,9 +157,9 @@ impl ClaimGenerator {
             .for_each(|inputs| {
                 range_check_20_state.add_packed_inputs(inputs, 7);
             });
-        tree_builder.extend_evals(trace.to_evals());
 
         (
+            trace,
             Claim { log_size },
             InteractionClaimGenerator {
                 n_rows,

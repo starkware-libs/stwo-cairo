@@ -26,8 +26,11 @@ impl ClaimGenerator {
 
     pub fn write_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
-    ) -> (Claim, InteractionClaimGenerator) {
+    ) -> (
+        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
+        Claim,
+        InteractionClaimGenerator,
+    ) {
         let mults = self.mults.map(AtomicMultiplicityColumn::into_simd_vec);
 
         let domain = CanonicCoset::new(LOG_SIZE).circle_domain();
@@ -37,10 +40,9 @@ impl ClaimGenerator {
             .map(BaseColumn::from_simd)
             .map(|col| CircleEvaluation::new(domain, col))
             .collect_vec();
-        tree_builder.extend_evals(trace);
         let lookup_data = LookupData { mults };
 
-        (Claim {}, InteractionClaimGenerator { lookup_data })
+        (trace, Claim {}, InteractionClaimGenerator { lookup_data })
     }
 
     pub fn add_input(&self, [M31(a), M31(b), ..]: &InputType) {

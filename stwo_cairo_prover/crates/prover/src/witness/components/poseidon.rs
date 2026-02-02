@@ -104,11 +104,9 @@ pub fn poseidon_context_write_trace(
         rc_3_3_3_3_3_trace_generator.unwrap(),
     );
     tree_builder.extend_evals(poseidon_full_round_chain_trace.to_evals());
-    let (cube_252_claim, cube_252_interaction_gen) = cube_252_trace_generator.write_trace(
-        tree_builder,
-        rc_9_9_trace_generator.unwrap(),
-        rc_20_trace_generator.unwrap(),
-    );
+    let (cube_252_trace, cube_252_claim, cube_252_interaction_gen) = cube_252_trace_generator
+        .write_trace(rc_9_9_trace_generator.unwrap(), rc_20_trace_generator.unwrap());
+    tree_builder.extend_evals(cube_252_trace.to_evals());
     let (poseidon_round_keys_trace, poseidon_round_keys_claim, poseidon_round_keys_interaction_gen) =
         poseidon_round_keys_trace_generator.write_trace();
     tree_builder.extend_evals(poseidon_round_keys_trace.to_evals());
