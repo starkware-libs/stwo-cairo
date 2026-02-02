@@ -11,8 +11,8 @@ use stwo::core::fields::FieldExpOps;
 use stwo::core::pcs::TreeVec;
 use stwo::core::proof::{ExtendedStarkProof, StarkProof};
 use stwo::core::vcs_lifted::MerkleHasherLifted;
-use stwo_cairo_common::prover_types::cpu::CasmState;
-use stwo_cairo_common::prover_types::felt::split_f252;
+use stwo_cairo_common::prover_types::cpu::{CasmState, FELT252_BITS_PER_WORD, FELT252_N_WORDS};
+use stwo_cairo_common::prover_types::felt::{split, split_f252};
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_constraint_framework::{Relation, TraceLocationAllocator};
@@ -34,6 +34,7 @@ use crate::relations::{
     self, CommonLookupElements, MEMORY_ADDRESS_TO_ID_RELATION_ID, MEMORY_ID_TO_BIG_RELATION_ID,
     OPCODES_RELATION_ID,
 };
+use crate::utils::pack_into_secure_felts;
 use crate::verifier::RelationUse;
 use crate::PreProcessedTraceVariant;
 
@@ -129,6 +130,7 @@ impl CairoClaim {
         TreeVec::concat_cols(log_sizes_list.into_iter())
     }
 }
+
 pub fn accumulate_relation_memory(
     relation_uses: &mut RelationUsesDict,
     claim: &Option<memory_id_to_big::Claim>,
@@ -216,14 +218,105 @@ impl PublicData {
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        let Self {
-            public_memory,
-            initial_state,
-            final_state,
+        let (public_claim, output_claim, program_claim) = self.pack_into_u32s();
+        channel.mix_felts(&pack_into_secure_felts(public_claim.into_iter()));
+        channel.mix_felts(&pack_into_secure_felts(output_claim.into_iter()));
+        channel.mix_felts(&pack_into_secure_felts(program_claim.into_iter()));
+    }
+
+    /// Converts public data to [u32], where each u32 is at most 2^31 - 1.
+    /// Returns the output and program values separately.
+    pub fn pack_into_u32s(&self) -> (Vec<u32>, Vec<u32>, Vec<u32>) {
+        let PublicData {
+            initial_state:
+                CasmState {
+                    pc: initial_pc,
+                    ap: initial_ap,
+                    fp: initial_fp,
+                },
+            final_state:
+                CasmState {
+                    pc: final_pc,
+                    ap: final_ap,
+                    fp: final_fp,
+                },
+            public_memory:
+                PublicMemory {
+                    public_segments,
+                    output,
+                    safe_call_ids,
+                    program,
+                },
         } = self;
-        public_memory.mix_into(channel);
-        initial_state.mix_into(channel);
-        final_state.mix_into(channel);
+
+        let mut public_claim = vec![
+            initial_pc.0,
+            initial_ap.0,
+            initial_fp.0,
+            final_pc.0,
+            final_ap.0,
+            final_fp.0,
+        ];
+        let PublicSegmentRanges {
+            output: output_ranges,
+            pedersen,
+            range_check_128,
+            ecdsa,
+            bitwise,
+            ec_op,
+            keccak,
+            poseidon,
+            range_check_96,
+            add_mod,
+            mul_mod,
+        } = public_segments;
+        Self::single_segment_range(Some(*output_ranges), &mut public_claim);
+        Self::single_segment_range(*pedersen, &mut public_claim);
+        Self::single_segment_range(*range_check_128, &mut public_claim);
+        Self::single_segment_range(*ecdsa, &mut public_claim);
+        Self::single_segment_range(*bitwise, &mut public_claim);
+        Self::single_segment_range(*ec_op, &mut public_claim);
+        Self::single_segment_range(*keccak, &mut public_claim);
+        Self::single_segment_range(*poseidon, &mut public_claim);
+        Self::single_segment_range(*range_check_96, &mut public_claim);
+        Self::single_segment_range(*add_mod, &mut public_claim);
+        Self::single_segment_range(*mul_mod, &mut public_claim);
+        public_claim.extend(safe_call_ids);
+        for (id, _) in output {
+            public_claim.push(*id);
+        }
+        for (id, _) in program {
+            public_claim.push(*id);
+        }
+
+        // Collect output values.
+        let mut output_claim = vec![];
+        for (_, value) in output {
+            output_claim
+                .extend::<[u32; FELT252_N_WORDS]>(split(*value, (1 << FELT252_BITS_PER_WORD) - 1));
+        }
+
+        // Collect program values.
+        let mut program_claim = vec![];
+        for (_, value) in program {
+            program_claim
+                .extend::<[u32; FELT252_N_WORDS]>(split(*value, (1 << FELT252_BITS_PER_WORD) - 1));
+        }
+
+        (public_claim, output_claim, program_claim)
+    }
+
+    fn single_segment_range(segment: Option<SegmentRange>, public_claim: &mut Vec<u32>) {
+        if let Some(segment) = segment {
+            public_claim.extend([
+                segment.start_ptr.id,
+                segment.start_ptr.value,
+                segment.stop_ptr.id,
+                segment.stop_ptr.value,
+            ]);
+        } else {
+            public_claim.extend([0_u32; 4]);
+        }
     }
 }
 
@@ -233,12 +326,6 @@ impl PublicData {
 pub struct MemorySmallValue {
     pub id: u32,
     pub value: u32,
-}
-impl MemorySmallValue {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_u64(self.id as u64);
-        channel.mix_u64(self.value as u64);
-    }
 }
 
 // TODO(alonf): Change this into a struct. Remove Pub prefix.
@@ -258,11 +345,6 @@ pub struct SegmentRange {
 impl SegmentRange {
     pub fn is_empty(&self) -> bool {
         self.start_ptr.value == self.stop_ptr.value
-    }
-
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        self.start_ptr.mix_into(channel);
-        self.stop_ptr.mix_into(channel);
     }
 }
 
@@ -398,12 +480,6 @@ impl PublicSegmentRanges {
             .map(|(addr, id, value)| (addr, id, [value, 0, 0, 0, 0, 0, 0, 0]))
     }
 
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        for segment in self.present_segments() {
-            segment.mix_into(channel);
-        }
-    }
-
     pub fn present_segments(&self) -> Vec<SegmentRange> {
         let Self {
             output,
@@ -477,33 +553,6 @@ impl PublicMemory {
             .chain(safe_call_iter)
             .chain(segment_ranges_iter)
             .chain(output_iter)
-    }
-
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        let Self {
-            program,
-            public_segments,
-            output,
-            safe_call_ids,
-        } = self;
-
-        // Mix program memory section. All the ids are mixed first, then all the values, each of
-        // them in the order it appears in the section.
-        channel.mix_u32s(&program.iter().map(|(id, _)| *id).collect_vec());
-        channel.mix_u32s(&program.iter().flat_map(|(_, value)| *value).collect_vec());
-
-        // Mix public segments.
-        public_segments.mix_into(channel);
-
-        // Mix output memory section. All the ids are mixed first, then all the values, each of them
-        // in the order it appears in the section.
-        channel.mix_u32s(&output.iter().map(|(id, _)| *id).collect_vec());
-        channel.mix_u32s(&output.iter().flat_map(|(_, value)| *value).collect_vec());
-
-        // Mix safe_ids memory section.
-        for id in safe_call_ids {
-            channel.mix_u64(*id as u64);
-        }
     }
 }
 

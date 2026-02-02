@@ -3,7 +3,10 @@ use stwo::core::channel::Channel;
 use stwo::core::fields::m31::M31;
 use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
 use stwo::core::pcs::TreeVec;
-use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{PreProcessedColumn, Seq};
+use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
+    PreProcessedColumn, Seq, MAX_SEQUENCE_LOG_SIZE,
+};
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry};
 
@@ -23,7 +26,8 @@ use crate::verifier::RelationUse;
 /// ID1 = [id3, id4, id5, 0]
 /// ID2 = [id6, id7, id8, 0]
 /// ID3 = [id9, id10, 0, 0]
-pub const MEMORY_ADDRESS_TO_ID_SPLIT: usize = 16;
+pub const MEMORY_ADDRESS_TO_ID_SPLIT: usize =
+    1 << (LOG_MEMORY_ADDRESS_BOUND - MAX_SEQUENCE_LOG_SIZE);
 pub const N_ID_AND_MULT_COLUMNS_PER_CHUNK: usize = 2;
 pub const N_TRACE_COLUMNS: usize = MEMORY_ADDRESS_TO_ID_SPLIT * N_ID_AND_MULT_COLUMNS_PER_CHUNK;
 

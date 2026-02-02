@@ -70,7 +70,7 @@ pub fn split_f252(x: [u32; 8]) -> [M31; memory_id_to_big::N_M31_IN_FELT252] {
 /// - `N`: the number of 32-bit words in the input.
 /// - `M`: the number of felts in the output.
 /// - `x`: the input dense representation.
-fn split<
+pub fn split<
     const N: usize,
     const M: usize,
     impl FixedArrayToSpan: ToSpanTrait<[u32; N], u32>,
