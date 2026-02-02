@@ -57,13 +57,13 @@ pub fn pedersen_context_write_trace(
             &mut partial_ec_mul_trace_generator,
         );
     tree_builder.extend_evals(pedersen_aggregator_trace.to_evals());
-    let (partial_ec_mul_claim, partial_ec_mul_interaction_gen) = partial_ec_mul_trace_generator
-        .write_trace(
-            tree_builder,
+    let (partial_ec_mul_trace, partial_ec_mul_claim, partial_ec_mul_interaction_gen) =
+        partial_ec_mul_trace_generator.write_trace(
             &pedersen_points_table_trace_generator,
             rc_9_9_trace_generator.unwrap(),
             rc_20_trace_generator.unwrap(),
         );
+    tree_builder.extend_evals(partial_ec_mul_trace.to_evals());
     let (
         pedersen_points_table_trace,
         pedersen_points_table_claim,
