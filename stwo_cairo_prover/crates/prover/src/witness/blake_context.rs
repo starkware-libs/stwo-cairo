@@ -55,14 +55,15 @@ pub fn blake_context_write_trace(
     let verify_bitwise_xor_12 =
         verify_bitwise_xor_12.expect("Should have blake context components at this point");
 
-    let (blake_round_claim, blake_round_interaction_gen) = blake_round.write_trace(
-        tree_builder,
-        &blake_sigma,
-        memory_address_to_id_trace_generator.unwrap(),
-        memory_id_to_value_trace_generator.unwrap(),
-        rc_7_2_5_trace_generator.unwrap(),
-        &mut blake_g,
-    );
+    let (blake_round_trace, blake_round_claim, blake_round_interaction_gen) = blake_round
+        .write_trace(
+            &blake_sigma,
+            memory_address_to_id_trace_generator.unwrap(),
+            memory_id_to_value_trace_generator.unwrap(),
+            rc_7_2_5_trace_generator.unwrap(),
+            &mut blake_g,
+        );
+    tree_builder.extend_evals(blake_round_trace.to_evals());
     let (blake_g_trace, blake_g_claim, blake_g_interaction_gen) = blake_g.write_trace(
         verify_bitwise_xor_8_trace_generator.unwrap(),
         &verify_bitwise_xor_12,
@@ -77,8 +78,12 @@ pub fn blake_context_write_trace(
     let (triple_xor_32_trace, triple_xor_32_claim, triple_xor_32_interaction_gen) =
         triple_xor_32.write_trace(verify_bitwise_xor_8_trace_generator.unwrap());
     tree_builder.extend_evals(triple_xor_32_trace.to_evals());
-    let (verify_bitwise_xor_12_claim, verify_bitwise_xor_12_interaction_gen) =
-        verify_bitwise_xor_12.write_trace(tree_builder);
+    let (
+        verify_bitwise_xor_12_trace,
+        verify_bitwise_xor_12_claim,
+        verify_bitwise_xor_12_interaction_gen,
+    ) = verify_bitwise_xor_12.write_trace();
+    tree_builder.extend_evals(verify_bitwise_xor_12_trace);
     span.exit();
 
     let gen = Some(BlakeInteractionClaimGenerator {
