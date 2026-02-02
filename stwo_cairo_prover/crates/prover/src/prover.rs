@@ -85,7 +85,13 @@ where
     // Run gen_trace in parallel with pre-blake opcode trace generation.
     let span = span!(Level::INFO, "Parallel preprocessed + pre-blake").entered();
     let (preprocessed_evals, pre_blake_result) = rayon::join(
-        || gen_trace(preprocessed_trace.clone()),
+        || {
+            let pool = rayon::ThreadPoolBuilder::new()
+                .num_threads(8)
+                .build()
+                .unwrap();
+            pool.install(|| gen_trace(preprocessed_trace.clone()))
+        },
         || cairo_claim_generator.generate_pre_blake_opcode_traces(),
     );
     span.exit();
