@@ -2,6 +2,7 @@ use std::fs::{read, read_to_string, File};
 use std::path::PathBuf;
 
 use anyhow::{Context, Result};
+use cairo_air::PreProcessedTraceVariant;
 use cairo_lang_executable::executable::{EntryPointKind, Executable};
 use cairo_lang_runner::{build_hints_dict, Arg, CairoHintProcessor};
 use cairo_lang_utils::bigint::BigUintAsHex;
@@ -16,7 +17,7 @@ use cairo_vm::Felt252;
 use clap::ValueEnum;
 use serde_json::from_reader;
 use stwo_cairo_adapter::adapter::adapt;
-use stwo_cairo_adapter::ProverInput;
+use stwo_cairo_adapter::{AdaptedInput, ProverInput};
 
 #[derive(Clone, Debug, ValueEnum)]
 pub enum ProgramType {
@@ -24,11 +25,31 @@ pub enum ProgramType {
     Json,
 }
 
+/// Runs a Cairo program and adapts the output to prover input.
+/// Uses `CanonicalWithoutPedersen` as the default preprocessed trace variant.
+/// For full control over the preprocessed trace, use `run_and_adapt_full`.
 pub fn run_and_adapt(
     program_path: &PathBuf,
     program_type: ProgramType,
     args: Option<&PathBuf>,
 ) -> Result<ProverInput> {
+    Ok(run_and_adapt_full(
+        program_path,
+        program_type,
+        args,
+        PreProcessedTraceVariant::CanonicalWithoutPedersen,
+    )?
+    .prover_input)
+}
+
+/// Runs a Cairo program and adapts the output to prover input, including preprocessed trace
+/// evaluations.
+pub fn run_and_adapt_full(
+    program_path: &PathBuf,
+    program_type: ProgramType,
+    args: Option<&PathBuf>,
+    preprocessed_trace_variant: PreProcessedTraceVariant,
+) -> Result<AdaptedInput> {
     let cairo_run_config = CairoRunConfig {
         trace_enabled: true,
         relocate_trace: false,
@@ -76,12 +97,15 @@ pub fn run_and_adapt(
         }
     };
 
-    adapt(&cairo_run_program_with_initial_scope(
-        &program,
-        &cairo_run_config,
-        hints.as_mut(),
-        exec_scopes,
-    )?)
+    adapt(
+        &cairo_run_program_with_initial_scope(
+            &program,
+            &cairo_run_config,
+            hints.as_mut(),
+            exec_scopes,
+        )?,
+        preprocessed_trace_variant,
+    )
 }
 
 fn get_program_and_hints_from_executable(

@@ -1,10 +1,12 @@
+use std::fs::read_to_string;
 use std::path::PathBuf;
 
 use anyhow::Result;
 use cairo_air::utils::ProofFormat;
+use cairo_air::PreProcessedTraceVariant;
 use clap::Parser;
-use stwo_cairo_prover::prover::create_and_serialize_proof;
-use stwo_cairo_utils::vm_utils::{run_and_adapt, ProgramType};
+use stwo_cairo_prover::prover::{create_and_serialize_proof, ProverParameters};
+use stwo_cairo_utils::vm_utils::{run_and_adapt_full, ProgramType};
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
 
@@ -69,14 +71,24 @@ fn main() -> Result<()> {
         .init();
     let _span = span!(Level::INFO, "run_and_prove").entered();
 
-    let prover_input = run_and_adapt(
+    // Load proof params early to get preprocessed trace variant.
+    let preprocessed_trace_variant = if let Some(ref proof_params_json) = args.proof_params_json {
+        let params: ProverParameters = sonic_rs::from_str(&read_to_string(proof_params_json)?)?;
+        params.preprocessed_trace
+    } else {
+        // Default to Canonical if no params provided.
+        PreProcessedTraceVariant::Canonical
+    };
+
+    let adapted_input = run_and_adapt_full(
         &args.program,
         args.program_type,
         args.program_arguments_file.as_ref(),
+        preprocessed_trace_variant,
     )?;
 
     let result = create_and_serialize_proof(
-        prover_input,
+        adapted_input,
         args.verify,
         args.proof_path,
         args.proof_format,

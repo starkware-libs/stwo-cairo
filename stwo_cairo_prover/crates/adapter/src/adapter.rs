@@ -1,4 +1,7 @@
+use std::sync::Arc;
+
 use anyhow::Result;
+use cairo_air::PreProcessedTraceVariant;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use tracing::{info, span, Level};
 
@@ -6,9 +9,12 @@ use super::memory::{MemoryBuilder, MemoryConfig};
 use super::ProverInput;
 use crate::builtins::BuiltinSegments;
 use crate::relocator::Relocator;
-use crate::{PublicSegmentContext, StateTransitions};
+use crate::{gen_preprocessed_trace, AdaptedInput, PublicSegmentContext, StateTransitions};
 
-pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
+pub fn adapt(
+    runner: &CairoRunner,
+    preprocessed_trace_variant: PreProcessedTraceVariant,
+) -> Result<AdaptedInput> {
     let _span = span!(Level::INFO, "adapt").entered();
 
     // Extract the relevant information from the Runner.
@@ -44,17 +50,25 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
     // TODO(Ohad): take this from the input.
     let public_segment_context = PublicSegmentContext::bootloader_context();
 
-    Ok(ProverInput {
-        state_transitions,
-        memory,
-        pc_count: inst_cache.len(),
-        public_memory_addresses,
-        builtin_segments,
-        public_segment_context,
-        #[cfg(feature = "extract-mem-trace")]
-        relocated_mem: relocated_memory_clone,
-        #[cfg(feature = "extract-mem-trace")]
-        relocated_trace: relocated_trace.clone(),
+    // Generate preprocessed trace evaluations.
+    let preprocessed_trace = Arc::new(preprocessed_trace_variant.to_preprocessed_trace());
+    let preprocessed_trace_evals = gen_preprocessed_trace(preprocessed_trace.clone());
+
+    Ok(AdaptedInput {
+        prover_input: ProverInput {
+            state_transitions,
+            memory,
+            pc_count: inst_cache.len(),
+            public_memory_addresses,
+            builtin_segments,
+            public_segment_context,
+            #[cfg(feature = "extract-mem-trace")]
+            relocated_mem: relocated_memory_clone,
+            #[cfg(feature = "extract-mem-trace")]
+            relocated_trace: relocated_trace.clone(),
+        },
+        preprocessed_trace,
+        preprocessed_trace_evals,
     })
 }
 

@@ -3431,6 +3431,7 @@ dependencies = [
  "anyhow",
  "bincode 2.0.1",
  "bytemuck",
+ "cairo-air",
  "cairo-lang-casm",
  "cairo-vm",
  "clap",
@@ -3563,6 +3564,7 @@ name = "stwo-cairo-utils"
 version = "1.0.0"
 dependencies = [
  "anyhow",
+ "cairo-air",
  "cairo-lang-executable",
  "cairo-lang-runner",
  "cairo-lang-utils",

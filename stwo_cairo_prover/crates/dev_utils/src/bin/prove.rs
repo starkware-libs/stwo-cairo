@@ -1,12 +1,14 @@
-use std::fs::File;
+use std::fs::{read_to_string, File};
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use anyhow::Result;
 use cairo_air::utils::ProofFormat;
+use cairo_air::PreProcessedTraceVariant;
 use clap::Parser;
 use serde_json::from_reader;
-use stwo_cairo_adapter::ProverInput;
-use stwo_cairo_prover::prover::create_and_serialize_proof;
+use stwo_cairo_adapter::{gen_preprocessed_trace, AdaptedInput, ProverInput};
+use stwo_cairo_prover::prover::{create_and_serialize_proof, ProverParameters};
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
 
@@ -66,9 +68,29 @@ fn main() -> Result<()> {
         .init();
     let _span = span!(Level::INFO, "prove").entered();
 
+    // Load proof params early to get preprocessed trace variant.
+    let preprocessed_trace_variant = if let Some(ref proof_params_json) = args.proof_params_json {
+        let params: ProverParameters = sonic_rs::from_str(&read_to_string(proof_params_json)?)?;
+        params.preprocessed_trace
+    } else {
+        // Default to Canonical if no params provided.
+        PreProcessedTraceVariant::Canonical
+    };
+
     let prover_input: ProverInput = from_reader(File::open(args.prover_input_path)?)?;
-    let result = create_and_serialize_proof(
+
+    // Generate preprocessed trace evaluations.
+    let preprocessed_trace = Arc::new(preprocessed_trace_variant.to_preprocessed_trace());
+    let preprocessed_trace_evals = gen_preprocessed_trace(preprocessed_trace.clone());
+
+    let adapted_input = AdaptedInput {
         prover_input,
+        preprocessed_trace,
+        preprocessed_trace_evals,
+    };
+
+    let result = create_and_serialize_proof(
+        adapted_input,
         args.verify,
         args.proof_path,
         args.proof_format,

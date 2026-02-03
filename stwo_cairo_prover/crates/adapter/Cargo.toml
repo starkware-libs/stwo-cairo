@@ -20,10 +20,11 @@ itertools.workspace = true
 log.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-stwo-cairo-common = { path = "../common", version = "~1.0.0" }
+stwo-cairo-common = { path = "../common", version = "~1.0.0", features = ["prover"] }
+cairo-air = { path = "../cairo-air", version = "~1.0.0" }
 tracing.workspace = true
 thiserror.workspace = true
-stwo.workspace = true
+stwo = { workspace = true, features = ["parallel", "prover"] }
 memmap2 = "0.9.5"
 bincode = { version = "2.0.1", features = ["serde"] }
 dashmap.workspace = true

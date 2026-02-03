@@ -1,4 +1,5 @@
 use std::ops::Deref;
+use std::sync::Arc;
 
 use builtins::BuiltinSegments;
 pub use cairo_vm::stdlib::collections::HashMap;
@@ -8,6 +9,11 @@ use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use memory::Memory;
 use opcodes::StateTransitions;
 use serde::{Deserialize, Serialize};
+use stwo::core::fields::m31::BaseField;
+use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::poly::circle::CircleEvaluation;
+use stwo::prover::poly::BitReversedOrder;
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 
 #[cfg(feature = "extract-mem-trace")]
 use crate::memory::MemoryEntry;
@@ -22,6 +28,27 @@ pub mod relocator;
 pub mod test_utils;
 
 pub const N_REGISTERS: usize = 3;
+
+/// Type alias for preprocessed trace evaluations.
+pub type PreprocessedTraceEval = Vec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>>;
+
+/// Output of the adapt function containing both prover input and preprocessed trace evaluations.
+pub struct AdaptedInput {
+    pub prover_input: ProverInput,
+    pub preprocessed_trace: Arc<PreProcessedTrace>,
+    pub preprocessed_trace_evals: PreprocessedTraceEval,
+}
+
+/// Generates the preprocessed trace evaluations from a preprocessed trace.
+pub fn gen_preprocessed_trace(
+    preprocessed_trace: Arc<PreProcessedTrace>,
+) -> PreprocessedTraceEval {
+    preprocessed_trace
+        .columns
+        .iter()
+        .map(|c| c.gen_column_simd())
+        .collect()
+}
 
 /// Externally provided inputs for the Stwo prover.
 #[derive(Debug, Serialize, Deserialize, Clone)]

@@ -12,6 +12,7 @@ cairo-lang-runner.workspace = true
 cairo-lang-utils.workspace = true
 cairo-vm = { workspace = true, default_features = true }
 stwo-cairo-adapter = { path = "../adapter", version = "~1.0.0" }
+cairo-air = { path = "../cairo-air", version = "~1.0.0" }
 anyhow.workspace = true
 clap.workspace = true
 env_logger.workspace = true
