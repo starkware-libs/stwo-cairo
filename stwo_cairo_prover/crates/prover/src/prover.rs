@@ -12,6 +12,7 @@ use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::{Channel, MerkleChannel};
+use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::fri::FriConfig;
 use stwo::core::pcs::PcsConfig;
@@ -20,9 +21,12 @@ use stwo::core::proof_of_work::GrindOps;
 use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
-use stwo::prover::poly::circle::PolyOps;
+use stwo::prover::poly::circle::{CircleEvaluation, PolyOps};
+use stwo::prover::poly::twiddles::TwiddleTree;
+use stwo::prover::poly::BitReversedOrder;
 use stwo::prover::{prove_ex, CommitmentSchemeProver, ProvingError};
 use stwo_cairo_adapter::ProverInput;
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 use tracing::{event, span, Level};
 
 use crate::utils::cairo_provers;
@@ -39,9 +43,59 @@ mod json {
 
 pub(crate) const LOG_MAX_ROWS: u32 = 27;
 
+/// Precomputed data for the preprocessed trace phase.
+/// This can be computed in parallel with adapting the Cairo VM output.
+pub struct PrecomputedTraceData {
+    pub preprocessed_trace: Arc<PreProcessedTrace>,
+    pub twiddles: TwiddleTree<SimdBackend>,
+    pub trace_evals: Vec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>>,
+}
+
+/// Computes the preprocessed trace data that doesn't depend on the prover input.
+/// This function can be run in parallel with `adapt` to reduce overall proving time.
+pub fn precompute_trace_data(prover_params: &ProverParameters) -> PrecomputedTraceData {
+    let _span = span!(Level::INFO, "precompute_trace_data").entered();
+
+    let cairo_air_log_degree_bound = 1;
+    let max_domain_size = LOG_MAX_ROWS
+        + std::cmp::max(
+            cairo_air_log_degree_bound,
+            prover_params.pcs_config.fri_config.log_blowup_factor,
+        );
+
+    let twiddles = SimdBackend::precompute_twiddles(
+        CanonicCoset::new(max_domain_size)
+            .circle_domain()
+            .half_coset,
+    );
+
+    let preprocessed_trace = Arc::new(prover_params.preprocessed_trace.to_preprocessed_trace());
+    let trace_evals = gen_trace(preprocessed_trace.clone());
+
+    PrecomputedTraceData {
+        preprocessed_trace,
+        twiddles,
+        trace_evals,
+    }
+}
+
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
     prover_params: ProverParameters,
+) -> Result<CairoProof<MC::H>, ProvingError>
+where
+    SimdBackend: BackendForChannel<MC>,
+{
+    let precomputed = precompute_trace_data(&prover_params);
+    prove_cairo_with_precomputed(input, prover_params, precomputed)
+}
+
+/// Prove Cairo execution with precomputed trace data.
+/// Use this when you want to run `precompute_trace_data` in parallel with `adapt`.
+pub fn prove_cairo_with_precomputed<MC: MerkleChannel>(
+    input: ProverInput,
+    prover_params: ProverParameters,
+    precomputed: PrecomputedTraceData,
 ) -> Result<CairoProof<MC::H>, ProvingError>
 where
     SimdBackend: BackendForChannel<MC>,
@@ -51,21 +105,15 @@ where
         channel_hash: _,
         channel_salt,
         pcs_config,
-        preprocessed_trace,
+        preprocessed_trace: _,
         store_polynomials_coefficients,
     } = prover_params;
 
-    let cairo_air_log_degree_bound = 1;
-    let max_domain_size = LOG_MAX_ROWS
-        + std::cmp::max(
-            cairo_air_log_degree_bound,
-            pcs_config.fri_config.log_blowup_factor,
-        );
-    let twiddles = SimdBackend::precompute_twiddles(
-        CanonicCoset::new(max_domain_size)
-            .circle_domain()
-            .half_coset,
-    );
+    let PrecomputedTraceData {
+        preprocessed_trace,
+        twiddles,
+        trace_evals,
+    } = precomputed;
 
     // Setup protocol.
     let channel = &mut MC::C::default();
@@ -79,9 +127,8 @@ where
         commitment_scheme.set_store_polynomials_coefficients();
     }
     // Preprocessed trace.
-    let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace());
     let mut tree_builder = commitment_scheme.tree_builder();
-    tree_builder.extend_evals(gen_trace(preprocessed_trace.clone()));
+    tree_builder.extend_evals(trace_evals);
     tree_builder.commit(channel);
 
     // Run Cairo.

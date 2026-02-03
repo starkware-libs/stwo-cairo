@@ -3486,6 +3486,7 @@ dependencies = [
  "clap",
  "log",
  "num-bigint",
+ "rayon",
  "regex",
  "serde",
  "serde_json",

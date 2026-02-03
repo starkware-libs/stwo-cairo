@@ -1,9 +1,17 @@
+use std::fs::read_to_string;
 use std::path::PathBuf;
 
 use anyhow::Result;
-use cairo_air::utils::ProofFormat;
+use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
+use cairo_air::verifier::verify_cairo;
+use cairo_air::PreProcessedTraceVariant;
 use clap::Parser;
-use stwo_cairo_prover::prover::create_and_serialize_proof;
+use stwo::core::fri::FriConfig;
+use stwo::core::pcs::PcsConfig;
+use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
+use stwo_cairo_prover::prover::{
+    precompute_trace_data, prove_cairo_with_precomputed, ChannelHash, ProverParameters,
+};
 use stwo_cairo_utils::vm_utils::{run_and_adapt, ProgramType};
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
@@ -62,6 +70,13 @@ struct Args {
     verify: bool,
 }
 
+mod json {
+    #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+    pub use serde_json::from_str;
+    #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+    pub use sonic_rs::from_str;
+}
+
 fn main() -> Result<()> {
     let args = Args::parse();
     tracing_subscriber::fmt()
@@ -69,19 +84,75 @@ fn main() -> Result<()> {
         .init();
     let _span = span!(Level::INFO, "run_and_prove").entered();
 
-    let prover_input = run_and_adapt(
-        &args.program,
-        args.program_type,
-        args.program_arguments_file.as_ref(),
-    )?;
+    // Parse prover params early so we can start precomputation in parallel.
+    let proof_params = if let Some(ref proof_params_json) = args.proof_params_json {
+        json::from_str(&read_to_string(proof_params_json)?)?
+    } else {
+        // The default prover parameters for prod use (96 bits of security).
+        ProverParameters {
+            channel_hash: ChannelHash::Blake2s,
+            channel_salt: 0,
+            pcs_config: PcsConfig {
+                pow_bits: 26,
+                fri_config: FriConfig {
+                    log_last_layer_degree_bound: 0,
+                    log_blowup_factor: 1,
+                    n_queries: 70,
+                },
+            },
+            preprocessed_trace: PreProcessedTraceVariant::Canonical,
+            store_polynomials_coefficients: false,
+        }
+    };
 
-    let result = create_and_serialize_proof(
-        prover_input,
-        args.verify,
-        args.proof_path,
-        args.proof_format,
-        args.proof_params_json,
+    // Run VM+adapt and precompute trace data in parallel.
+    let (prover_input_result, precomputed) = rayon::join(
+        || {
+            run_and_adapt(
+                &args.program,
+                args.program_type.clone(),
+                args.program_arguments_file.as_ref(),
+            )
+        },
+        || precompute_trace_data(&proof_params),
     );
+
+    let prover_input = prover_input_result?;
+
+    // Prove with precomputed data.
+    let result: Result<()> = match proof_params.channel_hash {
+        ChannelHash::Blake2s => {
+            let cairo_proof = prove_cairo_with_precomputed::<Blake2sMerkleChannel>(
+                prover_input,
+                proof_params,
+                precomputed,
+            )?;
+            if args.verify {
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof.clone().into())?;
+            }
+            serialize_proof_to_file(&cairo_proof, &args.proof_path, args.proof_format)?;
+            Ok(())
+        }
+        #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+        ChannelHash::Poseidon252 => {
+            unimplemented!("Poseidon252 is not supported for wasm targets");
+        }
+        #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+        ChannelHash::Poseidon252 => {
+            use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
+            let cairo_proof = prove_cairo_with_precomputed::<Poseidon252MerkleChannel>(
+                prover_input,
+                proof_params,
+                precomputed,
+            )?;
+            if args.verify {
+                verify_cairo::<Poseidon252MerkleChannel>(cairo_proof.clone().into())?;
+            }
+            serialize_proof_to_file(&cairo_proof, &args.proof_path, args.proof_format)?;
+            Ok(())
+        }
+    };
+
     match result {
         Ok(_) => log::info!("✅ Proved successfully!"),
         Err(ref e) => log::error!("❌ Proving failed: {e:?}"),

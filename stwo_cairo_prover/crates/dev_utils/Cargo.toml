@@ -14,6 +14,7 @@ required-features = ["stwo-cairo-adapter/extract-mem-trace"]
 anyhow.workspace = true
 cairo-air = { path = "../cairo-air", version = "~1.0.0" }
 clap.workspace = true
+rayon.workspace = true
 serde.workspace = true
 starknet-ff.workspace = true
 sonic-rs.workspace = true
