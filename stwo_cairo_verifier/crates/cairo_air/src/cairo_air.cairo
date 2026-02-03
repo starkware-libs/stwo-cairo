@@ -9,6 +9,7 @@ use components::verify_bitwise_xor_7::InteractionClaimImpl as VerifyBitwiseXor7I
 use components::verify_bitwise_xor_8::InteractionClaimImpl as VerifyBitwiseXor8InteractionClaimImpl;
 use components::verify_bitwise_xor_9::InteractionClaimImpl as VerifyBitwiseXor9InteractionClaimImpl;
 use components::verify_instruction::InteractionClaimImpl as VerifyInstructionInteractionClaimImpl;
+use core::array::Span;
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 use core::traits::TryInto;
@@ -18,9 +19,7 @@ use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::opcodes::{OpcodeComponents, OpcodeComponentsImpl, opcodes_log_sizes};
 use stwo_verifier_core::fields::m31::M31;
-use stwo_verifier_core::utils::OptionExTrait;
 use crate::P_U32;
-use crate::utils::*;
 
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub mod pedersen_context_imports {
@@ -32,7 +31,6 @@ use pedersen_context_imports::*;
 pub mod poseidon_context_imports {
     pub use stwo_cairo_air::poseidon::{PoseidonContextComponents, PoseidonContextComponentsImpl};
 }
-use core::array::Span;
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use poseidon_context_imports::*;
 use stwo_cairo_air::blake::blake_context_log_sizes;
