@@ -144,3 +144,69 @@ fn lookup_constraints(
         + range_check_4_4_multiplicity);
     sum = sum * random_coeff + constraint_quotient;
 }
+#[cfg(and(test, feature: "qm31_opcode"))]
+mod tests {
+    use core::array::ArrayImpl;
+    use core::num::traits::Zero;
+    #[allow(unused_imports)]
+    use stwo_cairo_air::preprocessed_columns::*;
+    #[allow(unused_imports)]
+    use stwo_constraint_framework::{
+        LookupElementsTrait, PreprocessedMaskValues, PreprocessedMaskValuesTrait,
+    };
+    use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Trait, qm31_const};
+    use crate::cairo_component::*;
+    use crate::components::sample_evaluations::*;
+    #[allow(unused_imports)]
+    use crate::test_utils::{make_interaction_trace, preprocessed_mask_add};
+    use crate::utils::*;
+    use super::{Claim, Component, InteractionClaim};
+
+    #[test]
+    fn test_evaluation_result() {
+        let component = Component {
+            claim: Claim {},
+            interaction_claim: InteractionClaim {
+                claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
+            },
+            common_lookup_elements: LookupElementsTrait::from_z_alpha(
+                qm31_const::<445623802, 202571636, 1360224996, 131355117>(),
+                qm31_const::<476823935, 939223384, 62486082, 122423602>(),
+            ),
+        };
+        let mut sum: QM31 = Zero::zero();
+
+        let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            RANGE_CHECK_4_4_COLUMN_0_IDX,
+            qm31_const::<1928260429, 15680291, 139619331, 637239059>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            RANGE_CHECK_4_4_COLUMN_1_IDX,
+            qm31_const::<1861151250, 2028946210, 72510466, 637239059>(),
+        );
+
+        let mut trace_columns = [
+            [qm31_const::<700269555, 307766862, 1685683780, 745982081>()].span(),
+        ]
+            .span();
+        let interaction_values = array![
+            qm31_const::<1005168032, 79980996, 1847888101, 1941984119>(),
+        ];
+        let mut interaction_columns = make_interaction_trace(
+            interaction_values, qm31_const::<1115374022, 1127856551, 489657863, 643630026>(),
+        );
+        component
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_trace,
+                ref trace_columns,
+                ref interaction_columns,
+                qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
+            );
+        preprocessed_trace.validate_usage();
+        assert_eq!(sum, QM31Trait::from_fixed_array(RANGE_CHECK_4_4_SAMPLE_EVAL_RESULT))
+    }
+}

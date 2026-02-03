@@ -2030,7 +2030,7 @@ mod tests {
     use core::array::ArrayImpl;
     use core::num::traits::Zero;
     #[allow(unused_imports)]
-    use stwo_cairo_air::preprocessed_columns::{NUM_PREPROCESSED_COLUMNS, seq_column_idx};
+    use stwo_cairo_air::preprocessed_columns::*;
     #[allow(unused_imports)]
     use stwo_constraint_framework::{
         LookupElementsTrait, PreprocessedMaskValues, PreprocessedMaskValuesTrait,
@@ -2238,7 +2238,7 @@ mod tests {
             [qm31_const::<2011588261, 1878571451, 1869722339, 502514153>()].span(),
             [qm31_const::<1944479082, 1744353723, 1802613475, 502514153>()].span(),
             [qm31_const::<2145806619, 2147006907, 2003940067, 502514153>()].span(),
-            [qm31_const::<179325277, 825275894, 97341591, 1357105975>()].span(),
+            [qm31_const::<902525010, 1115155995, 130434373, 2116865290>()].span(),
         ]
             .span();
         let interaction_values = array![
