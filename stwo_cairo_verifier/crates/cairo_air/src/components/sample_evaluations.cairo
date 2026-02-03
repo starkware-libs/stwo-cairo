@@ -1,140 +1,140 @@
-// AIR version 90bedee8
+// AIR version 6f555dfe
 use stwo_verifier_core::fields::m31::M31;
 pub const ADD_AP_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1747787077 }, M31 { inner: 7677051 }, M31 { inner: 1790902331 },
-    M31 { inner: 424435536 },
+    M31 { inner: 1763229546 }, M31 { inner: 1632198791 }, M31 { inner: 1137649783 },
+    M31 { inner: 1656272739 },
 ];
 pub const ADD_MOD_BUILTIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1650291485 }, M31 { inner: 1795692079 }, M31 { inner: 1561168650 },
     M31 { inner: 1121115500 },
 ];
 pub const ADD_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 263510890 }, M31 { inner: 1115877092 }, M31 { inner: 1912506062 },
-    M31 { inner: 1376706579 },
+    M31 { inner: 2030489388 }, M31 { inner: 1985812570 }, M31 { inner: 1713987492 },
+    M31 { inner: 1333065491 },
 ];
 pub const ADD_OPCODE_SMALL_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1132423221 }, M31 { inner: 1655376060 }, M31 { inner: 331092418 },
-    M31 { inner: 1463213278 },
+    M31 { inner: 1717602371 }, M31 { inner: 34376313 }, M31 { inner: 870097850 },
+    M31 { inner: 923231057 },
 ];
 pub const ASSERT_EQ_OPCODE_DOUBLE_DEREF_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1541982806 }, M31 { inner: 1901163786 }, M31 { inner: 2010736708 },
-    M31 { inner: 788912575 },
+    M31 { inner: 237897765 }, M31 { inner: 2087590173 }, M31 { inner: 703588213 },
+    M31 { inner: 1156855521 },
 ];
 pub const ASSERT_EQ_OPCODE_IMM_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1653682443 }, M31 { inner: 1381198030 }, M31 { inner: 895816843 },
-    M31 { inner: 862346794 },
+    M31 { inner: 380773 }, M31 { inner: 2016061538 }, M31 { inner: 975687335 },
+    M31 { inner: 1027346688 },
 ];
 pub const ASSERT_EQ_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1777141252 }, M31 { inner: 1426032174 }, M31 { inner: 1384047344 },
-    M31 { inner: 180615810 },
+    M31 { inner: 638874930 }, M31 { inner: 325931200 }, M31 { inner: 1515882271 },
+    M31 { inner: 1160677726 },
 ];
 pub const BITWISE_BUILTIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 29668381 }, M31 { inner: 220510102 }, M31 { inner: 1551556551 },
     M31 { inner: 2067292790 },
 ];
 pub const BLAKE_COMPRESS_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 2114038943 }, M31 { inner: 206340270 }, M31 { inner: 502701426 },
-    M31 { inner: 1294243670 },
+    M31 { inner: 1799680481 }, M31 { inner: 1395335538 }, M31 { inner: 2142292550 },
+    M31 { inner: 700483665 },
 ];
 pub const BLAKE_G_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 973461513 }, M31 { inner: 211503821 }, M31 { inner: 2017317864 },
-    M31 { inner: 1620560143 },
+    M31 { inner: 1730100989 }, M31 { inner: 1587980317 }, M31 { inner: 657195193 },
+    M31 { inner: 2095137176 },
 ];
 pub const BLAKE_ROUND_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1295998635 }, M31 { inner: 1758235005 }, M31 { inner: 846000045 },
-    M31 { inner: 1531822685 },
+    M31 { inner: 1951389747 }, M31 { inner: 681694682 }, M31 { inner: 509166955 },
+    M31 { inner: 1121384410 },
 ];
 pub const BLAKE_ROUND_SIGMA_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 2096649497 }, M31 { inner: 1557301132 }, M31 { inner: 1941336472 },
-    M31 { inner: 1581411874 },
+    M31 { inner: 1701231199 }, M31 { inner: 1132589817 }, M31 { inner: 1626969750 },
+    M31 { inner: 1271365776 },
 ];
 pub const CALL_OPCODE_ABS_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1206909047 }, M31 { inner: 699879226 }, M31 { inner: 88571306 },
-    M31 { inner: 101477773 },
+    M31 { inner: 1255385067 }, M31 { inner: 1570244224 }, M31 { inner: 456257814 },
+    M31 { inner: 1057383708 },
 ];
 pub const CALL_OPCODE_REL_IMM_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 2005962868 }, M31 { inner: 1652443598 }, M31 { inner: 1705024504 },
-    M31 { inner: 2044904441 },
+    M31 { inner: 1570255771 }, M31 { inner: 938776071 }, M31 { inner: 1715167906 },
+    M31 { inner: 1699121079 },
 ];
 pub const CUBE_252_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1593583862 }, M31 { inner: 1988351005 }, M31 { inner: 270186883 },
-    M31 { inner: 1073920497 },
+    M31 { inner: 638731557 }, M31 { inner: 1314963193 }, M31 { inner: 790114677 },
+    M31 { inner: 182021630 },
 ];
 pub const EC_OP_BUILTIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1878001749 }, M31 { inner: 1448958833 }, M31 { inner: 661841698 },
     M31 { inner: 202205134 },
 ];
 pub const GENERIC_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 67859657 }, M31 { inner: 1033604772 }, M31 { inner: 1337665250 },
-    M31 { inner: 365166224 },
+    M31 { inner: 457872554 }, M31 { inner: 1469365994 }, M31 { inner: 1060658449 },
+    M31 { inner: 1993375836 },
 ];
 pub const JNZ_OPCODE_NON_TAKEN_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1422578313 }, M31 { inner: 1916095600 }, M31 { inner: 757969204 },
-    M31 { inner: 575826600 },
+    M31 { inner: 286163833 }, M31 { inner: 1723569237 }, M31 { inner: 1878496 },
+    M31 { inner: 292205341 },
 ];
 pub const JNZ_OPCODE_TAKEN_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1719440633 }, M31 { inner: 1851259088 }, M31 { inner: 2023230466 },
-    M31 { inner: 1953514960 },
+    M31 { inner: 424004523 }, M31 { inner: 1836942134 }, M31 { inner: 5603740 },
+    M31 { inner: 2046458855 },
 ];
 pub const JUMP_OPCODE_ABS_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 593023744 }, M31 { inner: 1899345382 }, M31 { inner: 941037009 },
-    M31 { inner: 1424068969 },
+    M31 { inner: 1180298338 }, M31 { inner: 1285839129 }, M31 { inner: 128302976 },
+    M31 { inner: 1367529751 },
 ];
 pub const JUMP_OPCODE_DOUBLE_DEREF_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 529158293 }, M31 { inner: 824768510 }, M31 { inner: 1347001745 },
-    M31 { inner: 877205709 },
+    M31 { inner: 949629003 }, M31 { inner: 1591494568 }, M31 { inner: 982361065 },
+    M31 { inner: 624609253 },
 ];
 pub const JUMP_OPCODE_REL_IMM_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 742980635 }, M31 { inner: 326971177 }, M31 { inner: 131966695 },
-    M31 { inner: 157732879 },
+    M31 { inner: 1538305139 }, M31 { inner: 957173590 }, M31 { inner: 2126759686 },
+    M31 { inner: 292560999 },
 ];
 pub const JUMP_OPCODE_REL_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 327986014 }, M31 { inner: 1076093195 }, M31 { inner: 292933614 },
-    M31 { inner: 1425516542 },
+    M31 { inner: 553984660 }, M31 { inner: 1643087233 }, M31 { inner: 953277797 },
+    M31 { inner: 483365208 },
 ];
 pub const MEMORY_ADDRESS_TO_ID_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1836997821 }, M31 { inner: 336945629 }, M31 { inner: 836923929 },
-    M31 { inner: 127063760 },
+    M31 { inner: 210458452 }, M31 { inner: 1966920244 }, M31 { inner: 277782471 },
+    M31 { inner: 1663423513 },
 ];
 pub const MEMORY_ID_TO_BIG_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1374265609 }, M31 { inner: 1172915378 }, M31 { inner: 756716406 },
-    M31 { inner: 636297880 },
+    M31 { inner: 1895209887 }, M31 { inner: 655406346 }, M31 { inner: 197574948 },
+    M31 { inner: 25173986 },
 ];
 pub const MEMORY_ID_TO_SMALL_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1247901940 }, M31 { inner: 25223653 }, M31 { inner: 544728202 },
-    M31 { inner: 531770183 },
+    M31 { inner: 1768846218 }, M31 { inner: 1655198268 }, M31 { inner: 2133070391 },
+    M31 { inner: 2068129936 },
 ];
 pub const MUL_MOD_BUILTIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 2105269936 }, M31 { inner: 24044638 }, M31 { inner: 1070911564 },
     M31 { inner: 102995875 },
 ];
 pub const MUL_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 492131764 }, M31 { inner: 597246325 }, M31 { inner: 1887384583 },
-    M31 { inner: 2083392404 },
+    M31 { inner: 1587941972 }, M31 { inner: 1874348527 }, M31 { inner: 1215015397 },
+    M31 { inner: 756498357 },
 ];
 pub const MUL_OPCODE_SMALL_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 60691802 }, M31 { inner: 2134274529 }, M31 { inner: 1874302147 },
-    M31 { inner: 958734423 },
+    M31 { inner: 1121890207 }, M31 { inner: 910895212 }, M31 { inner: 470247433 },
+    M31 { inner: 1177329063 },
 ];
 pub const PARTIAL_EC_MUL_GENERIC_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1335048765 }, M31 { inner: 660608730 }, M31 { inner: 499564977 },
-    M31 { inner: 1857312722 },
+    M31 { inner: 52900575 }, M31 { inner: 1537915826 }, M31 { inner: 975542659 },
+    M31 { inner: 1753886062 },
 ];
 pub const PARTIAL_EC_MUL_WINDOW_BITS_18_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 422508539 }, M31 { inner: 315894763 }, M31 { inner: 1621376112 },
-    M31 { inner: 176816998 },
+    M31 { inner: 228061339 }, M31 { inner: 1501807951 }, M31 { inner: 750997896 },
+    M31 { inner: 879210143 },
 ];
 pub const PARTIAL_EC_MUL_WINDOW_BITS_9_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 266668687 }, M31 { inner: 461367316 }, M31 { inner: 1702377357 },
-    M31 { inner: 1674779554 },
+    M31 { inner: 2128996448 }, M31 { inner: 1722650972 }, M31 { inner: 574792494 },
+    M31 { inner: 296117993 },
 ];
 pub const PEDERSEN_AGGREGATOR_WINDOW_BITS_18_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 556920574 }, M31 { inner: 897163103 }, M31 { inner: 414671425 },
-    M31 { inner: 96362751 },
+    M31 { inner: 260632222 }, M31 { inner: 642882775 }, M31 { inner: 346491701 },
+    M31 { inner: 1990521584 },
 ];
 pub const PEDERSEN_AGGREGATOR_WINDOW_BITS_9_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 935671333 }, M31 { inner: 1018060370 }, M31 { inner: 1664498049 },
-    M31 { inner: 1814235133 },
+    M31 { inner: 1941376513 }, M31 { inner: 501578852 }, M31 { inner: 565190672 },
+    M31 { inner: 1931022023 },
 ];
 pub const PEDERSEN_BUILTIN_NARROW_WINDOWS_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 2020715120 }, M31 { inner: 1310543091 }, M31 { inner: 1596837836 },
@@ -145,130 +145,130 @@ pub const PEDERSEN_BUILTIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1127518382 },
 ];
 pub const PEDERSEN_POINTS_TABLE_WINDOW_BITS_18_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 37149556 }, M31 { inner: 45795295 }, M31 { inner: 1088744983 },
-    M31 { inner: 1274519648 },
+    M31 { inner: 103758879 }, M31 { inner: 496453202 }, M31 { inner: 1778797942 },
+    M31 { inner: 748446009 },
 ];
 pub const PEDERSEN_POINTS_TABLE_WINDOW_BITS_9_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 62337755 }, M31 { inner: 730458450 }, M31 { inner: 538412377 },
-    M31 { inner: 15201680 },
+    M31 { inner: 583282033 }, M31 { inner: 212949418 }, M31 { inner: 2126754566 },
+    M31 { inner: 1551561433 },
 ];
 pub const POSEIDON_3_PARTIAL_ROUNDS_CHAIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 482965434 }, M31 { inner: 1368042394 }, M31 { inner: 329987812 },
-    M31 { inner: 2118047840 },
+    M31 { inner: 129600344 }, M31 { inner: 926428605 }, M31 { inner: 726710013 },
+    M31 { inner: 1977126055 },
 ];
 pub const POSEIDON_AGGREGATOR_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1488619120 }, M31 { inner: 1054406935 }, M31 { inner: 527194314 },
-    M31 { inner: 1722927594 },
+    M31 { inner: 214209804 }, M31 { inner: 1786003270 }, M31 { inner: 1829809387 },
+    M31 { inner: 188787004 },
 ];
 pub const POSEIDON_BUILTIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1657448345 }, M31 { inner: 1388042425 }, M31 { inner: 56352108 },
     M31 { inner: 456274273 },
 ];
 pub const POSEIDON_FULL_ROUND_CHAIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 318181240 }, M31 { inner: 1281710852 }, M31 { inner: 1661924138 },
-    M31 { inner: 1077195749 },
+    M31 { inner: 983170456 }, M31 { inner: 1655824835 }, M31 { inner: 952727613 },
+    M31 { inner: 694217602 },
 ];
 pub const POSEIDON_ROUND_KEYS_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1504380271 }, M31 { inner: 1867357148 }, M31 { inner: 1670697150 },
-    M31 { inner: 1723738195 },
+    M31 { inner: 185408867 }, M31 { inner: 875209405 }, M31 { inner: 171605260 },
+    M31 { inner: 420901048 },
 ];
 pub const QM_31_ADD_MUL_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 414963257 }, M31 { inner: 459898230 }, M31 { inner: 780511924 },
-    M31 { inner: 33692233 },
+    M31 { inner: 1318526684 }, M31 { inner: 238637217 }, M31 { inner: 1409250746 },
+    M31 { inner: 1508706659 },
 ];
 pub const RANGE_CHECK_11_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1555400600 }, M31 { inner: 208822411 }, M31 { inner: 1263567654 },
-    M31 { inner: 2091226505 },
+    M31 { inner: 1238993445 }, M31 { inner: 42153316 }, M31 { inner: 968615912 },
+    M31 { inner: 92040246 },
 ];
 pub const RANGE_CHECK_12_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1348778033 }, M31 { inner: 1312021896 }, M31 { inner: 706898454 },
-    M31 { inner: 1951597895 },
+    M31 { inner: 831845107 }, M31 { inner: 2116832436 }, M31 { inner: 643266463 },
+    M31 { inner: 1505540163 },
 ];
 pub const RANGE_CHECK_18_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1322468224 }, M31 { inner: 693481298 }, M31 { inner: 1407676549 },
-    M31 { inner: 216780216 },
+    M31 { inner: 402167323 }, M31 { inner: 205506535 }, M31 { inner: 2017430424 },
+    M31 { inner: 88217398 },
 ];
 pub const RANGE_CHECK_20_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 127493498 }, M31 { inner: 147751123 }, M31 { inner: 1458086110 },
-    M31 { inner: 432212059 },
+    M31 { inner: 754404595 }, M31 { inner: 532741235 }, M31 { inner: 1131083618 },
+    M31 { inner: 687122087 },
 ];
 pub const RANGE_CHECK_252_WIDTH_27_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 702251577 }, M31 { inner: 1131925893 }, M31 { inner: 434704820 },
-    M31 { inner: 1087963726 },
+    M31 { inner: 1410519729 }, M31 { inner: 897572906 }, M31 { inner: 1543859462 },
+    M31 { inner: 838217559 },
 ];
 pub const RANGE_CHECK_3_3_3_3_3_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1694741178 }, M31 { inner: 2059556458 }, M31 { inner: 238208204 },
-    M31 { inner: 1764102959 },
+    M31 { inner: 68201809 }, M31 { inner: 1542047426 }, M31 { inner: 1826550393 },
+    M31 { inner: 1152979065 },
 ];
 pub const RANGE_CHECK_3_6_6_3_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1928039688 }, M31 { inner: 361821298 }, M31 { inner: 1954133752 },
-    M31 { inner: 426844658 },
+    M31 { inner: 2143248723 }, M31 { inner: 865877678 }, M31 { inner: 1090885268 },
+    M31 { inner: 1082124073 },
 ];
 pub const RANGE_CHECK_4_3_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 138260222 }, M31 { inner: 2128800951 }, M31 { inner: 1885221720 },
-    M31 { inner: 1734182900 },
+    M31 { inner: 246211453 }, M31 { inner: 465210304 }, M31 { inner: 1220537903 },
+    M31 { inner: 2103131116 },
 ];
 pub const RANGE_CHECK_4_4_4_4_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 634589121 }, M31 { inner: 1564665532 }, M31 { inner: 1894720173 },
-    M31 { inner: 1370476943 },
+    M31 { inner: 9723138 }, M31 { inner: 412429 }, M31 { inner: 515462998 },
+    M31 { inner: 2068584078 },
 ];
 pub const RANGE_CHECK_4_4_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 250096350 }, M31 { inner: 1543846644 }, M31 { inner: 519150999 },
-    M31 { inner: 193780643 },
+    M31 { inner: 869785593 }, M31 { inner: 1379395609 }, M31 { inner: 1314377656 },
+    M31 { inner: 1596171016 },
 ];
 pub const RANGE_CHECK_6_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1470490914 }, M31 { inner: 815128797 }, M31 { inner: 1376647647 },
-    M31 { inner: 1148890890 },
+    M31 { inner: 1851834833 }, M31 { inner: 1738013467 }, M31 { inner: 1815997303 },
+    M31 { inner: 1182486754 },
 ];
 pub const RANGE_CHECK_7_2_5_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1894550545 }, M31 { inner: 474169279 }, M31 { inner: 416886156 },
-    M31 { inner: 1661742011 },
+    M31 { inner: 1067051417 }, M31 { inner: 1659698728 }, M31 { inner: 782076605 },
+    M31 { inner: 1528558031 },
 ];
 pub const RANGE_CHECK_8_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 316576820 }, M31 { inner: 271649132 }, M31 { inner: 607174156 },
-    M31 { inner: 1361651804 },
+    M31 { inner: 1542925585 }, M31 { inner: 1464692667 }, M31 { inner: 1393827316 },
+    M31 { inner: 456064875 },
 ];
 pub const RANGE_CHECK_96_BUILTIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1691914450 }, M31 { inner: 1396913530 }, M31 { inner: 1328896898 },
     M31 { inner: 236361760 },
 ];
 pub const RANGE_CHECK_9_9_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 632045866 }, M31 { inner: 1642174669 }, M31 { inner: 1881158183 },
-    M31 { inner: 1641699982 },
+    M31 { inner: 260899462 }, M31 { inner: 1308775790 }, M31 { inner: 689097204 },
+    M31 { inner: 791213510 },
 ];
 pub const RANGE_CHECK_BUILTIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1517405280 }, M31 { inner: 1369424843 }, M31 { inner: 500759354 },
     M31 { inner: 352831272 },
 ];
 pub const RET_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 251266870 }, M31 { inner: 901637176 }, M31 { inner: 468716832 },
-    M31 { inner: 797505811 },
+    M31 { inner: 1344919290 }, M31 { inner: 1601278855 }, M31 { inner: 242940037 },
+    M31 { inner: 1019356985 },
 ];
 pub const TRIPLE_XOR_32_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1904284065 }, M31 { inner: 1800094257 }, M31 { inner: 462809414 },
-    M31 { inner: 1929676281 },
+    M31 { inner: 167803233 }, M31 { inner: 1888945003 }, M31 { inner: 1989102194 },
+    M31 { inner: 477826363 },
 ];
 pub const VERIFY_BITWISE_XOR_12_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1939100410 }, M31 { inner: 713305897 }, M31 { inner: 1433331646 },
-    M31 { inner: 243140503 },
+    M31 { inner: 205789579 }, M31 { inner: 597555084 }, M31 { inner: 1574535354 },
+    M31 { inner: 1031074732 },
 ];
 pub const VERIFY_BITWISE_XOR_4_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 2122954501 }, M31 { inner: 2038828366 }, M31 { inner: 314148263 },
-    M31 { inner: 1549872740 },
+    M31 { inner: 786037965 }, M31 { inner: 984411711 }, M31 { inner: 914916521 },
+    M31 { inner: 1214105055 },
 ];
 pub const VERIFY_BITWISE_XOR_7_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1567545122 }, M31 { inner: 924262717 }, M31 { inner: 1710725514 },
-    M31 { inner: 370608313 },
+    M31 { inner: 1447395451 }, M31 { inner: 1992418834 }, M31 { inner: 938162686 },
+    M31 { inner: 356127218 },
 ];
 pub const VERIFY_BITWISE_XOR_8_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 756865720 }, M31 { inner: 772219950 }, M31 { inner: 161267656 },
-    M31 { inner: 1674699769 },
+    M31 { inner: 721086777 }, M31 { inner: 1225218342 }, M31 { inner: 1108969863 },
+    M31 { inner: 690888069 },
 ];
 pub const VERIFY_BITWISE_XOR_9_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 181741414 }, M31 { inner: 1530217763 }, M31 { inner: 2002668987 },
-    M31 { inner: 1281540025 },
+    M31 { inner: 1843657485 }, M31 { inner: 1219019896 }, M31 { inner: 1870158610 },
+    M31 { inner: 1515648367 },
 ];
 pub const VERIFY_INSTRUCTION_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 22732056 }, M31 { inner: 1466490835 }, M31 { inner: 1868053241 },
-    M31 { inner: 2071577058 },
+    M31 { inner: 543676334 }, M31 { inner: 948981803 }, M31 { inner: 1308911783 },
+    M31 { inner: 1460453164 },
 ];
