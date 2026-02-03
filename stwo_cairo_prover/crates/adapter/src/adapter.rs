@@ -24,49 +24,63 @@ pub fn adapt(
     let public_memory_offsets = &runner.vm.segments.public_memory_offsets;
     let builtin_segments = runner.get_builtin_segments();
 
-    // Relocation part.
-    BuiltinSegments::pad_relocatble_builtin_segments(&mut relocatable_memory, &builtin_segments);
-    let relocator = Relocator::new(&relocatable_memory);
-    let relocated_memory = relocator.relocate_memory(&relocatable_memory);
+    // Run preprocessed trace generation in parallel with the rest of the adapt logic.
+    let ((preprocessed_trace, preprocessed_trace_evals), prover_input) = rayon::join(
+        || {
+            let preprocessed_trace =
+                Arc::new(preprocessed_trace_variant.to_preprocessed_trace());
+            let preprocessed_trace_evals = gen_preprocessed_trace(preprocessed_trace.clone());
+            (preprocessed_trace, preprocessed_trace_evals)
+        },
+        || {
+            // Relocation part.
+            BuiltinSegments::pad_relocatble_builtin_segments(
+                &mut relocatable_memory,
+                &builtin_segments,
+            );
+            let relocator = Relocator::new(&relocatable_memory);
+            let relocated_memory = relocator.relocate_memory(&relocatable_memory);
 
-    #[cfg(feature = "extract-mem-trace")]
-    let relocated_memory_clone = relocated_memory.clone();
+            #[cfg(feature = "extract-mem-trace")]
+            let relocated_memory_clone = relocated_memory.clone();
 
-    let relocated_trace = relocator.relocate_trace(relocatable_trace);
-    let builtin_segments = relocator.relocate_builtin_segments(&builtin_segments);
-    info!("Builtin segments: {:?}", builtin_segments);
-    let public_memory_addresses = relocator.relocate_public_addresses(public_memory_offsets);
+            let relocated_trace = relocator.relocate_trace(relocatable_trace);
+            let builtin_segments = relocator.relocate_builtin_segments(&builtin_segments);
+            info!("Builtin segments: {:?}", builtin_segments);
+            let public_memory_addresses =
+                relocator.relocate_public_addresses(public_memory_offsets);
 
-    let memory = MemoryBuilder::from_iter(MemoryConfig::default(), relocated_memory);
-    let state_transitions = StateTransitions::from_slice_parallel(&relocated_trace, &memory);
-    info!(
-        "Opcode counts: {:?}",
-        state_transitions.casm_states_by_opcode.counts()
+            let memory = MemoryBuilder::from_iter(MemoryConfig::default(), relocated_memory);
+            let state_transitions =
+                StateTransitions::from_slice_parallel(&relocated_trace, &memory);
+            info!(
+                "Opcode counts: {:?}",
+                state_transitions.casm_states_by_opcode.counts()
+            );
+
+            // TODO(spapini): Add output builtin to public memory.
+            let (memory, inst_cache) = memory.build();
+
+            // TODO(Ohad): take this from the input.
+            let public_segment_context = PublicSegmentContext::bootloader_context();
+
+            ProverInput {
+                state_transitions,
+                memory,
+                pc_count: inst_cache.len(),
+                public_memory_addresses,
+                builtin_segments,
+                public_segment_context,
+                #[cfg(feature = "extract-mem-trace")]
+                relocated_mem: relocated_memory_clone,
+                #[cfg(feature = "extract-mem-trace")]
+                relocated_trace: relocated_trace.clone(),
+            }
+        },
     );
 
-    // TODO(spapini): Add output builtin to public memory.
-    let (memory, inst_cache) = memory.build();
-
-    // TODO(Ohad): take this from the input.
-    let public_segment_context = PublicSegmentContext::bootloader_context();
-
-    // Generate preprocessed trace evaluations.
-    let preprocessed_trace = Arc::new(preprocessed_trace_variant.to_preprocessed_trace());
-    let preprocessed_trace_evals = gen_preprocessed_trace(preprocessed_trace.clone());
-
     Ok(AdaptedInput {
-        prover_input: ProverInput {
-            state_transitions,
-            memory,
-            pc_count: inst_cache.len(),
-            public_memory_addresses,
-            builtin_segments,
-            public_segment_context,
-            #[cfg(feature = "extract-mem-trace")]
-            relocated_mem: relocated_memory_clone,
-            #[cfg(feature = "extract-mem-trace")]
-            relocated_trace: relocated_trace.clone(),
-        },
+        prover_input,
         preprocessed_trace,
         preprocessed_trace_evals,
     })
