@@ -90,3 +90,5 @@ pub(crate) fn display_components<E: FrameworkEval>(components: &[FrameworkCompon
         .map(|component| indented_component_display(component))
         .join("\n")
 }
+pub mod ec_op_builtin;
+pub mod partial_ec_mul_generic;
