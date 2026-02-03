@@ -212,3 +212,347 @@ fn lookup_constraints(
         + pedersen_points_table_window_bits_9_multiplicity);
     sum = sum * random_coeff + constraint_quotient;
 }
+#[cfg(and(test, feature: "qm31_opcode"))]
+mod tests {
+    use core::array::ArrayImpl;
+    use core::num::traits::Zero;
+    #[allow(unused_imports)]
+    use stwo_cairo_air::preprocessed_columns::*;
+    #[allow(unused_imports)]
+    use stwo_constraint_framework::{
+        LookupElementsTrait, PreprocessedMaskValues, PreprocessedMaskValuesTrait,
+    };
+    use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Trait, qm31_const};
+    use crate::cairo_component::*;
+    use crate::components::sample_evaluations::*;
+    #[allow(unused_imports)]
+    use crate::test_utils::{make_interaction_trace, preprocessed_mask_add};
+    use crate::utils::*;
+    use super::{Claim, Component, InteractionClaim};
+
+    #[test]
+    fn test_evaluation_result() {
+        let component = Component {
+            claim: Claim {},
+            interaction_claim: InteractionClaim {
+                claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
+            },
+            common_lookup_elements: LookupElementsTrait::from_z_alpha(
+                qm31_const::<445623802, 202571636, 1360224996, 131355117>(),
+                qm31_const::<476823935, 939223384, 62486082, 122423602>(),
+            ),
+        };
+        let mut sum: QM31 = Zero::zero();
+
+        let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            SEQ_15_IDX,
+            qm31_const::<1561133224, 586108960, 1063114695, 1758380471>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_0_IDX,
+            qm31_const::<1498683260, 701261032, 9432172, 1479828962>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_1_IDX,
+            qm31_const::<1565792439, 835478760, 76541036, 1479828962>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_2_IDX,
+            qm31_const::<1364464902, 432825576, 2022698091, 1479828961>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_3_IDX,
+            qm31_const::<1431574081, 567043304, 2089806955, 1479828961>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_4_IDX,
+            qm31_const::<1767119976, 1238131944, 277867628, 1479828962>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_5_IDX,
+            qm31_const::<1834229155, 1372349672, 344976492, 1479828962>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_6_IDX,
+            qm31_const::<1632901618, 969696488, 143649900, 1479828962>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_7_IDX,
+            qm31_const::<1700010797, 1103914216, 210758764, 1479828962>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_8_IDX,
+            qm31_const::<961809828, 1775002855, 1620044906, 1479828961>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_9_IDX,
+            qm31_const::<1028919007, 1909220583, 1687153770, 1479828961>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_10_IDX,
+            qm31_const::<1362728643, 314406152, 1163211253, 1597535363>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_11_IDX,
+            qm31_const::<1295619464, 180188424, 1096102389, 1597535363>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_12_IDX,
+            qm31_const::<1496947001, 582841608, 1297428981, 1597535363>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_13_IDX,
+            qm31_const::<1429837822, 448623880, 1230320117, 1597535363>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_14_IDX,
+            qm31_const::<1631165359, 851277064, 1431646709, 1597535363>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_15_IDX,
+            qm31_const::<1564056180, 717059336, 1364537845, 1597535363>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_16_IDX,
+            qm31_const::<1765383717, 1119712520, 1565864437, 1597535363>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_17_IDX,
+            qm31_const::<1698274538, 985494792, 1498755573, 1597535363>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_18_IDX,
+            qm31_const::<825855211, 1388147975, 626340340, 1597535363>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_19_IDX,
+            qm31_const::<758746032, 1253930247, 559231476, 1597535363>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_20_IDX,
+            qm31_const::<1228203100, 45970516, 1028993345, 1597535303>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_21_IDX,
+            qm31_const::<1295312279, 180188244, 1096102209, 1597535303>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_22_IDX,
+            qm31_const::<1362421458, 314405972, 1163211073, 1597535303>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_23_IDX,
+            qm31_const::<1429530637, 448623700, 1230319937, 1597535303>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_24_IDX,
+            qm31_const::<1496639816, 582841428, 1297428801, 1597535303>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_25_IDX,
+            qm31_const::<1563748995, 717059156, 1364537665, 1597535303>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_26_IDX,
+            qm31_const::<1630858174, 851276884, 1431646529, 1597535303>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_27_IDX,
+            qm31_const::<1697967353, 985494612, 1498755393, 1597535303>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_28_IDX,
+            qm31_const::<691329668, 1119712339, 492122432, 1597535303>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_29_IDX,
+            qm31_const::<758438847, 1253930067, 559231296, 1597535303>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_30_IDX,
+            qm31_const::<557213705, 851276943, 357904764, 1597535323>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_31_IDX,
+            qm31_const::<490104526, 717059215, 290795900, 1597535323>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_32_IDX,
+            qm31_const::<422995347, 582841487, 223687036, 1597535323>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_33_IDX,
+            qm31_const::<355886168, 448623759, 156578172, 1597535323>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_34_IDX,
+            qm31_const::<825650421, 1388147855, 626340220, 1597535323>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_35_IDX,
+            qm31_const::<758541242, 1253930127, 559231356, 1597535323>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_36_IDX,
+            qm31_const::<691432063, 1119712399, 492122492, 1597535323>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_37_IDX,
+            qm31_const::<624322884, 985494671, 425013628, 1597535323>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_38_IDX,
+            qm31_const::<1094087137, 1925018767, 894775676, 1597535323>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_39_IDX,
+            qm31_const::<1026977958, 1790801039, 827666812, 1597535323>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_40_IDX,
+            qm31_const::<1497254186, 582841788, 1297429161, 1597535423>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_41_IDX,
+            qm31_const::<1564363365, 717059516, 1364538025, 1597535423>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_42_IDX,
+            qm31_const::<1363035828, 314406332, 1163211433, 1597535423>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_43_IDX,
+            qm31_const::<1430145007, 448624060, 1230320297, 1597535423>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_44_IDX,
+            qm31_const::<1765690902, 1119712700, 1565864617, 1597535423>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_45_IDX,
+            qm31_const::<1832800081, 1253930428, 1632973481, 1597535423>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_46_IDX,
+            qm31_const::<1631472544, 851277244, 1431646889, 1597535423>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_47_IDX,
+            qm31_const::<1698581723, 985494972, 1498755753, 1597535423>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_48_IDX,
+            qm31_const::<960380754, 1656583611, 760558248, 1597535423>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_49_IDX,
+            qm31_const::<1027489933, 1790801339, 827667112, 1597535423>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_50_IDX,
+            qm31_const::<826264791, 1388148215, 626340580, 1597535443>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_51_IDX,
+            qm31_const::<759155612, 1253930487, 559231716, 1597535443>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_52_IDX,
+            qm31_const::<960483149, 1656583671, 760558308, 1597535443>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_53_IDX,
+            qm31_const::<893373970, 1522365943, 693449444, 1597535443>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_54_IDX,
+            qm31_const::<557828075, 851277303, 357905124, 1597535443>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            PEDERSEN_POINTS_55_IDX,
+            qm31_const::<490718896, 717059575, 290796260, 1597535443>(),
+        );
+
+        let mut trace_columns = [
+            [qm31_const::<700269555, 307766862, 1685683780, 745982081>()].span(),
+        ]
+            .span();
+        let interaction_values = array![
+            qm31_const::<1005168032, 79980996, 1847888101, 1941984119>(),
+        ];
+        let mut interaction_columns = make_interaction_trace(
+            interaction_values, qm31_const::<1115374022, 1127856551, 489657863, 643630026>(),
+        );
+        component
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_trace,
+                ref trace_columns,
+                ref interaction_columns,
+                qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
+            );
+        preprocessed_trace.validate_usage();
+        assert_eq!(
+            sum,
+            QM31Trait::from_fixed_array(PEDERSEN_POINTS_TABLE_WINDOW_BITS_9_SAMPLE_EVAL_RESULT),
+        )
+    }
+}
