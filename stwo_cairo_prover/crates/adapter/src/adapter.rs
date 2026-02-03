@@ -39,16 +39,32 @@ pub fn adapt(
                 &builtin_segments,
             );
             let relocator = Relocator::new(&relocatable_memory);
-            let relocated_memory = relocator.relocate_memory(&relocatable_memory);
+
+            // Run all four relocation functions in parallel.
+            let (
+                (relocated_memory, relocated_trace),
+                (builtin_segments, public_memory_addresses),
+            ) = rayon::join(
+                || {
+                    rayon::join(
+                        || relocator.relocate_memory(&relocatable_memory),
+                        || relocator.relocate_trace(relocatable_trace),
+                    )
+                },
+                || {
+                    rayon::join(
+                        || relocator.relocate_builtin_segments(&builtin_segments),
+                        || relocator.relocate_public_addresses(public_memory_offsets),
+                    )
+                },
+            );
 
             #[cfg(feature = "extract-mem-trace")]
             let relocated_memory_clone = relocated_memory.clone();
+            #[cfg(feature = "extract-mem-trace")]
+            let relocated_trace_clone = relocated_trace.clone();
 
-            let relocated_trace = relocator.relocate_trace(relocatable_trace);
-            let builtin_segments = relocator.relocate_builtin_segments(&builtin_segments);
             info!("Builtin segments: {:?}", builtin_segments);
-            let public_memory_addresses =
-                relocator.relocate_public_addresses(public_memory_offsets);
 
             let memory = MemoryBuilder::from_iter(MemoryConfig::default(), relocated_memory);
             let state_transitions =
@@ -74,7 +90,7 @@ pub fn adapt(
                 #[cfg(feature = "extract-mem-trace")]
                 relocated_mem: relocated_memory_clone,
                 #[cfg(feature = "extract-mem-trace")]
-                relocated_trace: relocated_trace.clone(),
+                relocated_trace: relocated_trace_clone,
             }
         },
     );

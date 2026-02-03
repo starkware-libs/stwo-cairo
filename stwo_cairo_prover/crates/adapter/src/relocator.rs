@@ -4,6 +4,7 @@ use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::trace::trace_entry::{RelocatedTraceEntry, TraceEntry};
+use rayon::prelude::*;
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use tracing::{span, Level};
 
@@ -42,35 +43,39 @@ impl Relocator {
     }
 
     /// Relocates the given memory segment by segment.
+    /// Processes segments in parallel for better performance on large memories.
     pub fn relocate_memory(&self, memory: &[Vec<Option<MaybeRelocatable>>]) -> Vec<MemoryEntry> {
         let _span = span!(Level::INFO, "get_relocated_memory").entered();
 
-        // Pre-allocate with exact size to avoid realloc overhead.
-        let total_size: usize = memory.iter().map(|seg| seg.len()).sum();
-        let mut res = Vec::with_capacity(total_size);
-
-        for (segment_index, segment) in memory.iter().enumerate() {
-            for (offset, value) in segment.iter().enumerate() {
-                let address = self.calc_relocated_addr(segment_index, offset) as u64;
-                let value = if let Some(val) = value {
-                    let mut relocated_value = [0; 8];
-                    match val {
-                        MaybeRelocatable::RelocatableValue(addr) => {
-                            relocated_value[0] =
-                                self.calc_relocated_addr(addr.segment_index as usize, addr.offset)
-                        }
-                        MaybeRelocatable::Int(val) => {
-                            relocated_value = bytemuck::cast(val.to_bytes_le())
-                        }
+        // Process segments in parallel and flatten results.
+        // Order doesn't matter since MemoryBuilder uses entry.address for placement.
+        let res: Vec<MemoryEntry> = memory
+            .par_iter()
+            .enumerate()
+            .flat_map_iter(|(segment_index, segment)| {
+                segment.iter().enumerate().map(move |(offset, value)| {
+                    let address = self.calc_relocated_addr(segment_index, offset) as u64;
+                    let value = if let Some(val) = value {
+                        let mut relocated_value = [0; 8];
+                        match val {
+                            MaybeRelocatable::RelocatableValue(addr) => {
+                                relocated_value[0] = self
+                                    .calc_relocated_addr(addr.segment_index as usize, addr.offset)
+                            }
+                            MaybeRelocatable::Int(val) => {
+                                relocated_value = bytemuck::cast(val.to_bytes_le())
+                            }
+                        };
+                        relocated_value
+                    } else {
+                        // If this cell is None, fill with zero.
+                        [0; 8]
                     };
-                    relocated_value
-                } else {
-                    // If this cell is None, fill with zero.
-                    [0; 8]
-                };
-                res.push(MemoryEntry { address, value });
-            }
-        }
+                    MemoryEntry { address, value }
+                })
+            })
+            .collect();
+
         assert!(
             res.len() <= MEMORY_ADDRESS_BOUND,
             "Relocated memory size exceeded the maximum address value",
