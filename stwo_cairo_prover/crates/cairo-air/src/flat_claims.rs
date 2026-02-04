@@ -191,13 +191,13 @@ fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
 
     // Blake
     option_log_size(
-        &claim.blake_g,
+        &claim.blake_round,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
     option_log_size(
-        &claim.triple_xor_32,
+        &claim.blake_g,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
@@ -209,7 +209,7 @@ fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
         &mut component_enable_bits,
     );
     option_log_size(
-        &claim.blake_round,
+        &claim.triple_xor_32,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
@@ -577,17 +577,17 @@ pub fn flatten_interaction_claim(interaction_claim: &CairoInteractionClaim) -> V
     ));
 
     // Blake context
-    claimed_sums.push(option_claimed_sum(&interaction_claim.blake_g, |c| {
+    claimed_sums.push(option_claimed_sum(&interaction_claim.blake_round, |c| {
         c.claimed_sum
     }));
-    claimed_sums.push(option_claimed_sum(&interaction_claim.triple_xor_32, |c| {
+    claimed_sums.push(option_claimed_sum(&interaction_claim.blake_g, |c| {
         c.claimed_sum
     }));
     claimed_sums.push(option_claimed_sum(
         &interaction_claim.blake_round_sigma,
         |c| c.claimed_sum,
     ));
-    claimed_sums.push(option_claimed_sum(&interaction_claim.blake_round, |c| {
+    claimed_sums.push(option_claimed_sum(&interaction_claim.triple_xor_32, |c| {
         c.claimed_sum
     }));
     claimed_sums.push(option_claimed_sum(
