@@ -57,7 +57,7 @@ use crate::PreProcessedTraceVariant;
 /// - **Cairo verifier**: Serialization via [`CairoSerialize`](stwo_cairo_serialize::CairoSerialize)
 ///   (see `serde_utils.rs`), which transforms the proof into a format compatible with the Cairo1
 ///   verifier.
-#[derive(Clone)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct CairoProof<H: MerkleHasherLifted> {
     pub claim: CairoClaim,
     pub interaction_pow: u64,
