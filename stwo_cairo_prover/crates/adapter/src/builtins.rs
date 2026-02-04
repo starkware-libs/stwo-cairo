@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
 use cairo_vm::air_public_input::MemorySegmentAddresses as VMMemorySegmentAddresses;
-use cairo_vm::stdlib::collections::HashMap;
+use cairo_vm::stdlib::collections::{HashMap, HashSet};
 use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use serde::{Deserialize, Serialize};
@@ -96,6 +96,93 @@ impl BuiltinSegments {
         counts
     }
 
+    pub fn find_missing_builtins(
+        _relocatable_memory: &[Vec<Option<MaybeRelocatable>>],
+        builtin_segments: &BTreeMap<usize, BuiltinName>,
+    ) -> HashSet<BuiltinName> {
+        // All builtins that the prover supports (matching BuiltinSegments struct fields).
+        let expected_builtins: HashSet<BuiltinName> = HashSet::from([
+            // BuiltinName::add_mod,
+            // BuiltinName::bitwise,
+            // BuiltinName::mul_mod,
+            // BuiltinName::pedersen,
+            // BuiltinName::poseidon,
+            // BuiltinName::range_check96,
+            // BuiltinName::range_check,
+            // BuiltinName::output,
+
+            // BuiltinName::output,
+            BuiltinName::range_check,
+            BuiltinName::pedersen,
+            // BuiltinName::ecdsa,//
+            // BuiltinName::keccak,//
+            BuiltinName::bitwise,
+            // BuiltinName::ec_op,//
+            BuiltinName::poseidon,
+            // BuiltinName::segment_arena,
+            BuiltinName::range_check96,
+            BuiltinName::add_mod,
+            BuiltinName::mul_mod,
+        ]);
+
+        // Collect the builtins present in builtin_segments.
+        let present_builtins: HashSet<BuiltinName> = builtin_segments.values().cloned().collect();
+
+        // Return the builtins that are expected but not present.
+        expected_builtins
+            .difference(&present_builtins)
+            .cloned()
+            .collect()
+    }
+
+    // pub fn zeropad_missing_builtins(
+    //     relocatable_memory: &mut [Vec<Option<MaybeRelocatable>>],
+    //     builtin_segments: &mut BTreeMap<usize, BuiltinName>,
+    // ) { let missing_builtins = BuiltinSegments::find_missing_builtins(relocatable_memory,
+    //   builtin_segments);
+
+    //     for missing_builtin in missing_builtins {
+    //         // Create a new segment filled with zeros for the missing builtin.
+    //         let n_cells_per_instance = match missing_builtin {
+    //             BuiltinName::add_mod => ADD_MOD_BUILTIN_MEMORY_CELLS,
+    //             BuiltinName::bitwise => BITWISE_BUILTIN_MEMORY_CELLS,
+    //             BuiltinName::ec_op => EC_OP_MEMORY_CELLS,
+    //             BuiltinName::ecdsa => ECDSA_MEMORY_CELLS,
+    //             BuiltinName::keccak => KECCAK_MEMORY_CELLS,
+    //             BuiltinName::mul_mod => MUL_MOD_BUILTIN_MEMORY_CELLS,
+    //             BuiltinName::pedersen => PEDERSEN_BUILTIN_MEMORY_CELLS,
+    //             BuiltinName::poseidon => POSEIDON_BUILTIN_MEMORY_CELLS,
+    //             BuiltinName::range_check96 => RANGE_CHECK_96_BUILTIN_MEMORY_CELLS,
+    //             BuiltinName::range_check => RANGE_CHECK_BUILTIN_MEMORY_CELLS,
+    //             _ => panic!("Invalid builtin name"),
+    //         };
+
+    //         let new_segment: Vec<Option<MaybeRelocatable>> =
+    //             vec![Some(MaybeRelocatable::Int(0.into())); n_cells_per_instance];
+
+    //         let new_segment_index = relocatable_memory.len();
+    //         relocatable_memory.push(new_segment);
+    //         builtin_segments.insert(new_segment_index, missing_builtin);
+
+    //         info!(
+    //             "Added zeropadded builtin segment '{}' at segment index: {}",
+    //             missing_builtin, new_segment_index
+    //         );
+    //     }
+    // }
+
+    pub fn seed_missing_builtins(
+        relocatable_memory: &mut [Vec<Option<MaybeRelocatable>>],
+        builtin_segments: &mut BTreeMap<usize, BuiltinName>, //
+    ) {
+        for (segment_index, builtin_name) in builtin_segments {
+            if *builtin_name == BuiltinName::segment_arena || *builtin_name == BuiltinName::output {
+                continue;
+            };
+            let current_builtin_segment = &mut relocatable_memory[*segment_index];
+        }
+    }
+
     // Pads the relocatable builtin segments output by the VM to match the size required by Stwo.
     // Assumes and verifies that the segments contain no holes and that their length is divisible by
     // the number of cells per instance.
@@ -104,6 +191,7 @@ impl BuiltinSegments {
         builtin_segments: &BTreeMap<usize, BuiltinName>,
     ) {
         let _span = span!(Level::INFO, "pad_relocatble_builtin_segments").entered();
+        info!("\n\n@@@@@@\n\nBuiltin segments in pad_relocatble_builtin_segments\n\n");
         for (segment_index, builtin_name) in builtin_segments {
             if *builtin_name == BuiltinName::segment_arena || *builtin_name == BuiltinName::output {
                 continue;
@@ -130,6 +218,7 @@ impl BuiltinSegments {
                 BuiltinName::range_check => RANGE_CHECK_BUILTIN_MEMORY_CELLS,
                 _ => panic!("Invalid builtin name"),
             };
+            info!("builtin segment: {builtin_name} size is {original_segment_len}");
             assert!(
                 original_segment_len.is_multiple_of(cells_per_instance),
                 "builtin segment: {builtin_name} size is {original_segment_len}, which is not divisble by {cells_per_instance}"
@@ -163,6 +252,7 @@ impl BuiltinSegments {
                 new_segment_size / cells_per_instance
             );
         }
+        info!("\n\n@@@@@@\n\n");
     }
 }
 

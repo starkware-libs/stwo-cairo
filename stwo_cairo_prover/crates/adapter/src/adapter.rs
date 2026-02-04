@@ -19,6 +19,11 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
     let builtin_segments = runner.get_builtin_segments();
 
     // Relocation part.
+    // BuiltinSegments::seed_missing_builtins(&mut relocatable_memory, &builtin_segments);
+    info!(
+        "\n\n@@@@@@\n\nBuiltin segments raw: {:?}\n\n@@@@@@\n\n",
+        builtin_segments
+    );
     BuiltinSegments::pad_relocatble_builtin_segments(&mut relocatable_memory, &builtin_segments);
     let relocator = Relocator::new(&relocatable_memory);
     let relocated_memory = relocator.relocate_memory(&relocatable_memory);
@@ -28,7 +33,10 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
 
     let relocated_trace = relocator.relocate_trace(relocatable_trace);
     let builtin_segments = relocator.relocate_builtin_segments(&builtin_segments);
-    info!("Builtin segments: {:?}", builtin_segments);
+    info!(
+        "\n\n@@@@@@\n\nBuiltin segments processed: {:?}\n\n@@@@@@\n\n",
+        builtin_segments
+    );
     let public_memory_addresses = relocator.relocate_public_addresses(public_memory_offsets);
 
     let memory = MemoryBuilder::from_iter(MemoryConfig::default(), relocated_memory);
