@@ -46,6 +46,9 @@ pub enum ProofFormat {
     /// Binary format.
     /// Additionally compressed to minimize the proof size.
     Binary,
+    /// Extended binary format.
+    /// Contains the extended stark proof.
+    ExtendedBinary,
 }
 
 pub fn pack_into_secure_felts<T: Into<BaseField>>(
@@ -100,6 +103,14 @@ where
             bz_encoder.write_all(&serialized_bytes)?;
             bz_encoder.finish()?;
         }
+        ProofFormat::ExtendedBinary => {
+            let serialized_bytes =
+                bincode::serialize(&proof).map_err(std::io::Error::other)?;
+
+            let mut bz_encoder = BzEncoder::new(proof_file, Compression::best());
+            bz_encoder.write_all(&serialized_bytes)?;
+            bz_encoder.finish()?;
+        }
     }
 
     span.exit();
@@ -129,6 +140,7 @@ where
             bz_decoder.read_to_end(&mut proof_bytes)?;
             bincode::deserialize(&proof_bytes).map_err(std::io::Error::other)
         }
+        ProofFormat::ExtendedBinary => panic!("Not supported."),
     }
 }
 

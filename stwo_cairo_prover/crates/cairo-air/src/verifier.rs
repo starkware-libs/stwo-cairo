@@ -289,7 +289,7 @@ fn check_builtin(
 /// log2(number of relation terms).
 /// E.g. assuming a 100-bit security target, the witness may contain up to
 /// 1 << (24 + INTERACTION_POW_BITS) relation terms.
-pub const INTERACTION_POW_BITS: u32 = 24;
+pub const INTERACTION_POW_BITS: u32 = 8;
 
 pub fn verify_cairo<MC: MerkleChannel>(
     CairoProofForRustVerifier {
