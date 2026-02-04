@@ -46,15 +46,11 @@ impl ClaimGenerator {
         (trace, Claim {}, InteractionClaimGenerator { lookup_data })
     }
 
-    pub fn add_input(&self, input: &InputType, relation_index: usize) {
-        self.mults[relation_index]
-            .increase_at((*self.input_to_row.get(input).unwrap()).try_into().unwrap());
-    }
-
     pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], relation_index: usize) {
         packed_inputs.into_par_iter().for_each(|packed_input| {
             packed_input.unpack().iter().for_each(|input| {
-                self.add_input(input, relation_index);
+                self.mults[relation_index]
+                    .increase_at((*self.input_to_row.get(input).unwrap()).try_into().unwrap());
             });
         });
     }
