@@ -586,6 +586,81 @@ impl CairoComponents {
         let tree_span_provider =
             &mut TraceLocationAllocator::new_with_preprocessed_columns(preprocessed_column_ids);
 
+        let mut active_components = Vec::new();
+        macro_rules! push_if_some {
+            ($field:ident) => {
+                if cairo_claim.$field.is_some() {
+                    active_components.push(stringify!($field));
+                }
+            };
+        }
+        push_if_some!(blake_compress_opcode);
+        push_if_some!(triple_xor_32);
+        push_if_some!(blake_round);
+        push_if_some!(blake_g);
+        push_if_some!(verify_bitwise_xor_7);
+        push_if_some!(verify_bitwise_xor_4);
+        push_if_some!(verify_bitwise_xor_12);
+        push_if_some!(blake_round_sigma);
+        push_if_some!(qm_31_add_mul_opcode);
+        push_if_some!(ret_opcode);
+        push_if_some!(mul_opcode);
+        push_if_some!(mul_opcode_small);
+        push_if_some!(jump_opcode_abs);
+        push_if_some!(jump_opcode_double_deref);
+        push_if_some!(jump_opcode_rel);
+        push_if_some!(jump_opcode_rel_imm);
+        push_if_some!(jnz_opcode_non_taken);
+        push_if_some!(jnz_opcode_taken);
+        push_if_some!(call_opcode_rel_imm);
+        push_if_some!(call_opcode_abs);
+        push_if_some!(assert_eq_opcode_imm);
+        push_if_some!(assert_eq_opcode_double_deref);
+        push_if_some!(assert_eq_opcode);
+        push_if_some!(add_opcode);
+        push_if_some!(add_opcode_small);
+        push_if_some!(add_ap_opcode);
+        push_if_some!(generic_opcode);
+        push_if_some!(range_check_11);
+        push_if_some!(verify_instruction);
+        push_if_some!(range_check_4_3);
+        push_if_some!(range_check_7_2_5);
+        push_if_some!(pedersen_builtin);
+        push_if_some!(pedersen_aggregator_window_bits_18);
+        push_if_some!(partial_ec_mul_window_bits_18);
+        push_if_some!(pedersen_points_table_window_bits_18);
+        push_if_some!(range_check_8);
+        push_if_some!(poseidon_builtin);
+        push_if_some!(poseidon_aggregator);
+        push_if_some!(poseidon_3_partial_rounds_chain);
+        push_if_some!(range_check_4_4);
+        push_if_some!(range_check_4_4_4_4);
+        push_if_some!(range_check_252_width_27);
+        push_if_some!(poseidon_full_round_chain);
+        push_if_some!(range_check_3_3_3_3_3);
+        push_if_some!(poseidon_round_keys);
+        push_if_some!(cube_252);
+        push_if_some!(range_check_20);
+        push_if_some!(mul_mod_builtin);
+        push_if_some!(range_check_18);
+        push_if_some!(range_check_3_6_6_3);
+        push_if_some!(range_check_12);
+        push_if_some!(add_mod_builtin);
+        push_if_some!(range_check96_builtin);
+        push_if_some!(range_check_6);
+        push_if_some!(range_check_builtin);
+        push_if_some!(bitwise_builtin);
+        push_if_some!(verify_bitwise_xor_8);
+        push_if_some!(verify_bitwise_xor_9);
+        push_if_some!(memory_id_to_big);
+        push_if_some!(range_check_9_9);
+        push_if_some!(memory_address_to_id);
+        eprintln!(
+            "CairoComponents::new active components ({}): {}",
+            active_components.len(),
+            active_components.join(", ")
+        );
+
         let opcode_components = OpcodeComponents::new(
             tree_span_provider,
             cairo_claim,
