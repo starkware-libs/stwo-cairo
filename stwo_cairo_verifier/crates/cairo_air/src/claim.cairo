@@ -229,14 +229,14 @@ fn flatten_claim(claim: @CairoClaim) -> (Span<bool>, Span<u32>) {
     component_enable_bits.append(true);
 
     // Blake
-    if let Some(c) = claim.blake_g {
+    if let Some(c) = claim.blake_round {
         component_log_sizes.append(*c.log_size);
         component_enable_bits.append(true);
     } else {
         component_log_sizes.append(0_u32);
         component_enable_bits.append(false);
     }
-    if let Some(c) = claim.triple_xor_32 {
+    if let Some(c) = claim.blake_g {
         component_log_sizes.append(*c.log_size);
         component_enable_bits.append(true);
     } else {
@@ -250,7 +250,7 @@ fn flatten_claim(claim: @CairoClaim) -> (Span<bool>, Span<u32>) {
         component_log_sizes.append(0_u32);
         component_enable_bits.append(false);
     }
-    if let Some(c) = claim.blake_round {
+    if let Some(c) = claim.triple_xor_32 {
         component_log_sizes.append(*c.log_size);
         component_enable_bits.append(true);
     } else {
@@ -576,12 +576,12 @@ pub fn flatten_interaction_claim(interaction_claim: @CairoInteractionClaim) -> S
     claimed_sums.append(c.claimed_sum);
 
     // Blake context
-    if let Some(c) = interaction_claim.blake_g {
+    if let Some(c) = interaction_claim.blake_round {
         claimed_sums.append(*c.claimed_sum);
     } else {
         claimed_sums.append(Zero::zero());
     }
-    if let Some(c) = interaction_claim.triple_xor_32 {
+    if let Some(c) = interaction_claim.blake_g {
         claimed_sums.append(*c.claimed_sum);
     } else {
         claimed_sums.append(Zero::zero());
@@ -591,7 +591,7 @@ pub fn flatten_interaction_claim(interaction_claim: @CairoInteractionClaim) -> S
     } else {
         claimed_sums.append(Zero::zero());
     }
-    if let Some(c) = interaction_claim.blake_round {
+    if let Some(c) = interaction_claim.triple_xor_32 {
         claimed_sums.append(*c.claimed_sum);
     } else {
         claimed_sums.append(Zero::zero());
