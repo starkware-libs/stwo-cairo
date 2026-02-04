@@ -149,6 +149,7 @@ impl CairoDeserialize for PcsConfig {
         PcsConfig {
             pow_bits,
             fri_config,
+            lifting_log_size: None,
         }
     }
 }
