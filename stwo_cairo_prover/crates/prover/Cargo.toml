@@ -9,6 +9,7 @@ description = "STARK prover for Cairo programs using the Stwo proving system"
 [features]
 slow-tests = []
 relation-tracker = []
+circuit-adaptation = ["stwo-cairo-adapter/circuit-adaptation"]
 
 # Define Nightly features in order to allow selective tests
 # Use the following #[cfg(feature = "nightly")]
