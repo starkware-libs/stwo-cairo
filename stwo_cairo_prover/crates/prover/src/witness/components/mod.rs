@@ -1,6 +1,5 @@
 pub mod memory_address_to_id;
 pub mod memory_id_to_big;
-pub mod poseidon;
 
 pub mod add_ap_opcode;
 pub mod add_mod_builtin;
@@ -31,7 +30,6 @@ pub mod mul_opcode_small;
 pub mod partial_ec_mul_generic;
 pub mod partial_ec_mul_window_bits_18;
 pub mod partial_ec_mul_window_bits_9;
-pub mod pedersen;
 pub mod pedersen_aggregator_window_bits_18;
 pub mod pedersen_aggregator_window_bits_9;
 pub mod pedersen_builtin;
