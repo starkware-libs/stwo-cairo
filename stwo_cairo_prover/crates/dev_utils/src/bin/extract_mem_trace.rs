@@ -49,6 +49,9 @@ struct Args {
     /// Output format for the files.
     #[arg(long = "format", default_value = "json")]
     format: OutputFormat,
+    /// Indicates whether to reroute Stone opcodes to generic opcodes.
+    #[arg(long = "generic_opcode_reroute", default_value = "false")]
+    generic_opcode_reroute: bool,
 }
 
 fn main() -> Result<()> {
@@ -63,6 +66,7 @@ fn main() -> Result<()> {
         &args.program,
         args.program_type,
         args.program_arguments_file.as_ref(),
+        args.generic_opcode_reroute,
     )?;
 
     if let Some(mem_file) = args.mem.as_ref() {
@@ -107,7 +111,8 @@ mod tests {
         let compiled_program_path =
             get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
 
-        let prover_input = run_and_adapt(&compiled_program_path, ProgramType::Json, None).unwrap();
+        let prover_input =
+            run_and_adapt(&compiled_program_path, ProgramType::Json, None, false).unwrap();
 
         // Test JSON format first
         let temp_mem_file = NamedTempFile::new().expect("Failed to create temp file");
