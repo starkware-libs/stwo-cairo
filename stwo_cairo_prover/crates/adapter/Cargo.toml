@@ -10,6 +10,7 @@ description = "Adapter for converting Cairo VM execution traces to Stwo prover f
 default = []
 slow-tests = []
 extract-mem-trace = []
+generic_opcode = []
 
 [dependencies]
 bytemuck.workspace = true
