@@ -16,8 +16,7 @@ use core::traits::TryInto;
 use stwo_cairo_air::blake::{BlakeContextComponents, BlakeContextComponentsImpl};
 use stwo_cairo_air::builtins::{BuiltinComponents, BuiltinComponentsImpl};
 use stwo_cairo_air::cairo_component::CairoComponent;
-use stwo_cairo_air::claim::ClaimTrait;
-use stwo_cairo_air::opcodes::{OpcodeComponents, OpcodeComponentsImpl, opcodes_log_sizes};
+use stwo_cairo_air::opcodes::{OpcodeComponents, OpcodeComponentsImpl};
 use stwo_verifier_core::fields::m31::M31;
 use crate::P_U32;
 
@@ -33,15 +32,9 @@ pub mod poseidon_context_imports {
 }
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use poseidon_context_imports::*;
-use stwo_cairo_air::blake::blake_context_log_sizes;
-use stwo_cairo_air::builtins::builtins_log_sizes;
-use stwo_cairo_air::pedersen::pedersen_context_log_sizes;
-use stwo_cairo_air::poseidon::poseidon_context_log_sizes;
 use stwo_cairo_air::preprocessed_columns::PREPROCESSED_COLUMN_LOG_SIZE;
-use stwo_cairo_air::range_checks::{
-    RangeChecksComponents, RangeChecksComponentsImpl, range_checks_log_sizes,
-};
-use stwo_cairo_air::{PublicDataImpl, components, utils};
+use stwo_cairo_air::range_checks::{RangeChecksComponents, RangeChecksComponentsImpl};
+use stwo_cairo_air::{PublicDataImpl, components};
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
@@ -81,26 +74,14 @@ fn validate_mask_usage(
     assert!(interaction_trace_mask_values.is_empty());
 }
 
-pub fn log_sizes(claim: @CairoClaim) -> TreeArray<Span<u32>> {
-    let mut aggregated_log_sizes = utils::tree_array_concat_cols(
-        array![
-            opcodes_log_sizes(claim), claim.verify_instruction.unwrap().log_sizes(),
-            blake_context_log_sizes(claim), builtins_log_sizes(claim),
-            pedersen_context_log_sizes(claim), poseidon_context_log_sizes(claim),
-            claim.memory_address_to_id.unwrap().log_sizes(),
-            claim.memory_id_to_big.as_snap().unwrap().log_sizes(), range_checks_log_sizes(claim),
-            claim.verify_bitwise_xor_4.unwrap().log_sizes(),
-            claim.verify_bitwise_xor_7.unwrap().log_sizes(),
-            claim.verify_bitwise_xor_8.unwrap().log_sizes(),
-            claim.verify_bitwise_xor_9.unwrap().log_sizes(),
-        ],
-    );
-
-    // Override the preprocessed trace log sizes, since they come from a global setting
-    // rather than computed by concatenating preprocessed log sizes of the individual
-    // components.
-    // TODO(ilya): consider removing the generation of `_invalid_preprocessed_trace_log_sizes`.
-    let boxed_triplet: Box<[Span<u32>; 3]> = *aggregated_log_sizes.span().try_into().unwrap();
+/// Override the preprocessed trace log sizes, since they come from a global setting
+/// rather than computed by concatenating preprocessed log sizes of the individual
+/// components.
+/// TODO(ilya): consider removing the generation of `_invalid_preprocessed_trace_log_sizes`.
+pub fn override_preprocessed_trace_log_sizes(
+    aggregated_log_sizes: TreeArray<Span<u32>>,
+) -> TreeArray<Span<u32>> {
+    let boxed_triplet: @Box<[Span<u32>; 3]> = aggregated_log_sizes.span().try_into().unwrap();
     let [_invalid_preprocessed_trace_log_sizes, trace_log_sizes, interaction_log_sizes] =
         boxed_triplet
         .unbox();

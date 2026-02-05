@@ -1,31 +1,4 @@
-use cairo_air::components::{
-    add_ap_opcode as add_ap_opcode_claim, add_opcode as add_opcode_claim,
-    add_opcode_small as add_opcode_small_claim, assert_eq_opcode as assert_eq_opcode_claim,
-    assert_eq_opcode_double_deref as assert_eq_opcode_double_deref_claim,
-    assert_eq_opcode_imm as assert_eq_opcode_imm_claim,
-    blake_compress_opcode as blake_compress_opcode_claim, call_opcode_abs as call_opcode_abs_claim,
-    call_opcode_rel_imm as call_opcode_rel_imm_claim, generic_opcode as generic_opcode_claim,
-    jnz_opcode_non_taken as jnz_opcode_non_taken_claim, jnz_opcode_taken as jnz_opcode_taken_claim,
-    jump_opcode_abs as jump_opcode_abs_claim,
-    jump_opcode_double_deref as jump_opcode_double_deref_claim,
-    jump_opcode_rel as jump_opcode_rel_claim, jump_opcode_rel_imm as jump_opcode_rel_imm_claim,
-    mul_opcode as mul_opcode_claim, mul_opcode_small as mul_opcode_small_claim,
-    qm_31_add_mul_opcode as qm_31_add_mul_opcode_claim, ret_opcode as ret_opcode_claim,
-};
-use rayon::scope;
-use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::opcodes::CasmStatesByOpcode;
-
-use crate::witness::components::{
-    add_ap_opcode, add_opcode, add_opcode_small, assert_eq_opcode, assert_eq_opcode_double_deref,
-    assert_eq_opcode_imm, blake_compress_opcode, blake_round, call_opcode_abs, call_opcode_rel_imm,
-    generic_opcode, jnz_opcode_non_taken, jnz_opcode_taken, jump_opcode_abs,
-    jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, memory_address_to_id,
-    memory_id_to_big, mul_opcode, mul_opcode_small, qm_31_add_mul_opcode, range_check_11,
-    range_check_18, range_check_20, range_check_4_4_4_4, range_check_7_2_5, range_check_9_9,
-    ret_opcode, triple_xor_32, verify_bitwise_xor_8, verify_instruction,
-};
-use crate::witness::utils::TreeBuilder;
 
 pub fn get_opcodes(casm_states_by_opcode: &CasmStatesByOpcode) -> Vec<&'static str> {
     let mut opcodes = vec![];
@@ -95,6 +68,7 @@ pub fn get_opcodes(casm_states_by_opcode: &CasmStatesByOpcode) -> Vec<&'static s
 
     opcodes
 }
+<<<<<<< HEAD
 
 #[allow(clippy::type_complexity)]
 pub fn opcodes_write_trace(
@@ -581,3 +555,5 @@ pub struct OpcodesInteractionClaimGenerator {
     pub qm31: Vec<qm_31_add_mul_opcode::InteractionClaimGenerator>,
     pub ret_interaction_gens: Vec<ret_opcode::InteractionClaimGenerator>,
 }
+=======
+>>>>>>> 6367d241 (tmp)

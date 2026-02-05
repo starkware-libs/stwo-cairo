@@ -5,10 +5,11 @@ use components::poseidon_builtin::InteractionClaimImpl as PoseidonBuiltinInterac
 use components::poseidon_full_round_chain::InteractionClaimImpl as PoseidonFullRoundChainInteractionClaimImpl;
 use components::poseidon_round_keys::InteractionClaimImpl as PoseidonRoundKeysInteractionClaimImpl;
 use components::range_check_252_width_27::InteractionClaimImpl as RangeCheckFelt252Width27InteractionClaimImpl;
+#[cfg(not(feature: "poseidon252_verifier"))]
 use core::array::Span;
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use stwo_cairo_air::cairo_component::CairoComponent;
-use stwo_cairo_air::claim::ClaimTrait;
+#[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use stwo_cairo_air::claims::CairoClaim;
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use stwo_cairo_air::claims::CairoInteractionClaim;
@@ -18,28 +19,9 @@ use stwo_constraint_framework::PreprocessedMaskValuesImpl;
 use stwo_constraint_framework::{CommonLookupElements, PreprocessedMaskValues};
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use stwo_verifier_core::ColumnSpan;
-use stwo_verifier_core::TreeArray;
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::utils::OptionImpl;
-use crate::utils;
-
-pub fn poseidon_context_log_sizes(claim: @CairoClaim) -> TreeArray<Span<u32>> {
-    if let Some(_) = claim.poseidon_aggregator {
-        utils::tree_array_concat_cols(
-            array![
-                claim.poseidon_aggregator.unwrap().log_sizes(),
-                claim.poseidon_3_partial_rounds_chain.unwrap().log_sizes(),
-                claim.poseidon_full_round_chain.unwrap().log_sizes(),
-                claim.cube_252.unwrap().log_sizes(), claim.poseidon_round_keys.unwrap().log_sizes(),
-                claim.range_check_252_width_27.unwrap().log_sizes(),
-            ],
-        )
-    } else {
-        array![]
-    }
-}
-
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 #[derive(Drop)]
 pub struct PoseidonContextComponents {

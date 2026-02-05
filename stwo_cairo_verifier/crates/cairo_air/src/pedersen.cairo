@@ -2,39 +2,21 @@ use components::partial_ec_mul_window_bits_18::InteractionClaimImpl as PartialEc
 use components::pedersen_aggregator_window_bits_18::InteractionClaimImpl as PedersenAggregatorInteractionClaimImpl;
 use components::pedersen_builtin::InteractionClaimImpl as PedersenBuiltinInteractionClaimImpl;
 use components::pedersen_points_table_window_bits_18::InteractionClaimImpl as PedersenPointsTableInteractionClaimImpl;
+#[cfg(not(feature: "poseidon252_verifier"))]
 use core::array::Span;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_cairo_air::cairo_component::CairoComponent;
-use stwo_cairo_air::claim::ClaimTrait;
-use stwo_cairo_air::claims::CairoClaim;
 #[cfg(not(feature: "poseidon252_verifier"))]
-use stwo_cairo_air::claims::CairoInteractionClaim;
+use stwo_cairo_air::claims::{CairoClaim, CairoInteractionClaim};
 use stwo_cairo_air::components;
 use stwo_constraint_framework::PreprocessedMaskValuesImpl;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_constraint_framework::{CommonLookupElements, PreprocessedMaskValues};
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::ColumnSpan;
-use stwo_verifier_core::TreeArray;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::utils::OptionImpl;
-use crate::utils;
-
-pub fn pedersen_context_log_sizes(claim: @CairoClaim) -> TreeArray<Span<u32>> {
-    if let Some(_) = claim.pedersen_aggregator_window_bits_18 {
-        utils::tree_array_concat_cols(
-            array![
-                claim.pedersen_aggregator_window_bits_18.unwrap().log_sizes(),
-                claim.partial_ec_mul_window_bits_18.unwrap().log_sizes(),
-                claim.pedersen_points_table_window_bits_18.unwrap().log_sizes(),
-            ],
-        )
-    } else {
-        array![]
-    }
-}
-
 #[cfg(not(feature: "poseidon252_verifier"))]
 #[derive(Drop)]
 pub struct PedersenContextComponents {
