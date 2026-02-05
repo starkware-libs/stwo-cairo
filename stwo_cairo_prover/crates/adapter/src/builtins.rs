@@ -96,6 +96,52 @@ impl BuiltinSegments {
         counts
     }
 
+    #[cfg(feature = "circuit-adaptation")]
+    fn seed_empty_builtin_segment(
+        segment: &mut Vec<Option<MaybeRelocatable>>,
+        builtin_name: &BuiltinName,
+    ) {
+        match builtin_name {
+            BuiltinName::bitwise => segment.extend([
+                Some(MaybeRelocatable::Int(3.into())),
+                Some(MaybeRelocatable::Int(6.into())),
+                Some(MaybeRelocatable::Int(2.into())),
+                Some(MaybeRelocatable::Int(5.into())),
+                Some(MaybeRelocatable::Int(7.into())),
+            ]),
+            BuiltinName::pedersen => {
+                segment.extend([Some(MaybeRelocatable::Int(2000.into())),
+                Some(MaybeRelocatable::Int(3000.into())),Some(MaybeRelocatable::Int(
+                    cairo_vm::Felt252::from_dec_str(
+                        "2259827999605678368300255972310867999576917457292275299312258452858451849126",
+                    )
+                    .expect("Invalid decimal string"),
+                )),])
+            },
+            BuiltinName::poseidon => {
+                segment.extend([Some(MaybeRelocatable::Int(0.into())),
+                Some(MaybeRelocatable::Int(1.into())),Some(MaybeRelocatable::Int(2.into())),Some(MaybeRelocatable::Int(
+                    cairo_vm::Felt252::from_dec_str(
+                        "2295587037099570554959559419563502401750712897815242840423085222573624626259",
+                    )
+                    .expect("Invalid decimal string"),
+                )),Some(MaybeRelocatable::Int(
+                    cairo_vm::Felt252::from_dec_str(
+                        "1376937952510280171498060847331258385898705105253722428056304895529608750111",
+                    )
+                    .expect("Invalid decimal string"),
+                )),Some(MaybeRelocatable::Int(
+                    cairo_vm::Felt252::from_dec_str(
+                        "88797818518863001461894449927004774331313731903189840167773508190167895212",
+                    )
+                    .expect("Invalid decimal string"),
+                )),])
+            },
+            BuiltinName::range_check => segment.extend([Some(MaybeRelocatable::Int(0.into()))]),
+            _ => (),
+        };
+    }
+
     // Pads the relocatable builtin segments output by the VM to match the size required by Stwo.
     // Assumes and verifies that the segments contain no holes and that their length is divisible by
     // the number of cells per instance.
@@ -109,6 +155,11 @@ impl BuiltinSegments {
                 continue;
             };
             let current_builtin_segment = &mut relocatable_memory[*segment_index];
+
+            #[cfg(feature = "circuit-adaptation")]
+            if current_builtin_segment.is_empty() {
+                BuiltinSegments::seed_empty_builtin_segment(current_builtin_segment, builtin_name);
+            }
 
             let original_segment_len = current_builtin_segment.len();
 
@@ -180,8 +231,14 @@ fn get_memory_segment_size(segment: &MemorySegmentAddresses) -> usize {
 
 #[cfg(test)]
 mod test_builtin_segments {
+    use stwo_cairo_common::builtins::BITWISE_BUILTIN_MEMORY_CELLS;
+    #[cfg(feature = "circuit-adaptation")]
+    use stwo_cairo_common::builtins::{
+        PEDERSEN_BUILTIN_MEMORY_CELLS, POSEIDON_BUILTIN_MEMORY_CELLS,
+        RANGE_CHECK_BUILTIN_MEMORY_CELLS,
+    };
+
     use super::*;
-    use crate::builtins::BITWISE_BUILTIN_MEMORY_CELLS;
 
     #[test]
     fn test_pad_relocatble_builtin_segments() {
@@ -262,6 +319,43 @@ mod test_builtin_segments {
         BuiltinSegments::pad_relocatble_builtin_segments(
             &mut relocatable_memory,
             &builtin_segments,
+        );
+    }
+
+    #[cfg(feature = "circuit-adaptation")]
+    #[test]
+    fn test_seed_empty_builtin_segments() {
+        let mut relocatable_memory = vec![vec![], vec![], vec![], vec![], vec![], vec![]];
+        let builtin_segments = BTreeMap::from([
+            (1, BuiltinName::bitwise),
+            (2, BuiltinName::pedersen),
+            (3, BuiltinName::keccak),
+            (4, BuiltinName::poseidon),
+            (5, BuiltinName::range_check),
+        ]);
+
+        BuiltinSegments::pad_relocatble_builtin_segments(
+            &mut relocatable_memory,
+            &builtin_segments,
+        );
+
+        assert_eq!(relocatable_memory[0].len(), 0);
+        assert_eq!(
+            relocatable_memory[1].len(),
+            MIN_SEGMENT_SIZE * BITWISE_BUILTIN_MEMORY_CELLS
+        );
+        assert_eq!(
+            relocatable_memory[2].len(),
+            MIN_SEGMENT_SIZE * PEDERSEN_BUILTIN_MEMORY_CELLS
+        );
+        assert_eq!(relocatable_memory[3].len(), 0);
+        assert_eq!(
+            relocatable_memory[4].len(),
+            MIN_SEGMENT_SIZE * POSEIDON_BUILTIN_MEMORY_CELLS
+        );
+        assert_eq!(
+            relocatable_memory[5].len(),
+            MIN_SEGMENT_SIZE * RANGE_CHECK_BUILTIN_MEMORY_CELLS
         );
     }
 }
