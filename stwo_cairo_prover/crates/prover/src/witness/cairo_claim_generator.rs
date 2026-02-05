@@ -3,15 +3,21 @@
 use std::sync::Arc;
 
 use cairo_air::air::PublicData;
+use cairo_air::claims::{CairoClaim, CairoInteractionClaim};
+use cairo_air::relations::CommonLookupElements;
 use indexmap::IndexSet;
 use rayon::scope;
 use stwo_cairo_adapter::builtins::BuiltinSegments;
 use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_adapter::opcodes::CasmStatesByOpcode;
 use stwo_cairo_common::builtins::*;
-use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
+    PreProcessedTrace, MAX_SEQUENCE_LOG_SIZE,
+};
 
 use crate::witness::components::*;
+use crate::witness::prelude::SimdBackend;
+use crate::witness::utils::TreeBuilder;
 
 #[derive(Default)]
 pub struct CairoClaimGenerator {
@@ -339,19 +345,16 @@ impl CairoClaimGenerator {
 
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(
-                    segment_length.is_multiple_of(ADD_MOD_BUILTIN_MEMORY_CELLS),
-                    "add_mod_builtin segment length is not a multiple of it's cells_per_instance"
-                );
+                        segment_length.is_multiple_of(ADD_MOD_BUILTIN_MEMORY_CELLS),
+                        "add_mod_builtin segment length is not a multiple of it's cells_per_instance"
+                    );
 
                     let n_instances = segment_length / ADD_MOD_BUILTIN_MEMORY_CELLS;
                     assert!(
                         n_instances.is_power_of_two(),
                         "add_mod_builtin instances number is not a power of two"
                     );
-                    *add_mod_builtin_ref = Some(add_mod_builtin::ClaimGenerator::new(
-                        n_instances.ilog2(),
-                        segment.begin_addr as u32,
-                    ));
+                    *add_mod_builtin_ref = Some(add_mod_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32));
                 });
             }
             if components.contains(&"bitwise_builtin") {
@@ -360,19 +363,16 @@ impl CairoClaimGenerator {
 
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(
-                    segment_length.is_multiple_of(BITWISE_BUILTIN_MEMORY_CELLS),
-                    "bitwise_builtin segment length is not a multiple of it's cells_per_instance"
-                );
+                        segment_length.is_multiple_of(BITWISE_BUILTIN_MEMORY_CELLS),
+                        "bitwise_builtin segment length is not a multiple of it's cells_per_instance"
+                    );
 
                     let n_instances = segment_length / BITWISE_BUILTIN_MEMORY_CELLS;
                     assert!(
                         n_instances.is_power_of_two(),
                         "bitwise_builtin instances number is not a power of two"
                     );
-                    *bitwise_builtin_ref = Some(bitwise_builtin::ClaimGenerator::new(
-                        n_instances.ilog2(),
-                        segment.begin_addr as u32,
-                    ));
+                    *bitwise_builtin_ref = Some(bitwise_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32));
                 });
             }
             if components.contains(&"mul_mod_builtin") {
@@ -381,19 +381,16 @@ impl CairoClaimGenerator {
 
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(
-                    segment_length.is_multiple_of(MUL_MOD_BUILTIN_MEMORY_CELLS),
-                    "mul_mod_builtin segment length is not a multiple of it's cells_per_instance"
-                );
+                        segment_length.is_multiple_of(MUL_MOD_BUILTIN_MEMORY_CELLS),
+                        "mul_mod_builtin segment length is not a multiple of it's cells_per_instance"
+                    );
 
                     let n_instances = segment_length / MUL_MOD_BUILTIN_MEMORY_CELLS;
                     assert!(
                         n_instances.is_power_of_two(),
                         "mul_mod_builtin instances number is not a power of two"
                     );
-                    *mul_mod_builtin_ref = Some(mul_mod_builtin::ClaimGenerator::new(
-                        n_instances.ilog2(),
-                        segment.begin_addr as u32,
-                    ));
+                    *mul_mod_builtin_ref = Some(mul_mod_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32));
                 });
             }
             if components.contains(&"pedersen_builtin") {
@@ -402,19 +399,16 @@ impl CairoClaimGenerator {
 
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(
-                    segment_length.is_multiple_of(PEDERSEN_BUILTIN_MEMORY_CELLS),
-                    "pedersen_builtin segment length is not a multiple of it's cells_per_instance"
-                );
+                        segment_length.is_multiple_of(PEDERSEN_BUILTIN_MEMORY_CELLS),
+                        "pedersen_builtin segment length is not a multiple of it's cells_per_instance"
+                    );
 
                     let n_instances = segment_length / PEDERSEN_BUILTIN_MEMORY_CELLS;
                     assert!(
                         n_instances.is_power_of_two(),
                         "pedersen_builtin instances number is not a power of two"
                     );
-                    *pedersen_builtin_ref = Some(pedersen_builtin::ClaimGenerator::new(
-                        n_instances.ilog2(),
-                        segment.begin_addr as u32,
-                    ));
+                    *pedersen_builtin_ref = Some(pedersen_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32));
                 });
             }
             if components.contains(&"poseidon_builtin") {
@@ -423,56 +417,53 @@ impl CairoClaimGenerator {
 
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(
-                    segment_length.is_multiple_of(POSEIDON_BUILTIN_MEMORY_CELLS),
-                    "poseidon_builtin segment length is not a multiple of it's cells_per_instance"
-                );
+                        segment_length.is_multiple_of(POSEIDON_BUILTIN_MEMORY_CELLS),
+                        "poseidon_builtin segment length is not a multiple of it's cells_per_instance"
+                    );
 
                     let n_instances = segment_length / POSEIDON_BUILTIN_MEMORY_CELLS;
                     assert!(
                         n_instances.is_power_of_two(),
                         "poseidon_builtin instances number is not a power of two"
                     );
-                    *poseidon_builtin_ref = Some(poseidon_builtin::ClaimGenerator::new(
-                        n_instances.ilog2(),
-                        segment.begin_addr as u32,
-                    ));
+                    *poseidon_builtin_ref = Some(poseidon_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32));
                 });
             }
             if components.contains(&"range_check96_builtin") {
                 s.spawn(|_| {
-                let segment = builtin_segments.range_check96_builtin.unwrap();
+                    let segment = builtin_segments.range_check96_builtin.unwrap();
 
-                let segment_length = segment.stop_ptr - segment.begin_addr;
-                assert!(
-                    segment_length.is_multiple_of(RANGE_CHECK_96_BUILTIN_MEMORY_CELLS),
-                    "range_check96_builtin segment length is not a multiple of it's cells_per_instance"
-                );
+                    let segment_length = segment.stop_ptr - segment.begin_addr;
+                    assert!(
+                        segment_length.is_multiple_of(RANGE_CHECK_96_BUILTIN_MEMORY_CELLS),
+                        "range_check96_builtin segment length is not a multiple of it's cells_per_instance"
+                    );
 
-                let n_instances = segment_length / RANGE_CHECK_96_BUILTIN_MEMORY_CELLS;
-                assert!(
-                    n_instances.is_power_of_two(),
-                    "range_check96_builtin instances number is not a power of two"
-                );
-                *range_check96_builtin_ref = Some(range_check96_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32));
-            });
+                    let n_instances = segment_length / RANGE_CHECK_96_BUILTIN_MEMORY_CELLS;
+                    assert!(
+                        n_instances.is_power_of_two(),
+                        "range_check96_builtin instances number is not a power of two"
+                    );
+                    *range_check96_builtin_ref = Some(range_check96_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32));
+                });
             }
             if components.contains(&"range_check_builtin") {
                 s.spawn(|_| {
-                let segment = builtin_segments.range_check_builtin.unwrap();
+                    let segment = builtin_segments.range_check_builtin.unwrap();
 
-                let segment_length = segment.stop_ptr - segment.begin_addr;
-                assert!(
-                    segment_length.is_multiple_of(RANGE_CHECK_BUILTIN_MEMORY_CELLS),
-                    "range_check_builtin segment length is not a multiple of it's cells_per_instance"
-                );
+                    let segment_length = segment.stop_ptr - segment.begin_addr;
+                    assert!(
+                        segment_length.is_multiple_of(RANGE_CHECK_BUILTIN_MEMORY_CELLS),
+                        "range_check_builtin segment length is not a multiple of it's cells_per_instance"
+                    );
 
-                let n_instances = segment_length / RANGE_CHECK_BUILTIN_MEMORY_CELLS;
-                assert!(
-                    n_instances.is_power_of_two(),
-                    "range_check_builtin instances number is not a power of two"
-                );
-                *range_check_builtin_ref = Some(range_check_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32));
-            });
+                    let n_instances = segment_length / RANGE_CHECK_BUILTIN_MEMORY_CELLS;
+                    assert!(
+                        n_instances.is_power_of_two(),
+                        "range_check_builtin instances number is not a power of two"
+                    );
+                    *range_check_builtin_ref = Some(range_check_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32));
+                });
             }
             if components.contains(&"pedersen_aggregator_window_bits_18") {
                 s.spawn(|_| {
@@ -662,8 +653,1730 @@ impl CairoClaimGenerator {
             }
         });
     }
+
+    pub fn write_trace(
+        mut self,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+    ) -> (CairoClaim, CairoInteractionClaimGenerator) {
+        let mut add_opcode_result = None;
+        let mut add_opcode_small_result = None;
+        let mut add_ap_opcode_result = None;
+        let mut assert_eq_opcode_result = None;
+        let mut assert_eq_opcode_imm_result = None;
+        let mut assert_eq_opcode_double_deref_result = None;
+        let mut blake_compress_opcode_result = None;
+        let mut call_opcode_abs_result = None;
+        let mut call_opcode_rel_imm_result = None;
+        let mut generic_opcode_result = None;
+        let mut jnz_opcode_non_taken_result = None;
+        let mut jnz_opcode_taken_result = None;
+        let mut jump_opcode_abs_result = None;
+        let mut jump_opcode_double_deref_result = None;
+        let mut jump_opcode_rel_result = None;
+        let mut jump_opcode_rel_imm_result = None;
+        let mut mul_opcode_result = None;
+        let mut mul_opcode_small_result = None;
+        let mut qm_31_add_mul_opcode_result = None;
+        let mut ret_opcode_result = None;
+
+        scope(|s| {
+            s.spawn(|_| {
+                add_opcode_result = self.add_opcode.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                    )
+                });
+            });
+            s.spawn(|_| {
+                add_opcode_small_result = self.add_opcode_small.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                    )
+                });
+            });
+            s.spawn(|_| {
+                add_ap_opcode_result = self.add_ap_opcode.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                        self.range_check_18.as_ref().unwrap(),
+                        self.range_check_11.as_ref().unwrap(),
+                    )
+                });
+            });
+            s.spawn(|_| {
+                assert_eq_opcode_result = self.assert_eq_opcode.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                    )
+                });
+            });
+            s.spawn(|_| {
+                assert_eq_opcode_imm_result = self.assert_eq_opcode_imm.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                    )
+                });
+            });
+            s.spawn(|_| {
+                assert_eq_opcode_double_deref_result =
+                    self.assert_eq_opcode_double_deref.map(|gen| {
+                        gen.write_trace(
+                            self.memory_address_to_id.as_ref().unwrap(),
+                            self.memory_id_to_big.as_ref().unwrap(),
+                            self.verify_instruction.as_ref().unwrap(),
+                        )
+                    });
+            });
+            s.spawn(|_| {
+                blake_compress_opcode_result = self.blake_compress_opcode.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                        self.range_check_7_2_5.as_ref().unwrap(),
+                        self.verify_bitwise_xor_8.as_ref().unwrap(),
+                        self.blake_round.as_mut().unwrap(),
+                        self.triple_xor_32.as_mut().unwrap(),
+                    )
+                });
+            });
+            s.spawn(|_| {
+                call_opcode_abs_result = self.call_opcode_abs.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                    )
+                });
+            });
+            s.spawn(|_| {
+                call_opcode_rel_imm_result = self.call_opcode_rel_imm.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                    )
+                });
+            });
+            s.spawn(|_| {
+                generic_opcode_result = self.generic_opcode.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                        self.range_check_9_9.as_ref().unwrap(),
+                        self.range_check_20.as_ref().unwrap(),
+                        self.range_check_18.as_ref().unwrap(),
+                        self.range_check_11.as_ref().unwrap(),
+                    )
+                });
+            });
+            s.spawn(|_| {
+                jnz_opcode_non_taken_result = self.jnz_opcode_non_taken.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                    )
+                });
+            });
+            s.spawn(|_| {
+                jnz_opcode_taken_result = self.jnz_opcode_taken.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                    )
+                });
+            });
+            s.spawn(|_| {
+                jump_opcode_abs_result = self.jump_opcode_abs.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                    )
+                });
+            });
+            s.spawn(|_| {
+                jump_opcode_double_deref_result = self.jump_opcode_double_deref.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                    )
+                });
+            });
+            s.spawn(|_| {
+                jump_opcode_rel_result = self.jump_opcode_rel.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                    )
+                });
+            });
+            s.spawn(|_| {
+                jump_opcode_rel_imm_result = self.jump_opcode_rel_imm.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                    )
+                });
+            });
+            s.spawn(|_| {
+                mul_opcode_result = self.mul_opcode.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                        self.range_check_20.as_ref().unwrap(),
+                    )
+                });
+            });
+            s.spawn(|_| {
+                mul_opcode_small_result = self.mul_opcode_small.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                        self.range_check_11.as_ref().unwrap(),
+                    )
+                });
+            });
+            s.spawn(|_| {
+                qm_31_add_mul_opcode_result = self.qm_31_add_mul_opcode.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                        self.range_check_4_4_4_4.as_ref().unwrap(),
+                    )
+                });
+            });
+            s.spawn(|_| {
+                ret_opcode_result = self.ret_opcode.map(|gen| {
+                    gen.write_trace(
+                        self.memory_address_to_id.as_ref().unwrap(),
+                        self.memory_id_to_big.as_ref().unwrap(),
+                        self.verify_instruction.as_ref().unwrap(),
+                    )
+                });
+            });
+        });
+
+        let (add_opcode_claim, add_opcode_interaction_gen) = add_opcode_result
+            .map(|(trace, claim, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (add_opcode_small_claim, add_opcode_small_interaction_gen) = add_opcode_small_result
+            .map(|(trace, claim, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (add_ap_opcode_claim, add_ap_opcode_interaction_gen) = add_ap_opcode_result
+            .map(|(trace, claim, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (assert_eq_opcode_claim, assert_eq_opcode_interaction_gen) = assert_eq_opcode_result
+            .map(|(trace, claim, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (assert_eq_opcode_imm_claim, assert_eq_opcode_imm_interaction_gen) =
+            assert_eq_opcode_imm_result
+                .map(|(trace, claim, interaction_gen)| {
+                    tree_builder.extend_evals(trace.to_evals());
+                    (claim, interaction_gen)
+                })
+                .unzip();
+        let (assert_eq_opcode_double_deref_claim, assert_eq_opcode_double_deref_interaction_gen) =
+            assert_eq_opcode_double_deref_result
+                .map(|(trace, claim, interaction_gen)| {
+                    tree_builder.extend_evals(trace.to_evals());
+                    (claim, interaction_gen)
+                })
+                .unzip();
+        let (blake_compress_opcode_claim, blake_compress_opcode_interaction_gen) =
+            blake_compress_opcode_result
+                .map(|(trace, claim, interaction_gen)| {
+                    tree_builder.extend_evals(trace.to_evals());
+                    (claim, interaction_gen)
+                })
+                .unzip();
+        let (call_opcode_abs_claim, call_opcode_abs_interaction_gen) = call_opcode_abs_result
+            .map(|(trace, claim, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (call_opcode_rel_imm_claim, call_opcode_rel_imm_interaction_gen) =
+            call_opcode_rel_imm_result
+                .map(|(trace, claim, interaction_gen)| {
+                    tree_builder.extend_evals(trace.to_evals());
+                    (claim, interaction_gen)
+                })
+                .unzip();
+        let (generic_opcode_claim, generic_opcode_interaction_gen) = generic_opcode_result
+            .map(|(trace, claim, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (jnz_opcode_non_taken_claim, jnz_opcode_non_taken_interaction_gen) =
+            jnz_opcode_non_taken_result
+                .map(|(trace, claim, interaction_gen)| {
+                    tree_builder.extend_evals(trace.to_evals());
+                    (claim, interaction_gen)
+                })
+                .unzip();
+        let (jnz_opcode_taken_claim, jnz_opcode_taken_interaction_gen) = jnz_opcode_taken_result
+            .map(|(trace, claim, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (jump_opcode_abs_claim, jump_opcode_abs_interaction_gen) = jump_opcode_abs_result
+            .map(|(trace, claim, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (jump_opcode_double_deref_claim, jump_opcode_double_deref_interaction_gen) =
+            jump_opcode_double_deref_result
+                .map(|(trace, claim, interaction_gen)| {
+                    tree_builder.extend_evals(trace.to_evals());
+                    (claim, interaction_gen)
+                })
+                .unzip();
+        let (jump_opcode_rel_claim, jump_opcode_rel_interaction_gen) = jump_opcode_rel_result
+            .map(|(trace, claim, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (jump_opcode_rel_imm_claim, jump_opcode_rel_imm_interaction_gen) =
+            jump_opcode_rel_imm_result
+                .map(|(trace, claim, interaction_gen)| {
+                    tree_builder.extend_evals(trace.to_evals());
+                    (claim, interaction_gen)
+                })
+                .unzip();
+        let (mul_opcode_claim, mul_opcode_interaction_gen) = mul_opcode_result
+            .map(|(trace, claim, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (mul_opcode_small_claim, mul_opcode_small_interaction_gen) = mul_opcode_small_result
+            .map(|(trace, claim, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (qm_31_add_mul_opcode_claim, qm_31_add_mul_opcode_interaction_gen) =
+            qm_31_add_mul_opcode_result
+                .map(|(trace, claim, interaction_gen)| {
+                    tree_builder.extend_evals(trace.to_evals());
+                    (claim, interaction_gen)
+                })
+                .unzip();
+        let (ret_opcode_claim, ret_opcode_interaction_gen) = ret_opcode_result
+            .map(|(trace, claim, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+
+        let (verify_instruction_claim, verify_instruction_interaction_gen) = self
+            .verify_instruction
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
+                    self.range_check_7_2_5.as_ref().unwrap(),
+                    self.range_check_4_3.as_ref().unwrap(),
+                    self.memory_address_to_id.as_ref().unwrap(),
+                    self.memory_id_to_big.as_ref().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (blake_round_claim, blake_round_interaction_gen) = self
+            .blake_round
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
+                    self.blake_round_sigma.as_ref().unwrap(),
+                    self.memory_address_to_id.as_ref().unwrap(),
+                    self.memory_id_to_big.as_ref().unwrap(),
+                    self.range_check_7_2_5.as_ref().unwrap(),
+                    self.blake_g.as_mut().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (blake_g_claim, blake_g_interaction_gen) = self
+            .blake_g
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
+                    self.verify_bitwise_xor_8.as_ref().unwrap(),
+                    self.verify_bitwise_xor_12.as_ref().unwrap(),
+                    self.verify_bitwise_xor_4.as_ref().unwrap(),
+                    self.verify_bitwise_xor_7.as_ref().unwrap(),
+                    self.verify_bitwise_xor_9.as_ref().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (blake_round_sigma_claim, blake_round_sigma_interaction_gen) = self
+            .blake_round_sigma
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (triple_xor_32_claim, triple_xor_32_interaction_gen) = self
+            .triple_xor_32
+            .map(|gen| {
+                let (trace, claim, interaction_gen) =
+                    gen.write_trace(self.verify_bitwise_xor_8.as_ref().unwrap());
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (verify_bitwise_xor_12_claim, verify_bitwise_xor_12_interaction_gen) = self
+            .verify_bitwise_xor_12
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace);
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (add_mod_builtin_claim, add_mod_builtin_interaction_gen) = self
+            .add_mod_builtin
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
+                    self.memory_address_to_id.as_ref().unwrap(),
+                    self.memory_id_to_big.as_ref().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (bitwise_builtin_claim, bitwise_builtin_interaction_gen) = self
+            .bitwise_builtin
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
+                    self.memory_address_to_id.as_ref().unwrap(),
+                    self.memory_id_to_big.as_ref().unwrap(),
+                    self.verify_bitwise_xor_9.as_ref().unwrap(),
+                    self.verify_bitwise_xor_8.as_ref().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (mul_mod_builtin_claim, mul_mod_builtin_interaction_gen) = self
+            .mul_mod_builtin
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
+                    self.memory_address_to_id.as_ref().unwrap(),
+                    self.memory_id_to_big.as_ref().unwrap(),
+                    self.range_check_12.as_ref().unwrap(),
+                    self.range_check_3_6_6_3.as_ref().unwrap(),
+                    self.range_check_18.as_ref().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (pedersen_builtin_claim, pedersen_builtin_interaction_gen) = self
+            .pedersen_builtin
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
+                    self.memory_address_to_id.as_ref().unwrap(),
+                    self.pedersen_aggregator_window_bits_18.as_ref().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (poseidon_builtin_claim, poseidon_builtin_interaction_gen) = self
+            .poseidon_builtin
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
+                    self.memory_address_to_id.as_ref().unwrap(),
+                    self.poseidon_aggregator.as_ref().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (range_check96_builtin_claim, range_check96_builtin_interaction_gen) = self
+            .range_check96_builtin
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
+                    self.memory_address_to_id.as_ref().unwrap(),
+                    self.memory_id_to_big.as_ref().unwrap(),
+                    self.range_check_6.as_ref().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (range_check_builtin_claim, range_check_builtin_interaction_gen) = self
+            .range_check_builtin
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
+                    self.memory_address_to_id.as_ref().unwrap(),
+                    self.memory_id_to_big.as_ref().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (
+            pedersen_aggregator_window_bits_18_claim,
+            pedersen_aggregator_window_bits_18_interaction_gen,
+        ) = self
+            .pedersen_aggregator_window_bits_18
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
+                    self.memory_id_to_big.as_ref().unwrap(),
+                    self.range_check_8.as_ref().unwrap(),
+                    self.partial_ec_mul_window_bits_18.as_mut().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (partial_ec_mul_window_bits_18_claim, partial_ec_mul_window_bits_18_interaction_gen) =
+            self.partial_ec_mul_window_bits_18
+                .map(|gen| {
+                    let (trace, claim, interaction_gen) = gen.write_trace(
+                        self.pedersen_points_table_window_bits_18.as_ref().unwrap(),
+                        self.range_check_9_9.as_ref().unwrap(),
+                        self.range_check_20.as_ref().unwrap(),
+                    );
+                    tree_builder.extend_evals(trace.to_evals());
+                    (claim, interaction_gen)
+                })
+                .unzip();
+        let (
+            pedersen_points_table_window_bits_18_claim,
+            pedersen_points_table_window_bits_18_interaction_gen,
+        ) = self
+            .pedersen_points_table_window_bits_18
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (poseidon_aggregator_claim, poseidon_aggregator_interaction_gen) = self
+            .poseidon_aggregator
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
+                    self.memory_id_to_big.as_ref().unwrap(),
+                    self.poseidon_full_round_chain.as_mut().unwrap(),
+                    self.range_check_252_width_27.as_mut().unwrap(),
+                    self.cube_252.as_mut().unwrap(),
+                    self.range_check_3_3_3_3_3.as_ref().unwrap(),
+                    self.range_check_4_4_4_4.as_ref().unwrap(),
+                    self.range_check_4_4.as_ref().unwrap(),
+                    self.poseidon_3_partial_rounds_chain.as_mut().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (
+            poseidon_3_partial_rounds_chain_claim,
+            poseidon_3_partial_rounds_chain_interaction_gen,
+        ) = self
+            .poseidon_3_partial_rounds_chain
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
+                    self.poseidon_round_keys.as_ref().unwrap(),
+                    self.cube_252.as_mut().unwrap(),
+                    self.range_check_4_4_4_4.as_ref().unwrap(),
+                    self.range_check_4_4.as_ref().unwrap(),
+                    self.range_check_252_width_27.as_mut().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (poseidon_full_round_chain_claim, poseidon_full_round_chain_interaction_gen) = self
+            .poseidon_full_round_chain
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
+                    self.cube_252.as_mut().unwrap(),
+                    self.poseidon_round_keys.as_ref().unwrap(),
+                    self.range_check_3_3_3_3_3.as_ref().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (cube_252_claim, cube_252_interaction_gen) = self
+            .cube_252
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
+                    self.range_check_9_9.as_ref().unwrap(),
+                    self.range_check_20.as_ref().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (poseidon_round_keys_claim, poseidon_round_keys_interaction_gen) = self
+            .poseidon_round_keys
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (range_check_252_width_27_claim, range_check_252_width_27_interaction_gen) = self
+            .range_check_252_width_27
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
+                    self.range_check_9_9.as_ref().unwrap(),
+                    self.range_check_18.as_ref().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (memory_address_to_id_claim, memory_address_to_id_interaction_gen) = self
+            .memory_address_to_id
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace);
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (memory_id_to_big_claim, memory_id_to_big_interaction_gen) = self
+            .memory_id_to_big
+            .map(|gen| {
+                const LOG_MAX_BIG_SIZE: u32 = MAX_SEQUENCE_LOG_SIZE;
+                let (big_traces, small_trace, claim, interaction_gen) =
+                    gen.write_trace(self.range_check_9_9.as_ref().unwrap(), LOG_MAX_BIG_SIZE);
+                for big_trace in big_traces {
+                    tree_builder.extend_evals(big_trace);
+                }
+                tree_builder.extend_evals(small_trace);
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (range_check_6_claim, range_check_6_interaction_gen) = self
+            .range_check_6
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (range_check_8_claim, range_check_8_interaction_gen) = self
+            .range_check_8
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (range_check_11_claim, range_check_11_interaction_gen) = self
+            .range_check_11
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (range_check_12_claim, range_check_12_interaction_gen) = self
+            .range_check_12
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (range_check_18_claim, range_check_18_interaction_gen) = self
+            .range_check_18
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (range_check_20_claim, range_check_20_interaction_gen) = self
+            .range_check_20
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (range_check_4_3_claim, range_check_4_3_interaction_gen) = self
+            .range_check_4_3
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (range_check_4_4_claim, range_check_4_4_interaction_gen) = self
+            .range_check_4_4
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (range_check_9_9_claim, range_check_9_9_interaction_gen) = self
+            .range_check_9_9
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (range_check_7_2_5_claim, range_check_7_2_5_interaction_gen) = self
+            .range_check_7_2_5
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (range_check_3_6_6_3_claim, range_check_3_6_6_3_interaction_gen) = self
+            .range_check_3_6_6_3
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (range_check_4_4_4_4_claim, range_check_4_4_4_4_interaction_gen) = self
+            .range_check_4_4_4_4
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (range_check_3_3_3_3_3_claim, range_check_3_3_3_3_3_interaction_gen) = self
+            .range_check_3_3_3_3_3
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (verify_bitwise_xor_4_claim, verify_bitwise_xor_4_interaction_gen) = self
+            .verify_bitwise_xor_4
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (verify_bitwise_xor_7_claim, verify_bitwise_xor_7_interaction_gen) = self
+            .verify_bitwise_xor_7
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (verify_bitwise_xor_8_claim, verify_bitwise_xor_8_interaction_gen) = self
+            .verify_bitwise_xor_8
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (verify_bitwise_xor_9_claim, verify_bitwise_xor_9_interaction_gen) = self
+            .verify_bitwise_xor_9
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+
+        (
+            CairoClaim {
+                public_data: self.public_data,
+                add_opcode: add_opcode_claim,
+                add_opcode_small: add_opcode_small_claim,
+                add_ap_opcode: add_ap_opcode_claim,
+                assert_eq_opcode: assert_eq_opcode_claim,
+                assert_eq_opcode_imm: assert_eq_opcode_imm_claim,
+                assert_eq_opcode_double_deref: assert_eq_opcode_double_deref_claim,
+                blake_compress_opcode: blake_compress_opcode_claim,
+                call_opcode_abs: call_opcode_abs_claim,
+                call_opcode_rel_imm: call_opcode_rel_imm_claim,
+                generic_opcode: generic_opcode_claim,
+                jnz_opcode_non_taken: jnz_opcode_non_taken_claim,
+                jnz_opcode_taken: jnz_opcode_taken_claim,
+                jump_opcode_abs: jump_opcode_abs_claim,
+                jump_opcode_double_deref: jump_opcode_double_deref_claim,
+                jump_opcode_rel: jump_opcode_rel_claim,
+                jump_opcode_rel_imm: jump_opcode_rel_imm_claim,
+                mul_opcode: mul_opcode_claim,
+                mul_opcode_small: mul_opcode_small_claim,
+                qm_31_add_mul_opcode: qm_31_add_mul_opcode_claim,
+                ret_opcode: ret_opcode_claim,
+                verify_instruction: verify_instruction_claim,
+                blake_round: blake_round_claim,
+                blake_g: blake_g_claim,
+                blake_round_sigma: blake_round_sigma_claim,
+                triple_xor_32: triple_xor_32_claim,
+                verify_bitwise_xor_12: verify_bitwise_xor_12_claim,
+                add_mod_builtin: add_mod_builtin_claim,
+                bitwise_builtin: bitwise_builtin_claim,
+                mul_mod_builtin: mul_mod_builtin_claim,
+                pedersen_builtin: pedersen_builtin_claim,
+                poseidon_builtin: poseidon_builtin_claim,
+                range_check96_builtin: range_check96_builtin_claim,
+                range_check_builtin: range_check_builtin_claim,
+                pedersen_aggregator_window_bits_18: pedersen_aggregator_window_bits_18_claim,
+                partial_ec_mul_window_bits_18: partial_ec_mul_window_bits_18_claim,
+                pedersen_points_table_window_bits_18: pedersen_points_table_window_bits_18_claim,
+                poseidon_aggregator: poseidon_aggregator_claim,
+                poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_claim,
+                poseidon_full_round_chain: poseidon_full_round_chain_claim,
+                cube_252: cube_252_claim,
+                poseidon_round_keys: poseidon_round_keys_claim,
+                range_check_252_width_27: range_check_252_width_27_claim,
+                memory_address_to_id: memory_address_to_id_claim,
+                memory_id_to_big: memory_id_to_big_claim,
+                range_check_6: range_check_6_claim,
+                range_check_8: range_check_8_claim,
+                range_check_11: range_check_11_claim,
+                range_check_12: range_check_12_claim,
+                range_check_18: range_check_18_claim,
+                range_check_20: range_check_20_claim,
+                range_check_4_3: range_check_4_3_claim,
+                range_check_4_4: range_check_4_4_claim,
+                range_check_9_9: range_check_9_9_claim,
+                range_check_7_2_5: range_check_7_2_5_claim,
+                range_check_3_6_6_3: range_check_3_6_6_3_claim,
+                range_check_4_4_4_4: range_check_4_4_4_4_claim,
+                range_check_3_3_3_3_3: range_check_3_3_3_3_3_claim,
+                verify_bitwise_xor_4: verify_bitwise_xor_4_claim,
+                verify_bitwise_xor_7: verify_bitwise_xor_7_claim,
+                verify_bitwise_xor_8: verify_bitwise_xor_8_claim,
+                verify_bitwise_xor_9: verify_bitwise_xor_9_claim,
+            },
+            CairoInteractionClaimGenerator {
+                add_opcode: add_opcode_interaction_gen,
+                add_opcode_small: add_opcode_small_interaction_gen,
+                add_ap_opcode: add_ap_opcode_interaction_gen,
+                assert_eq_opcode: assert_eq_opcode_interaction_gen,
+                assert_eq_opcode_imm: assert_eq_opcode_imm_interaction_gen,
+                assert_eq_opcode_double_deref: assert_eq_opcode_double_deref_interaction_gen,
+                blake_compress_opcode: blake_compress_opcode_interaction_gen,
+                call_opcode_abs: call_opcode_abs_interaction_gen,
+                call_opcode_rel_imm: call_opcode_rel_imm_interaction_gen,
+                generic_opcode: generic_opcode_interaction_gen,
+                jnz_opcode_non_taken: jnz_opcode_non_taken_interaction_gen,
+                jnz_opcode_taken: jnz_opcode_taken_interaction_gen,
+                jump_opcode_abs: jump_opcode_abs_interaction_gen,
+                jump_opcode_double_deref: jump_opcode_double_deref_interaction_gen,
+                jump_opcode_rel: jump_opcode_rel_interaction_gen,
+                jump_opcode_rel_imm: jump_opcode_rel_imm_interaction_gen,
+                mul_opcode: mul_opcode_interaction_gen,
+                mul_opcode_small: mul_opcode_small_interaction_gen,
+                qm_31_add_mul_opcode: qm_31_add_mul_opcode_interaction_gen,
+                ret_opcode: ret_opcode_interaction_gen,
+                verify_instruction: verify_instruction_interaction_gen,
+                blake_round: blake_round_interaction_gen,
+                blake_g: blake_g_interaction_gen,
+                blake_round_sigma: blake_round_sigma_interaction_gen,
+                triple_xor_32: triple_xor_32_interaction_gen,
+                verify_bitwise_xor_12: verify_bitwise_xor_12_interaction_gen,
+                add_mod_builtin: add_mod_builtin_interaction_gen,
+                bitwise_builtin: bitwise_builtin_interaction_gen,
+                mul_mod_builtin: mul_mod_builtin_interaction_gen,
+                pedersen_builtin: pedersen_builtin_interaction_gen,
+                poseidon_builtin: poseidon_builtin_interaction_gen,
+                range_check96_builtin: range_check96_builtin_interaction_gen,
+                range_check_builtin: range_check_builtin_interaction_gen,
+                pedersen_aggregator_window_bits_18:
+                    pedersen_aggregator_window_bits_18_interaction_gen,
+                partial_ec_mul_window_bits_18: partial_ec_mul_window_bits_18_interaction_gen,
+                pedersen_points_table_window_bits_18:
+                    pedersen_points_table_window_bits_18_interaction_gen,
+                poseidon_aggregator: poseidon_aggregator_interaction_gen,
+                poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_interaction_gen,
+                poseidon_full_round_chain: poseidon_full_round_chain_interaction_gen,
+                cube_252: cube_252_interaction_gen,
+                poseidon_round_keys: poseidon_round_keys_interaction_gen,
+                range_check_252_width_27: range_check_252_width_27_interaction_gen,
+                memory_address_to_id: memory_address_to_id_interaction_gen,
+                memory_id_to_big: memory_id_to_big_interaction_gen,
+                range_check_6: range_check_6_interaction_gen,
+                range_check_8: range_check_8_interaction_gen,
+                range_check_11: range_check_11_interaction_gen,
+                range_check_12: range_check_12_interaction_gen,
+                range_check_18: range_check_18_interaction_gen,
+                range_check_20: range_check_20_interaction_gen,
+                range_check_4_3: range_check_4_3_interaction_gen,
+                range_check_4_4: range_check_4_4_interaction_gen,
+                range_check_9_9: range_check_9_9_interaction_gen,
+                range_check_7_2_5: range_check_7_2_5_interaction_gen,
+                range_check_3_6_6_3: range_check_3_6_6_3_interaction_gen,
+                range_check_4_4_4_4: range_check_4_4_4_4_interaction_gen,
+                range_check_3_3_3_3_3: range_check_3_3_3_3_3_interaction_gen,
+                verify_bitwise_xor_4: verify_bitwise_xor_4_interaction_gen,
+                verify_bitwise_xor_7: verify_bitwise_xor_7_interaction_gen,
+                verify_bitwise_xor_8: verify_bitwise_xor_8_interaction_gen,
+                verify_bitwise_xor_9: verify_bitwise_xor_9_interaction_gen,
+            },
+        )
+    }
 }
 
+#[derive(Default)]
+pub struct CairoInteractionClaimGenerator {
+    pub add_opcode: Option<add_opcode::InteractionClaimGenerator>,
+    pub add_opcode_small: Option<add_opcode_small::InteractionClaimGenerator>,
+    pub add_ap_opcode: Option<add_ap_opcode::InteractionClaimGenerator>,
+    pub assert_eq_opcode: Option<assert_eq_opcode::InteractionClaimGenerator>,
+    pub assert_eq_opcode_imm: Option<assert_eq_opcode_imm::InteractionClaimGenerator>,
+    pub assert_eq_opcode_double_deref:
+        Option<assert_eq_opcode_double_deref::InteractionClaimGenerator>,
+    pub blake_compress_opcode: Option<blake_compress_opcode::InteractionClaimGenerator>,
+    pub call_opcode_abs: Option<call_opcode_abs::InteractionClaimGenerator>,
+    pub call_opcode_rel_imm: Option<call_opcode_rel_imm::InteractionClaimGenerator>,
+    pub generic_opcode: Option<generic_opcode::InteractionClaimGenerator>,
+    pub jnz_opcode_non_taken: Option<jnz_opcode_non_taken::InteractionClaimGenerator>,
+    pub jnz_opcode_taken: Option<jnz_opcode_taken::InteractionClaimGenerator>,
+    pub jump_opcode_abs: Option<jump_opcode_abs::InteractionClaimGenerator>,
+    pub jump_opcode_double_deref: Option<jump_opcode_double_deref::InteractionClaimGenerator>,
+    pub jump_opcode_rel: Option<jump_opcode_rel::InteractionClaimGenerator>,
+    pub jump_opcode_rel_imm: Option<jump_opcode_rel_imm::InteractionClaimGenerator>,
+    pub mul_opcode: Option<mul_opcode::InteractionClaimGenerator>,
+    pub mul_opcode_small: Option<mul_opcode_small::InteractionClaimGenerator>,
+    pub qm_31_add_mul_opcode: Option<qm_31_add_mul_opcode::InteractionClaimGenerator>,
+    pub ret_opcode: Option<ret_opcode::InteractionClaimGenerator>,
+    pub verify_instruction: Option<verify_instruction::InteractionClaimGenerator>,
+    pub blake_round: Option<blake_round::InteractionClaimGenerator>,
+    pub blake_g: Option<blake_g::InteractionClaimGenerator>,
+    pub blake_round_sigma: Option<blake_round_sigma::InteractionClaimGenerator>,
+    pub triple_xor_32: Option<triple_xor_32::InteractionClaimGenerator>,
+    pub verify_bitwise_xor_12: Option<verify_bitwise_xor_12::InteractionClaimGenerator>,
+    pub add_mod_builtin: Option<add_mod_builtin::InteractionClaimGenerator>,
+    pub bitwise_builtin: Option<bitwise_builtin::InteractionClaimGenerator>,
+    pub mul_mod_builtin: Option<mul_mod_builtin::InteractionClaimGenerator>,
+    pub pedersen_builtin: Option<pedersen_builtin::InteractionClaimGenerator>,
+    pub poseidon_builtin: Option<poseidon_builtin::InteractionClaimGenerator>,
+    pub range_check96_builtin: Option<range_check96_builtin::InteractionClaimGenerator>,
+    pub range_check_builtin: Option<range_check_builtin::InteractionClaimGenerator>,
+    pub pedersen_aggregator_window_bits_18:
+        Option<pedersen_aggregator_window_bits_18::InteractionClaimGenerator>,
+    pub partial_ec_mul_window_bits_18:
+        Option<partial_ec_mul_window_bits_18::InteractionClaimGenerator>,
+    pub pedersen_points_table_window_bits_18:
+        Option<pedersen_points_table_window_bits_18::InteractionClaimGenerator>,
+    pub poseidon_aggregator: Option<poseidon_aggregator::InteractionClaimGenerator>,
+    pub poseidon_3_partial_rounds_chain:
+        Option<poseidon_3_partial_rounds_chain::InteractionClaimGenerator>,
+    pub poseidon_full_round_chain: Option<poseidon_full_round_chain::InteractionClaimGenerator>,
+    pub cube_252: Option<cube_252::InteractionClaimGenerator>,
+    pub poseidon_round_keys: Option<poseidon_round_keys::InteractionClaimGenerator>,
+    pub range_check_252_width_27: Option<range_check_252_width_27::InteractionClaimGenerator>,
+    pub memory_address_to_id: Option<memory_address_to_id::InteractionClaimGenerator>,
+    pub memory_id_to_big: Option<memory_id_to_big::InteractionClaimGenerator>,
+    pub range_check_6: Option<range_check_6::InteractionClaimGenerator>,
+    pub range_check_8: Option<range_check_8::InteractionClaimGenerator>,
+    pub range_check_11: Option<range_check_11::InteractionClaimGenerator>,
+    pub range_check_12: Option<range_check_12::InteractionClaimGenerator>,
+    pub range_check_18: Option<range_check_18::InteractionClaimGenerator>,
+    pub range_check_20: Option<range_check_20::InteractionClaimGenerator>,
+    pub range_check_4_3: Option<range_check_4_3::InteractionClaimGenerator>,
+    pub range_check_4_4: Option<range_check_4_4::InteractionClaimGenerator>,
+    pub range_check_9_9: Option<range_check_9_9::InteractionClaimGenerator>,
+    pub range_check_7_2_5: Option<range_check_7_2_5::InteractionClaimGenerator>,
+    pub range_check_3_6_6_3: Option<range_check_3_6_6_3::InteractionClaimGenerator>,
+    pub range_check_4_4_4_4: Option<range_check_4_4_4_4::InteractionClaimGenerator>,
+    pub range_check_3_3_3_3_3: Option<range_check_3_3_3_3_3::InteractionClaimGenerator>,
+    pub verify_bitwise_xor_4: Option<verify_bitwise_xor_4::InteractionClaimGenerator>,
+    pub verify_bitwise_xor_7: Option<verify_bitwise_xor_7::InteractionClaimGenerator>,
+    pub verify_bitwise_xor_8: Option<verify_bitwise_xor_8::InteractionClaimGenerator>,
+    pub verify_bitwise_xor_9: Option<verify_bitwise_xor_9::InteractionClaimGenerator>,
+}
+
+impl CairoInteractionClaimGenerator {
+    pub fn write_interaction_trace(
+        self,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        common_lookup_elements: &CommonLookupElements,
+    ) -> CairoInteractionClaim {
+        let mut add_opcode_result = None;
+        let mut add_opcode_small_result = None;
+        let mut add_ap_opcode_result = None;
+        let mut assert_eq_opcode_result = None;
+        let mut assert_eq_opcode_imm_result = None;
+        let mut assert_eq_opcode_double_deref_result = None;
+        let mut blake_compress_opcode_result = None;
+        let mut call_opcode_abs_result = None;
+        let mut call_opcode_rel_imm_result = None;
+        let mut generic_opcode_result = None;
+        let mut jnz_opcode_non_taken_result = None;
+        let mut jnz_opcode_taken_result = None;
+        let mut jump_opcode_abs_result = None;
+        let mut jump_opcode_double_deref_result = None;
+        let mut jump_opcode_rel_result = None;
+        let mut jump_opcode_rel_imm_result = None;
+        let mut mul_opcode_result = None;
+        let mut mul_opcode_small_result = None;
+        let mut qm_31_add_mul_opcode_result = None;
+        let mut ret_opcode_result = None;
+        let mut verify_instruction_result = None;
+        let mut blake_round_result = None;
+        let mut blake_g_result = None;
+        let mut blake_round_sigma_result = None;
+        let mut triple_xor_32_result = None;
+        let mut verify_bitwise_xor_12_result = None;
+        let mut add_mod_builtin_result = None;
+        let mut bitwise_builtin_result = None;
+        let mut mul_mod_builtin_result = None;
+        let mut pedersen_builtin_result = None;
+        let mut poseidon_builtin_result = None;
+        let mut range_check96_builtin_result = None;
+        let mut range_check_builtin_result = None;
+        let mut pedersen_aggregator_window_bits_18_result = None;
+        let mut partial_ec_mul_window_bits_18_result = None;
+        let mut pedersen_points_table_window_bits_18_result = None;
+        let mut poseidon_aggregator_result = None;
+        let mut poseidon_3_partial_rounds_chain_result = None;
+        let mut poseidon_full_round_chain_result = None;
+        let mut cube_252_result = None;
+        let mut poseidon_round_keys_result = None;
+        let mut range_check_252_width_27_result = None;
+        let mut memory_address_to_id_result = None;
+        let mut memory_id_to_big_result = None;
+        let mut range_check_6_result = None;
+        let mut range_check_8_result = None;
+        let mut range_check_11_result = None;
+        let mut range_check_12_result = None;
+        let mut range_check_18_result = None;
+        let mut range_check_20_result = None;
+        let mut range_check_4_3_result = None;
+        let mut range_check_4_4_result = None;
+        let mut range_check_9_9_result = None;
+        let mut range_check_7_2_5_result = None;
+        let mut range_check_3_6_6_3_result = None;
+        let mut range_check_4_4_4_4_result = None;
+        let mut range_check_3_3_3_3_3_result = None;
+        let mut verify_bitwise_xor_4_result = None;
+        let mut verify_bitwise_xor_7_result = None;
+        let mut verify_bitwise_xor_8_result = None;
+        let mut verify_bitwise_xor_9_result = None;
+
+        scope(|s| {
+            s.spawn(|_| {
+                add_opcode_result = self
+                    .add_opcode
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                add_opcode_small_result = self
+                    .add_opcode_small
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                add_ap_opcode_result = self
+                    .add_ap_opcode
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                assert_eq_opcode_result = self
+                    .assert_eq_opcode
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                assert_eq_opcode_imm_result = self
+                    .assert_eq_opcode_imm
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                assert_eq_opcode_double_deref_result = self
+                    .assert_eq_opcode_double_deref
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                blake_compress_opcode_result = self
+                    .blake_compress_opcode
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                call_opcode_abs_result = self
+                    .call_opcode_abs
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                call_opcode_rel_imm_result = self
+                    .call_opcode_rel_imm
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                generic_opcode_result = self
+                    .generic_opcode
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                jnz_opcode_non_taken_result = self
+                    .jnz_opcode_non_taken
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                jnz_opcode_taken_result = self
+                    .jnz_opcode_taken
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                jump_opcode_abs_result = self
+                    .jump_opcode_abs
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                jump_opcode_double_deref_result = self
+                    .jump_opcode_double_deref
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                jump_opcode_rel_result = self
+                    .jump_opcode_rel
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                jump_opcode_rel_imm_result = self
+                    .jump_opcode_rel_imm
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                mul_opcode_result = self
+                    .mul_opcode
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                mul_opcode_small_result = self
+                    .mul_opcode_small
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                qm_31_add_mul_opcode_result = self
+                    .qm_31_add_mul_opcode
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                ret_opcode_result = self
+                    .ret_opcode
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                verify_instruction_result = self
+                    .verify_instruction
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                blake_round_result = self
+                    .blake_round
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                blake_g_result = self
+                    .blake_g
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                blake_round_sigma_result = self
+                    .blake_round_sigma
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                triple_xor_32_result = self
+                    .triple_xor_32
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                verify_bitwise_xor_12_result = self
+                    .verify_bitwise_xor_12
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                add_mod_builtin_result = self
+                    .add_mod_builtin
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                bitwise_builtin_result = self
+                    .bitwise_builtin
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                mul_mod_builtin_result = self
+                    .mul_mod_builtin
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                pedersen_builtin_result = self
+                    .pedersen_builtin
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                poseidon_builtin_result = self
+                    .poseidon_builtin
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                range_check96_builtin_result = self
+                    .range_check96_builtin
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                range_check_builtin_result = self
+                    .range_check_builtin
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                pedersen_aggregator_window_bits_18_result = self
+                    .pedersen_aggregator_window_bits_18
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                partial_ec_mul_window_bits_18_result = self
+                    .partial_ec_mul_window_bits_18
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                pedersen_points_table_window_bits_18_result = self
+                    .pedersen_points_table_window_bits_18
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                poseidon_aggregator_result = self
+                    .poseidon_aggregator
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                poseidon_3_partial_rounds_chain_result = self
+                    .poseidon_3_partial_rounds_chain
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                poseidon_full_round_chain_result = self
+                    .poseidon_full_round_chain
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                cube_252_result = self
+                    .cube_252
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                poseidon_round_keys_result = self
+                    .poseidon_round_keys
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                range_check_252_width_27_result = self
+                    .range_check_252_width_27
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                memory_address_to_id_result = self
+                    .memory_address_to_id
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                memory_id_to_big_result = self
+                    .memory_id_to_big
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                range_check_6_result = self
+                    .range_check_6
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                range_check_8_result = self
+                    .range_check_8
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                range_check_11_result = self
+                    .range_check_11
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                range_check_12_result = self
+                    .range_check_12
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                range_check_18_result = self
+                    .range_check_18
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                range_check_20_result = self
+                    .range_check_20
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                range_check_4_3_result = self
+                    .range_check_4_3
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                range_check_4_4_result = self
+                    .range_check_4_4
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                range_check_9_9_result = self
+                    .range_check_9_9
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                range_check_7_2_5_result = self
+                    .range_check_7_2_5
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                range_check_3_6_6_3_result = self
+                    .range_check_3_6_6_3
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                range_check_4_4_4_4_result = self
+                    .range_check_4_4_4_4
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                range_check_3_3_3_3_3_result = self
+                    .range_check_3_3_3_3_3
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                verify_bitwise_xor_4_result = self
+                    .verify_bitwise_xor_4
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                verify_bitwise_xor_7_result = self
+                    .verify_bitwise_xor_7
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                verify_bitwise_xor_8_result = self
+                    .verify_bitwise_xor_8
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+            s.spawn(|_| {
+                verify_bitwise_xor_9_result = self
+                    .verify_bitwise_xor_9
+                    .map(|gen| gen.write_interaction_trace(common_lookup_elements));
+            });
+        });
+
+        let add_opcode_interaction_claim = add_opcode_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        let add_opcode_small_interaction_claim =
+            add_opcode_small_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let add_ap_opcode_interaction_claim =
+            add_ap_opcode_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let assert_eq_opcode_interaction_claim =
+            assert_eq_opcode_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let assert_eq_opcode_imm_interaction_claim =
+            assert_eq_opcode_imm_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let assert_eq_opcode_double_deref_interaction_claim = assert_eq_opcode_double_deref_result
+            .map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let blake_compress_opcode_interaction_claim =
+            blake_compress_opcode_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let call_opcode_abs_interaction_claim =
+            call_opcode_abs_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let call_opcode_rel_imm_interaction_claim =
+            call_opcode_rel_imm_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let generic_opcode_interaction_claim =
+            generic_opcode_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let jnz_opcode_non_taken_interaction_claim =
+            jnz_opcode_non_taken_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let jnz_opcode_taken_interaction_claim =
+            jnz_opcode_taken_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let jump_opcode_abs_interaction_claim =
+            jump_opcode_abs_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let jump_opcode_double_deref_interaction_claim =
+            jump_opcode_double_deref_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let jump_opcode_rel_interaction_claim =
+            jump_opcode_rel_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let jump_opcode_rel_imm_interaction_claim =
+            jump_opcode_rel_imm_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let mul_opcode_interaction_claim = mul_opcode_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        let mul_opcode_small_interaction_claim =
+            mul_opcode_small_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let qm_31_add_mul_opcode_interaction_claim =
+            qm_31_add_mul_opcode_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let ret_opcode_interaction_claim = ret_opcode_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        let verify_instruction_interaction_claim =
+            verify_instruction_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let blake_round_interaction_claim = blake_round_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        let blake_g_interaction_claim = blake_g_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        let blake_round_sigma_interaction_claim =
+            blake_round_sigma_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let triple_xor_32_interaction_claim =
+            triple_xor_32_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let verify_bitwise_xor_12_interaction_claim =
+            verify_bitwise_xor_12_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let add_mod_builtin_interaction_claim =
+            add_mod_builtin_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let bitwise_builtin_interaction_claim =
+            bitwise_builtin_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let mul_mod_builtin_interaction_claim =
+            mul_mod_builtin_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let pedersen_builtin_interaction_claim =
+            pedersen_builtin_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let poseidon_builtin_interaction_claim =
+            poseidon_builtin_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let range_check96_builtin_interaction_claim =
+            range_check96_builtin_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let range_check_builtin_interaction_claim =
+            range_check_builtin_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let pedersen_aggregator_window_bits_18_interaction_claim =
+            pedersen_aggregator_window_bits_18_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let partial_ec_mul_window_bits_18_interaction_claim = partial_ec_mul_window_bits_18_result
+            .map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let pedersen_points_table_window_bits_18_interaction_claim =
+            pedersen_points_table_window_bits_18_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let poseidon_aggregator_interaction_claim =
+            poseidon_aggregator_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let poseidon_3_partial_rounds_chain_interaction_claim =
+            poseidon_3_partial_rounds_chain_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let poseidon_full_round_chain_interaction_claim =
+            poseidon_full_round_chain_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let cube_252_interaction_claim = cube_252_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        let poseidon_round_keys_interaction_claim =
+            poseidon_round_keys_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let range_check_252_width_27_interaction_claim =
+            range_check_252_width_27_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let memory_address_to_id_interaction_claim =
+            memory_address_to_id_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let (_, memory_id_to_big_interaction_claim) = memory_id_to_big_result
+            .map(|(big_traces, small_trace, interaction_claim)| {
+                for big_trace in big_traces {
+                    tree_builder.extend_evals(big_trace);
+                }
+                tree_builder.extend_evals(small_trace);
+                ((), interaction_claim)
+            })
+            .unzip();
+        let range_check_6_interaction_claim =
+            range_check_6_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let range_check_8_interaction_claim =
+            range_check_8_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let range_check_11_interaction_claim =
+            range_check_11_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let range_check_12_interaction_claim =
+            range_check_12_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let range_check_18_interaction_claim =
+            range_check_18_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let range_check_20_interaction_claim =
+            range_check_20_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let range_check_4_3_interaction_claim =
+            range_check_4_3_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let range_check_4_4_interaction_claim =
+            range_check_4_4_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let range_check_9_9_interaction_claim =
+            range_check_9_9_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let range_check_7_2_5_interaction_claim =
+            range_check_7_2_5_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let range_check_3_6_6_3_interaction_claim =
+            range_check_3_6_6_3_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let range_check_4_4_4_4_interaction_claim =
+            range_check_4_4_4_4_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let range_check_3_3_3_3_3_interaction_claim =
+            range_check_3_3_3_3_3_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let verify_bitwise_xor_4_interaction_claim =
+            verify_bitwise_xor_4_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let verify_bitwise_xor_7_interaction_claim =
+            verify_bitwise_xor_7_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let verify_bitwise_xor_8_interaction_claim =
+            verify_bitwise_xor_8_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let verify_bitwise_xor_9_interaction_claim =
+            verify_bitwise_xor_9_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+
+        CairoInteractionClaim {
+            add_opcode: add_opcode_interaction_claim,
+            add_opcode_small: add_opcode_small_interaction_claim,
+            add_ap_opcode: add_ap_opcode_interaction_claim,
+            assert_eq_opcode: assert_eq_opcode_interaction_claim,
+            assert_eq_opcode_imm: assert_eq_opcode_imm_interaction_claim,
+            assert_eq_opcode_double_deref: assert_eq_opcode_double_deref_interaction_claim,
+            blake_compress_opcode: blake_compress_opcode_interaction_claim,
+            call_opcode_abs: call_opcode_abs_interaction_claim,
+            call_opcode_rel_imm: call_opcode_rel_imm_interaction_claim,
+            generic_opcode: generic_opcode_interaction_claim,
+            jnz_opcode_non_taken: jnz_opcode_non_taken_interaction_claim,
+            jnz_opcode_taken: jnz_opcode_taken_interaction_claim,
+            jump_opcode_abs: jump_opcode_abs_interaction_claim,
+            jump_opcode_double_deref: jump_opcode_double_deref_interaction_claim,
+            jump_opcode_rel: jump_opcode_rel_interaction_claim,
+            jump_opcode_rel_imm: jump_opcode_rel_imm_interaction_claim,
+            mul_opcode: mul_opcode_interaction_claim,
+            mul_opcode_small: mul_opcode_small_interaction_claim,
+            qm_31_add_mul_opcode: qm_31_add_mul_opcode_interaction_claim,
+            ret_opcode: ret_opcode_interaction_claim,
+            verify_instruction: verify_instruction_interaction_claim,
+            blake_round: blake_round_interaction_claim,
+            blake_g: blake_g_interaction_claim,
+            blake_round_sigma: blake_round_sigma_interaction_claim,
+            triple_xor_32: triple_xor_32_interaction_claim,
+            verify_bitwise_xor_12: verify_bitwise_xor_12_interaction_claim,
+            add_mod_builtin: add_mod_builtin_interaction_claim,
+            bitwise_builtin: bitwise_builtin_interaction_claim,
+            mul_mod_builtin: mul_mod_builtin_interaction_claim,
+            pedersen_builtin: pedersen_builtin_interaction_claim,
+            poseidon_builtin: poseidon_builtin_interaction_claim,
+            range_check96_builtin: range_check96_builtin_interaction_claim,
+            range_check_builtin: range_check_builtin_interaction_claim,
+            pedersen_aggregator_window_bits_18:
+                pedersen_aggregator_window_bits_18_interaction_claim,
+            partial_ec_mul_window_bits_18: partial_ec_mul_window_bits_18_interaction_claim,
+            pedersen_points_table_window_bits_18:
+                pedersen_points_table_window_bits_18_interaction_claim,
+            poseidon_aggregator: poseidon_aggregator_interaction_claim,
+            poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_interaction_claim,
+            poseidon_full_round_chain: poseidon_full_round_chain_interaction_claim,
+            cube_252: cube_252_interaction_claim,
+            poseidon_round_keys: poseidon_round_keys_interaction_claim,
+            range_check_252_width_27: range_check_252_width_27_interaction_claim,
+            memory_address_to_id: memory_address_to_id_interaction_claim,
+            memory_id_to_big: memory_id_to_big_interaction_claim,
+            range_check_6: range_check_6_interaction_claim,
+            range_check_8: range_check_8_interaction_claim,
+            range_check_11: range_check_11_interaction_claim,
+            range_check_12: range_check_12_interaction_claim,
+            range_check_18: range_check_18_interaction_claim,
+            range_check_20: range_check_20_interaction_claim,
+            range_check_4_3: range_check_4_3_interaction_claim,
+            range_check_4_4: range_check_4_4_interaction_claim,
+            range_check_9_9: range_check_9_9_interaction_claim,
+            range_check_7_2_5: range_check_7_2_5_interaction_claim,
+            range_check_3_6_6_3: range_check_3_6_6_3_interaction_claim,
+            range_check_4_4_4_4: range_check_4_4_4_4_interaction_claim,
+            range_check_3_3_3_3_3: range_check_3_3_3_3_3_interaction_claim,
+            verify_bitwise_xor_4: verify_bitwise_xor_4_interaction_claim,
+            verify_bitwise_xor_7: verify_bitwise_xor_7_interaction_claim,
+            verify_bitwise_xor_8: verify_bitwise_xor_8_interaction_claim,
+            verify_bitwise_xor_9: verify_bitwise_xor_9_interaction_claim,
+        }
+    }
+}
 pub fn get_sub_components(component_name: &str) -> Vec<&'static str> {
     match component_name {
         "generic_opcode" => {
