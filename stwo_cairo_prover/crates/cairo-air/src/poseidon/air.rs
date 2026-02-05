@@ -1,5 +1,4 @@
 use stwo::core::air::Component;
-use stwo::core::pcs::TreeVec;
 use stwo_constraint_framework::TraceLocationAllocator;
 
 use crate::claims::{CairoClaim, CairoInteractionClaim};
@@ -8,23 +7,6 @@ use crate::components::{
     poseidon_full_round_chain, poseidon_round_keys, range_check_252_width_27,
 };
 use crate::relations::CommonLookupElements;
-
-pub fn poseidon_context_log_sizes(claim: &CairoClaim) -> TreeVec<Vec<u32>> {
-    if claim.poseidon_aggregator.is_some() {
-        let log_sizes = [
-            claim.poseidon_aggregator.unwrap().log_sizes(),
-            claim.poseidon_3_partial_rounds_chain.unwrap().log_sizes(),
-            claim.poseidon_full_round_chain.unwrap().log_sizes(),
-            claim.cube_252.unwrap().log_sizes(),
-            claim.poseidon_round_keys.unwrap().log_sizes(),
-            claim.range_check_252_width_27.unwrap().log_sizes(),
-        ]
-        .into_iter();
-        TreeVec::concat_cols(log_sizes)
-    } else {
-        TreeVec::concat_cols(vec![].into_iter())
-    }
-}
 
 pub struct PoseidonContextComponents {
     pub components: Option<Components>,

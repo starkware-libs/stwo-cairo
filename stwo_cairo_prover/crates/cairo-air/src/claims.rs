@@ -4,6 +4,7 @@ use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::Channel;
 use stwo::core::fields::qm31::QM31;
+use stwo::core::pcs::TreeVec;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 
 use super::flat_claims::{flatten_interaction_claim, FlatClaim};
@@ -343,6 +344,194 @@ impl CairoClaim {
             )
         });
         accumulate_relation_memory(relation_uses, &self.memory_id_to_big);
+    }
+
+    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
+        let mut log_sizes_list = vec![];
+        self.add_opcode
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.add_opcode_small
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.add_ap_opcode
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.assert_eq_opcode
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.assert_eq_opcode_imm
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.assert_eq_opcode_double_deref
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.blake_compress_opcode
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.call_opcode_abs
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.call_opcode_rel_imm
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.generic_opcode
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.jnz_opcode_non_taken
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.jnz_opcode_taken
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.jump_opcode_abs
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.jump_opcode_double_deref
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.jump_opcode_rel
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.jump_opcode_rel_imm
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.mul_opcode
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.mul_opcode_small
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.qm_31_add_mul_opcode
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.ret_opcode
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.verify_instruction
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.blake_round
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.blake_g
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.blake_round_sigma
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.triple_xor_32
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.verify_bitwise_xor_12
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.add_mod_builtin
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.bitwise_builtin
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.mul_mod_builtin
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.pedersen_builtin
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.poseidon_builtin
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check96_builtin
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_builtin
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.pedersen_aggregator_window_bits_18
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.partial_ec_mul_window_bits_18
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.pedersen_points_table_window_bits_18
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.poseidon_aggregator
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.poseidon_3_partial_rounds_chain
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.poseidon_full_round_chain
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.cube_252
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.poseidon_round_keys
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_252_width_27
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.memory_address_to_id
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.memory_id_to_big
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_6
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_8
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_11
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_12
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_18
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_20
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_4_3
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_4_4
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_9_9
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_7_2_5
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_3_6_6_3
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_4_4_4_4
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_3_3_3_3_3
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.verify_bitwise_xor_4
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.verify_bitwise_xor_7
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.verify_bitwise_xor_8
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.verify_bitwise_xor_9
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        TreeVec::concat_cols(log_sizes_list.into_iter())
     }
 }
 

@@ -7,7 +7,7 @@ use stwo_verifier_core::TreeArray;
 use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::utils::OptionImpl;
-use crate::cairo_air::log_sizes;
+use crate::cairo_air::override_preprocessed_trace_log_sizes;
 use crate::components::add_ap_opcode::InteractionClaimImpl as AddApOpcodeInteractionClaimImpl;
 use crate::components::add_mod_builtin::InteractionClaimImpl as AddModBuiltinInteractionClaimImpl;
 use crate::components::add_opcode::InteractionClaimImpl as AddOpcodeInteractionClaimImpl;
@@ -69,7 +69,7 @@ use crate::components::verify_bitwise_xor_7::InteractionClaimImpl as VerifyBitwi
 use crate::components::verify_bitwise_xor_8::InteractionClaimImpl as VerifyBitwiseXor8InteractionClaimImpl;
 use crate::components::verify_bitwise_xor_9::InteractionClaimImpl as VerifyBitwiseXor9InteractionClaimImpl;
 use crate::components::verify_instruction::InteractionClaimImpl as VerifyInstructionInteractionClaimImpl;
-use crate::{ChannelTrait, PublicDataTrait, components};
+use crate::{ChannelTrait, PublicDataTrait, components, utils};
 use super::claim::{FlatClaim, FlatClaimTrait, flatten_interaction_claim};
 
 #[derive(Drop, Serde)]
@@ -144,7 +144,192 @@ pub struct CairoClaim {
 
 pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
     fn log_sizes(self: @CairoClaim) -> TreeArray<Span<u32>> {
-        log_sizes(self)
+        let mut log_sizes_list = array![];
+        if let Some(claim) = self.add_opcode {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.add_opcode_small {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.add_ap_opcode {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.assert_eq_opcode {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.assert_eq_opcode_imm {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.assert_eq_opcode_double_deref {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.blake_compress_opcode {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.call_opcode_abs {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.call_opcode_rel_imm {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.generic_opcode {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.jnz_opcode_non_taken {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.jnz_opcode_taken {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.jump_opcode_abs {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.jump_opcode_double_deref {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.jump_opcode_rel {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.jump_opcode_rel_imm {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.mul_opcode {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.mul_opcode_small {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.qm_31_add_mul_opcode {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.ret_opcode {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.verify_instruction {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.blake_round {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.blake_g {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.blake_round_sigma {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.triple_xor_32 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.verify_bitwise_xor_12 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.add_mod_builtin {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.bitwise_builtin {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.mul_mod_builtin {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.pedersen_builtin {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.poseidon_builtin {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check96_builtin {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check_builtin {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.pedersen_aggregator_window_bits_18 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.partial_ec_mul_window_bits_18 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.pedersen_points_table_window_bits_18 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.poseidon_aggregator {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.poseidon_3_partial_rounds_chain {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.poseidon_full_round_chain {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.cube_252 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.poseidon_round_keys {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check_252_width_27 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.memory_address_to_id {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.memory_id_to_big {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check_6 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check_8 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check_11 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check_12 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check_18 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check_20 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check_4_3 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check_4_4 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check_9_9 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check_7_2_5 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check_3_6_6_3 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check_4_4_4_4 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check_3_3_3_3_3 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.verify_bitwise_xor_4 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.verify_bitwise_xor_7 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.verify_bitwise_xor_8 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.verify_bitwise_xor_9 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        let aggregated_log_sizes = utils::tree_array_concat_cols(log_sizes_list);
+        override_preprocessed_trace_log_sizes(aggregated_log_sizes)
     }
 
     fn mix_into(self: @CairoClaim, ref channel: Channel) {
