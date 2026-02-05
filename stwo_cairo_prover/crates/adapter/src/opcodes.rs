@@ -1,7 +1,6 @@
 use std::fmt::Display;
 
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
-use crypto_bigint::U256;
 use rayon::iter::ParallelIterator;
 use rayon::slice::ParallelSlice;
 use serde::{Deserialize, Serialize};
@@ -11,7 +10,7 @@ use stwo_cairo_common::prover_types::cpu::CasmState;
 use tracing::{span, Level};
 
 use super::decode::{Instruction, OpcodeExtension};
-use super::memory::{MemoryBuilder, MemoryValue};
+use super::memory::MemoryBuilder;
 
 // TODO (Stav): Ensure it stays synced with that opcdode AIR's list.
 /// This struct holds the components used to prove the opcodes in a Cairo program,
@@ -52,6 +51,7 @@ impl CasmStatesByOpcode {
     }
 
     /// Pushes the state transition at pc into the appropriate opcode component.
+    #[cfg(not(feature = "generic_opcode"))]
     fn push_instr(&mut self, memory: &MemoryBuilder, state: CasmState) {
         assert_state_in_address_space(state);
         let CasmState { ap, fp, pc } = state;
@@ -107,10 +107,10 @@ impl CasmStatesByOpcode {
                 // ap += imm.
                 // ap += [ap/fp + offset2].
                 assert_eq!(
-                    (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
-                    1,
-                    "add_ap opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
-                );
+                (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
+                1,
+                "add_ap opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
+            );
                 assert!(
                     (!op_1_imm) || offset2 == 1,
                     "add_ap opcode requires that if op_1_imm is true, offset2 must be 1"
@@ -330,15 +330,15 @@ impl CasmStatesByOpcode {
                 // [ap/fp + offset0] = [ap/fp + offset1] * imm.
                 // [ap/fp + offset0] = [ap/fp + offset1] * [ap/fp + offset2].
                 assert_eq!(
-                    (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
-                    1,
-                    "mul opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
-                );
+                (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
+                1,
+                "mul opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
+            );
                 assert!(
                     (!op_1_imm) || offset2 == 1,
                     "mul opcode requires that if op_1_imm is true, offset2 must be 1"
                 );
-                if is_small_mul(op0, op_1) {
+                if opcode_utils::is_small_mul(op0, op_1) {
                     self.mul_opcode_small.push(state);
                 } else {
                     self.mul_opcode.push(state);
@@ -387,15 +387,15 @@ impl CasmStatesByOpcode {
                 // [ap/fp + offset0] = [ap/fp + offset1] + imm.
                 // [ap/fp + offset0] = [ap/fp + offset1] + [ap/fp + offset2].
                 assert_eq!(
-                    (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
-                    1,
-                    "add opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
-                );
+                (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
+                1,
+                "add opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
+            );
                 assert!(
                     (!op_1_imm) || offset2 == 1,
                     "add opcode requires that if op_1_imm is true, offset2 must be 1"
                 );
-                if is_small_add(dst, op0, op_1) {
+                if opcode_utils::is_small_add(dst, op0, op_1) {
                     self.add_opcode_small.push(state);
                 } else {
                     self.add_opcode.push(state);
@@ -455,10 +455,94 @@ impl CasmStatesByOpcode {
             } => {
                 // [ap/fp + offset0] = [ap/fp + offset1] +/* [ap/fp/pc + offset2]
                 assert_eq!(
-                    (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
-                    1,
-                    "qm31_add_mul opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
+                (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
+                1,
+                "qm31_add_mul opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
+            );
+                assert!(
+                    res_add ^ res_mul,
+                    "qm31_add_mul opcode requires exactly one of res_add, res_mul must be true"
                 );
+                assert!(
+                    (!op_1_imm) || offset2 == 1,
+                    "qm31_add_mul opcode requires that if op_1_imm is true, offset2 must be 1"
+                );
+                self.qm_31_add_mul_opcode.push(state);
+            }
+
+            // generic opcode.
+            _ => {
+                if !matches!(instruction.opcode_extension, OpcodeExtension::Stone) {
+                    panic!("`generic_opcode` component supports `Stone` opcodes only.");
+                }
+                self.generic_opcode.push(state);
+            }
+        }
+    }
+
+    #[cfg(feature = "generic_opcode")]
+    fn push_instr(&mut self, memory: &MemoryBuilder, state: CasmState) {
+        assert_state_in_address_space(state);
+        let encoded_instruction = memory.get_inst(state.pc.0);
+        let instruction = Instruction::decode(encoded_instruction);
+        match instruction {
+            // Blake.
+            Instruction {
+                offset0: _,
+                offset1: _,
+                offset2: _,
+                dst_base_fp: _,
+                op0_base_fp: _,
+                op_1_imm: false,
+                op_1_base_fp,
+                op_1_base_ap,
+                res_add: false,
+                res_mul: false,
+                pc_update_jump: false,
+                pc_update_jump_rel: false,
+                pc_update_jnz: false,
+                ap_update_add: false,
+                ap_update_add_1: _,
+                opcode_call: false,
+                opcode_ret: false,
+                opcode_assert_eq: false,
+                opcode_extension: OpcodeExtension::Blake | OpcodeExtension::BlakeFinalize,
+            } => {
+                assert!(
+                    op_1_base_fp ^ op_1_base_ap,
+                    "Blake opcode requires exactly one of op_1_base_fp and op_1_base_ap to be true"
+                );
+                self.blake_compress_opcode.push(state);
+            }
+
+            // QM31 add mul.
+            Instruction {
+                offset0: _,
+                offset1: _,
+                offset2,
+                dst_base_fp: _,
+                op0_base_fp: _,
+                op_1_imm,
+                op_1_base_fp,
+                op_1_base_ap,
+                res_add,
+                res_mul,
+                pc_update_jump: false,
+                pc_update_jump_rel: false,
+                pc_update_jnz: false,
+                ap_update_add: false,
+                ap_update_add_1: _,
+                opcode_call: false,
+                opcode_ret: false,
+                opcode_assert_eq: true,
+                opcode_extension: OpcodeExtension::QM31Operation,
+            } => {
+                // [ap/fp + offset0] = [ap/fp + offset1] +/* [ap/fp/pc + offset2]
+                assert_eq!(
+                (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
+                1,
+                "qm31_add_mul opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
+            );
                 assert!(
                     res_add ^ res_mul,
                     "qm31_add_mul opcode requires exactly one of res_add, res_mul must be true"
@@ -689,42 +773,50 @@ impl StateTransitions {
     }
 }
 
-fn u256_from_le_array(arr: [u32; 8]) -> U256 {
-    let mut buf = [0u8; 32];
-    for (i, x) in arr.iter().enumerate() {
-        buf[i * 4..(i + 1) * 4].copy_from_slice(&x.to_le_bytes());
+#[cfg(not(feature = "generic_opcode"))]
+mod opcode_utils {
+    use crypto_bigint::U256;
+
+    use super::super::memory::MemoryValue;
+
+    fn u256_from_le_array(arr: [u32; 8]) -> U256 {
+        let mut buf = [0u8; 32];
+        for (i, x) in arr.iter().enumerate() {
+            buf[i * 4..(i + 1) * 4].copy_from_slice(&x.to_le_bytes());
+        }
+        U256::from_le_slice(&buf)
     }
-    U256::from_le_slice(&buf)
-}
 
-/// Small add ranges: [0 … 2^29 − 1] (positive) | [P − 2^29 - 1 … P − 1] (negative mod P).
-// 2^29 - 1
-const SMALL_ADD_POSITIVE_UPPER_BOUND: U256 = U256::from_u32(2_u32.pow(29) - 1);
-// P - 2^29 - 1
-const SMALL_ADD_NEGATIVE_LOWER_BOUND: U256 =
-    U256::from_be_hex("0800000000000010FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE0000000");
-// P - 1
-const SMALL_ADD_NEGATIVE_UPPER_BOUND: U256 =
-    U256::from_be_hex("0800000000000011000000000000000000000000000000000000000000000000");
+    /// Small add ranges: [0 … 2^29 − 1] (positive) | [P − 2^29 - 1 … P − 1] (negative mod P).
+    // 2^29 - 1
+    const SMALL_ADD_POSITIVE_UPPER_BOUND: U256 = U256::from_u32(2_u32.pow(29) - 1);
+    // P - 2^29 - 1
+    const SMALL_ADD_NEGATIVE_LOWER_BOUND: U256 =
+        U256::from_be_hex("0800000000000010FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE0000000");
+    // P - 1
+    const SMALL_ADD_NEGATIVE_UPPER_BOUND: U256 =
+        U256::from_be_hex("0800000000000011000000000000000000000000000000000000000000000000");
 
-// Returns 'true' if all the operands modulo P are within the range of [-2^29 - 1, 2^29 - 1].
-fn is_small_add(dst: MemoryValue, op0: MemoryValue, op_1: MemoryValue) -> bool {
-    [dst, op0, op_1].iter().all(|val| {
-        let value = u256_from_le_array(val.as_u256());
+    // Returns 'true' if all the operands modulo P are within the range of [-2^29 - 1, 2^29 - 1].
+    pub fn is_small_add(dst: MemoryValue, op0: MemoryValue, op_1: MemoryValue) -> bool {
+        [dst, op0, op_1].iter().all(|val| {
+            let value = u256_from_le_array(val.as_u256());
 
-        value <= SMALL_ADD_POSITIVE_UPPER_BOUND
-            || (value >= SMALL_ADD_NEGATIVE_LOWER_BOUND && value <= SMALL_ADD_NEGATIVE_UPPER_BOUND)
-    })
-}
+            value <= SMALL_ADD_POSITIVE_UPPER_BOUND
+                || (value >= SMALL_ADD_NEGATIVE_LOWER_BOUND
+                    && value <= SMALL_ADD_NEGATIVE_UPPER_BOUND)
+        })
+    }
 
-const SMALL_MUL_MAX_VALUE: u64 = 2u64.pow(36) - 1;
-// Returns 'true' if the multiplication factors are in the range [0, 2^36-1].
-fn is_small_mul(op0: MemoryValue, op_1: MemoryValue) -> bool {
-    [op0, op_1].iter().all(|val| {
-        let value = val.as_u256();
-        value[2..8] == [0; 6]
-            && (value[0] as u64 + ((value[1] as u64) << 32) <= SMALL_MUL_MAX_VALUE)
-    })
+    const SMALL_MUL_MAX_VALUE: u64 = 2u64.pow(36) - 1;
+    // Returns 'true' if the multiplication factors are in the range [0, 2^36-1].
+    pub fn is_small_mul(op0: MemoryValue, op_1: MemoryValue) -> bool {
+        [op0, op_1].iter().all(|val| {
+            let value = val.as_u256();
+            value[2..8] == [0; 6]
+                && (value[0] as u64 + ((value[1] as u64) << 32) <= SMALL_MUL_MAX_VALUE)
+        })
+    }
 }
 
 /// Tests instructions mapping.
@@ -741,10 +833,12 @@ mod mappings_tests {
     use stwo::core::fields::m31::M31;
     use stwo_cairo_common::prover_types::cpu::CasmState;
 
+    #[cfg(not(feature = "generic_opcode"))]
+    use super::opcode_utils::is_small_add;
     use crate::adapter::adapt;
     use crate::decode::{Instruction, OpcodeExtension};
     use crate::memory::*;
-    use crate::opcodes::{is_small_add, CasmStatesByOpcode, StateTransitions};
+    use crate::opcodes::{CasmStatesByOpcode, StateTransitions};
     use crate::relocator::relocator_tests::get_test_relocatble_trace;
     use crate::relocator::Relocator;
     use crate::test_utils::program_from_casm;
@@ -769,6 +863,7 @@ mod mappings_tests {
         adapt(&runner).expect("Adapter failed")
     }
 
+    #[cfg(not(feature = "generic_opcode"))]
     #[test]
     fn test_small_add_positive_range() {
         // lower bound
@@ -797,6 +892,7 @@ mod mappings_tests {
         assert!(is_small_add(dst, op0, op1));
     }
 
+    #[cfg(not(feature = "generic_opcode"))]
     #[test]
     fn test_small_add_negative_range() {
         // lower bound
@@ -831,6 +927,7 @@ mod mappings_tests {
         assert!(is_small_add(dst, op0, op1));
     }
 
+    #[cfg(not(feature = "generic_opcode"))]
     #[test]
     fn test_not_small_add() {
         let value = 2_u128.pow(29);
@@ -1319,5 +1416,40 @@ mod mappings_tests {
         memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
 
         StateTransitions::from_slice_parallel(&reloctated_trace, &memory_builder);
+    }
+
+    #[cfg(feature = "generic_opcode")]
+    #[test]
+    fn test_generic_opcode_full_program() {
+        use stwo_cairo_dev_utils::utils::get_compiled_cairo_program_path;
+        use stwo_cairo_utils::vm_utils::{run_and_adapt, ProgramType};
+
+        let compiled_program = get_compiled_cairo_program_path(
+            "test_prove_verify_all_opcode_components_generic_opcode",
+        );
+        let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
+        let casm_states = input.state_transitions.casm_states_by_opcode;
+
+        assert_eq!(casm_states.blake_compress_opcode.len(), 2);
+        assert_eq!(casm_states.qm_31_add_mul_opcode.len(), 10);
+        assert_eq!(casm_states.generic_opcode.len(), 1482);
+
+        assert!(casm_states.ret_opcode.is_empty());
+        assert!(casm_states.add_ap_opcode.is_empty());
+        assert!(casm_states.add_opcode.is_empty());
+        assert!(casm_states.add_opcode_small.is_empty());
+        assert!(casm_states.assert_eq_opcode.is_empty());
+        assert!(casm_states.assert_eq_opcode_double_deref.is_empty());
+        assert!(casm_states.assert_eq_opcode_imm.is_empty());
+        assert!(casm_states.call_opcode_abs.is_empty());
+        assert!(casm_states.call_opcode_rel_imm.is_empty());
+        assert!(casm_states.jnz_opcode_non_taken.is_empty());
+        assert!(casm_states.jnz_opcode_taken.is_empty());
+        assert!(casm_states.jump_opcode_rel_imm.is_empty());
+        assert!(casm_states.jump_opcode_rel.is_empty());
+        assert!(casm_states.jump_opcode_double_deref.is_empty());
+        assert!(casm_states.jump_opcode_abs.is_empty());
+        assert!(casm_states.mul_opcode_small.is_empty());
+        assert!(casm_states.mul_opcode.is_empty());
     }
 }
