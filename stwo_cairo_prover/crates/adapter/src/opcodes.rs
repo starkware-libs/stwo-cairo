@@ -54,11 +54,55 @@ impl CasmStatesByOpcode {
     /// Pushes the state transition at pc into the appropriate opcode component.
     fn push_instr(&mut self, memory: &MemoryBuilder, state: CasmState) {
         assert_state_in_address_space(state);
-        let CasmState { ap, fp, pc } = state;
-        let encoded_instruction = memory.get_inst(pc.0);
+        let encoded_instruction = memory.get_inst(state.pc.0);
         let instruction = Instruction::decode(encoded_instruction);
 
-        match instruction {
+        #[cfg(feature = "circuit-adaptation")]
+        {
+            match instruction {
+                // Blake.
+                Instruction {
+                    offset0: _,
+                    offset1: _,
+                    offset2: _,
+                    dst_base_fp: _,
+                    op0_base_fp: _,
+                    op_1_imm: false,
+                    op_1_base_fp,
+                    op_1_base_ap,
+                    res_add: false,
+                    res_mul: false,
+                    pc_update_jump: false,
+                    pc_update_jump_rel: false,
+                    pc_update_jnz: false,
+                    ap_update_add: false,
+                    ap_update_add_1: _,
+                    opcode_call: false,
+                    opcode_ret: false,
+                    opcode_assert_eq: false,
+                    opcode_extension: OpcodeExtension::Blake | OpcodeExtension::BlakeFinalize,
+                } => {
+                    assert!(
+                        op_1_base_fp ^ op_1_base_ap,
+                        "Blake opcode requires exactly one of op_1_base_fp and op_1_base_ap to be true"
+                    );
+                    self.blake_compress_opcode.push(state);
+                }
+
+                // generic opcode.
+                _ => {
+                    if !matches!(instruction.opcode_extension, OpcodeExtension::Stone) {
+                        panic!("`generic_opcode` component supports `Stone` opcodes only.");
+                    }
+                    self.generic_opcode.push(state);
+                }
+            }
+        }
+
+        #[cfg(not(feature = "circuit-adaptation"))]
+        {
+            let CasmState { ap, fp, pc } = state;
+            match instruction {
             // ret.
             Instruction {
                 offset0: -2,
@@ -476,6 +520,7 @@ impl CasmStatesByOpcode {
                     panic!("`generic_opcode` component supports `Stone` opcodes only.");
                 }
                 self.generic_opcode.push(state);
+            }
             }
         }
     }
@@ -1319,5 +1364,74 @@ mod mappings_tests {
         memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
 
         StateTransitions::from_slice_parallel(&reloctated_trace, &memory_builder);
+    }
+
+    #[cfg(feature = "circuit-adaptation")]
+    #[test]
+    fn test_circuit_adaptation_blake_routed_to_blake_compress() {
+        // BlakeFinalize instruction - should route to blake_compress_opcode
+        let encoded_blake_finalize_inst =
+            0b10000000000001011011111111111110101111111111111000111111111111011;
+        let x = u128_to_4_limbs(encoded_blake_finalize_inst);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+
+        let instruction = Instruction::decode(memory_builder.get_inst(1));
+        assert!(matches!(
+            instruction.opcode_extension,
+            OpcodeExtension::BlakeFinalize
+        ));
+
+        let trace_entry = relocated_trace_entry!(1, 1, 1);
+        let states = CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+
+        assert_eq!(states.blake_compress_opcode.len(), 1);
+        assert_eq!(states.generic_opcode.len(), 0);
+    }
+
+    #[cfg(feature = "circuit-adaptation")]
+    #[test]
+    fn test_circuit_adaptation_stone_routed_to_generic() {
+        // A Stone opcode (ret instruction) - should route to generic_opcode
+        // Encoding for `ret` instruction
+        let encoded_ret_inst = 0b0010000000000111100000000000000011111111111111101111111111111110;
+        let x = u128_to_4_limbs(encoded_ret_inst);
+        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
+        memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
+
+        let instruction = Instruction::decode(memory_builder.get_inst(1));
+        assert!(matches!(
+            instruction.opcode_extension,
+            OpcodeExtension::Stone
+        ));
+
+        let trace_entry = relocated_trace_entry!(1, 1, 1);
+        let states = CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+
+        assert_eq!(states.generic_opcode.len(), 1);
+        assert_eq!(states.blake_compress_opcode.len(), 0);
+    }
+
+    #[cfg(feature = "circuit-adaptation")]
+    #[test]
+    fn test_circuit_adaptation_all_stone_opcodes_to_generic() {
+        // Test with a simple program - all Stone opcodes should go to generic_opcode
+        let instructions = casm! {
+            [ap] = 1, ap++;
+            [ap] = 2, ap++;
+            [ap] = [ap - 1] + [ap - 2], ap++;
+        }
+        .instructions;
+
+        let input = input_from_plain_casm(instructions);
+        let casm_states_by_opcode = input.state_transitions.casm_states_by_opcode;
+
+        // All instructions are Stone opcodes, so they should all go to generic_opcode
+        assert!(casm_states_by_opcode.generic_opcode.len() > 0);
+        // Individual opcode buckets should be empty
+        assert_eq!(casm_states_by_opcode.ret_opcode.len(), 0);
+        assert_eq!(casm_states_by_opcode.add_opcode.len(), 0);
+        assert_eq!(casm_states_by_opcode.add_opcode_small.len(), 0);
+        assert_eq!(casm_states_by_opcode.assert_eq_opcode_imm.len(), 0);
     }
 }
