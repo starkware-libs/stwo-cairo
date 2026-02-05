@@ -5,32 +5,14 @@ use components::triple_xor_32::InteractionClaimImpl as TripleXor32InteractionCla
 use components::verify_bitwise_xor_12::InteractionClaimImpl as VerifyBitwiseXor12InteractionClaimImpl;
 use core::array::Span;
 use stwo_cairo_air::cairo_component::CairoComponent;
-use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::claims::{CairoClaim, CairoInteractionClaim};
 use stwo_cairo_air::components;
 use stwo_constraint_framework::{
     CommonLookupElements, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
+use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::utils::OptionImpl;
-use stwo_verifier_core::{ColumnSpan, TreeArray};
-use crate::utils;
-
-pub fn blake_context_log_sizes(claim: @CairoClaim) -> TreeArray<Span<u32>> {
-    if let Some(_) = claim.blake_round {
-        utils::tree_array_concat_cols(
-            array![
-                claim.blake_round.unwrap().log_sizes(), claim.blake_g.unwrap().log_sizes(),
-                claim.blake_round_sigma.unwrap().log_sizes(),
-                claim.triple_xor_32.unwrap().log_sizes(),
-                claim.verify_bitwise_xor_12.unwrap().log_sizes(),
-            ],
-        )
-    } else {
-        array![]
-    }
-}
-
 #[derive(Drop)]
 pub struct BlakeContextComponents {
     components: Option<BlakeComponents>,

@@ -1,5 +1,4 @@
 use stwo::core::air::Component;
-use stwo::core::pcs::TreeVec;
 use stwo_constraint_framework::TraceLocationAllocator;
 
 use crate::claims::{CairoClaim, CairoInteractionClaim};
@@ -7,22 +6,6 @@ use crate::components::{
     blake_g, blake_round, blake_round_sigma, triple_xor_32, verify_bitwise_xor_12,
 };
 use crate::relations::CommonLookupElements;
-
-pub fn blake_context_log_sizes(claim: &CairoClaim) -> TreeVec<Vec<u32>> {
-    if claim.blake_round.is_some() {
-        let log_sizes = [
-            claim.blake_round.unwrap().log_sizes(),
-            claim.blake_g.unwrap().log_sizes(),
-            claim.blake_round_sigma.unwrap().log_sizes(),
-            claim.triple_xor_32.unwrap().log_sizes(),
-            claim.verify_bitwise_xor_12.unwrap().log_sizes(),
-        ]
-        .into_iter();
-        TreeVec::concat_cols(log_sizes)
-    } else {
-        TreeVec::concat_cols(vec![].into_iter())
-    }
-}
 
 pub struct BlakeContextComponents {
     pub components: Option<Components>,

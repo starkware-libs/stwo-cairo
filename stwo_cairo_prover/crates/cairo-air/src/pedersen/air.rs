@@ -1,5 +1,4 @@
 use stwo::core::air::Component;
-use stwo::core::pcs::TreeVec;
 use stwo_constraint_framework::TraceLocationAllocator;
 
 use crate::claims::{CairoClaim, CairoInteractionClaim};
@@ -8,26 +7,6 @@ use crate::components::{
     pedersen_points_table_window_bits_18,
 };
 use crate::relations::CommonLookupElements;
-
-pub fn pedersen_context_log_sizes(claim: &CairoClaim) -> TreeVec<Vec<u32>> {
-    if claim.pedersen_aggregator_window_bits_18.is_some() {
-        let log_sizes = [
-            claim
-                .pedersen_aggregator_window_bits_18
-                .unwrap()
-                .log_sizes(),
-            claim.partial_ec_mul_window_bits_18.unwrap().log_sizes(),
-            claim
-                .pedersen_points_table_window_bits_18
-                .unwrap()
-                .log_sizes(),
-        ]
-        .into_iter();
-        TreeVec::concat_cols(log_sizes)
-    } else {
-        TreeVec::concat_cols(vec![].into_iter())
-    }
-}
 
 pub struct PedersenContextComponents {
     pub components: Option<Components>,

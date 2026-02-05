@@ -1,6 +1,4 @@
-use itertools::chain;
 use stwo::core::air::Component;
-use stwo::core::pcs::TreeVec;
 use stwo_constraint_framework::TraceLocationAllocator;
 
 use crate::claims::{CairoClaim, CairoInteractionClaim};
@@ -9,39 +7,6 @@ use crate::components::{
     pedersen_builtin, poseidon_builtin, range_check96_builtin, range_check_builtin,
 };
 use crate::relations::CommonLookupElements;
-
-pub fn builtins_log_sizes(claim: &CairoClaim) -> TreeVec<Vec<u32>> {
-    TreeVec::concat_cols(chain!(
-        claim
-            .add_mod_builtin
-            .map(|add_mod_builtin| add_mod_builtin.log_sizes())
-            .into_iter(),
-        claim
-            .bitwise_builtin
-            .map(|bitwise_builtin| bitwise_builtin.log_sizes())
-            .into_iter(),
-        claim
-            .mul_mod_builtin
-            .map(|mul_mod_builtin| mul_mod_builtin.log_sizes())
-            .into_iter(),
-        claim
-            .pedersen_builtin
-            .map(|pedersen_builtin| pedersen_builtin.log_sizes())
-            .into_iter(),
-        claim
-            .poseidon_builtin
-            .map(|poseidon_builtin| poseidon_builtin.log_sizes())
-            .into_iter(),
-        claim
-            .range_check96_builtin
-            .map(|range_check96_builtin| range_check96_builtin.log_sizes())
-            .into_iter(),
-        claim
-            .range_check_builtin
-            .map(|range_check_builtin| range_check_builtin.log_sizes())
-            .into_iter(),
-    ))
-}
 
 pub struct BuiltinComponents {
     pub add_mod_builtin: Option<add_mod_builtin::Component>,

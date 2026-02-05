@@ -8,7 +8,6 @@ use stwo::core::channel::Channel;
 use stwo::core::fields::m31::M31;
 use stwo::core::fields::qm31::QM31;
 use stwo::core::fields::FieldExpOps;
-use stwo::core::pcs::TreeVec;
 use stwo::core::proof::{ExtendedStarkProof, StarkProof};
 use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo_cairo_common::prover_types::cpu::{CasmState, FELT252_BITS_PER_WORD, FELT252_N_WORDS};
@@ -17,19 +16,18 @@ use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_constraint_framework::{Relation, TraceLocationAllocator};
 
-use super::blake::air::{blake_context_log_sizes, BlakeContextComponents};
-use super::builtins_air::{builtins_log_sizes, BuiltinComponents};
+use super::blake::air::BlakeContextComponents;
+use super::builtins_air::BuiltinComponents;
 use super::components::indented_component_display;
 use super::opcodes_air::OpcodeComponents;
-use super::pedersen::air::{pedersen_context_log_sizes, PedersenContextComponents};
-use super::poseidon::air::{poseidon_context_log_sizes, PoseidonContextComponents};
-use super::range_checks_air::{range_checks_log_sizes, RangeChecksComponents};
+use super::pedersen::air::PedersenContextComponents;
+use super::poseidon::air::PoseidonContextComponents;
+use super::range_checks_air::RangeChecksComponents;
 use crate::claims::{CairoClaim, CairoInteractionClaim};
 use crate::components::{
     memory_address_to_id, memory_id_to_big, verify_bitwise_xor_4, verify_bitwise_xor_7,
     verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
 };
-use crate::opcodes_air::opcodes_log_sizes;
 use crate::relations::{
     self, CommonLookupElements, MEMORY_ADDRESS_TO_ID_RELATION_ID, MEMORY_ID_TO_BIG_RELATION_ID,
     OPCODES_RELATION_ID,
@@ -98,36 +96,6 @@ pub fn accumulate_relation_uses<const N: usize>(
         let relation_uses_in_component = relation_use.uses.checked_mul(component_size).unwrap();
         let prev = relation_uses.entry(relation_use.relation_id).or_insert(0);
         *prev = prev.checked_add(relation_uses_in_component).unwrap();
-    }
-}
-
-impl CairoClaim {
-    /// Returns the log sizes of the components.
-    /// Does not include the preprocessed trace log sizes.
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let mut log_sizes_list = vec![];
-        log_sizes_list.push(opcodes_log_sizes(self));
-        self.verify_instruction
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        log_sizes_list.push(blake_context_log_sizes(self));
-        log_sizes_list.push(builtins_log_sizes(self));
-        log_sizes_list.push(pedersen_context_log_sizes(self));
-        log_sizes_list.push(poseidon_context_log_sizes(self));
-        self.memory_address_to_id
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.memory_id_to_big
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        log_sizes_list.push(range_checks_log_sizes(self));
-        self.verify_bitwise_xor_4
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.verify_bitwise_xor_7
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.verify_bitwise_xor_8
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.verify_bitwise_xor_9
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        TreeVec::concat_cols(log_sizes_list.into_iter())
     }
 }
 

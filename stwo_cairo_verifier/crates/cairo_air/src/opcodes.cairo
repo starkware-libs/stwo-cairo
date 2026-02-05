@@ -22,85 +22,15 @@ use core::array::Span;
 use core::box::BoxImpl;
 use core::iter::{IntoIterator, Iterator};
 use stwo_cairo_air::cairo_component::CairoComponent;
-use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::claims::{CairoClaim, CairoInteractionClaim};
 use stwo_cairo_air::components;
 use stwo_constraint_framework::{
     CommonLookupElements, LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
+use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
-use stwo_verifier_core::{ColumnSpan, TreeArray};
-use crate::utils;
-
-pub fn opcodes_log_sizes(claim: @CairoClaim) -> TreeArray<Span<u32>> {
-    let mut log_sizes = array![];
-
-    if let Some(claim) = claim.add_opcode {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.add_opcode_small {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.add_ap_opcode {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.assert_eq_opcode {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.assert_eq_opcode_imm {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.assert_eq_opcode_double_deref {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.blake_compress_opcode {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.call_opcode_abs {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.call_opcode_rel_imm {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.generic_opcode {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.jnz_opcode_non_taken {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.jnz_opcode_taken {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.jump_opcode_abs {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.jump_opcode_double_deref {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.jump_opcode_rel {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.jump_opcode_rel_imm {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.mul_opcode {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.mul_opcode_small {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.qm_31_add_mul_opcode {
-        log_sizes.append(claim.log_sizes());
-    }
-    if let Some(claim) = claim.ret_opcode {
-        log_sizes.append(claim.log_sizes());
-    }
-
-    utils::tree_array_concat_cols(log_sizes)
-}
-
 #[cfg(not(feature: "poseidon252_verifier"))]
 #[derive(Drop)]
 pub struct OpcodeComponents {
