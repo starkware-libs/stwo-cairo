@@ -1,6 +1,5 @@
-use itertools::{chain, Itertools};
+use itertools::Itertools;
 use stwo::core::air::Component;
-use stwo::core::pcs::TreeVec;
 use stwo_constraint_framework::TraceLocationAllocator;
 
 use super::components::display_components;
@@ -13,34 +12,6 @@ use crate::components::{
     qm_31_add_mul_opcode, ret_opcode,
 };
 use crate::relations::CommonLookupElements;
-
-pub fn opcodes_log_sizes(claim: &CairoClaim) -> TreeVec<Vec<u32>> {
-    TreeVec::concat_cols(chain!(
-        claim.add_opcode.iter().map(|c| c.log_sizes()),
-        claim.add_opcode_small.iter().map(|c| c.log_sizes()),
-        claim.add_ap_opcode.iter().map(|c| c.log_sizes()),
-        claim.assert_eq_opcode.iter().map(|c| c.log_sizes()),
-        claim.assert_eq_opcode_imm.iter().map(|c| c.log_sizes()),
-        claim
-            .assert_eq_opcode_double_deref
-            .iter()
-            .map(|c| c.log_sizes()),
-        claim.blake_compress_opcode.iter().map(|c| c.log_sizes()),
-        claim.call_opcode_abs.iter().map(|c| c.log_sizes()),
-        claim.call_opcode_rel_imm.iter().map(|c| c.log_sizes()),
-        claim.generic_opcode.iter().map(|c| c.log_sizes()),
-        claim.jnz_opcode_non_taken.iter().map(|c| c.log_sizes()),
-        claim.jnz_opcode_taken.iter().map(|c| c.log_sizes()),
-        claim.jump_opcode_abs.iter().map(|c| c.log_sizes()),
-        claim.jump_opcode_double_deref.iter().map(|c| c.log_sizes()),
-        claim.jump_opcode_rel.iter().map(|c| c.log_sizes()),
-        claim.jump_opcode_rel_imm.iter().map(|c| c.log_sizes()),
-        claim.mul_opcode.iter().map(|c| c.log_sizes()),
-        claim.mul_opcode_small.iter().map(|c| c.log_sizes()),
-        claim.qm_31_add_mul_opcode.iter().map(|c| c.log_sizes()),
-        claim.ret_opcode.iter().map(|c| c.log_sizes()),
-    ))
-}
 
 pub struct OpcodeComponents {
     pub add: Vec<add_opcode::Component>,

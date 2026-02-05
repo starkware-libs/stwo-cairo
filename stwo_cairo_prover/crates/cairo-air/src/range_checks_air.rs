@@ -1,35 +1,13 @@
 use stwo::core::air::Component;
-use stwo::core::pcs::TreeVec;
 use stwo_constraint_framework::TraceLocationAllocator;
 
-use crate::claims::{CairoClaim, CairoInteractionClaim};
+use crate::claims::CairoInteractionClaim;
 use crate::components::{
     indented_component_display, range_check_11, range_check_12, range_check_18, range_check_20,
     range_check_3_3_3_3_3, range_check_3_6_6_3, range_check_4_3, range_check_4_4,
     range_check_4_4_4_4, range_check_6, range_check_7_2_5, range_check_8, range_check_9_9,
 };
 use crate::relations;
-
-pub fn range_checks_log_sizes(claim: &CairoClaim) -> TreeVec<Vec<u32>> {
-    TreeVec::concat_cols(
-        vec![
-            claim.range_check_6.unwrap().log_sizes(),
-            claim.range_check_8.unwrap().log_sizes(),
-            claim.range_check_11.unwrap().log_sizes(),
-            claim.range_check_12.unwrap().log_sizes(),
-            claim.range_check_18.unwrap().log_sizes(),
-            claim.range_check_20.unwrap().log_sizes(),
-            claim.range_check_4_3.unwrap().log_sizes(),
-            claim.range_check_4_4.unwrap().log_sizes(),
-            claim.range_check_9_9.unwrap().log_sizes(),
-            claim.range_check_7_2_5.unwrap().log_sizes(),
-            claim.range_check_3_6_6_3.unwrap().log_sizes(),
-            claim.range_check_4_4_4_4.unwrap().log_sizes(),
-            claim.range_check_3_3_3_3_3.unwrap().log_sizes(),
-        ]
-        .into_iter(),
-    )
-}
 
 pub struct RangeChecksComponents {
     pub rc_6: range_check_6::Component,
