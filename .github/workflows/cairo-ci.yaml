@@ -99,6 +99,18 @@ jobs:
           RUSTFLAGS: -C target-cpu=native
           RUST_LOG_SPAN_EVENTS: enter,close
           RUST_LOG: info
+      - run: cargo nextest run --cargo-profile witness-opt-1 --features=slow-tests,circuit-adaptation test_e2e_prove_cairo_verify_all_opcode_components_circuit_adaptation -j 1 -P ci
+        env:
+          RUST_MIN_STACK: 4194304
+          RUSTFLAGS: -C target-cpu=native
+          RUST_LOG_SPAN_EVENTS: enter,close
+          RUST_LOG: info
+      - run: cargo nextest run --cargo-profile witness-opt-1 --features=circuit-adaptation test_circuit_adaptation -j 1 -P ci
+        env:
+          RUST_MIN_STACK: 4194304
+          RUSTFLAGS: -C target-cpu=native
+          RUST_LOG_SPAN_EVENTS: enter,close
+          RUST_LOG: info
 
   cairo-prove-test:
     runs-on: stwo-cairo-avx-l
