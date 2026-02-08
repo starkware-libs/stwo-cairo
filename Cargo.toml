@@ -1,13 +1,14 @@
 [workspace]
 members = [
-    "crates/adapter",
-    "crates/prover",
-    "crates/cairo-serialize",
-    "crates/cairo-serialize-derive",
-    "crates/utils",
-    "crates/common",
-    "crates/cairo-air",
-    "crates/dev_utils",
+    "stwo_cairo_prover/crates/adapter",
+    "stwo_cairo_prover/crates/prover",
+    "stwo_cairo_prover/crates/cairo-serialize",
+    "stwo_cairo_prover/crates/cairo-air",
+    "stwo_cairo_prover/crates/common",
+    "stwo_cairo_prover/crates/utils",
+    "stwo_cairo_prover/crates/dev_utils",
+    "stwo_cairo_prover/crates/cairo-serialize-derive",
+    "cairo-prove"
 ]
 resolver = "2"
 
@@ -23,8 +24,6 @@ cairo-lang-casm = { git = "https://github.com/starkware-libs/cairo", rev = "bcc3
 cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo", rev = "bcc3e1fe9e4ab855939945a905e77d68087da0c2" }
 cairo-lang-executable = { git = "https://github.com/starkware-libs/cairo", rev = "bcc3e1fe9e4ab855939945a905e77d68087da0c2" }
 cairo-lang-utils = { git = "https://github.com/starkware-libs/cairo", rev = "bcc3e1fe9e4ab855939945a905e77d68087da0c2" }
-# TODO(yuval): Use an official version, not a specific commit.
-# Note: This revision does not originate from the main branch but from 'starkware-development'.
 cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "95be27dcb1a766b6a5b20d77403fd8e3f22e7e04", features = [
     "extensive_hints",
     "mod_builtin",
@@ -51,15 +50,6 @@ starknet-types-core = { version = "=0.2.4", features = [
     "curve",
     "num-traits",
 ] }
-stwo_cairo_prover = { path = "crates/prover", version = "~0.1.0" }
-stwo_cairo_utils = { path = "crates/utils", version = "~0.1.0" }
-stwo-cairo-adapter = { path = "crates/adapter" }
-dev-utils = { path = "crates/dev_utils" }
-stwo-cairo-common = { path = "crates/common" }
-cairo-air = { path = "crates/cairo-air" }
-stwo-cairo-serialize = { path = "crates/cairo-serialize", version = "~0.1.0" }
-# TODO(Ohad): re export stwo from constraint-framework.
-# TODO(Ohad): separate cairo-air from prover code and use prover features only in the prover crate.
 stwo = { git = "https://github.com/starkware-libs/stwo", rev = "45d0180", features = [
     "parallel",
     "prover",
@@ -80,20 +70,3 @@ indoc = "2.0.6"
 tempfile = "3.8.1"
 anyhow = "1.0.98"
 dashmap = "6.0.1"
-
-[profile.bench]
-codegen-units = 1
-lto = true
-
-# Optimize witness generation and FFTs. This is usually enough to run the tests without stack overflows,
-# while maintaining a reasonable compile time.
-# In the cases where it's not enough, try to manually increase the stack size,
-# See cairo-ci.yaml for an example command.
-[profile.witness-opt-1]
-inherits = "dev"
-package = { "stwo_cairo_prover" = { opt-level = 1 }, "stwo" = { opt-level = 1 } }
-
-[profile.adapter-release]
-inherits = "dev"
-package = { "stwo-cairo-adapter" = { opt-level = 3 } }
-debug-assertions = false
