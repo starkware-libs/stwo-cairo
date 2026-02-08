@@ -45,18 +45,15 @@ impl ClaimGenerator {
         (trace, Claim {}, InteractionClaimGenerator { lookup_data })
     }
 
-    pub fn add_input(&self, [M31(a), M31(b), ..]: &InputType) {
-        let [[al, ah], [bl, bh]] = [*a, *b].map(|x| [x & ((1 << LIMB_BITS) - 1), x >> LIMB_BITS]);
-        let column_index = (ah << EXPAND_BITS) + bh;
-        let row_index = (al << LIMB_BITS) + bl;
-        self.mults[column_index as usize].increase_at(row_index);
-    }
-
     pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], _relation_index: usize) {
         packed_inputs.into_par_iter().for_each(|packed_input| {
-            packed_input.unpack().into_iter().for_each(|input| {
-                self.add_input(&input);
-            });
+            for [M31(a), M31(b), ..] in packed_input.unpack() {
+                let [[al, ah], [bl, bh]] =
+                    [a, b].map(|x| [x & ((1 << LIMB_BITS) - 1), x >> LIMB_BITS]);
+                let column_index = (ah << EXPAND_BITS) + bh;
+                let row_index = (al << LIMB_BITS) + bl;
+                self.mults[column_index as usize].increase_at(row_index);
+            }
         });
     }
 }
