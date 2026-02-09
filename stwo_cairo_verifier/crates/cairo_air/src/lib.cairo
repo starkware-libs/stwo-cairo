@@ -3,6 +3,10 @@ use components::memory_address_to_id::{
 };
 use components::memory_id_to_big::InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl;
 use stwo_verifier_core::Hash;
+#[cfg(not(feature: "poseidon252_verifier"))]
+use stwo_verifier_core::vcs::blake2s_hasher::hash_small_vals;
+#[cfg(feature: "poseidon252_verifier")]
+use stwo_verifier_core::vcs::poseidon_hasher::hash_small_vals;
 use stwo_verifier_utils::{PublicMemoryEntries, PublicMemoryEntriesTrait, PublicMemoryEntry};
 
 #[cfg(feature: "poseidon252_verifier")]
@@ -756,8 +760,12 @@ impl PublicDataImpl of PublicDataTrait {
     fn mix_into(self: @PublicData, ref channel: Channel) {
         let (public_claim, output_claim, program_claim) = self.pack_into_u32s();
         channel.mix_felts(pack_into_qm31s(public_claim));
-        channel.mix_felts(pack_into_qm31s(output_claim));
-        channel.mix_felts(pack_into_qm31s(program_claim));
+        let empty_array: Array<felt252> = array![];
+        let output_hash = hash_small_vals(empty_array, output_claim);
+        channel.mix_commitment(output_hash);
+        let empty_array: Array<felt252> = array![];
+        let program_hash = hash_small_vals(empty_array, program_claim);
+        channel.mix_commitment(program_hash);
     }
 
     /// Converts public data to [u32], where each u32 is at most 2^31 - 1.

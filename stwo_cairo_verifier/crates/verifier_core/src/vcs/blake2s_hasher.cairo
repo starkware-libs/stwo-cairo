@@ -157,3 +157,8 @@ impl Blake2sHashSerde of Serde<Blake2sHash> {
         )
     }
 }
+
+pub fn hash_small_vals(initial_array: Array<felt252>, mut values: Span<u32>) -> Blake2sHash {
+    assert!(initial_array.is_empty());
+    Blake2sHash { hash: stwo_verifier_utils::hash_u32s(values) }
+}
