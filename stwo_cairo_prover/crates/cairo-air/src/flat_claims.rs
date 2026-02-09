@@ -6,11 +6,11 @@ use crate::air::PublicData;
 use crate::claims::{CairoClaim, CairoInteractionClaim};
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
 use crate::components::{
-    blake_round_sigma, memory_id_to_big, range_check_11, range_check_12, range_check_18,
-    range_check_20, range_check_3_3_3_3_3, range_check_3_6_6_3, range_check_4_3, range_check_4_4,
-    range_check_4_4_4_4, range_check_6, range_check_7_2_5, range_check_8, range_check_9_9,
-    verify_bitwise_xor_12, verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8,
-    verify_bitwise_xor_9,
+    blake_round_sigma, memory_id_to_big, pedersen_points_table_window_bits_18, poseidon_round_keys,
+    range_check_11, range_check_12, range_check_18, range_check_20, range_check_3_3_3_3_3,
+    range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4, range_check_6,
+    range_check_7_2_5, range_check_8, range_check_9_9, verify_bitwise_xor_12, verify_bitwise_xor_4,
+    verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9,
 };
 use crate::utils::pack_into_secure_felts;
 
@@ -221,107 +221,108 @@ fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
         &mut component_enable_bits,
     );
 
-    // // Builtins
-    // option_log_size(
-    //     &claim.range_check_builtin,
-    //     |c| c.log_size,
-    //     &mut component_log_sizes,
-    //     &mut component_enable_bits,
-    // );
-    // option_log_size(
-    //     &claim.range_check96_builtin,
-    //     |c| c.log_size,
-    //     &mut component_log_sizes,
-    //     &mut component_enable_bits,
-    // );
-    // option_log_size(
-    //     &claim.bitwise_builtin,
-    //     |c| c.log_size,
-    //     &mut component_log_sizes,
-    //     &mut component_enable_bits,
-    // );
-    // option_log_size(
-    //     &claim.add_mod_builtin,
-    //     |c| c.log_size,
-    //     &mut component_log_sizes,
-    //     &mut component_enable_bits,
-    // );
-    // option_log_size(
-    //     &claim.mul_mod_builtin,
-    //     |c| c.log_size,
-    //     &mut component_log_sizes,
-    //     &mut component_enable_bits,
-    // );
-    // option_log_size(
-    //     &claim.pedersen_builtin,
-    //     |c| c.log_size,
-    //     &mut component_log_sizes,
-    //     &mut component_enable_bits,
-    // );
-    // option_log_size(
-    //     &claim.poseidon_builtin,
-    //     |c| c.log_size,
-    //     &mut component_log_sizes,
-    //     &mut component_enable_bits,
-    // );
+    // Builtins
+    option_log_size(
+        &claim.add_mod_builtin,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.bitwise_builtin,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
 
-    // // Pedersen context
-    // option_log_size(
-    //     &claim.pedersen_aggregator_window_bits_18,
-    //     |c| c.log_size,
-    //     &mut component_log_sizes,
-    //     &mut component_enable_bits,
-    // );
-    // option_log_size(
-    //     &claim.partial_ec_mul_window_bits_18,
-    //     |c| c.log_size,
-    //     &mut component_log_sizes,
-    //     &mut component_enable_bits,
-    // );
-    // option_log_size(
-    //     &claim.pedersen_points_table_window_bits_18,
-    //     |_| pedersen_points_table_window_bits_18::LOG_SIZE,
-    //     &mut component_log_sizes,
-    //     &mut component_enable_bits,
-    // );
+    option_log_size(
+        &claim.mul_mod_builtin,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.pedersen_builtin,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.poseidon_builtin,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check96_builtin,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check_builtin,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
 
-    // // Poseidon context
-    // option_log_size(
-    //     &claim.poseidon_aggregator,
-    //     |c| c.log_size,
-    //     &mut component_log_sizes,
-    //     &mut component_enable_bits,
-    // );
-    // option_log_size(
-    //     &claim.poseidon_3_partial_rounds_chain,
-    //     |c| c.log_size,
-    //     &mut component_log_sizes,
-    //     &mut component_enable_bits,
-    // );
-    // option_log_size(
-    //     &claim.poseidon_full_round_chain,
-    //     |c| c.log_size,
-    //     &mut component_log_sizes,
-    //     &mut component_enable_bits,
-    // );
-    // option_log_size(
-    //     &claim.cube_252,
-    //     |c| c.log_size,
-    //     &mut component_log_sizes,
-    //     &mut component_enable_bits,
-    // );
-    // option_log_size(
-    //     &claim.poseidon_round_keys,
-    //     |_| poseidon_round_keys::LOG_SIZE,
-    //     &mut component_log_sizes,
-    //     &mut component_enable_bits,
-    // );
-    // option_log_size(
-    //     &claim.range_check_252_width_27,
-    //     |c| c.log_size,
-    //     &mut component_log_sizes,
-    //     &mut component_enable_bits,
-    // );
+    // Pedersen context
+    option_log_size(
+        &claim.pedersen_aggregator_window_bits_18,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.partial_ec_mul_window_bits_18,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.pedersen_points_table_window_bits_18,
+        |_| pedersen_points_table_window_bits_18::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+
+    // Poseidon context
+    option_log_size(
+        &claim.poseidon_aggregator,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.poseidon_3_partial_rounds_chain,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.poseidon_full_round_chain,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.cube_252,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.poseidon_round_keys,
+        |_| poseidon_round_keys::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check_252_width_27,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
 
     // Memory
     option_log_size(
@@ -340,10 +341,10 @@ fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
         component_log_sizes.push(*log_size);
         component_enable_bits.push(true);
     }
-    // for _ in 0..(MEMORY_ADDRESS_TO_ID_SPLIT - big_log_sizes.len()) {
-    //     component_log_sizes.push(0_u32);
-    //     component_enable_bits.push(false);
-    // }
+    for _ in 0..(MEMORY_ADDRESS_TO_ID_SPLIT - big_log_sizes.len()) {
+        component_log_sizes.push(0_u32);
+        component_enable_bits.push(false);
+    }
 
     component_log_sizes.push(*small_log_size);
     component_enable_bits.push(true);
@@ -596,73 +597,74 @@ pub fn flatten_interaction_claim(interaction_claim: &CairoInteractionClaim) -> V
     ));
 
     // Builtins
-    // claimed_sums.push(option_claimed_sum(
-    //     &interaction_claim.range_check_builtin,
-    //     |c| c.claimed_sum,
-    // ));
-    // claimed_sums.push(option_claimed_sum(
-    //     &interaction_claim.range_check96_builtin,
-    //     |c| c.claimed_sum,
-    // ));
-    // claimed_sums.push(option_claimed_sum(
-    //     &interaction_claim.bitwise_builtin,
-    //     |c| c.claimed_sum,
-    // ));
-    // claimed_sums.push(option_claimed_sum(
-    //     &interaction_claim.add_mod_builtin,
-    //     |c| c.claimed_sum,
-    // ));
-    // claimed_sums.push(option_claimed_sum(
-    //     &interaction_claim.mul_mod_builtin,
-    //     |c| c.claimed_sum,
-    // ));
-    // claimed_sums.push(option_claimed_sum(
-    //     &interaction_claim.pedersen_builtin,
-    //     |c| c.claimed_sum,
-    // ));
-    // claimed_sums.push(option_claimed_sum(
-    //     &interaction_claim.poseidon_builtin,
-    //     |c| c.claimed_sum,
-    // ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.add_mod_builtin,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.bitwise_builtin,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.mul_mod_builtin,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.pedersen_builtin,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.poseidon_builtin,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.range_check96_builtin,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.range_check_builtin,
+        |c| c.claimed_sum,
+    ));
+  
 
-    // // Pedersen context
-    // claimed_sums.push(option_claimed_sum(
-    //     &interaction_claim.pedersen_aggregator_window_bits_18,
-    //     |c| c.claimed_sum,
-    // ));
-    // claimed_sums.push(option_claimed_sum(
-    //     &interaction_claim.partial_ec_mul_window_bits_18,
-    //     |c| c.claimed_sum,
-    // ));
-    // claimed_sums.push(option_claimed_sum(
-    //     &interaction_claim.pedersen_points_table_window_bits_18,
-    //     |c| c.claimed_sum,
-    // ));
+    // Pedersen context
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.pedersen_aggregator_window_bits_18,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.partial_ec_mul_window_bits_18,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.pedersen_points_table_window_bits_18,
+        |c| c.claimed_sum,
+    ));
 
-    // // Poseidon context
-    // claimed_sums.push(option_claimed_sum(
-    //     &interaction_claim.poseidon_aggregator,
-    //     |c| c.claimed_sum,
-    // ));
-    // claimed_sums.push(option_claimed_sum(
-    //     &interaction_claim.poseidon_3_partial_rounds_chain,
-    //     |c| c.claimed_sum,
-    // ));
-    // claimed_sums.push(option_claimed_sum(
-    //     &interaction_claim.poseidon_full_round_chain,
-    //     |c| c.claimed_sum,
-    // ));
-    // claimed_sums.push(option_claimed_sum(&interaction_claim.cube_252, |c| {
-    //     c.claimed_sum
-    // }));
-    // claimed_sums.push(option_claimed_sum(
-    //     &interaction_claim.poseidon_round_keys,
-    //     |c| c.claimed_sum,
-    // ));
-    // claimed_sums.push(option_claimed_sum(
-    //     &interaction_claim.range_check_252_width_27,
-    //     |c| c.claimed_sum,
-    // ));
+    // Poseidon context
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.poseidon_aggregator,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.poseidon_3_partial_rounds_chain,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.poseidon_full_round_chain,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(&interaction_claim.cube_252, |c| {
+        c.claimed_sum
+    }));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.poseidon_round_keys,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.range_check_252_width_27,
+        |c| c.claimed_sum,
+    ));
 
     // Memory address to id
     claimed_sums.push(option_claimed_sum(
@@ -680,9 +682,9 @@ pub fn flatten_interaction_claim(interaction_claim: &CairoInteractionClaim) -> V
     for claimed_sum in big_claimed_sums {
         claimed_sums.push(*claimed_sum);
     }
-    // for _ in 0..(MEMORY_ADDRESS_TO_ID_SPLIT - big_claimed_sums.len()) {
-    //     claimed_sums.push(SecureField::zero());
-    // }
+    for _ in 0..(MEMORY_ADDRESS_TO_ID_SPLIT - big_claimed_sums.len()) {
+        claimed_sums.push(SecureField::zero());
+    }
 
     claimed_sums.push(*small_claimed_sum);
 

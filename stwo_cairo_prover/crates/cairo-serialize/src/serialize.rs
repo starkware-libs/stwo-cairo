@@ -120,6 +120,7 @@ impl CairoSerialize for PcsConfig {
         let Self {
             pow_bits,
             fri_config,
+            lifting_log_size: _,
         } = self;
         pow_bits.serialize(output);
         fri_config.serialize(output);

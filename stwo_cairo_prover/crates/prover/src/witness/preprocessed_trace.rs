@@ -40,6 +40,7 @@ where
         &mut MC::C::default(),
         &twiddles,
         false,
+        None,
     );
 
     commitment_scheme.commitment.root()
