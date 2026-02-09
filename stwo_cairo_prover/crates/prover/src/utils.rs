@@ -3,6 +3,7 @@ use cairo_air::blake::air::Components as BlakeContextComponents;
 use cairo_air::builtins_air::BuiltinComponents;
 use cairo_air::opcodes_air::OpcodeComponents;
 use cairo_air::pedersen::air::Components as PedersenContextComponents;
+use cairo_air::pedersen_narrow_windows::air::Components as PedersenNarrowWindowsContextComponents;
 use cairo_air::poseidon::air::Components as PoseidonContextComponents;
 use itertools::chain;
 use stwo::prover::backend::simd::SimdBackend;
@@ -15,6 +16,9 @@ pub fn cairo_provers(components: &CairoComponents) -> Vec<&dyn ComponentProver<S
         blake_context_provers(&components.blake_context.components),
         builtin_provers(&components.builtins),
         pedersen_context_provers(&components.pedersen_context.components),
+        pedersen_narrow_windows_context_provers(
+            &components.pedersen_narrow_windows_context.components
+        ),
         poseidon_context_provers(&components.poseidon_context.components),
         [&components.memory_address_to_id as &dyn ComponentProver<SimdBackend>,],
         components
@@ -187,6 +191,9 @@ fn builtin_provers(components: &BuiltinComponents) -> Vec<&dyn ComponentProver<S
     if let Some(pedersen_builtin) = &components.pedersen_builtin {
         vec.push(pedersen_builtin as &dyn ComponentProver<SimdBackend>);
     }
+    if let Some(pedersen_builtin_narrow_windows) = &components.pedersen_builtin_narrow_windows {
+        vec.push(pedersen_builtin_narrow_windows as &dyn ComponentProver<SimdBackend>);
+    }
     if let Some(poseidon_builtin) = &components.poseidon_builtin {
         vec.push(poseidon_builtin as &dyn ComponentProver<SimdBackend>);
     }
@@ -217,6 +224,20 @@ fn blake_context_provers(
 
 fn pedersen_context_provers(
     components: &Option<PedersenContextComponents>,
+) -> Vec<&dyn ComponentProver<SimdBackend>> {
+    if let Some(components) = components {
+        return vec![
+            &components.pedersen_aggregator as &dyn ComponentProver<SimdBackend>,
+            &components.partial_ec_mul as &dyn ComponentProver<SimdBackend>,
+            &components.pedersen_points_table as &dyn ComponentProver<SimdBackend>,
+        ];
+    }
+
+    vec![]
+}
+
+fn pedersen_narrow_windows_context_provers(
+    components: &Option<PedersenNarrowWindowsContextComponents>,
 ) -> Vec<&dyn ComponentProver<SimdBackend>> {
     if let Some(components) = components {
         return vec![

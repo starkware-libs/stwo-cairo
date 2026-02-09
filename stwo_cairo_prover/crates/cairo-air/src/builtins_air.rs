@@ -4,7 +4,8 @@ use stwo_constraint_framework::TraceLocationAllocator;
 use crate::claims::{CairoClaim, CairoInteractionClaim};
 use crate::components::{
     add_mod_builtin, bitwise_builtin, indented_component_display, mul_mod_builtin,
-    pedersen_builtin, poseidon_builtin, range_check96_builtin, range_check_builtin,
+    pedersen_builtin, pedersen_builtin_narrow_windows, poseidon_builtin, range_check96_builtin,
+    range_check_builtin,
 };
 use crate::relations::CommonLookupElements;
 
@@ -13,6 +14,7 @@ pub struct BuiltinComponents {
     pub bitwise_builtin: Option<bitwise_builtin::Component>,
     pub mul_mod_builtin: Option<mul_mod_builtin::Component>,
     pub pedersen_builtin: Option<pedersen_builtin::Component>,
+    pub pedersen_builtin_narrow_windows: Option<pedersen_builtin_narrow_windows::Component>,
     pub poseidon_builtin: Option<poseidon_builtin::Component>,
     pub range_check_96_builtin: Option<range_check96_builtin::Component>,
     pub range_check_128_builtin: Option<range_check_builtin::Component>,
@@ -64,6 +66,21 @@ impl BuiltinComponents {
                 interaction_claim.pedersen_builtin.unwrap().claimed_sum,
             )
         });
+        let pedersen_builtin_narrow_windows_component = cairo_claim
+            .pedersen_builtin_narrow_windows
+            .map(|pedersen_builtin_narrow_windows| {
+                pedersen_builtin_narrow_windows::Component::new(
+                    tree_span_provider,
+                    pedersen_builtin_narrow_windows::Eval {
+                        claim: pedersen_builtin_narrow_windows,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim
+                        .pedersen_builtin_narrow_windows
+                        .unwrap()
+                        .claimed_sum,
+                )
+            });
         let poseidon_builtin_component = cairo_claim.poseidon_builtin.map(|poseidon_builtin| {
             poseidon_builtin::Component::new(
                 tree_span_provider,
@@ -105,6 +122,7 @@ impl BuiltinComponents {
             bitwise_builtin: bitwise_builtin_component,
             mul_mod_builtin: mul_mod_builtin_component,
             pedersen_builtin: pedersen_builtin_component,
+            pedersen_builtin_narrow_windows: pedersen_builtin_narrow_windows_component,
             poseidon_builtin: poseidon_builtin_component,
             range_check_96_builtin: range_check_96_builtin_component,
             range_check_128_builtin: range_check_128_builtin_component,
@@ -124,6 +142,9 @@ impl BuiltinComponents {
         }
         if let Some(pedersen_builtin) = &self.pedersen_builtin {
             vec.push(pedersen_builtin as &dyn Component);
+        }
+        if let Some(pedersen_builtin_narrow_windows) = &self.pedersen_builtin_narrow_windows {
+            vec.push(pedersen_builtin_narrow_windows as &dyn Component);
         }
         if let Some(poseidon_builtin) = &self.poseidon_builtin {
             vec.push(poseidon_builtin as &dyn Component);
@@ -159,6 +180,13 @@ impl std::fmt::Display for BuiltinComponents {
                 f,
                 "MulModBuiltin: {}",
                 indented_component_display(mul_mod_builtin)
+            )?;
+        }
+        if let Some(pedersen_builtin_narrow_windows) = &self.pedersen_builtin_narrow_windows {
+            writeln!(
+                f,
+                "PedersenNarrowWindowsBuiltin: {}",
+                indented_component_display(pedersen_builtin_narrow_windows)
             )?;
         }
         if let Some(pedersen_builtin) = &self.pedersen_builtin {

@@ -1,11 +1,18 @@
+use std::sync::Arc;
+
 use stwo_cairo_adapter::builtins::BuiltinSegments;
 use stwo_cairo_common::builtins::{
     ADD_MOD_BUILTIN_MEMORY_CELLS, BITWISE_BUILTIN_MEMORY_CELLS, MUL_MOD_BUILTIN_MEMORY_CELLS,
     PEDERSEN_BUILTIN_MEMORY_CELLS, POSEIDON_BUILTIN_MEMORY_CELLS,
     RANGE_CHECK_96_BUILTIN_MEMORY_CELLS, RANGE_CHECK_BUILTIN_MEMORY_CELLS,
 };
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
+use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
-pub fn get_builtins(builtin_segments: &BuiltinSegments) -> Vec<&'static str> {
+pub fn get_builtins(
+    builtin_segments: &BuiltinSegments,
+    preprocessed_trace: Arc<PreProcessedTrace>,
+) -> Vec<&'static str> {
     let mut builtins = vec![];
 
     if let Some(segment) = builtin_segments.add_mod_builtin {
@@ -58,7 +65,17 @@ pub fn get_builtins(builtin_segments: &BuiltinSegments) -> Vec<&'static str> {
             n_instances.is_power_of_two(),
             "pedersen instances number is not a power of two"
         );
-        builtins.push("pedersen_builtin");
+        if preprocessed_trace.has_column(&PreProcessedColumnId {
+            id: "pedersen_points_0".to_owned(),
+        }) {
+            builtins.push("pedersen_builtin");
+        } else if preprocessed_trace.has_column(&PreProcessedColumnId {
+            id: "pedersen_points_small_0".to_owned(),
+        }) {
+            builtins.push("pedersen_builtin_narrow_windows");
+        } else {
+            panic!("Missing pedersen points in the preprocessed trace.")
+        }
     }
     if let Some(segment) = builtin_segments.poseidon_builtin {
         let segment_length = segment.stop_ptr - segment.begin_addr;
