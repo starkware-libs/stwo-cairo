@@ -39,6 +39,7 @@ fn secure_pcs_config() -> PcsConfig {
             log_blowup_factor: 1,
             n_queries: 70,
         },
+        lifting_log_size: None,
     }
 }
 
