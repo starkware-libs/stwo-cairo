@@ -1,4 +1,4 @@
-use stwo::core::channel::Channel;
+use stwo::core::channel::{Channel, MerkleChannel};
 
 use crate::air::PublicData;
 use crate::utils::pack_into_secure_felts;
@@ -9,7 +9,7 @@ pub struct FlatClaim {
     pub public_data: PublicData,
 }
 impl FlatClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
+    pub fn mix_into<MC: MerkleChannel>(&self, channel: &mut MC::C) {
         channel.mix_felts(&pack_into_secure_felts(
             [self.component_enable_bits.len() as u32].into_iter(),
         ));
@@ -22,7 +22,7 @@ impl FlatClaim {
         channel.mix_felts(&pack_into_secure_felts(
             [self.public_data.public_memory.program.len() as u32].into_iter(),
         ));
-        self.public_data.mix_into(channel);
+        self.public_data.mix_into::<MC>(channel);
     }
 }
 

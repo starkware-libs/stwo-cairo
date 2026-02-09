@@ -46,15 +46,17 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
             }
         }
 
-
         hash_small_vals::<BaseField>(hash_array, column_values)
     }
 }
 
 /// Hashes small values into a felt252.
 /// Assumes that the values are in the range [0, 2^31).
-/// Takes an initial array of felt252s packes the smalles and appens them to the array before hashing.
-pub fn hash_small_vals<T, +Copy<T>, +Drop<T>, +Into<T, felt252>>(initial_array: Array<felt252>, mut values: Span<T>) -> felt252 {
+/// Takes an initial array of felt252s packes the smalles and appens them to the array before
+/// hashing.
+pub fn hash_small_vals<T, +Copy<T>, +Drop<T>, +Into<T, felt252>>(
+    initial_array: Array<felt252>, mut values: Span<T>,
+) -> felt252 {
     let mut hash_array = initial_array;
     // TODO(andrew): Measure performance diff and consider inlining `poseidon_hash_span(..)`
     // functionality here to do all packing and hashing in a single pass.
