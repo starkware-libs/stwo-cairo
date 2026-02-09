@@ -124,7 +124,7 @@ pub fn create_cairo_claim_generator(
     for opcode in get_opcodes(&state_transitions.casm_states_by_opcode) {
         all_components.extend(get_sub_components(opcode));
     }
-    for builtin in get_builtins(&builtin_segments) {
+    for builtin in get_builtins(&builtin_segments, preprocessed_trace.clone()) {
         all_components.extend(get_sub_components(builtin));
     }
     // TODO(Stav): remove after range checks and verify bitwise xor are optional in the claim.

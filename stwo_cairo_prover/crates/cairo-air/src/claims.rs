@@ -3,7 +3,7 @@
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::Channel;
-use stwo::core::fields::qm31::QM31;
+use stwo::core::fields::qm31::SecureField;
 use stwo::core::pcs::TreeVec;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 
@@ -11,7 +11,6 @@ use super::flat_claims::{flatten_interaction_claim, FlatClaim};
 use crate::air::{
     accumulate_relation_memory, accumulate_relation_uses, PublicData, RelationUsesDict,
 };
-use crate::claims::prelude::SecureField;
 use crate::components::*;
 use crate::relations::CommonLookupElements;
 
@@ -48,12 +47,16 @@ pub struct CairoClaim {
     pub bitwise_builtin: Option<bitwise_builtin::Claim>,
     pub mul_mod_builtin: Option<mul_mod_builtin::Claim>,
     pub pedersen_builtin: Option<pedersen_builtin::Claim>,
+    pub pedersen_builtin_narrow_windows: Option<pedersen_builtin_narrow_windows::Claim>,
     pub poseidon_builtin: Option<poseidon_builtin::Claim>,
     pub range_check96_builtin: Option<range_check96_builtin::Claim>,
     pub range_check_builtin: Option<range_check_builtin::Claim>,
     pub pedersen_aggregator_window_bits_18: Option<pedersen_aggregator_window_bits_18::Claim>,
     pub partial_ec_mul_window_bits_18: Option<partial_ec_mul_window_bits_18::Claim>,
     pub pedersen_points_table_window_bits_18: Option<pedersen_points_table_window_bits_18::Claim>,
+    pub pedersen_aggregator_window_bits_9: Option<pedersen_aggregator_window_bits_9::Claim>,
+    pub partial_ec_mul_window_bits_9: Option<partial_ec_mul_window_bits_9::Claim>,
+    pub pedersen_points_table_window_bits_9: Option<pedersen_points_table_window_bits_9::Claim>,
     pub poseidon_aggregator: Option<poseidon_aggregator::Claim>,
     pub poseidon_3_partial_rounds_chain: Option<poseidon_3_partial_rounds_chain::Claim>,
     pub poseidon_full_round_chain: Option<poseidon_full_round_chain::Claim>,
@@ -268,6 +271,13 @@ impl CairoClaim {
                 c.log_size,
             )
         });
+        self.pedersen_builtin_narrow_windows.as_ref().inspect(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                pedersen_builtin_narrow_windows::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
         self.poseidon_builtin.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
@@ -302,6 +312,22 @@ impl CairoClaim {
             accumulate_relation_uses(
                 relation_uses,
                 partial_ec_mul_window_bits_18::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        self.pedersen_aggregator_window_bits_9
+            .as_ref()
+            .inspect(|c| {
+                accumulate_relation_uses(
+                    relation_uses,
+                    pedersen_aggregator_window_bits_9::RELATION_USES_PER_ROW,
+                    c.log_size,
+                )
+            });
+        self.partial_ec_mul_window_bits_9.as_ref().inspect(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                partial_ec_mul_window_bits_9::RELATION_USES_PER_ROW,
                 c.log_size,
             )
         });
@@ -438,6 +464,9 @@ impl CairoClaim {
         self.pedersen_builtin
             .as_ref()
             .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.pedersen_builtin_narrow_windows
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
         self.poseidon_builtin
             .as_ref()
             .inspect(|c| log_sizes_list.push(c.log_sizes()));
@@ -454,6 +483,15 @@ impl CairoClaim {
             .as_ref()
             .inspect(|c| log_sizes_list.push(c.log_sizes()));
         self.pedersen_points_table_window_bits_18
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.pedersen_aggregator_window_bits_9
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.partial_ec_mul_window_bits_9
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.pedersen_points_table_window_bits_9
             .as_ref()
             .inspect(|c| log_sizes_list.push(c.log_sizes()));
         self.poseidon_aggregator
@@ -567,6 +605,7 @@ pub struct CairoInteractionClaim {
     pub bitwise_builtin: Option<bitwise_builtin::InteractionClaim>,
     pub mul_mod_builtin: Option<mul_mod_builtin::InteractionClaim>,
     pub pedersen_builtin: Option<pedersen_builtin::InteractionClaim>,
+    pub pedersen_builtin_narrow_windows: Option<pedersen_builtin_narrow_windows::InteractionClaim>,
     pub poseidon_builtin: Option<poseidon_builtin::InteractionClaim>,
     pub range_check96_builtin: Option<range_check96_builtin::InteractionClaim>,
     pub range_check_builtin: Option<range_check_builtin::InteractionClaim>,
@@ -575,6 +614,11 @@ pub struct CairoInteractionClaim {
     pub partial_ec_mul_window_bits_18: Option<partial_ec_mul_window_bits_18::InteractionClaim>,
     pub pedersen_points_table_window_bits_18:
         Option<pedersen_points_table_window_bits_18::InteractionClaim>,
+    pub pedersen_aggregator_window_bits_9:
+        Option<pedersen_aggregator_window_bits_9::InteractionClaim>,
+    pub partial_ec_mul_window_bits_9: Option<partial_ec_mul_window_bits_9::InteractionClaim>,
+    pub pedersen_points_table_window_bits_9:
+        Option<pedersen_points_table_window_bits_9::InteractionClaim>,
     pub poseidon_aggregator: Option<poseidon_aggregator::InteractionClaim>,
     pub poseidon_3_partial_rounds_chain: Option<poseidon_3_partial_rounds_chain::InteractionClaim>,
     pub poseidon_full_round_chain: Option<poseidon_full_round_chain::InteractionClaim>,
@@ -614,7 +658,7 @@ pub fn lookup_sum(
     common_lookup_elements: &CommonLookupElements,
     interaction_claim: &CairoInteractionClaim,
 ) -> SecureField {
-    let mut sum = QM31::zero();
+    let mut sum = SecureField::zero();
     sum += claim.public_data.logup_sum(common_lookup_elements);
     interaction_claim.add_opcode.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
@@ -733,6 +777,12 @@ pub fn lookup_sum(
     interaction_claim.pedersen_builtin.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
+    interaction_claim
+        .pedersen_builtin_narrow_windows
+        .as_ref()
+        .inspect(|ic| {
+            sum += ic.claimed_sum;
+        });
     interaction_claim.poseidon_builtin.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
@@ -762,6 +812,24 @@ pub fn lookup_sum(
         });
     interaction_claim
         .pedersen_points_table_window_bits_18
+        .as_ref()
+        .inspect(|ic| {
+            sum += ic.claimed_sum;
+        });
+    interaction_claim
+        .pedersen_aggregator_window_bits_9
+        .as_ref()
+        .inspect(|ic| {
+            sum += ic.claimed_sum;
+        });
+    interaction_claim
+        .partial_ec_mul_window_bits_9
+        .as_ref()
+        .inspect(|ic| {
+            sum += ic.claimed_sum;
+        });
+    interaction_claim
+        .pedersen_points_table_window_bits_9
         .as_ref()
         .inspect(|ic| {
             sum += ic.claimed_sum;
