@@ -36,9 +36,13 @@ use crate::components::mul_mod_builtin::InteractionClaimImpl as MulModBuiltinInt
 use crate::components::mul_opcode::InteractionClaimImpl as MulOpcodeInteractionClaimImpl;
 use crate::components::mul_opcode_small::InteractionClaimImpl as MulOpcodeSmallInteractionClaimImpl;
 use crate::components::partial_ec_mul_window_bits_18::InteractionClaimImpl as PartialEcMulWindowBits18InteractionClaimImpl;
+use crate::components::partial_ec_mul_window_bits_9::InteractionClaimImpl as PartialEcMulWindowBits9InteractionClaimImpl;
 use crate::components::pedersen_aggregator_window_bits_18::InteractionClaimImpl as PedersenAggregatorWindowBits18InteractionClaimImpl;
+use crate::components::pedersen_aggregator_window_bits_9::InteractionClaimImpl as PedersenAggregatorWindowBits9InteractionClaimImpl;
 use crate::components::pedersen_builtin::InteractionClaimImpl as PedersenBuiltinInteractionClaimImpl;
+use crate::components::pedersen_builtin_narrow_windows::InteractionClaimImpl as PedersenBuiltinNarrowWindowsInteractionClaimImpl;
 use crate::components::pedersen_points_table_window_bits_18::InteractionClaimImpl as PedersenPointsTableWindowBits18InteractionClaimImpl;
+use crate::components::pedersen_points_table_window_bits_9::InteractionClaimImpl as PedersenPointsTableWindowBits9InteractionClaimImpl;
 use crate::components::poseidon_3_partial_rounds_chain::InteractionClaimImpl as Poseidon3PartialRoundsChainInteractionClaimImpl;
 use crate::components::poseidon_aggregator::InteractionClaimImpl as PoseidonAggregatorInteractionClaimImpl;
 use crate::components::poseidon_builtin::InteractionClaimImpl as PoseidonBuiltinInteractionClaimImpl;
@@ -106,6 +110,7 @@ pub struct CairoClaim {
     pub bitwise_builtin: Option<components::bitwise_builtin::Claim>,
     pub mul_mod_builtin: Option<components::mul_mod_builtin::Claim>,
     pub pedersen_builtin: Option<components::pedersen_builtin::Claim>,
+    pub pedersen_builtin_narrow_windows: Option<components::pedersen_builtin_narrow_windows::Claim>,
     pub poseidon_builtin: Option<components::poseidon_builtin::Claim>,
     pub range_check96_builtin: Option<components::range_check96_builtin::Claim>,
     pub range_check_builtin: Option<components::range_check_builtin::Claim>,
@@ -115,6 +120,13 @@ pub struct CairoClaim {
     pub partial_ec_mul_window_bits_18: Option<components::partial_ec_mul_window_bits_18::Claim>,
     pub pedersen_points_table_window_bits_18: Option<
         components::pedersen_points_table_window_bits_18::Claim,
+    >,
+    pub pedersen_aggregator_window_bits_9: Option<
+        components::pedersen_aggregator_window_bits_9::Claim,
+    >,
+    pub partial_ec_mul_window_bits_9: Option<components::partial_ec_mul_window_bits_9::Claim>,
+    pub pedersen_points_table_window_bits_9: Option<
+        components::pedersen_points_table_window_bits_9::Claim,
     >,
     pub poseidon_aggregator: Option<components::poseidon_aggregator::Claim>,
     pub poseidon_3_partial_rounds_chain: Option<components::poseidon_3_partial_rounds_chain::Claim>,
@@ -236,6 +248,9 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         if let Some(claim) = self.pedersen_builtin {
             log_sizes_list.append(claim.log_sizes());
         }
+        if let Some(claim) = self.pedersen_builtin_narrow_windows {
+            log_sizes_list.append(claim.log_sizes());
+        }
         if let Some(claim) = self.poseidon_builtin {
             log_sizes_list.append(claim.log_sizes());
         }
@@ -252,6 +267,15 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             log_sizes_list.append(claim.log_sizes());
         }
         if let Some(claim) = self.pedersen_points_table_window_bits_18 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.pedersen_aggregator_window_bits_9 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.partial_ec_mul_window_bits_9 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.pedersen_points_table_window_bits_9 {
             log_sizes_list.append(claim.log_sizes());
         }
         if let Some(claim) = self.poseidon_aggregator {
@@ -423,6 +447,9 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         if let Some(claim) = self.pedersen_builtin {
             claim.accumulate_relation_uses(ref relation_uses);
         }
+        if let Some(claim) = self.pedersen_builtin_narrow_windows {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
         if let Some(claim) = self.poseidon_builtin {
             claim.accumulate_relation_uses(ref relation_uses);
         }
@@ -436,6 +463,12 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             claim.accumulate_relation_uses(ref relation_uses);
         }
         if let Some(claim) = self.partial_ec_mul_window_bits_18 {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
+        if let Some(claim) = self.pedersen_aggregator_window_bits_9 {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
+        if let Some(claim) = self.partial_ec_mul_window_bits_9 {
             claim.accumulate_relation_uses(ref relation_uses);
         }
         if let Some(claim) = self.poseidon_aggregator {
@@ -496,6 +529,9 @@ pub struct CairoInteractionClaim {
     pub bitwise_builtin: Option<components::bitwise_builtin::InteractionClaim>,
     pub mul_mod_builtin: Option<components::mul_mod_builtin::InteractionClaim>,
     pub pedersen_builtin: Option<components::pedersen_builtin::InteractionClaim>,
+    pub pedersen_builtin_narrow_windows: Option<
+        components::pedersen_builtin_narrow_windows::InteractionClaim,
+    >,
     pub poseidon_builtin: Option<components::poseidon_builtin::InteractionClaim>,
     pub range_check96_builtin: Option<components::range_check96_builtin::InteractionClaim>,
     pub range_check_builtin: Option<components::range_check_builtin::InteractionClaim>,
@@ -507,6 +543,15 @@ pub struct CairoInteractionClaim {
     >,
     pub pedersen_points_table_window_bits_18: Option<
         components::pedersen_points_table_window_bits_18::InteractionClaim,
+    >,
+    pub pedersen_aggregator_window_bits_9: Option<
+        components::pedersen_aggregator_window_bits_9::InteractionClaim,
+    >,
+    pub partial_ec_mul_window_bits_9: Option<
+        components::partial_ec_mul_window_bits_9::InteractionClaim,
+    >,
+    pub pedersen_points_table_window_bits_9: Option<
+        components::pedersen_points_table_window_bits_9::InteractionClaim,
     >,
     pub poseidon_aggregator: Option<components::poseidon_aggregator::InteractionClaim>,
     pub poseidon_3_partial_rounds_chain: Option<
@@ -639,6 +684,9 @@ pub fn lookup_sum(
     if let Some(interaction_claim) = interaction_claim.pedersen_builtin {
         sum += *interaction_claim.claimed_sum;
     }
+    if let Some(interaction_claim) = interaction_claim.pedersen_builtin_narrow_windows {
+        sum += *interaction_claim.claimed_sum;
+    }
     if let Some(interaction_claim) = interaction_claim.poseidon_builtin {
         sum += *interaction_claim.claimed_sum;
     }
@@ -655,6 +703,15 @@ pub fn lookup_sum(
         sum += *interaction_claim.claimed_sum;
     }
     if let Some(interaction_claim) = interaction_claim.pedersen_points_table_window_bits_18 {
+        sum += *interaction_claim.claimed_sum;
+    }
+    if let Some(interaction_claim) = interaction_claim.pedersen_aggregator_window_bits_9 {
+        sum += *interaction_claim.claimed_sum;
+    }
+    if let Some(interaction_claim) = interaction_claim.partial_ec_mul_window_bits_9 {
+        sum += *interaction_claim.claimed_sum;
+    }
+    if let Some(interaction_claim) = interaction_claim.pedersen_points_table_window_bits_9 {
         sum += *interaction_claim.claimed_sum;
     }
     if let Some(interaction_claim) = interaction_claim.poseidon_aggregator {

@@ -53,6 +53,11 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         common_lookup_elements: @CommonLookupElements,
         interaction_claim: @CairoInteractionClaim,
     ) -> BuiltinComponents {
+        assert!(
+            cairo_claim.pedersen_builtin_narrow_windows.is_none()
+                && interaction_claim.pedersen_builtin_narrow_windows.is_none(),
+        );
+
         let add_mod_builtin_component = components::add_mod_builtin::NewComponentImpl::try_new(
             cairo_claim.add_mod_builtin, interaction_claim.add_mod_builtin, common_lookup_elements,
         );
@@ -221,6 +226,10 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             cairo_claim.pedersen_builtin.is_none() && interaction_claim.pedersen_builtin.is_none(),
         );
         assert!(
+            cairo_claim.pedersen_builtin_narrow_windows.is_none()
+                && interaction_claim.pedersen_builtin_narrow_windows.is_none(),
+        );
+        assert!(
             cairo_claim.poseidon_builtin.is_none() && interaction_claim.poseidon_builtin.is_none(),
         );
 
@@ -295,6 +304,10 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         );
         assert!(
             cairo_claim.pedersen_builtin.is_none() && interaction_claim.pedersen_builtin.is_none(),
+        );
+        assert!(
+            cairo_claim.pedersen_builtin_narrow_windows.is_none()
+                && interaction_claim.pedersen_builtin_narrow_windows.is_none(),
         );
 
         let bitwise_builtin_component = components::bitwise_builtin::NewComponentImpl::try_new(

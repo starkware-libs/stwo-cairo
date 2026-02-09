@@ -291,6 +291,7 @@ fn verify_claim(claim: @CairoClaim) {
         claim.add_mod_builtin,
         claim.mul_mod_builtin,
         claim.pedersen_builtin,
+        claim.pedersen_builtin_narrow_windows,
         claim.poseidon_builtin,
         public_segments,
     );
@@ -361,9 +362,14 @@ fn verify_builtins(
     add_mod_builtin: @Option<crate::components::add_mod_builtin::Claim>,
     mul_mod_builtin: @Option<crate::components::mul_mod_builtin::Claim>,
     pedersen_builtin: @Option<crate::components::pedersen_builtin::Claim>,
+    pedersen_builtin_narrow_windows: @Option<
+        crate::components::pedersen_builtin_narrow_windows::Claim,
+    >,
     poseidon_builtin: @Option<crate::components::poseidon_builtin::Claim>,
     segment_ranges: @PublicSegmentRanges,
 ) {
+    assert!(pedersen_builtin_narrow_windows.is_none());
+
     let PublicSegmentRanges {
         ec_op: ec_op_segment_range,
         ecdsa: ecdsa_segment_range,

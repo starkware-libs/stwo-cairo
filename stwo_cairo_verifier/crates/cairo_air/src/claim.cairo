@@ -6,11 +6,12 @@ use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::utils::{OptionImpl, pack_into_qm31s};
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
 use crate::components::{
-    blake_round_sigma, memory_id_to_big, pedersen_points_table_window_bits_18, poseidon_round_keys,
-    range_check_11, range_check_12, range_check_18, range_check_20, range_check_3_3_3_3_3,
-    range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4, range_check_6,
-    range_check_7_2_5, range_check_8, range_check_9_9, verify_bitwise_xor_12, verify_bitwise_xor_4,
-    verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9,
+    blake_round_sigma, memory_id_to_big, pedersen_points_table_window_bits_18,
+    pedersen_points_table_window_bits_9, poseidon_round_keys, range_check_11, range_check_12,
+    range_check_18, range_check_20, range_check_3_3_3_3_3, range_check_3_6_6_3, range_check_4_3,
+    range_check_4_4, range_check_4_4_4_4, range_check_6, range_check_7_2_5, range_check_8,
+    range_check_9_9, verify_bitwise_xor_12, verify_bitwise_xor_4, verify_bitwise_xor_7,
+    verify_bitwise_xor_8, verify_bitwise_xor_9,
 };
 use crate::{PublicData, PublicDataImpl, RelationUsesDict};
 use super::claims::{CairoClaim, CairoInteractionClaim};
@@ -294,6 +295,13 @@ fn flatten_claim(claim: @CairoClaim) -> (Span<bool>, Span<u32>) {
         component_log_sizes.append(0_u32);
         component_enable_bits.append(false);
     }
+    if let Some(c) = claim.pedersen_builtin_narrow_windows {
+        component_log_sizes.append(*c.log_size);
+        component_enable_bits.append(true);
+    } else {
+        component_log_sizes.append(0_u32);
+        component_enable_bits.append(false);
+    }
     if let Some(c) = claim.poseidon_builtin {
         component_log_sizes.append(*c.log_size);
         component_enable_bits.append(true);
@@ -301,14 +309,14 @@ fn flatten_claim(claim: @CairoClaim) -> (Span<bool>, Span<u32>) {
         component_log_sizes.append(0_u32);
         component_enable_bits.append(false);
     }
-    if let Some(c) = claim.range_check_builtin {
+    if let Some(c) = claim.range_check96_builtin {
         component_log_sizes.append(*c.log_size);
         component_enable_bits.append(true);
     } else {
         component_log_sizes.append(0_u32);
         component_enable_bits.append(false);
     }
-    if let Some(c) = claim.range_check96_builtin {
+    if let Some(c) = claim.range_check_builtin {
         component_log_sizes.append(*c.log_size);
         component_enable_bits.append(true);
     } else {
@@ -333,6 +341,29 @@ fn flatten_claim(claim: @CairoClaim) -> (Span<bool>, Span<u32>) {
     }
     if claim.pedersen_points_table_window_bits_18.is_some() {
         component_log_sizes.append(pedersen_points_table_window_bits_18::LOG_SIZE);
+        component_enable_bits.append(true);
+    } else {
+        component_log_sizes.append(0_u32);
+        component_enable_bits.append(false);
+    }
+
+    // Pedersen narrow windowsd context
+    if let Some(c) = claim.pedersen_aggregator_window_bits_9 {
+        component_log_sizes.append(*c.log_size);
+        component_enable_bits.append(true);
+    } else {
+        component_log_sizes.append(0_u32);
+        component_enable_bits.append(false);
+    }
+    if let Some(c) = claim.partial_ec_mul_window_bits_9 {
+        component_log_sizes.append(*c.log_size);
+        component_enable_bits.append(true);
+    } else {
+        component_log_sizes.append(0_u32);
+        component_enable_bits.append(false);
+    }
+    if claim.pedersen_points_table_window_bits_9.is_some() {
+        component_log_sizes.append(pedersen_points_table_window_bits_9::LOG_SIZE);
         component_enable_bits.append(true);
     } else {
         component_log_sizes.append(0_u32);
@@ -623,17 +654,22 @@ pub fn flatten_interaction_claim(interaction_claim: @CairoInteractionClaim) -> S
     } else {
         claimed_sums.append(Zero::zero());
     }
+    if let Some(c) = interaction_claim.pedersen_builtin_narrow_windows {
+        claimed_sums.append(*c.claimed_sum);
+    } else {
+        claimed_sums.append(Zero::zero());
+    }
     if let Some(c) = interaction_claim.poseidon_builtin {
         claimed_sums.append(*c.claimed_sum);
     } else {
         claimed_sums.append(Zero::zero());
     }
-    if let Some(c) = interaction_claim.range_check_builtin {
+    if let Some(c) = interaction_claim.range_check96_builtin {
         claimed_sums.append(*c.claimed_sum);
     } else {
         claimed_sums.append(Zero::zero());
     }
-    if let Some(c) = interaction_claim.range_check96_builtin {
+    if let Some(c) = interaction_claim.range_check_builtin {
         claimed_sums.append(*c.claimed_sum);
     } else {
         claimed_sums.append(Zero::zero());
@@ -651,6 +687,23 @@ pub fn flatten_interaction_claim(interaction_claim: @CairoInteractionClaim) -> S
         claimed_sums.append(Zero::zero());
     }
     if let Some(c) = interaction_claim.pedersen_points_table_window_bits_18 {
+        claimed_sums.append(*c.claimed_sum);
+    } else {
+        claimed_sums.append(Zero::zero());
+    }
+
+    // Pedersen narrow windows context
+    if let Some(c) = interaction_claim.pedersen_aggregator_window_bits_9 {
+        claimed_sums.append(*c.claimed_sum);
+    } else {
+        claimed_sums.append(Zero::zero());
+    }
+    if let Some(c) = interaction_claim.partial_ec_mul_window_bits_9 {
+        claimed_sums.append(*c.claimed_sum);
+    } else {
+        claimed_sums.append(Zero::zero());
+    }
+    if let Some(c) = interaction_claim.pedersen_points_table_window_bits_9 {
         claimed_sums.append(*c.claimed_sum);
     } else {
         claimed_sums.append(Zero::zero());
