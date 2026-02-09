@@ -144,7 +144,7 @@ where
 
     // Prove stark.
     let span = span!(Level::INFO, "Prove STARKs").entered();
-    let proof = prove_ex::<SimdBackend, _>(&components, channel, commitment_scheme)?;
+    let proof = prove_ex::<SimdBackend, _>(&components, channel, commitment_scheme, false)?;
     span.exit();
 
     event!(name: "component_info", Level::DEBUG, "Components: {}", component_builder);

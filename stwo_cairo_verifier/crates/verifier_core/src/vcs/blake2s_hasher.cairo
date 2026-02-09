@@ -3,19 +3,10 @@ use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
 use crate::BaseField;
 use crate::fields::m31::{M31, M31Zero};
+use stwo_verifier_utils::BLAKE2S_256_INITIAL_STATE;
 use crate::vcs::hasher::MerkleHasher;
 
 const M31_ELEMENTS_IN_MSG: usize = 16;
-
-// compress(IV, 64, [b'leaf'] + [0_u32; 15])
-const LEAF_INITIAL_STATE: [u32; 8] = [
-    0x6510b1f7, 0xfd531f42, 0xcff75ec3, 0x382935d0, 0xab15dbf2, 0x950eb564, 0xe8e92866, 0x28047aca,
-];
-
-// compress(IV, 64, [b'node'] + [0_u32; 15])
-const NODE_INITIAL_STATE: [u32; 8] = [
-    0xe5cf8926, 0x841cea30, 0x7b4acada, 0xfc5d8d28, 0xfc6ef857, 0xb29da528, 0xc0d319c7, 0x8ae795c8,
-];
 
 /// State for Blake2s hash.
 type Blake2sState = Box<[u32; 8]>;
@@ -26,23 +17,29 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
     fn hash_node(
         children_hashes: Option<(Self::Hash, Self::Hash)>, mut column_values: Span<BaseField>,
     ) -> Self::Hash {
-        let mut byte_count = 64_u32;
-        let mut state = match children_hashes {
-            None => BoxImpl::new(LEAF_INITIAL_STATE),
-            Some(children_hashes) => {
-                let state = BoxImpl::new(NODE_INITIAL_STATE);
-                let (x, y) = children_hashes;
-                let msg = combine_u32_block(x.hash, y.hash);
-                byte_count += 64;
+        let mut state = BoxImpl::new(BLAKE2S_256_INITIAL_STATE);
 
-                // No column values (most common case).
-                if column_values.is_empty() {
-                    return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
-                }
+        // No column values (most common case).
+        if column_values.is_empty() {
+            let (msg, byte_count) = match children_hashes {
+                Some((x, y)) => (combine_u32_block(x.hash, y.hash), 64),
+                None => panic!("Empty nodes are not supported"),
+            };
 
-                blake2s_compress(:state, :byte_count, :msg)
-            },
-        };
+            // Note: there is no domain separation between the cases
+            // (children_hashes.is_some() && column_values.len()= K)
+            // and (children_hashes.is_none() && column_values.len() == 16 + K).
+            // This is acceptable because the verifier always knows
+            // the exact structure of the Merkle tree.
+            return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
+        }
+
+        let mut byte_count = 0_u32;
+        if let Some((x, y)) = children_hashes {
+            let msg = combine_u32_block(x.hash, y.hash);
+            byte_count = 64;
+            state = blake2s_compress(:state, :byte_count, :msg);
+        }
 
         // Special case #1: Single QM31 column (split into 4 M31 coordinates), inner FRI layer
         // decommitment phase.
