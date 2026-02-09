@@ -147,7 +147,7 @@ where
 /// Note: This function is very slow and is intended for generating the preprocessed roots when
 /// needed.
 pub fn export_preprocessed_roots() {
-    let max_log_blowup_factor = 2;
+    let max_log_blowup_factor = 5;
 
     // Blake2s roots.
     let blake_roots = get_preprocessed_roots::<Blake2sMerkleChannel>(
@@ -329,5 +329,10 @@ mod tests {
         let result = tree_trace_cells(tree_sizes);
 
         assert_eq!(result, vec![6, 24, 32]);
+    }
+
+    #[test]
+    fn test_export_preprocessed_roots() {
+        super::export_preprocessed_roots();
     }
 }

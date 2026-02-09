@@ -9,14 +9,6 @@ pub const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
     0x6B08E647, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19,
 ];
 
-const LEAF_INITIAL_STATE: [u32; 8] = [
-    0x6510b1f7, 0xfd531f42, 0xcff75ec3, 0x382935d0, 0xab15dbf2, 0x950eb564, 0xe8e92866, 0x28047aca,
-];
-
-const NODE_INITIAL_STATE: [u32; 8] = [
-    0xe5cf8926, 0x841cea30, 0x7b4acada, 0xfc5d8d28, 0xfc6ef857, 0xb29da528, 0xc0d319c7, 0x8ae795c8,
-];
-
 /// Returns the hash of the given digest and all of the memory section ids, according to their order
 /// in the memory section.
 pub fn hash_memory_section_ids(section: MemorySection, digest: [u32; 8]) -> Box<[u32; 8]> {
