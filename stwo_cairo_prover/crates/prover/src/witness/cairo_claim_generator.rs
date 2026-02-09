@@ -7,6 +7,7 @@ use cairo_air::claims::{CairoClaim, CairoInteractionClaim};
 use cairo_air::relations::CommonLookupElements;
 use indexmap::IndexSet;
 use rayon::scope;
+pub use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::builtins::BuiltinSegments;
 use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_adapter::opcodes::CasmStatesByOpcode;
@@ -16,7 +17,6 @@ use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
 };
 
 use crate::witness::components::*;
-use crate::witness::prelude::SimdBackend;
 use crate::witness::utils::TreeBuilder;
 
 #[derive(Default)]
@@ -52,6 +52,7 @@ pub struct CairoClaimGenerator {
     pub bitwise_builtin: Option<bitwise_builtin::ClaimGenerator>,
     pub mul_mod_builtin: Option<mul_mod_builtin::ClaimGenerator>,
     pub pedersen_builtin: Option<pedersen_builtin::ClaimGenerator>,
+    pub pedersen_builtin_narrow_windows: Option<pedersen_builtin_narrow_windows::ClaimGenerator>,
     pub poseidon_builtin: Option<poseidon_builtin::ClaimGenerator>,
     pub range_check96_builtin: Option<range_check96_builtin::ClaimGenerator>,
     pub range_check_builtin: Option<range_check_builtin::ClaimGenerator>,
@@ -60,6 +61,11 @@ pub struct CairoClaimGenerator {
     pub partial_ec_mul_window_bits_18: Option<partial_ec_mul_window_bits_18::ClaimGenerator>,
     pub pedersen_points_table_window_bits_18:
         Option<pedersen_points_table_window_bits_18::ClaimGenerator>,
+    pub pedersen_aggregator_window_bits_9:
+        Option<pedersen_aggregator_window_bits_9::ClaimGenerator>,
+    pub partial_ec_mul_window_bits_9: Option<partial_ec_mul_window_bits_9::ClaimGenerator>,
+    pub pedersen_points_table_window_bits_9:
+        Option<pedersen_points_table_window_bits_9::ClaimGenerator>,
     pub poseidon_aggregator: Option<poseidon_aggregator::ClaimGenerator>,
     pub poseidon_3_partial_rounds_chain: Option<poseidon_3_partial_rounds_chain::ClaimGenerator>,
     pub poseidon_full_round_chain: Option<poseidon_full_round_chain::ClaimGenerator>,
@@ -128,12 +134,16 @@ impl CairoClaimGenerator {
             bitwise_builtin: bitwise_builtin_ref,
             mul_mod_builtin: mul_mod_builtin_ref,
             pedersen_builtin: pedersen_builtin_ref,
+            pedersen_builtin_narrow_windows: pedersen_builtin_narrow_windows_ref,
             poseidon_builtin: poseidon_builtin_ref,
             range_check96_builtin: range_check96_builtin_ref,
             range_check_builtin: range_check_builtin_ref,
             pedersen_aggregator_window_bits_18: pedersen_aggregator_window_bits_18_ref,
             partial_ec_mul_window_bits_18: partial_ec_mul_window_bits_18_ref,
             pedersen_points_table_window_bits_18: pedersen_points_table_window_bits_18_ref,
+            pedersen_aggregator_window_bits_9: pedersen_aggregator_window_bits_9_ref,
+            partial_ec_mul_window_bits_9: partial_ec_mul_window_bits_9_ref,
+            pedersen_points_table_window_bits_9: pedersen_points_table_window_bits_9_ref,
             poseidon_aggregator: poseidon_aggregator_ref,
             poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_ref,
             poseidon_full_round_chain: poseidon_full_round_chain_ref,
@@ -341,14 +351,12 @@ impl CairoClaimGenerator {
             }
             if components.contains(&"add_mod_builtin") {
                 s.spawn(|_| {
-                    let segment = builtin_segments.add_mod_builtin.unwrap();
-
+                    let segment = builtin_segments.get_segment_by_name("add_mod_builtin").unwrap();
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(
                         segment_length.is_multiple_of(ADD_MOD_BUILTIN_MEMORY_CELLS),
                         "add_mod_builtin segment length is not a multiple of it's cells_per_instance"
                     );
-
                     let n_instances = segment_length / ADD_MOD_BUILTIN_MEMORY_CELLS;
                     assert!(
                         n_instances.is_power_of_two(),
@@ -359,14 +367,12 @@ impl CairoClaimGenerator {
             }
             if components.contains(&"bitwise_builtin") {
                 s.spawn(|_| {
-                    let segment = builtin_segments.bitwise_builtin.unwrap();
-
+                    let segment = builtin_segments.get_segment_by_name("bitwise_builtin").unwrap();
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(
                         segment_length.is_multiple_of(BITWISE_BUILTIN_MEMORY_CELLS),
                         "bitwise_builtin segment length is not a multiple of it's cells_per_instance"
                     );
-
                     let n_instances = segment_length / BITWISE_BUILTIN_MEMORY_CELLS;
                     assert!(
                         n_instances.is_power_of_two(),
@@ -377,14 +383,12 @@ impl CairoClaimGenerator {
             }
             if components.contains(&"mul_mod_builtin") {
                 s.spawn(|_| {
-                    let segment = builtin_segments.mul_mod_builtin.unwrap();
-
+                    let segment = builtin_segments.get_segment_by_name("mul_mod_builtin").unwrap();
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(
                         segment_length.is_multiple_of(MUL_MOD_BUILTIN_MEMORY_CELLS),
                         "mul_mod_builtin segment length is not a multiple of it's cells_per_instance"
                     );
-
                     let n_instances = segment_length / MUL_MOD_BUILTIN_MEMORY_CELLS;
                     assert!(
                         n_instances.is_power_of_two(),
@@ -395,14 +399,12 @@ impl CairoClaimGenerator {
             }
             if components.contains(&"pedersen_builtin") {
                 s.spawn(|_| {
-                    let segment = builtin_segments.pedersen_builtin.unwrap();
-
+                    let segment = builtin_segments.get_segment_by_name("pedersen_builtin").unwrap();
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(
                         segment_length.is_multiple_of(PEDERSEN_BUILTIN_MEMORY_CELLS),
                         "pedersen_builtin segment length is not a multiple of it's cells_per_instance"
                     );
-
                     let n_instances = segment_length / PEDERSEN_BUILTIN_MEMORY_CELLS;
                     assert!(
                         n_instances.is_power_of_two(),
@@ -411,16 +413,30 @@ impl CairoClaimGenerator {
                     *pedersen_builtin_ref = Some(pedersen_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32));
                 });
             }
+            if components.contains(&"pedersen_builtin_narrow_windows") {
+                s.spawn(|_| {
+                    let segment = builtin_segments.get_segment_by_name("pedersen_builtin_narrow_windows").unwrap();
+                    let segment_length = segment.stop_ptr - segment.begin_addr;
+                    assert!(
+                        segment_length.is_multiple_of(PEDERSEN_BUILTIN_NARROW_WINDOWS_MEMORY_CELLS),
+                        "pedersen_builtin_narrow_windows segment length is not a multiple of it's cells_per_instance"
+                    );
+                    let n_instances = segment_length / PEDERSEN_BUILTIN_NARROW_WINDOWS_MEMORY_CELLS;
+                    assert!(
+                        n_instances.is_power_of_two(),
+                        "pedersen_builtin_narrow_windows instances number is not a power of two"
+                    );
+                    *pedersen_builtin_narrow_windows_ref = Some(pedersen_builtin_narrow_windows::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32));
+                });
+            }
             if components.contains(&"poseidon_builtin") {
                 s.spawn(|_| {
-                    let segment = builtin_segments.poseidon_builtin.unwrap();
-
+                    let segment = builtin_segments.get_segment_by_name("poseidon_builtin").unwrap();
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(
                         segment_length.is_multiple_of(POSEIDON_BUILTIN_MEMORY_CELLS),
                         "poseidon_builtin segment length is not a multiple of it's cells_per_instance"
                     );
-
                     let n_instances = segment_length / POSEIDON_BUILTIN_MEMORY_CELLS;
                     assert!(
                         n_instances.is_power_of_two(),
@@ -431,14 +447,12 @@ impl CairoClaimGenerator {
             }
             if components.contains(&"range_check96_builtin") {
                 s.spawn(|_| {
-                    let segment = builtin_segments.range_check96_builtin.unwrap();
-
+                    let segment = builtin_segments.get_segment_by_name("range_check96_builtin").unwrap();
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(
                         segment_length.is_multiple_of(RANGE_CHECK_96_BUILTIN_MEMORY_CELLS),
                         "range_check96_builtin segment length is not a multiple of it's cells_per_instance"
                     );
-
                     let n_instances = segment_length / RANGE_CHECK_96_BUILTIN_MEMORY_CELLS;
                     assert!(
                         n_instances.is_power_of_two(),
@@ -449,14 +463,12 @@ impl CairoClaimGenerator {
             }
             if components.contains(&"range_check_builtin") {
                 s.spawn(|_| {
-                    let segment = builtin_segments.range_check_builtin.unwrap();
-
+                    let segment = builtin_segments.get_segment_by_name("range_check_builtin").unwrap();
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(
                         segment_length.is_multiple_of(RANGE_CHECK_BUILTIN_MEMORY_CELLS),
                         "range_check_builtin segment length is not a multiple of it's cells_per_instance"
                     );
-
                     let n_instances = segment_length / RANGE_CHECK_BUILTIN_MEMORY_CELLS;
                     assert!(
                         n_instances.is_power_of_two(),
@@ -481,6 +493,26 @@ impl CairoClaimGenerator {
                 s.spawn(|_| {
                     *pedersen_points_table_window_bits_18_ref =
                         Some(pedersen_points_table_window_bits_18::ClaimGenerator::new(
+                            preprocessed_trace.clone(),
+                        ));
+                });
+            }
+            if components.contains(&"pedersen_aggregator_window_bits_9") {
+                s.spawn(|_| {
+                    *pedersen_aggregator_window_bits_9_ref =
+                        Some(pedersen_aggregator_window_bits_9::ClaimGenerator::new());
+                });
+            }
+            if components.contains(&"partial_ec_mul_window_bits_9") {
+                s.spawn(|_| {
+                    *partial_ec_mul_window_bits_9_ref =
+                        Some(partial_ec_mul_window_bits_9::ClaimGenerator::new());
+                });
+            }
+            if components.contains(&"pedersen_points_table_window_bits_9") {
+                s.spawn(|_| {
+                    *pedersen_points_table_window_bits_9_ref =
+                        Some(pedersen_points_table_window_bits_9::ClaimGenerator::new(
                             preprocessed_trace.clone(),
                         ));
                 });
@@ -1119,6 +1151,20 @@ impl CairoClaimGenerator {
                 (claim, interaction_gen)
             })
             .unzip();
+        let (
+            pedersen_builtin_narrow_windows_claim,
+            pedersen_builtin_narrow_windows_interaction_gen,
+        ) = self
+            .pedersen_builtin_narrow_windows
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
+                    self.memory_address_to_id.as_ref().unwrap(),
+                    self.pedersen_aggregator_window_bits_9.as_ref().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
         let (poseidon_builtin_claim, poseidon_builtin_interaction_gen) = self
             .poseidon_builtin
             .map(|gen| {
@@ -1185,6 +1231,44 @@ impl CairoClaimGenerator {
             pedersen_points_table_window_bits_18_interaction_gen,
         ) = self
             .pedersen_points_table_window_bits_18
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace();
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (
+            pedersen_aggregator_window_bits_9_claim,
+            pedersen_aggregator_window_bits_9_interaction_gen,
+        ) = self
+            .pedersen_aggregator_window_bits_9
+            .map(|gen| {
+                let (trace, claim, interaction_gen) = gen.write_trace(
+                    self.memory_id_to_big.as_ref().unwrap(),
+                    self.range_check_8.as_ref().unwrap(),
+                    self.partial_ec_mul_window_bits_9.as_mut().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (claim, interaction_gen)
+            })
+            .unzip();
+        let (partial_ec_mul_window_bits_9_claim, partial_ec_mul_window_bits_9_interaction_gen) =
+            self.partial_ec_mul_window_bits_9
+                .map(|gen| {
+                    let (trace, claim, interaction_gen) = gen.write_trace(
+                        self.pedersen_points_table_window_bits_9.as_ref().unwrap(),
+                        self.range_check_9_9.as_ref().unwrap(),
+                        self.range_check_20.as_ref().unwrap(),
+                    );
+                    tree_builder.extend_evals(trace.to_evals());
+                    (claim, interaction_gen)
+                })
+                .unzip();
+        let (
+            pedersen_points_table_window_bits_9_claim,
+            pedersen_points_table_window_bits_9_interaction_gen,
+        ) = self
+            .pedersen_points_table_window_bits_9
             .map(|gen| {
                 let (trace, claim, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
@@ -1458,12 +1542,16 @@ impl CairoClaimGenerator {
                 bitwise_builtin: bitwise_builtin_claim,
                 mul_mod_builtin: mul_mod_builtin_claim,
                 pedersen_builtin: pedersen_builtin_claim,
+                pedersen_builtin_narrow_windows: pedersen_builtin_narrow_windows_claim,
                 poseidon_builtin: poseidon_builtin_claim,
                 range_check96_builtin: range_check96_builtin_claim,
                 range_check_builtin: range_check_builtin_claim,
                 pedersen_aggregator_window_bits_18: pedersen_aggregator_window_bits_18_claim,
                 partial_ec_mul_window_bits_18: partial_ec_mul_window_bits_18_claim,
                 pedersen_points_table_window_bits_18: pedersen_points_table_window_bits_18_claim,
+                pedersen_aggregator_window_bits_9: pedersen_aggregator_window_bits_9_claim,
+                partial_ec_mul_window_bits_9: partial_ec_mul_window_bits_9_claim,
+                pedersen_points_table_window_bits_9: pedersen_points_table_window_bits_9_claim,
                 poseidon_aggregator: poseidon_aggregator_claim,
                 poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_claim,
                 poseidon_full_round_chain: poseidon_full_round_chain_claim,
@@ -1521,6 +1609,7 @@ impl CairoClaimGenerator {
                 bitwise_builtin: bitwise_builtin_interaction_gen,
                 mul_mod_builtin: mul_mod_builtin_interaction_gen,
                 pedersen_builtin: pedersen_builtin_interaction_gen,
+                pedersen_builtin_narrow_windows: pedersen_builtin_narrow_windows_interaction_gen,
                 poseidon_builtin: poseidon_builtin_interaction_gen,
                 range_check96_builtin: range_check96_builtin_interaction_gen,
                 range_check_builtin: range_check_builtin_interaction_gen,
@@ -1529,6 +1618,11 @@ impl CairoClaimGenerator {
                 partial_ec_mul_window_bits_18: partial_ec_mul_window_bits_18_interaction_gen,
                 pedersen_points_table_window_bits_18:
                     pedersen_points_table_window_bits_18_interaction_gen,
+                pedersen_aggregator_window_bits_9:
+                    pedersen_aggregator_window_bits_9_interaction_gen,
+                partial_ec_mul_window_bits_9: partial_ec_mul_window_bits_9_interaction_gen,
+                pedersen_points_table_window_bits_9:
+                    pedersen_points_table_window_bits_9_interaction_gen,
                 poseidon_aggregator: poseidon_aggregator_interaction_gen,
                 poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_interaction_gen,
                 poseidon_full_round_chain: poseidon_full_round_chain_interaction_gen,
@@ -1592,6 +1686,8 @@ pub struct CairoInteractionClaimGenerator {
     pub bitwise_builtin: Option<bitwise_builtin::InteractionClaimGenerator>,
     pub mul_mod_builtin: Option<mul_mod_builtin::InteractionClaimGenerator>,
     pub pedersen_builtin: Option<pedersen_builtin::InteractionClaimGenerator>,
+    pub pedersen_builtin_narrow_windows:
+        Option<pedersen_builtin_narrow_windows::InteractionClaimGenerator>,
     pub poseidon_builtin: Option<poseidon_builtin::InteractionClaimGenerator>,
     pub range_check96_builtin: Option<range_check96_builtin::InteractionClaimGenerator>,
     pub range_check_builtin: Option<range_check_builtin::InteractionClaimGenerator>,
@@ -1601,6 +1697,12 @@ pub struct CairoInteractionClaimGenerator {
         Option<partial_ec_mul_window_bits_18::InteractionClaimGenerator>,
     pub pedersen_points_table_window_bits_18:
         Option<pedersen_points_table_window_bits_18::InteractionClaimGenerator>,
+    pub pedersen_aggregator_window_bits_9:
+        Option<pedersen_aggregator_window_bits_9::InteractionClaimGenerator>,
+    pub partial_ec_mul_window_bits_9:
+        Option<partial_ec_mul_window_bits_9::InteractionClaimGenerator>,
+    pub pedersen_points_table_window_bits_9:
+        Option<pedersen_points_table_window_bits_9::InteractionClaimGenerator>,
     pub poseidon_aggregator: Option<poseidon_aggregator::InteractionClaimGenerator>,
     pub poseidon_3_partial_rounds_chain:
         Option<poseidon_3_partial_rounds_chain::InteractionClaimGenerator>,
@@ -1665,12 +1767,16 @@ impl CairoInteractionClaimGenerator {
         let mut bitwise_builtin_result = None;
         let mut mul_mod_builtin_result = None;
         let mut pedersen_builtin_result = None;
+        let mut pedersen_builtin_narrow_windows_result = None;
         let mut poseidon_builtin_result = None;
         let mut range_check96_builtin_result = None;
         let mut range_check_builtin_result = None;
         let mut pedersen_aggregator_window_bits_18_result = None;
         let mut partial_ec_mul_window_bits_18_result = None;
         let mut pedersen_points_table_window_bits_18_result = None;
+        let mut pedersen_aggregator_window_bits_9_result = None;
+        let mut partial_ec_mul_window_bits_9_result = None;
+        let mut pedersen_points_table_window_bits_9_result = None;
         let mut poseidon_aggregator_result = None;
         let mut poseidon_3_partial_rounds_chain_result = None;
         let mut poseidon_full_round_chain_result = None;
@@ -1873,6 +1979,12 @@ impl CairoInteractionClaimGenerator {
                         Some(gen.write_interaction_trace(common_lookup_elements));
                 });
             }
+            if let Some(gen) = self.pedersen_builtin_narrow_windows {
+                s.spawn(|_| {
+                    pedersen_builtin_narrow_windows_result =
+                        Some(gen.write_interaction_trace(common_lookup_elements));
+                });
+            }
             if let Some(gen) = self.poseidon_builtin {
                 s.spawn(|_| {
                     poseidon_builtin_result =
@@ -1906,6 +2018,24 @@ impl CairoInteractionClaimGenerator {
             if let Some(gen) = self.pedersen_points_table_window_bits_18 {
                 s.spawn(|_| {
                     pedersen_points_table_window_bits_18_result =
+                        Some(gen.write_interaction_trace(common_lookup_elements));
+                });
+            }
+            if let Some(gen) = self.pedersen_aggregator_window_bits_9 {
+                s.spawn(|_| {
+                    pedersen_aggregator_window_bits_9_result =
+                        Some(gen.write_interaction_trace(common_lookup_elements));
+                });
+            }
+            if let Some(gen) = self.partial_ec_mul_window_bits_9 {
+                s.spawn(|_| {
+                    partial_ec_mul_window_bits_9_result =
+                        Some(gen.write_interaction_trace(common_lookup_elements));
+                });
+            }
+            if let Some(gen) = self.pedersen_points_table_window_bits_9 {
+                s.spawn(|_| {
+                    pedersen_points_table_window_bits_9_result =
                         Some(gen.write_interaction_trace(common_lookup_elements));
                 });
             }
@@ -2205,6 +2335,11 @@ impl CairoInteractionClaimGenerator {
                 tree_builder.extend_evals(trace);
                 interaction_claim
             });
+        let pedersen_builtin_narrow_windows_interaction_claim =
+            pedersen_builtin_narrow_windows_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
         let poseidon_builtin_interaction_claim =
             poseidon_builtin_result.map(|(trace, interaction_claim)| {
                 tree_builder.extend_evals(trace);
@@ -2232,6 +2367,21 @@ impl CairoInteractionClaimGenerator {
             });
         let pedersen_points_table_window_bits_18_interaction_claim =
             pedersen_points_table_window_bits_18_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let pedersen_aggregator_window_bits_9_interaction_claim =
+            pedersen_aggregator_window_bits_9_result.map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let partial_ec_mul_window_bits_9_interaction_claim = partial_ec_mul_window_bits_9_result
+            .map(|(trace, interaction_claim)| {
+                tree_builder.extend_evals(trace);
+                interaction_claim
+            });
+        let pedersen_points_table_window_bits_9_interaction_claim =
+            pedersen_points_table_window_bits_9_result.map(|(trace, interaction_claim)| {
                 tree_builder.extend_evals(trace);
                 interaction_claim
             });
@@ -2394,6 +2544,7 @@ impl CairoInteractionClaimGenerator {
             bitwise_builtin: bitwise_builtin_interaction_claim,
             mul_mod_builtin: mul_mod_builtin_interaction_claim,
             pedersen_builtin: pedersen_builtin_interaction_claim,
+            pedersen_builtin_narrow_windows: pedersen_builtin_narrow_windows_interaction_claim,
             poseidon_builtin: poseidon_builtin_interaction_claim,
             range_check96_builtin: range_check96_builtin_interaction_claim,
             range_check_builtin: range_check_builtin_interaction_claim,
@@ -2402,6 +2553,10 @@ impl CairoInteractionClaimGenerator {
             partial_ec_mul_window_bits_18: partial_ec_mul_window_bits_18_interaction_claim,
             pedersen_points_table_window_bits_18:
                 pedersen_points_table_window_bits_18_interaction_claim,
+            pedersen_aggregator_window_bits_9: pedersen_aggregator_window_bits_9_interaction_claim,
+            partial_ec_mul_window_bits_9: partial_ec_mul_window_bits_9_interaction_claim,
+            pedersen_points_table_window_bits_9:
+                pedersen_points_table_window_bits_9_interaction_claim,
             poseidon_aggregator: poseidon_aggregator_interaction_claim,
             poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_interaction_claim,
             poseidon_full_round_chain: poseidon_full_round_chain_interaction_claim,
@@ -2745,6 +2900,19 @@ pub fn get_sub_components(component_name: &str) -> Vec<&'static str> {
                 "partial_ec_mul_window_bits_18",
                 "pedersen_aggregator_window_bits_18",
                 "pedersen_builtin",
+            ]
+        }
+        "pedersen_builtin_narrow_windows" => {
+            vec![
+                "memory_address_to_id",
+                "range_check_9_9",
+                "memory_id_to_big",
+                "range_check_8",
+                "pedersen_points_table_window_bits_9",
+                "range_check_20",
+                "partial_ec_mul_window_bits_9",
+                "pedersen_aggregator_window_bits_9",
+                "pedersen_builtin_narrow_windows",
             ]
         }
         _ => panic!("Unknown component: {component_name}"),

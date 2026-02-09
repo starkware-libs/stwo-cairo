@@ -59,6 +59,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         blake_context,
         builtins,
         pedersen_context,
+        pedersen_narrow_windows_context,
         poseidon_context,
         memory_address_to_id,
         memory_id_to_value,
@@ -169,6 +170,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         add_mod_builtin,
         bitwise_builtin,
         pedersen_builtin,
+        pedersen_builtin_narrow_windows,
         poseidon_builtin,
         mul_mod_builtin,
         range_check_96_builtin,
@@ -186,6 +188,9 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     if let Some(pedersen) = pedersen_builtin {
         assert_component(pedersen, &trace);
     }
+    if let Some(pedersen_narrow_windows) = pedersen_builtin_narrow_windows {
+        assert_component(pedersen_narrow_windows, &trace);
+    }
     if let Some(poseidon) = poseidon_builtin {
         assert_component(poseidon, &trace);
     }
@@ -200,6 +205,16 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         partial_ec_mul,
         pedersen_points_table,
     }) = &pedersen_context.components
+    {
+        assert_component(pedersen_aggregator, &trace);
+        assert_component(partial_ec_mul, &trace);
+        assert_component(pedersen_points_table, &trace);
+    }
+    if let Some(cairo_air::pedersen_narrow_windows::air::Components {
+        pedersen_aggregator,
+        partial_ec_mul,
+        pedersen_points_table,
+    }) = &pedersen_narrow_windows_context.components
     {
         assert_component(pedersen_aggregator, &trace);
         assert_component(partial_ec_mul, &trace);
