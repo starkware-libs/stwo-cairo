@@ -13,6 +13,7 @@ use crate::components::{
     verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9,
 };
 use crate::utils::pack_into_secure_felts;
+use stwo::core::channel::MerkleChannel;
 
 pub struct FlatClaim {
     pub component_enable_bits: Vec<bool>,
@@ -29,7 +30,7 @@ impl FlatClaim {
         }
     }
 
-    pub fn mix_into(&self, channel: &mut impl Channel) {
+    pub fn mix_into<MC: MerkleChannel>(&self, channel: &mut MC::C) {
         channel.mix_felts(&pack_into_secure_felts(
             [self.component_enable_bits.len() as u32].into_iter(),
         ));
@@ -42,7 +43,7 @@ impl FlatClaim {
         channel.mix_felts(&pack_into_secure_felts(
             [self.public_data.public_memory.program.len() as u32].into_iter(),
         ));
-        self.public_data.mix_into(channel);
+        self.public_data.mix_into::<MC>(channel);
     }
 }
 

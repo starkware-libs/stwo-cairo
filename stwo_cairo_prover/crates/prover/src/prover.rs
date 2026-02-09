@@ -102,7 +102,7 @@ where
     let (claim, interaction_generator) = cairo_claim_generator.write_trace(&mut tree_builder);
     span.exit();
 
-    claim.mix_into(channel);
+    claim.mix_into::<MC>(channel);
     tree_builder.commit(channel);
 
     let trace_log_size = commitment_scheme

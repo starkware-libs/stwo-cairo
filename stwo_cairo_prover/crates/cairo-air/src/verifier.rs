@@ -327,7 +327,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
     // Preproccessed trace.
     commitment_scheme_verifier.commit(stark_proof.commitments[0], &log_sizes[0], channel);
 
-    claim.mix_into(channel);
+    claim.mix_into::<MC>(channel);
     commitment_scheme_verifier.commit(stark_proof.commitments[1], &log_sizes[1], channel);
 
     // Proof of work.

@@ -13,6 +13,7 @@ use crate::air::{
 use crate::claims::prelude::SecureField;
 use crate::components::*;
 use crate::relations::CommonLookupElements;
+use stwo::core::channel::MerkleChannel;
 
 #[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct CairoClaim {
@@ -81,9 +82,9 @@ pub struct CairoClaim {
 }
 
 impl CairoClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
+    pub fn mix_into<MC: MerkleChannel>(&self, channel: &mut MC::C) {
         let claim = FlatClaim::from_cairo_claim(self);
-        claim.mix_into(channel);
+        claim.mix_into::<MC>(channel);
     }
 
     pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {

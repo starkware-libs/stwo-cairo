@@ -37,6 +37,7 @@ use crate::relations::{
 use crate::utils::pack_into_secure_felts;
 use crate::verifier::RelationUse;
 use crate::PreProcessedTraceVariant;
+use stwo::core::channel::MerkleChannel;
 
 /// The canonical proof format emitted by the Cairo prover.
 ///
@@ -217,11 +218,16 @@ impl PublicData {
         inverted_values.iter().sum::<QM31>()
     }
 
-    pub fn mix_into(&self, channel: &mut impl Channel) {
+    pub fn mix_into<MC: MerkleChannel>(&self, channel: &mut MC::C) {
         let (public_claim, output_claim, program_claim) = self.pack_into_u32s();
         channel.mix_felts(&pack_into_secure_felts(public_claim.into_iter()));
-        channel.mix_felts(&pack_into_secure_felts(output_claim.into_iter()));
-        channel.mix_felts(&pack_into_secure_felts(program_claim.into_iter()));
+        let mut hasher = MC::H::default();
+        hasher.update_leaf(output_claim.iter().map(|x| M31::from_u32_unchecked(*x)).collect::<Vec<_>>().as_slice());
+        
+        MC::mix_root(channel, hasher.finalize());
+        let mut hasher = MC::H::default();
+        hasher.update_leaf(program_claim.iter().map(|x| M31::from_u32_unchecked(*x)).collect::<Vec<_>>().as_slice());
+        MC::mix_root(channel, hasher.finalize());
     }
 
     /// Converts public data to [u32], where each u32 is at most 2^31 - 1.
