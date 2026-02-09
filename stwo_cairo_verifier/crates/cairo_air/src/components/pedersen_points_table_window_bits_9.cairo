@@ -73,62 +73,118 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let column_size = m31(pow2(log_size));
         let mut pedersen_points_table_window_bits_9_sum_0: QM31 = Zero::zero();
         let seq_15 = preprocessed_mask_values.get_and_mark_used(SEQ_15_IDX);
-        let pedersen_points_0 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_0_IDX);
-        let pedersen_points_1 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_1_IDX);
-        let pedersen_points_2 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_2_IDX);
-        let pedersen_points_3 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_3_IDX);
-        let pedersen_points_4 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_4_IDX);
-        let pedersen_points_5 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_5_IDX);
-        let pedersen_points_6 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_6_IDX);
-        let pedersen_points_7 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_7_IDX);
-        let pedersen_points_8 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_8_IDX);
-        let pedersen_points_9 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_9_IDX);
-        let pedersen_points_10 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_10_IDX);
-        let pedersen_points_11 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_11_IDX);
-        let pedersen_points_12 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_12_IDX);
-        let pedersen_points_13 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_13_IDX);
-        let pedersen_points_14 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_14_IDX);
-        let pedersen_points_15 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_15_IDX);
-        let pedersen_points_16 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_16_IDX);
-        let pedersen_points_17 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_17_IDX);
-        let pedersen_points_18 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_18_IDX);
-        let pedersen_points_19 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_19_IDX);
-        let pedersen_points_20 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_20_IDX);
-        let pedersen_points_21 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_21_IDX);
-        let pedersen_points_22 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_22_IDX);
-        let pedersen_points_23 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_23_IDX);
-        let pedersen_points_24 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_24_IDX);
-        let pedersen_points_25 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_25_IDX);
-        let pedersen_points_26 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_26_IDX);
-        let pedersen_points_27 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_27_IDX);
-        let pedersen_points_28 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_28_IDX);
-        let pedersen_points_29 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_29_IDX);
-        let pedersen_points_30 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_30_IDX);
-        let pedersen_points_31 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_31_IDX);
-        let pedersen_points_32 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_32_IDX);
-        let pedersen_points_33 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_33_IDX);
-        let pedersen_points_34 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_34_IDX);
-        let pedersen_points_35 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_35_IDX);
-        let pedersen_points_36 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_36_IDX);
-        let pedersen_points_37 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_37_IDX);
-        let pedersen_points_38 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_38_IDX);
-        let pedersen_points_39 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_39_IDX);
-        let pedersen_points_40 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_40_IDX);
-        let pedersen_points_41 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_41_IDX);
-        let pedersen_points_42 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_42_IDX);
-        let pedersen_points_43 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_43_IDX);
-        let pedersen_points_44 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_44_IDX);
-        let pedersen_points_45 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_45_IDX);
-        let pedersen_points_46 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_46_IDX);
-        let pedersen_points_47 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_47_IDX);
-        let pedersen_points_48 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_48_IDX);
-        let pedersen_points_49 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_49_IDX);
-        let pedersen_points_50 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_50_IDX);
-        let pedersen_points_51 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_51_IDX);
-        let pedersen_points_52 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_52_IDX);
-        let pedersen_points_53 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_53_IDX);
-        let pedersen_points_54 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_54_IDX);
-        let pedersen_points_55 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_55_IDX);
+        let pedersen_points_small_0 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_0_IDX);
+        let pedersen_points_small_1 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_1_IDX);
+        let pedersen_points_small_2 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_2_IDX);
+        let pedersen_points_small_3 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_3_IDX);
+        let pedersen_points_small_4 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_4_IDX);
+        let pedersen_points_small_5 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_5_IDX);
+        let pedersen_points_small_6 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_6_IDX);
+        let pedersen_points_small_7 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_7_IDX);
+        let pedersen_points_small_8 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_8_IDX);
+        let pedersen_points_small_9 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_9_IDX);
+        let pedersen_points_small_10 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_10_IDX);
+        let pedersen_points_small_11 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_11_IDX);
+        let pedersen_points_small_12 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_12_IDX);
+        let pedersen_points_small_13 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_13_IDX);
+        let pedersen_points_small_14 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_14_IDX);
+        let pedersen_points_small_15 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_15_IDX);
+        let pedersen_points_small_16 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_16_IDX);
+        let pedersen_points_small_17 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_17_IDX);
+        let pedersen_points_small_18 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_18_IDX);
+        let pedersen_points_small_19 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_19_IDX);
+        let pedersen_points_small_20 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_20_IDX);
+        let pedersen_points_small_21 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_21_IDX);
+        let pedersen_points_small_22 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_22_IDX);
+        let pedersen_points_small_23 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_23_IDX);
+        let pedersen_points_small_24 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_24_IDX);
+        let pedersen_points_small_25 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_25_IDX);
+        let pedersen_points_small_26 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_26_IDX);
+        let pedersen_points_small_27 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_27_IDX);
+        let pedersen_points_small_28 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_28_IDX);
+        let pedersen_points_small_29 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_29_IDX);
+        let pedersen_points_small_30 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_30_IDX);
+        let pedersen_points_small_31 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_31_IDX);
+        let pedersen_points_small_32 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_32_IDX);
+        let pedersen_points_small_33 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_33_IDX);
+        let pedersen_points_small_34 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_34_IDX);
+        let pedersen_points_small_35 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_35_IDX);
+        let pedersen_points_small_36 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_36_IDX);
+        let pedersen_points_small_37 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_37_IDX);
+        let pedersen_points_small_38 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_38_IDX);
+        let pedersen_points_small_39 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_39_IDX);
+        let pedersen_points_small_40 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_40_IDX);
+        let pedersen_points_small_41 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_41_IDX);
+        let pedersen_points_small_42 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_42_IDX);
+        let pedersen_points_small_43 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_43_IDX);
+        let pedersen_points_small_44 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_44_IDX);
+        let pedersen_points_small_45 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_45_IDX);
+        let pedersen_points_small_46 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_46_IDX);
+        let pedersen_points_small_47 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_47_IDX);
+        let pedersen_points_small_48 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_48_IDX);
+        let pedersen_points_small_49 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_49_IDX);
+        let pedersen_points_small_50 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_50_IDX);
+        let pedersen_points_small_51 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_51_IDX);
+        let pedersen_points_small_52 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_52_IDX);
+        let pedersen_points_small_53 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_53_IDX);
+        let pedersen_points_small_54 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_54_IDX);
+        let pedersen_points_small_55 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_55_IDX);
 
         let [pedersen_points_table_window_bits_9_multiplicity]: [Span<QM31>; 1] =
             (*trace_mask_values
@@ -147,21 +203,26 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1791500038, 0, 0, 0>(), seq_15, pedersen_points_0,
-                    pedersen_points_1, pedersen_points_2, pedersen_points_3, pedersen_points_4,
-                    pedersen_points_5, pedersen_points_6, pedersen_points_7, pedersen_points_8,
-                    pedersen_points_9, pedersen_points_10, pedersen_points_11, pedersen_points_12,
-                    pedersen_points_13, pedersen_points_14, pedersen_points_15, pedersen_points_16,
-                    pedersen_points_17, pedersen_points_18, pedersen_points_19, pedersen_points_20,
-                    pedersen_points_21, pedersen_points_22, pedersen_points_23, pedersen_points_24,
-                    pedersen_points_25, pedersen_points_26, pedersen_points_27, pedersen_points_28,
-                    pedersen_points_29, pedersen_points_30, pedersen_points_31, pedersen_points_32,
-                    pedersen_points_33, pedersen_points_34, pedersen_points_35, pedersen_points_36,
-                    pedersen_points_37, pedersen_points_38, pedersen_points_39, pedersen_points_40,
-                    pedersen_points_41, pedersen_points_42, pedersen_points_43, pedersen_points_44,
-                    pedersen_points_45, pedersen_points_46, pedersen_points_47, pedersen_points_48,
-                    pedersen_points_49, pedersen_points_50, pedersen_points_51, pedersen_points_52,
-                    pedersen_points_53, pedersen_points_54, pedersen_points_55,
+                    qm31_const::<1791500038, 0, 0, 0>(), seq_15, pedersen_points_small_0,
+                    pedersen_points_small_1, pedersen_points_small_2, pedersen_points_small_3,
+                    pedersen_points_small_4, pedersen_points_small_5, pedersen_points_small_6,
+                    pedersen_points_small_7, pedersen_points_small_8, pedersen_points_small_9,
+                    pedersen_points_small_10, pedersen_points_small_11, pedersen_points_small_12,
+                    pedersen_points_small_13, pedersen_points_small_14, pedersen_points_small_15,
+                    pedersen_points_small_16, pedersen_points_small_17, pedersen_points_small_18,
+                    pedersen_points_small_19, pedersen_points_small_20, pedersen_points_small_21,
+                    pedersen_points_small_22, pedersen_points_small_23, pedersen_points_small_24,
+                    pedersen_points_small_25, pedersen_points_small_26, pedersen_points_small_27,
+                    pedersen_points_small_28, pedersen_points_small_29, pedersen_points_small_30,
+                    pedersen_points_small_31, pedersen_points_small_32, pedersen_points_small_33,
+                    pedersen_points_small_34, pedersen_points_small_35, pedersen_points_small_36,
+                    pedersen_points_small_37, pedersen_points_small_38, pedersen_points_small_39,
+                    pedersen_points_small_40, pedersen_points_small_41, pedersen_points_small_42,
+                    pedersen_points_small_43, pedersen_points_small_44, pedersen_points_small_45,
+                    pedersen_points_small_46, pedersen_points_small_47, pedersen_points_small_48,
+                    pedersen_points_small_49, pedersen_points_small_50, pedersen_points_small_51,
+                    pedersen_points_small_52, pedersen_points_small_53, pedersen_points_small_54,
+                    pedersen_points_small_55,
                 ]
                     .span(),
             );
@@ -252,283 +313,283 @@ mod tests {
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_0_IDX,
-            qm31_const::<1498683260, 701261032, 9432172, 1479828962>(),
+            PEDERSEN_POINTS_SMALL_0_IDX,
+            qm31_const::<1071331976, 281835572, 1927130496, 1936455919>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_1_IDX,
-            qm31_const::<1565792439, 835478760, 76541036, 1479828962>(),
+            PEDERSEN_POINTS_SMALL_1_IDX,
+            qm31_const::<1138441155, 416053300, 1994239360, 1936455919>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_2_IDX,
-            qm31_const::<1364464902, 432825576, 2022698091, 1479828961>(),
+            PEDERSEN_POINTS_SMALL_2_IDX,
+            qm31_const::<937113618, 13400116, 1792912768, 1936455919>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_3_IDX,
-            qm31_const::<1431574081, 567043304, 2089806955, 1479828961>(),
+            PEDERSEN_POINTS_SMALL_3_IDX,
+            qm31_const::<1004222797, 147617844, 1860021632, 1936455919>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_4_IDX,
-            qm31_const::<1767119976, 1238131944, 277867628, 1479828962>(),
+            PEDERSEN_POINTS_SMALL_4_IDX,
+            qm31_const::<1339768692, 818706484, 48082305, 1936455920>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_5_IDX,
-            qm31_const::<1834229155, 1372349672, 344976492, 1479828962>(),
+            PEDERSEN_POINTS_SMALL_5_IDX,
+            qm31_const::<1406877871, 952924212, 115191169, 1936455920>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_6_IDX,
-            qm31_const::<1632901618, 969696488, 143649900, 1479828962>(),
+            PEDERSEN_POINTS_SMALL_6_IDX,
+            qm31_const::<1205550334, 550271028, 2061348224, 1936455919>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_7_IDX,
-            qm31_const::<1700010797, 1103914216, 210758764, 1479828962>(),
+            PEDERSEN_POINTS_SMALL_7_IDX,
+            qm31_const::<1272659513, 684488756, 2128457088, 1936455919>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_8_IDX,
-            qm31_const::<961809828, 1775002855, 1620044906, 1479828961>(),
+            PEDERSEN_POINTS_SMALL_8_IDX,
+            qm31_const::<1608205408, 1355577396, 316517761, 1936455920>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_9_IDX,
-            qm31_const::<1028919007, 1909220583, 1687153770, 1479828961>(),
+            PEDERSEN_POINTS_SMALL_9_IDX,
+            qm31_const::<1675314587, 1489795124, 383626625, 1936455920>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_10_IDX,
-            qm31_const::<1362728643, 314406152, 1163211253, 1597535363>(),
+            PEDERSEN_POINTS_SMALL_10_IDX,
+            qm31_const::<943093592, 1811147488, 1730181953, 2068794068>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_11_IDX,
-            qm31_const::<1295619464, 180188424, 1096102389, 1597535363>(),
+            PEDERSEN_POINTS_SMALL_11_IDX,
+            qm31_const::<875984413, 1676929760, 1663073089, 2068794068>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_12_IDX,
-            qm31_const::<1496947001, 582841608, 1297428981, 1597535363>(),
+            PEDERSEN_POINTS_SMALL_12_IDX,
+            qm31_const::<1077311950, 2079582944, 1864399681, 2068794068>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_13_IDX,
-            qm31_const::<1429837822, 448623880, 1230320117, 1597535363>(),
+            PEDERSEN_POINTS_SMALL_13_IDX,
+            qm31_const::<1010202771, 1945365216, 1797290817, 2068794068>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_14_IDX,
-            qm31_const::<1631165359, 851277064, 1431646709, 1597535363>(),
+            PEDERSEN_POINTS_SMALL_14_IDX,
+            qm31_const::<1211530308, 200534753, 1998617410, 2068794068>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_15_IDX,
-            qm31_const::<1564056180, 717059336, 1364537845, 1597535363>(),
+            PEDERSEN_POINTS_SMALL_15_IDX,
+            qm31_const::<1144421129, 66317025, 1931508546, 2068794068>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_16_IDX,
-            qm31_const::<1765383717, 1119712520, 1565864437, 1597535363>(),
+            PEDERSEN_POINTS_SMALL_16_IDX,
+            qm31_const::<1345748666, 468970209, 2132835138, 2068794068>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_17_IDX,
-            qm31_const::<1698274538, 985494792, 1498755573, 1597535363>(),
+            PEDERSEN_POINTS_SMALL_17_IDX,
+            qm31_const::<1278639487, 334752481, 2065726274, 2068794068>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_18_IDX,
-            qm31_const::<825855211, 1388147975, 626340340, 1597535363>(),
+            PEDERSEN_POINTS_SMALL_18_IDX,
+            qm31_const::<1479967024, 737405665, 119569219, 2068794069>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_19_IDX,
-            qm31_const::<758746032, 1253930247, 559231476, 1597535363>(),
+            PEDERSEN_POINTS_SMALL_19_IDX,
+            qm31_const::<1412857845, 603187937, 52460355, 2068794069>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_20_IDX,
-            qm31_const::<1228203100, 45970516, 1028993345, 1597535303>(),
+            PEDERSEN_POINTS_SMALL_20_IDX,
+            qm31_const::<808568049, 1542711852, 1595964045, 2068794008>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_21_IDX,
-            qm31_const::<1295312279, 180188244, 1096102209, 1597535303>(),
+            PEDERSEN_POINTS_SMALL_21_IDX,
+            qm31_const::<875677228, 1676929580, 1663072909, 2068794008>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_22_IDX,
-            qm31_const::<1362421458, 314405972, 1163211073, 1597535303>(),
+            PEDERSEN_POINTS_SMALL_22_IDX,
+            qm31_const::<942786407, 1811147308, 1730181773, 2068794008>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_23_IDX,
-            qm31_const::<1429530637, 448623700, 1230319937, 1597535303>(),
+            PEDERSEN_POINTS_SMALL_23_IDX,
+            qm31_const::<1009895586, 1945365036, 1797290637, 2068794008>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_24_IDX,
-            qm31_const::<1496639816, 582841428, 1297428801, 1597535303>(),
+            PEDERSEN_POINTS_SMALL_24_IDX,
+            qm31_const::<1077004765, 2079582764, 1864399501, 2068794008>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_25_IDX,
-            qm31_const::<1563748995, 717059156, 1364537665, 1597535303>(),
+            PEDERSEN_POINTS_SMALL_25_IDX,
+            qm31_const::<1144113944, 66316845, 1931508366, 2068794008>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_26_IDX,
-            qm31_const::<1630858174, 851276884, 1431646529, 1597535303>(),
+            PEDERSEN_POINTS_SMALL_26_IDX,
+            qm31_const::<1211223123, 200534573, 1998617230, 2068794008>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_27_IDX,
-            qm31_const::<1697967353, 985494612, 1498755393, 1597535303>(),
+            PEDERSEN_POINTS_SMALL_27_IDX,
+            qm31_const::<1278332302, 334752301, 2065726094, 2068794008>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_28_IDX,
-            qm31_const::<691329668, 1119712339, 492122432, 1597535303>(),
+            PEDERSEN_POINTS_SMALL_28_IDX,
+            qm31_const::<1345441481, 468970029, 2132834958, 2068794008>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_29_IDX,
-            qm31_const::<758438847, 1253930067, 559231296, 1597535303>(),
+            PEDERSEN_POINTS_SMALL_29_IDX,
+            qm31_const::<1412550660, 603187757, 52460175, 2068794009>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_30_IDX,
-            qm31_const::<557213705, 851276943, 357904764, 1597535323>(),
+            PEDERSEN_POINTS_SMALL_30_IDX,
+            qm31_const::<137588735, 200534635, 924875468, 2068794029>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_31_IDX,
-            qm31_const::<490104526, 717059215, 290795900, 1597535323>(),
+            PEDERSEN_POINTS_SMALL_31_IDX,
+            qm31_const::<70479556, 66316907, 857766604, 2068794029>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_32_IDX,
-            qm31_const::<422995347, 582841487, 223687036, 1597535323>(),
+            PEDERSEN_POINTS_SMALL_32_IDX,
+            qm31_const::<3370377, 2079582826, 790657739, 2068794029>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_33_IDX,
-            qm31_const::<355886168, 448623759, 156578172, 1597535323>(),
+            PEDERSEN_POINTS_SMALL_33_IDX,
+            qm31_const::<2083744845, 1945365097, 723548875, 2068794029>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_34_IDX,
-            qm31_const::<825650421, 1388147855, 626340220, 1597535323>(),
+            PEDERSEN_POINTS_SMALL_34_IDX,
+            qm31_const::<406025451, 737405547, 1193310924, 2068794029>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_35_IDX,
-            qm31_const::<758541242, 1253930127, 559231356, 1597535323>(),
+            PEDERSEN_POINTS_SMALL_35_IDX,
+            qm31_const::<338916272, 603187819, 1126202060, 2068794029>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_36_IDX,
-            qm31_const::<691432063, 1119712399, 492122492, 1597535323>(),
+            PEDERSEN_POINTS_SMALL_36_IDX,
+            qm31_const::<271807093, 468970091, 1059093196, 2068794029>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_37_IDX,
-            qm31_const::<624322884, 985494671, 425013628, 1597535323>(),
+            PEDERSEN_POINTS_SMALL_37_IDX,
+            qm31_const::<204697914, 334752363, 991984332, 2068794029>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_38_IDX,
-            qm31_const::<1094087137, 1925018767, 894775676, 1597535323>(),
+            PEDERSEN_POINTS_SMALL_38_IDX,
+            qm31_const::<1748198950, 1274276457, 388004555, 2068794029>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_39_IDX,
-            qm31_const::<1026977958, 1790801039, 827666812, 1597535323>(),
+            PEDERSEN_POINTS_SMALL_39_IDX,
+            qm31_const::<1681089771, 1140058729, 320895691, 2068794029>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_40_IDX,
-            qm31_const::<1497254186, 582841788, 1297429161, 1597535423>(),
+            PEDERSEN_POINTS_SMALL_40_IDX,
+            qm31_const::<1077619135, 2079583124, 1864399861, 2068794128>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_41_IDX,
-            qm31_const::<1564363365, 717059516, 1364538025, 1597535423>(),
+            PEDERSEN_POINTS_SMALL_41_IDX,
+            qm31_const::<1144728314, 66317205, 1931508726, 2068794128>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_42_IDX,
-            qm31_const::<1363035828, 314406332, 1163211433, 1597535423>(),
+            PEDERSEN_POINTS_SMALL_42_IDX,
+            qm31_const::<943400777, 1811147668, 1730182133, 2068794128>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_43_IDX,
-            qm31_const::<1430145007, 448624060, 1230320297, 1597535423>(),
+            PEDERSEN_POINTS_SMALL_43_IDX,
+            qm31_const::<1010509956, 1945365396, 1797290997, 2068794128>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_44_IDX,
-            qm31_const::<1765690902, 1119712700, 1565864617, 1597535423>(),
+            PEDERSEN_POINTS_SMALL_44_IDX,
+            qm31_const::<1346055851, 468970389, 2132835318, 2068794128>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_45_IDX,
-            qm31_const::<1832800081, 1253930428, 1632973481, 1597535423>(),
+            PEDERSEN_POINTS_SMALL_45_IDX,
+            qm31_const::<1413165030, 603188117, 52460535, 2068794129>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_46_IDX,
-            qm31_const::<1631472544, 851277244, 1431646889, 1597535423>(),
+            PEDERSEN_POINTS_SMALL_46_IDX,
+            qm31_const::<1211837493, 200534933, 1998617590, 2068794128>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_47_IDX,
-            qm31_const::<1698581723, 985494972, 1498755753, 1597535423>(),
+            PEDERSEN_POINTS_SMALL_47_IDX,
+            qm31_const::<1278946672, 334752661, 2065726454, 2068794128>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_48_IDX,
-            qm31_const::<960380754, 1656583611, 760558248, 1597535423>(),
+            PEDERSEN_POINTS_SMALL_48_IDX,
+            qm31_const::<1614492567, 1005841301, 253787127, 2068794129>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_49_IDX,
-            qm31_const::<1027489933, 1790801339, 827667112, 1597535423>(),
+            PEDERSEN_POINTS_SMALL_49_IDX,
+            qm31_const::<1681601746, 1140059029, 320895991, 2068794129>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_50_IDX,
-            qm31_const::<826264791, 1388148215, 626340580, 1597535443>(),
+            PEDERSEN_POINTS_SMALL_50_IDX,
+            qm31_const::<406639821, 737405907, 1193311284, 2068794149>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_51_IDX,
-            qm31_const::<759155612, 1253930487, 559231716, 1597535443>(),
+            PEDERSEN_POINTS_SMALL_51_IDX,
+            qm31_const::<339530642, 603188179, 1126202420, 2068794149>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_52_IDX,
-            qm31_const::<960483149, 1656583671, 760558308, 1597535443>(),
+            PEDERSEN_POINTS_SMALL_52_IDX,
+            qm31_const::<540858179, 1005841363, 1327529012, 2068794149>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_53_IDX,
-            qm31_const::<893373970, 1522365943, 693449444, 1597535443>(),
+            PEDERSEN_POINTS_SMALL_53_IDX,
+            qm31_const::<473749000, 871623635, 1260420148, 2068794149>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_54_IDX,
-            qm31_const::<557828075, 851277303, 357905124, 1597535443>(),
+            PEDERSEN_POINTS_SMALL_54_IDX,
+            qm31_const::<138203105, 200534995, 924875828, 2068794149>(),
         );
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
-            PEDERSEN_POINTS_55_IDX,
-            qm31_const::<490718896, 717059575, 290796260, 1597535443>(),
+            PEDERSEN_POINTS_SMALL_55_IDX,
+            qm31_const::<71093926, 66317267, 857766964, 2068794149>(),
         );
 
         let mut trace_columns = [
