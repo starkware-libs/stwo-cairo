@@ -6,7 +6,7 @@ use crate::air::PublicData;
 use crate::claims::{CairoClaim, CairoInteractionClaim};
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
 use crate::components::{
-    blake_round_sigma, memory_id_to_big, pedersen_points_table_window_bits_18, poseidon_round_keys,
+    blake_round_sigma, memory_id_to_big, pedersen_points_table_window_bits_18, pedersen_points_table_window_bits_9, poseidon_round_keys,
     range_check_11, range_check_12, range_check_18, range_check_20, range_check_3_3_3_3_3,
     range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4, range_check_6,
     range_check_7_2_5, range_check_8, range_check_9_9, verify_bitwise_xor_12, verify_bitwise_xor_4,
@@ -248,6 +248,12 @@ fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
         &mut component_enable_bits,
     );
     option_log_size(
+        &claim.pedersen_builtin_narrow_windows,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
         &claim.poseidon_builtin,
         |c| c.log_size,
         &mut component_log_sizes,
@@ -282,6 +288,26 @@ fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
     option_log_size(
         &claim.pedersen_points_table_window_bits_18,
         |_| pedersen_points_table_window_bits_18::LOG_SIZE,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+
+    // Pedersen narrow windows context
+    option_log_size(
+        &claim.pedersen_aggregator_window_bits_9,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.partial_ec_mul_window_bits_9,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.pedersen_points_table_window_bits_9,
+        |_| pedersen_points_table_window_bits_9::LOG_SIZE,
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
@@ -614,6 +640,10 @@ pub fn flatten_interaction_claim(interaction_claim: &CairoInteractionClaim) -> V
         |c| c.claimed_sum,
     ));
     claimed_sums.push(option_claimed_sum(
+        &interaction_claim.pedersen_builtin_narrow_windows,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
         &interaction_claim.poseidon_builtin,
         |c| c.claimed_sum,
     ));
@@ -637,6 +667,20 @@ pub fn flatten_interaction_claim(interaction_claim: &CairoInteractionClaim) -> V
     ));
     claimed_sums.push(option_claimed_sum(
         &interaction_claim.pedersen_points_table_window_bits_18,
+        |c| c.claimed_sum,
+    ));
+
+    // Pedersen narrow windows context
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.pedersen_aggregator_window_bits_9,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.partial_ec_mul_window_bits_9,
+        |c| c.claimed_sum,
+    ));
+    claimed_sums.push(option_claimed_sum(
+        &interaction_claim.pedersen_points_table_window_bits_9,
         |c| c.claimed_sum,
     ));
 
