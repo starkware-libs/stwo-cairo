@@ -7,30 +7,13 @@ pub const LOG_SIZE: u32 = 11;
 pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
-    pub claim: Claim,
     pub common_lookup_elements: relations::CommonLookupElements,
 }
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct Claim {}
-impl Claim {
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![LOG_SIZE; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![LOG_SIZE; SECURE_EXTENSION_DEGREE];
-        TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
-    }
-
-    pub fn mix_into(&self, _channel: &mut impl Channel) {}
-}
-
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct InteractionClaim {
-    pub claimed_sum: SecureField,
-}
-impl InteractionClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_felts(&[self.claimed_sum]);
-    }
+pub fn log_sizes(log_size: u32) -> TreeVec<Vec<u32>> {
+    let trace_log_sizes = vec![log_size; N_TRACE_COLUMNS];
+    let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE];
+    TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
 }
 
 pub type Component = FrameworkComponent<Eval>;
@@ -80,7 +63,6 @@ mod tests {
     fn range_check_11_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
-            claim: Claim {},
             common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());

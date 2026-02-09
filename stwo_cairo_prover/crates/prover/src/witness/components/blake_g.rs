@@ -34,7 +34,7 @@ impl ClaimGenerator {
         verify_bitwise_xor_9_state: &verify_bitwise_xor_9::ClaimGenerator,
     ) -> (
         ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
+        u32,
         InteractionClaimGenerator,
     ) {
         assert!(!self.packed_inputs.is_empty());
@@ -75,7 +75,7 @@ impl ClaimGenerator {
 
         (
             trace,
-            Claim { log_size },
+            log_size,
             InteractionClaimGenerator {
                 n_rows,
                 log_size,
@@ -745,7 +745,7 @@ impl InteractionClaimGenerator {
         common_lookup_elements: &relations::CommonLookupElements,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
+        QM31,
     ) {
         let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
@@ -876,6 +876,6 @@ impl InteractionClaimGenerator {
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
 
-        (trace, InteractionClaim { claimed_sum })
+        (trace, claimed_sum)
     }
 }

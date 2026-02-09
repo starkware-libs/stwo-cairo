@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::iter::once;
 
-use itertools::{chain, Itertools};
+use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use stwo::core::air::Component;
 use stwo::core::channel::Channel;
@@ -13,21 +13,9 @@ use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo_cairo_common::prover_types::cpu::{CasmState, FELT252_BITS_PER_WORD, FELT252_N_WORDS};
 use stwo_cairo_common::prover_types::felt::{split, split_f252};
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
-use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
-use stwo_constraint_framework::{Relation, TraceLocationAllocator};
+use stwo_constraint_framework::Relation;
 
-use super::blake::air::BlakeContextComponents;
-use super::builtins_air::BuiltinComponents;
-use super::components::indented_component_display;
-use super::opcodes_air::OpcodeComponents;
-use super::pedersen::air::PedersenContextComponents;
-use super::poseidon::air::PoseidonContextComponents;
-use super::range_checks_air::RangeChecksComponents;
 use crate::claims::{CairoClaim, CairoInteractionClaim};
-use crate::components::{
-    memory_address_to_id, memory_id_to_big, verify_bitwise_xor_4, verify_bitwise_xor_7,
-    verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
-};
 use crate::relations::{
     self, CommonLookupElements, MEMORY_ADDRESS_TO_ID_RELATION_ID, MEMORY_ID_TO_BIG_RELATION_ID,
     OPCODES_RELATION_ID,
@@ -97,28 +85,6 @@ pub fn accumulate_relation_uses<const N: usize>(
         let prev = relation_uses.entry(relation_use.relation_id).or_insert(0);
         *prev = prev.checked_add(relation_uses_in_component).unwrap();
     }
-}
-
-pub fn accumulate_relation_memory(
-    relation_uses: &mut RelationUsesDict,
-    claim: &Option<memory_id_to_big::Claim>,
-) {
-    let memory_id_to_value = claim.as_ref().expect("memory_id_to_value must be Some");
-
-    // TODO(ShaharS): Look into the file name of memory_id_to_big.
-    // memory_id_to_value has a big value component and a small value component.
-    for log_size in &memory_id_to_value.big_log_sizes {
-        accumulate_relation_uses(
-            relation_uses,
-            memory_id_to_big::RELATION_USES_PER_ROW_BIG,
-            *log_size,
-        );
-    }
-    accumulate_relation_uses(
-        relation_uses,
-        memory_id_to_big::RELATION_USES_PER_ROW_SMALL,
-        memory_id_to_value.small_log_size,
-    );
 }
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, Default, Clone)]
@@ -227,28 +193,28 @@ impl PublicData {
         ];
         let PublicSegmentRanges {
             output: output_ranges,
-            pedersen,
-            range_check_128,
+            pedersen_builtin,
+            range_check_builtin,
             ecdsa,
-            bitwise,
+            bitwise_builtin,
             ec_op,
             keccak,
-            poseidon,
-            range_check_96,
-            add_mod,
-            mul_mod,
+            poseidon_builtin,
+            range_check96_builtin,
+            add_mod_builtin,
+            mul_mod_builtin,
         } = public_segments;
         Self::single_segment_range(Some(*output_ranges), &mut public_claim);
-        Self::single_segment_range(*pedersen, &mut public_claim);
-        Self::single_segment_range(*range_check_128, &mut public_claim);
+        Self::single_segment_range(*pedersen_builtin, &mut public_claim);
+        Self::single_segment_range(*range_check_builtin, &mut public_claim);
         Self::single_segment_range(*ecdsa, &mut public_claim);
-        Self::single_segment_range(*bitwise, &mut public_claim);
+        Self::single_segment_range(*bitwise_builtin, &mut public_claim);
         Self::single_segment_range(*ec_op, &mut public_claim);
         Self::single_segment_range(*keccak, &mut public_claim);
-        Self::single_segment_range(*poseidon, &mut public_claim);
-        Self::single_segment_range(*range_check_96, &mut public_claim);
-        Self::single_segment_range(*add_mod, &mut public_claim);
-        Self::single_segment_range(*mul_mod, &mut public_claim);
+        Self::single_segment_range(*poseidon_builtin, &mut public_claim);
+        Self::single_segment_range(*range_check96_builtin, &mut public_claim);
+        Self::single_segment_range(*add_mod_builtin, &mut public_claim);
+        Self::single_segment_range(*mul_mod_builtin, &mut public_claim);
         public_claim.extend(safe_call_ids);
         for (id, _) in output {
             public_claim.push(*id);
@@ -319,16 +285,16 @@ impl SegmentRange {
 #[derive(Clone, Debug, Serialize, Deserialize, Copy, Default)]
 pub struct PublicSegmentRanges {
     pub output: SegmentRange,
-    pub pedersen: Option<SegmentRange>,
-    pub range_check_128: Option<SegmentRange>,
+    pub pedersen_builtin: Option<SegmentRange>,
+    pub range_check_builtin: Option<SegmentRange>,
     pub ecdsa: Option<SegmentRange>,
-    pub bitwise: Option<SegmentRange>,
+    pub bitwise_builtin: Option<SegmentRange>,
     pub ec_op: Option<SegmentRange>,
     pub keccak: Option<SegmentRange>,
-    pub poseidon: Option<SegmentRange>,
-    pub range_check_96: Option<SegmentRange>,
-    pub add_mod: Option<SegmentRange>,
-    pub mul_mod: Option<SegmentRange>,
+    pub poseidon_builtin: Option<SegmentRange>,
+    pub range_check96_builtin: Option<SegmentRange>,
+    pub add_mod_builtin: Option<SegmentRange>,
+    pub mul_mod_builtin: Option<SegmentRange>,
 }
 
 /// Same as PublicSegmentRanges, but with all segments present, this serialization of the struct is
@@ -353,31 +319,31 @@ impl CairoSerialize for PublicSegmentRanges {
     fn serialize(&self, serialized: &mut Vec<starknet_ff::FieldElement>) {
         let Self {
             output,
-            pedersen,
-            range_check_128,
+            pedersen_builtin,
+            range_check_builtin,
             ecdsa,
-            bitwise,
+            bitwise_builtin,
             ec_op,
             keccak,
-            poseidon,
-            range_check_96,
-            add_mod,
-            mul_mod,
+            poseidon_builtin,
+            range_check96_builtin,
+            add_mod_builtin,
+            mul_mod_builtin,
         } = self;
 
         CairoSerialize::serialize(
             &FullSegmentRanges {
                 output: *output,
-                pedersen: pedersen.unwrap(),
-                range_check_128: range_check_128.unwrap(),
+                pedersen: pedersen_builtin.unwrap(),
+                range_check_128: range_check_builtin.unwrap(),
                 ecdsa: ecdsa.unwrap(),
-                bitwise: bitwise.unwrap(),
+                bitwise: bitwise_builtin.unwrap(),
                 ec_op: ec_op.unwrap(),
                 keccak: keccak.unwrap(),
-                poseidon: poseidon.unwrap(),
-                range_check_96: range_check_96.unwrap(),
-                add_mod: add_mod.unwrap(),
-                mul_mod: mul_mod.unwrap(),
+                poseidon: poseidon_builtin.unwrap(),
+                range_check_96: range_check96_builtin.unwrap(),
+                add_mod: add_mod_builtin.unwrap(),
+                mul_mod: mul_mod_builtin.unwrap(),
             },
             serialized,
         );
@@ -402,16 +368,16 @@ impl CairoDeserialize for PublicSegmentRanges {
 
         Self {
             output,
-            pedersen: Some(pedersen),
-            range_check_128: Some(range_check_128),
+            pedersen_builtin: Some(pedersen),
+            range_check_builtin: Some(range_check_128),
             ecdsa: Some(ecdsa),
-            bitwise: Some(bitwise),
+            bitwise_builtin: Some(bitwise),
             ec_op: Some(ec_op),
             keccak: Some(keccak),
-            poseidon: Some(poseidon),
-            range_check_96: Some(range_check_96),
-            add_mod: Some(add_mod),
-            mul_mod: Some(mul_mod),
+            poseidon_builtin: Some(poseidon),
+            range_check96_builtin: Some(range_check_96),
+            add_mod_builtin: Some(add_mod),
+            mul_mod_builtin: Some(mul_mod),
         }
     }
 }
@@ -451,29 +417,29 @@ impl PublicSegmentRanges {
     pub fn present_segments(&self) -> Vec<SegmentRange> {
         let Self {
             output,
-            pedersen,
-            range_check_128,
+            pedersen_builtin,
+            range_check_builtin,
             ecdsa,
-            bitwise,
+            bitwise_builtin,
             ec_op,
             keccak,
-            poseidon,
-            range_check_96,
-            add_mod,
-            mul_mod,
+            poseidon_builtin,
+            range_check96_builtin,
+            add_mod_builtin,
+            mul_mod_builtin,
         } = *self;
         vec![
             Some(output),
-            pedersen,
-            range_check_128,
+            pedersen_builtin,
+            range_check_builtin,
             ecdsa,
-            bitwise,
+            bitwise_builtin,
             ec_op,
             keccak,
-            poseidon,
-            range_check_96,
-            add_mod,
-            mul_mod,
+            poseidon_builtin,
+            range_check96_builtin,
+            add_mod_builtin,
+            mul_mod_builtin,
         ]
         .into_iter()
         .flatten()
@@ -521,245 +487,6 @@ impl PublicMemory {
             .chain(safe_call_iter)
             .chain(segment_ranges_iter)
             .chain(output_iter)
-    }
-}
-
-pub struct CairoComponents {
-    pub opcodes: OpcodeComponents,
-    pub verify_instruction: verify_instruction::Component,
-    pub blake_context: BlakeContextComponents,
-    pub builtins: BuiltinComponents,
-    pub pedersen_context: PedersenContextComponents,
-    pub poseidon_context: PoseidonContextComponents,
-    pub memory_address_to_id: memory_address_to_id::Component,
-    pub memory_id_to_value: (
-        Vec<memory_id_to_big::BigComponent>,
-        memory_id_to_big::SmallComponent,
-    ),
-    pub range_checks: RangeChecksComponents,
-    pub verify_bitwise_xor_4: verify_bitwise_xor_4::Component,
-    pub verify_bitwise_xor_7: verify_bitwise_xor_7::Component,
-    pub verify_bitwise_xor_8: verify_bitwise_xor_8::Component,
-    pub verify_bitwise_xor_9: verify_bitwise_xor_9::Component,
-    // ...
-}
-impl CairoComponents {
-    pub fn new(
-        cairo_claim: &CairoClaim,
-        common_lookup_elements: &CommonLookupElements,
-        interaction_claim: &CairoInteractionClaim,
-        // Describes the structure of the preprocessed trace. Sensitive to order.
-        preprocessed_column_ids: &[PreProcessedColumnId],
-    ) -> Self {
-        let tree_span_provider =
-            &mut TraceLocationAllocator::new_with_preprocessed_columns(preprocessed_column_ids);
-
-        let opcode_components = OpcodeComponents::new(
-            tree_span_provider,
-            cairo_claim,
-            common_lookup_elements,
-            interaction_claim,
-        );
-
-        let verify_instruction_component = verify_instruction::Component::new(
-            tree_span_provider,
-            verify_instruction::Eval {
-                claim: cairo_claim.verify_instruction.unwrap(),
-                common_lookup_elements: common_lookup_elements.clone(),
-            },
-            interaction_claim.verify_instruction.unwrap().claimed_sum,
-        );
-
-        let blake_context = BlakeContextComponents::new(
-            tree_span_provider,
-            cairo_claim,
-            common_lookup_elements,
-            interaction_claim,
-        );
-        let builtin_components = BuiltinComponents::new(
-            tree_span_provider,
-            cairo_claim,
-            common_lookup_elements,
-            interaction_claim,
-        );
-        let pedersen_context = PedersenContextComponents::new(
-            tree_span_provider,
-            cairo_claim,
-            common_lookup_elements,
-            interaction_claim,
-        );
-        let poseidon_context = PoseidonContextComponents::new(
-            tree_span_provider,
-            cairo_claim,
-            common_lookup_elements,
-            interaction_claim,
-        );
-        let memory_address_to_id_component = memory_address_to_id::Component::new(
-            tree_span_provider,
-            memory_address_to_id::Eval::new(
-                cairo_claim.memory_address_to_id.as_ref().unwrap(),
-                common_lookup_elements.clone(),
-            ),
-            interaction_claim.memory_address_to_id.unwrap().claimed_sum,
-        );
-
-        let memory_id_to_value_components = memory_id_to_big::big_components_from_claim(
-            &cairo_claim.memory_id_to_big.as_ref().unwrap().big_log_sizes,
-            &interaction_claim
-                .memory_id_to_big
-                .as_ref()
-                .unwrap()
-                .big_claimed_sums,
-            &common_lookup_elements.clone(),
-            tree_span_provider,
-        );
-        let small_memory_id_to_value_component = memory_id_to_big::SmallComponent::new(
-            tree_span_provider,
-            memory_id_to_big::SmallEval::new(
-                cairo_claim.memory_id_to_big.as_ref().unwrap(),
-                common_lookup_elements.clone(),
-            ),
-            interaction_claim
-                .memory_id_to_big
-                .as_ref()
-                .unwrap()
-                .small_claimed_sum,
-        );
-        let range_checks_component = RangeChecksComponents::new(
-            tree_span_provider,
-            common_lookup_elements,
-            interaction_claim,
-        );
-        let verify_bitwise_xor_4_component = verify_bitwise_xor_4::Component::new(
-            tree_span_provider,
-            verify_bitwise_xor_4::Eval {
-                claim: cairo_claim.verify_bitwise_xor_4.unwrap(),
-                common_lookup_elements: common_lookup_elements.clone(),
-            },
-            interaction_claim.verify_bitwise_xor_4.unwrap().claimed_sum,
-        );
-        let verify_bitwise_xor_7_component = verify_bitwise_xor_7::Component::new(
-            tree_span_provider,
-            verify_bitwise_xor_7::Eval {
-                claim: cairo_claim.verify_bitwise_xor_7.unwrap(),
-                common_lookup_elements: common_lookup_elements.clone(),
-            },
-            interaction_claim.verify_bitwise_xor_7.unwrap().claimed_sum,
-        );
-        let verify_bitwise_xor_8_component = verify_bitwise_xor_8::Component::new(
-            tree_span_provider,
-            verify_bitwise_xor_8::Eval {
-                claim: cairo_claim.verify_bitwise_xor_8.unwrap(),
-                common_lookup_elements: common_lookup_elements.clone(),
-            },
-            interaction_claim.verify_bitwise_xor_8.unwrap().claimed_sum,
-        );
-        let verify_bitwise_xor_9_component = verify_bitwise_xor_9::Component::new(
-            tree_span_provider,
-            verify_bitwise_xor_9::Eval {
-                claim: cairo_claim.verify_bitwise_xor_9.unwrap(),
-                common_lookup_elements: common_lookup_elements.clone(),
-            },
-            interaction_claim.verify_bitwise_xor_9.unwrap().claimed_sum,
-        );
-        Self {
-            opcodes: opcode_components,
-            verify_instruction: verify_instruction_component,
-            blake_context,
-            builtins: builtin_components,
-            pedersen_context,
-            poseidon_context,
-            memory_address_to_id: memory_address_to_id_component,
-            memory_id_to_value: (
-                memory_id_to_value_components,
-                small_memory_id_to_value_component,
-            ),
-            range_checks: range_checks_component,
-            verify_bitwise_xor_4: verify_bitwise_xor_4_component,
-            verify_bitwise_xor_7: verify_bitwise_xor_7_component,
-            verify_bitwise_xor_8: verify_bitwise_xor_8_component,
-            verify_bitwise_xor_9: verify_bitwise_xor_9_component,
-        }
-    }
-
-    pub fn components(&self) -> Vec<&dyn Component> {
-        chain!(
-            self.opcodes.components(),
-            [&self.verify_instruction as &dyn Component,],
-            self.blake_context.components(),
-            self.builtins.components(),
-            self.pedersen_context.components(),
-            self.poseidon_context.components(),
-            [&self.memory_address_to_id as &dyn Component,],
-            self.memory_id_to_value
-                .0
-                .iter()
-                .map(|component| component as &dyn Component),
-            [&self.memory_id_to_value.1 as &dyn Component,],
-            self.range_checks.components(),
-            [
-                &self.verify_bitwise_xor_4 as &dyn Component,
-                &self.verify_bitwise_xor_7 as &dyn Component,
-                &self.verify_bitwise_xor_8 as &dyn Component,
-                &self.verify_bitwise_xor_9 as &dyn Component,
-            ]
-        )
-        .collect()
-    }
-}
-
-impl std::fmt::Display for CairoComponents {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "CairoComponents")?;
-        writeln!(f, "Opcodes: {}", self.opcodes)?;
-        writeln!(
-            f,
-            "VerifyInstruction: {}",
-            indented_component_display(&self.verify_instruction)
-        )?;
-        writeln!(f, "BlakeContext: {}", self.blake_context)?;
-        writeln!(f, "Builtins: {}", self.builtins)?;
-        writeln!(f, "PedersenContext: {}", self.pedersen_context)?;
-        writeln!(f, "PoseidonContext: {}", self.poseidon_context)?;
-        writeln!(
-            f,
-            "MemoryAddressToId: {}",
-            indented_component_display(&self.memory_address_to_id)
-        )?;
-        for component in &self.memory_id_to_value.0 {
-            writeln!(
-                f,
-                "MemoryIdToValue: {}",
-                indented_component_display(component)
-            )?;
-        }
-        writeln!(
-            f,
-            "SmallMemoryIdToValue: {}",
-            indented_component_display(&self.memory_id_to_value.1)
-        )?;
-        writeln!(f, "RangeChecks: {}", self.range_checks)?;
-        writeln!(
-            f,
-            "VerifyBitwiseXor4: {}",
-            indented_component_display(&self.verify_bitwise_xor_4)
-        )?;
-        writeln!(
-            f,
-            "VerifyBitwiseXor7: {}",
-            indented_component_display(&self.verify_bitwise_xor_7)
-        )?;
-        writeln!(
-            f,
-            "VerifyBitwiseXor8: {}",
-            indented_component_display(&self.verify_bitwise_xor_8)
-        )?;
-        writeln!(
-            f,
-            "VerifyBitwiseXor9: {}",
-            indented_component_display(&self.verify_bitwise_xor_9)
-        )?;
-        Ok(())
     }
 }
 
@@ -863,7 +590,7 @@ mod tests {
                             value: 2520,
                         },
                     },
-                    pedersen: Some(SegmentRange {
+                    pedersen_builtin: Some(SegmentRange {
                         start_ptr: MemorySmallValue {
                             id: 228,
                             value: 2520,
@@ -873,7 +600,7 @@ mod tests {
                             value: 2520,
                         },
                     }),
-                    range_check_128: Some(SegmentRange {
+                    range_check_builtin: Some(SegmentRange {
                         start_ptr: MemorySmallValue {
                             id: 228,
                             value: 2520,
@@ -887,7 +614,7 @@ mod tests {
                         start_ptr: MemorySmallValue { id: 5, value: 0 },
                         stop_ptr: MemorySmallValue { id: 5, value: 0 },
                     }),
-                    bitwise: Some(SegmentRange {
+                    bitwise_builtin: Some(SegmentRange {
                         start_ptr: MemorySmallValue {
                             id: 228,
                             value: 2520,
@@ -905,7 +632,7 @@ mod tests {
                         start_ptr: MemorySmallValue { id: 5, value: 0 },
                         stop_ptr: MemorySmallValue { id: 5, value: 0 },
                     }),
-                    poseidon: Some(SegmentRange {
+                    poseidon_builtin: Some(SegmentRange {
                         start_ptr: MemorySmallValue {
                             id: 228,
                             value: 2520,
@@ -915,7 +642,7 @@ mod tests {
                             value: 2520,
                         },
                     }),
-                    range_check_96: Some(SegmentRange {
+                    range_check96_builtin: Some(SegmentRange {
                         start_ptr: MemorySmallValue {
                             id: 228,
                             value: 2520,
@@ -925,7 +652,7 @@ mod tests {
                             value: 2520,
                         },
                     }),
-                    add_mod: Some(SegmentRange {
+                    add_mod_builtin: Some(SegmentRange {
                         start_ptr: MemorySmallValue {
                             id: 228,
                             value: 2520,
@@ -935,7 +662,7 @@ mod tests {
                             value: 2520,
                         },
                     }),
-                    mul_mod: Some(SegmentRange {
+                    mul_mod_builtin: Some(SegmentRange {
                         start_ptr: MemorySmallValue {
                             id: 228,
                             value: 2520,

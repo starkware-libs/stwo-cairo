@@ -8,31 +8,14 @@ pub const N_MULT_COLUMNS: usize = 1 << (EXPAND_BITS * 2);
 pub const N_TRACE_COLUMNS: usize = N_MULT_COLUMNS;
 
 pub struct Eval {
-    pub claim: Claim,
     pub common_lookup_elements: relations::CommonLookupElements,
 }
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct Claim {}
-impl Claim {
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![LOG_SIZE; N_TRACE_COLUMNS];
-        let interaction_log_sizes =
-            vec![LOG_SIZE; SECURE_EXTENSION_DEGREE * N_MULT_COLUMNS.div_ceil(2)];
-        TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
-    }
-
-    pub fn mix_into(&self, _channel: &mut impl Channel) {}
-}
-
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct InteractionClaim {
-    pub claimed_sum: SecureField,
-}
-impl InteractionClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_felts(&[self.claimed_sum]);
-    }
+pub fn log_sizes(log_size: u32) -> TreeVec<Vec<u32>> {
+    let trace_log_sizes = vec![LOG_SIZE; N_TRACE_COLUMNS];
+    let interaction_log_sizes =
+        vec![LOG_SIZE; SECURE_EXTENSION_DEGREE * N_MULT_COLUMNS.div_ceil(2)];
+    TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
 }
 
 pub type Component = FrameworkComponent<Eval>;
@@ -96,7 +79,6 @@ mod tests {
     fn verify_bitwise_xor_12_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
-            claim: Claim {},
             common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
 

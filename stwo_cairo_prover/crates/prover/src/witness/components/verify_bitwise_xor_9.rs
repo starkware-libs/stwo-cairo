@@ -42,7 +42,7 @@ impl ClaimGenerator {
         self,
     ) -> (
         ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
+        u32,
         InteractionClaimGenerator,
     ) {
         let mults = self
@@ -53,7 +53,7 @@ impl ClaimGenerator {
 
         let (trace, lookup_data) = write_trace_simd(&self.preprocessed_trace, mults);
 
-        (trace, Claim {}, InteractionClaimGenerator { lookup_data })
+        (trace, 18, InteractionClaimGenerator { lookup_data })
     }
 
     pub fn add_input(&self, input: &InputType, relation_index: usize) {
@@ -134,7 +134,7 @@ impl InteractionClaimGenerator {
         common_lookup_elements: &relations::CommonLookupElements,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
+        QM31,
     ) {
         let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
@@ -154,6 +154,6 @@ impl InteractionClaimGenerator {
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
 
-        (trace, InteractionClaim { claimed_sum })
+        (trace, claimed_sum)
     }
 }

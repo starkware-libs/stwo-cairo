@@ -1,13 +1,10 @@
-use serde::{Deserialize, Serialize};
-use stwo::core::channel::Channel;
 use stwo::core::fields::m31::M31;
-use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
+use stwo::core::fields::qm31::SECURE_EXTENSION_DEGREE;
 use stwo::core::pcs::TreeVec;
 use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
     PreProcessedColumn, Seq, MAX_SEQUENCE_LOG_SIZE,
 };
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry};
 
 use crate::relations::{self, MEMORY_ADDRESS_TO_ID_RELATION_ID};
@@ -41,9 +38,9 @@ pub struct Eval {
     pub common_lookup_elements: relations::CommonLookupElements,
 }
 impl Eval {
-    pub fn new(claim: &Claim, common_lookup_elements: relations::CommonLookupElements) -> Self {
+    pub fn new(log_size: u32, common_lookup_elements: relations::CommonLookupElements) -> Self {
         Self {
-            log_size: claim.log_size,
+            log_size,
             common_lookup_elements,
         }
     }
@@ -79,31 +76,11 @@ impl FrameworkEval for Eval {
     }
 }
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct Claim {
-    pub log_size: u32,
-}
-impl Claim {
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes =
-            vec![self.log_size; SECURE_EXTENSION_DEGREE * MEMORY_ADDRESS_TO_ID_SPLIT.div_ceil(2)];
-        TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
-    }
-
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_u64(self.log_size as u64);
-    }
-}
-
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct InteractionClaim {
-    pub claimed_sum: SecureField,
-}
-impl InteractionClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_felts(&[self.claimed_sum]);
-    }
+pub fn log_sizes(log_size: u32) -> TreeVec<Vec<u32>> {
+    let trace_log_sizes = vec![log_size; N_TRACE_COLUMNS];
+    let interaction_log_sizes =
+        vec![log_size; SECURE_EXTENSION_DEGREE * MEMORY_ADDRESS_TO_ID_SPLIT.div_ceil(2)];
+    TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
 }
 
 #[cfg(test)]

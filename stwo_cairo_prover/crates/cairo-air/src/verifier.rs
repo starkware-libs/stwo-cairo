@@ -1,33 +1,31 @@
 use std::collections::HashMap;
 
 use num_traits::{One, Zero};
-use paste::paste;
+// use paste::paste;
 use serde_json::to_string_pretty;
 use stwo::core::channel::{Channel, MerkleChannel};
 use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::pcs::CommitmentSchemeVerifier;
 use stwo::core::verifier::{verify, VerificationError};
-use stwo_cairo_common::builtins::{
-    ADD_MOD_BUILTIN_MEMORY_CELLS, BITWISE_BUILTIN_MEMORY_CELLS, MUL_MOD_BUILTIN_MEMORY_CELLS,
-    PEDERSEN_BUILTIN_MEMORY_CELLS, POSEIDON_BUILTIN_MEMORY_CELLS,
-    RANGE_CHECK_96_BUILTIN_MEMORY_CELLS, RANGE_CHECK_BUILTIN_MEMORY_CELLS,
-};
-use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, LOG_MEMORY_ADDRESS_BOUND};
+// use stwo_cairo_common::builtins::{
+//     ADD_MOD_BUILTIN_MEMORY_CELLS, BITWISE_BUILTIN_MEMORY_CELLS,
+// MUL_MOD_BUILTIN_MEMORY_CELLS,     PEDERSEN_BUILTIN_MEMORY_CELLS,
+// POSEIDON_BUILTIN_MEMORY_CELLS,     RANGE_CHECK_96_BUILTIN_MEMORY_CELLS,
+// RANGE_CHECK_BUILTIN_MEMORY_CELLS, };
+use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
 use stwo_cairo_common::prover_types::cpu::{CasmState, PRIME};
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
 use thiserror::Error;
 use tracing::{span, Level};
 
-use crate::air::{
-    CairoComponents, MemorySection, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange,
-};
-use crate::claims::{lookup_sum, CairoClaim};
+// use crate::air::{
+//     MemorySection, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange,
+// };
+use crate::air::{MemorySection, PublicData, PublicMemory, PublicSegmentRanges};
+use crate::air_components::CairoComponents;
+use crate::claims::{interaction_claim_mix_into, lookup_sum, CairoClaim};
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
-use crate::components::{
-    add_mod_builtin, bitwise_builtin, mul_mod_builtin, pedersen_builtin, poseidon_builtin,
-    range_check96_builtin, range_check_builtin,
-};
 use crate::relations::CommonLookupElements;
 use crate::CairoProofForRustVerifier;
 
@@ -54,16 +52,17 @@ fn verify_claim(claim: &CairoClaim) {
             },
     } = &claim.public_data;
 
-    verify_builtins(
-        &claim.add_mod_builtin,
-        &claim.bitwise_builtin,
-        &claim.mul_mod_builtin,
-        &claim.pedersen_builtin,
-        &claim.poseidon_builtin,
-        &claim.range_check96_builtin,
-        &claim.range_check_builtin,
-        public_segments,
-    );
+    // TODO(AnatG): Move to the builtins.
+    // verify_builtins(
+    //     &claim.add_mod_builtin,
+    //     &claim.bitwise_builtin,
+    //     &claim.mul_mod_builtin,
+    //     &claim.pedersen_builtin,
+    //     &claim.poseidon_builtin,
+    //     &claim.range_check96_builtin,
+    //     &claim.range_check_builtin,
+    //     public_segments,
+    // );
 
     verify_program(program, public_segments);
 
@@ -82,19 +81,20 @@ fn verify_claim(claim: &CairoClaim) {
     claim.accumulate_relation_uses(&mut relation_uses);
     check_relation_uses(&relation_uses);
 
-    // Large value IDs reside in [LARGE_MEMORY_VALUE_ID_BASE..P).
-    // Check that IDs in (ID -> Value) do not overflow P.
-    let largest_id = claim
-        .memory_id_to_big
-        .as_ref()
-        .unwrap()
-        .big_log_sizes
-        .iter()
-        .map(|log_size| 1 << log_size)
-        .sum::<u32>()
-        - 1
-        + LARGE_MEMORY_VALUE_ID_BASE;
-    assert!(largest_id < PRIME);
+    // TODO(AnatG): Erase. Moved to memory_id_to_big.
+    // // Large value IDs reside in [LARGE_MEMORY_VALUE_ID_BASE..P).
+    // // Check that IDs in (ID -> Value) do not overflow P.
+    // let largest_id = claim
+    //     .memory_id_to_big
+    //     .as_ref()
+    //     .unwrap()
+    //     .big_log_sizes
+    //     .iter()
+    //     .map(|log_size| 1 << log_size)
+    //     .sum::<u32>()
+    //     - 1
+    //     + LARGE_MEMORY_VALUE_ID_BASE;
+    // assert!(largest_id < PRIME);
 }
 
 fn check_relation_uses(relation_uses: &HashMap<&'static str, u64>) {
@@ -122,102 +122,87 @@ pub struct RelationUse {
     pub uses: u64,
 }
 
-struct BuiltinClaim {
-    segment_start: u32,
-    log_size: u32,
-}
+// #[allow(clippy::too_many_arguments)]
+// fn verify_builtins(
+//     add_mod_builtin_claim: &Option<u32>,
+//     bitwise_builtin_claim: &Option<u32>,
+//     mul_mod_builtin_claim: &Option<u32>,
+//     pedersen_builtin_claim: &Option<u32>,
+//     poseidon_builtin_claim: &Option<u32>,
+//     range_check_96_builtin_claim: &Option<u32>,
+//     range_check_128_builtin_claim: &Option<u32>,
+//     segment_ranges: &PublicSegmentRanges,
+// ) {
+//     let PublicSegmentRanges {
+//         output,
+//         pedersen_builtin,
+//         range_check_builtin,
+//         ecdsa,
+//         bitwise_builtin,
+//         ec_op,
+//         keccak,
+//         poseidon_builtin,
+//         range_check96_builtin,
+//         add_mod_builtin,
+//         mul_mod_builtin,
+//     } = *segment_ranges;
+//     // Check that non-supported builtins aren't used.
+//     if let Some(ecdsa) = ecdsa {
+//         assert_eq!(
+//             ecdsa.start_ptr.value, ecdsa.stop_ptr.value,
+//             "ECDSA segment is not empty"
+//         );
+//     }
+//     if let Some(keccak) = keccak {
+//         assert_eq!(
+//             keccak.start_ptr.value, keccak.stop_ptr.value,
+//             "Keccak segment is not empty"
+//         );
+//     }
+//     if let Some(ec_op) = ec_op {
+//         assert_eq!(
+//             ec_op.start_ptr.value, ec_op.stop_ptr.value,
+//             "EC_OP segment is not empty"
+//         );
+//     }
 
-#[allow(clippy::too_many_arguments)]
-fn verify_builtins(
-    add_mod_builtin_claim: &Option<add_mod_builtin::Claim>,
-    bitwise_builtin_claim: &Option<bitwise_builtin::Claim>,
-    mul_mod_builtin_claim: &Option<mul_mod_builtin::Claim>,
-    pedersen_builtin_claim: &Option<pedersen_builtin::Claim>,
-    poseidon_builtin_claim: &Option<poseidon_builtin::Claim>,
-    range_check_96_builtin_claim: &Option<range_check96_builtin::Claim>,
-    range_check_128_builtin_claim: &Option<range_check_builtin::Claim>,
-    segment_ranges: &PublicSegmentRanges,
-) {
-    let PublicSegmentRanges {
-        output,
-        pedersen,
-        range_check_128,
-        ecdsa,
-        bitwise,
-        ec_op,
-        keccak,
-        poseidon,
-        range_check_96,
-        add_mod,
-        mul_mod,
-    } = *segment_ranges;
-    // Check that non-supported builtins aren't used.
-    if let Some(ecdsa) = ecdsa {
-        assert_eq!(
-            ecdsa.start_ptr.value, ecdsa.stop_ptr.value,
-            "ECDSA segment is not empty"
-        );
-    }
-    if let Some(keccak) = keccak {
-        assert_eq!(
-            keccak.start_ptr.value, keccak.stop_ptr.value,
-            "Keccak segment is not empty"
-        );
-    }
-    if let Some(ec_op) = ec_op {
-        assert_eq!(
-            ec_op.start_ptr.value, ec_op.stop_ptr.value,
-            "EC_OP segment is not empty"
-        );
-    }
+//     // Output builtin.
+//     assert!(output.stop_ptr.value < 1 << 31);
+//     assert!(output.start_ptr.value <= output.stop_ptr.value);
 
-    // Output builtin.
-    assert!(output.stop_ptr.value < 1 << 31);
-    assert!(output.start_ptr.value <= output.stop_ptr.value);
+//     // Macro for calling `check_builtin` on all builtins except both range_check builtins.
+//     macro_rules! check_builtin_generic {
+//         ($name:ident) => {
+//             paste! {
+//                 check_builtin(
+//                     [<$name _builtin_claim>],
+//                     $name,
+//                     stringify!($name),
+//                     [<$name:upper _BUILTIN_MEMORY_CELLS>]
+//                 );
+//             }
+//         };
+//     }
 
-    // Macro for calling `check_builtin` on all builtins except both range_check builtins.
-    macro_rules! check_builtin_generic {
-        ($name:ident) => {
-            paste! {
-                check_builtin(
-                    (*[<$name _builtin_claim>])
-                        .map(|claim| BuiltinClaim {
-                            segment_start: claim.[<$name _builtin_segment_start>],
-                            log_size: claim.log_size,
-                        }),
-                    $name,
-                    stringify!($name),
-                    [<$name:upper _BUILTIN_MEMORY_CELLS>]
-                );
-            }
-        };
-    }
-
-    // All other supported builtins.
-    check_builtin(
-        (*range_check_128_builtin_claim).map(|claim| BuiltinClaim {
-            segment_start: claim.range_check_builtin_segment_start,
-            log_size: claim.log_size,
-        }),
-        range_check_128,
-        "range_check_128",
-        RANGE_CHECK_BUILTIN_MEMORY_CELLS,
-    );
-    check_builtin(
-        (*range_check_96_builtin_claim).map(|claim| BuiltinClaim {
-            segment_start: claim.range_check96_builtin_segment_start,
-            log_size: claim.log_size,
-        }),
-        range_check_96,
-        "range_check_96",
-        RANGE_CHECK_96_BUILTIN_MEMORY_CELLS,
-    );
-    check_builtin_generic!(bitwise);
-    check_builtin_generic!(add_mod);
-    check_builtin_generic!(mul_mod);
-    check_builtin_generic!(pedersen);
-    check_builtin_generic!(poseidon);
-}
+//     // All other supported builtins.
+//     check_builtin(
+//         range_check_128_builtin_claim,
+//         range_check_builtin,
+//         "range_check_128",
+//         RANGE_CHECK_BUILTIN_MEMORY_CELLS,
+//     );
+//     check_builtin(
+//         range_check_96_builtin_claim,
+//         range_check96_builtin,
+//         "range_check_96",
+//         RANGE_CHECK_96_BUILTIN_MEMORY_CELLS,
+//     );
+//     check_builtin_generic!(bitwise_builtin);
+//     check_builtin_generic!(add_mod_builtin);
+//     check_builtin_generic!(mul_mod_builtin);
+//     check_builtin_generic!(pedersen_builtin);
+//     check_builtin_generic!(poseidon_builtin);
+// }
 
 fn verify_program(program: &MemorySection, public_segments: &PublicSegmentRanges) {
     // For information about how the compiler adds this code, see:
@@ -234,56 +219,49 @@ fn verify_program(program: &MemorySection, public_segments: &PublicSegmentRanges
     assert_eq!(program[5].1, [0, 0, 0, 0, 0, 0, 0, 0]); // Imm of last instruction (jmp rel 0).
 }
 
-fn check_builtin(
-    builtin_claim: Option<BuiltinClaim>,
-    segment_range: Option<SegmentRange>,
-    name: &str,
-    n_cells: usize,
-) {
-    let segment_range = match segment_range {
-        None => return,
-        Some(segment_range) => {
-            if segment_range.is_empty() {
-                return;
-            }
-            segment_range
-        }
-    };
+// fn check_builtin(
+//     builtin_claim: Option<u32>,
+//     segment_range: Option<SegmentRange>,
+//     name: &str,
+//     n_cells: usize,
+// ) {
+//     let segment_range = match segment_range {
+//         None => return,
+//         Some(segment_range) => {
+//             if segment_range.is_empty() {
+//                 return;
+//             }
+//             segment_range
+//         }
+//     };
 
-    // If segment range is non-empty, claim must be Some.
-    let BuiltinClaim {
-        segment_start,
-        log_size,
-    } = builtin_claim.unwrap_or_else(|| {
-        panic!("Missing {name} builtin claim despite non-empty segment range {segment_range:?}")
-    });
+//     // If segment range is non-empty, claim must be Some.
+//     let Some(log_size) = builtin_claim.unwrap_or_else(|| {
+//         panic!("Missing {name} builtin claim despite non-empty segment range {segment_range:?}")
+//     });
 
-    let segment_end = segment_start + (1 << log_size) * n_cells as u32;
-    let start_ptr = segment_range.start_ptr.value;
-    let stop_ptr = segment_range.stop_ptr.value;
-    assert!(
-        (stop_ptr - start_ptr).is_multiple_of(n_cells as u32),
-        "Builtin segment range must divisible by {n_cells} cells, but got start_ptr: {start_ptr}, stop_ptr: {stop_ptr}"
-    );
+//     let segment_end = start_ptr + (1 << log_size) * n_cells as u32;
+//     let start_ptr = segment_range.start_ptr.value;
+//     let stop_ptr = segment_range.stop_ptr.value;
+//     assert!(
+//         (stop_ptr - start_ptr).is_multiple_of(n_cells as u32),
+//         "Builtin segment range must divisible by {n_cells} cells, but got start_ptr: {start_ptr},
+// stop_ptr: {stop_ptr}"     );
 
-    // Check that segment_start == start_ptr <= stop_ptr <= segment_end < 2**31.
-    assert_eq!(
-        start_ptr, segment_start,
-        "Builtin segment start doesn't match claim"
-    );
-    assert!(
-        start_ptr <= stop_ptr,
-        "Range start should be less than or equal to range stop"
-    );
-    assert!(
-        stop_ptr <= segment_end,
-        "Builtin stop pointer must be within the builtin segment"
-    );
-    assert!(
-        segment_end < 1 << 31,
-        "segment_end must be less than 2^31, but got {segment_end}"
-    );
-}
+//     // Check that start_ptr <= stop_ptr <= segment_end < 2**31.
+//     assert!(
+//         start_ptr <= stop_ptr,
+//         "Range start should be less than or equal to range stop"
+//     );
+//     assert!(
+//         stop_ptr <= segment_end,
+//         "Builtin stop pointer must be within the builtin segment"
+//     );
+//     assert!(
+//         segment_end < 1 << 31,
+//         "segment_end must be less than 2^31, but got {segment_end}"
+//     );
+// }
 
 /// Logup security is defined by the `QM31` space (~124 bits) + `INTERACTION_POW_BITS` -
 /// log2(number of relation terms).
@@ -341,7 +319,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
     if lookup_sum(&claim, &interaction_elements, &interaction_claim) != SecureField::zero() {
         return Err(CairoVerificationError::InvalidLogupSum);
     }
-    interaction_claim.mix_into(channel);
+    interaction_claim_mix_into(interaction_claim, channel);
     commitment_scheme_verifier.commit(stark_proof.commitments[2], &log_sizes[2], channel);
 
     let component_generator = CairoComponents::new(

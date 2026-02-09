@@ -4,6 +4,7 @@ use std::sync::Arc;
 
 use cairo_air::air::PublicData;
 use cairo_air::claims::{CairoClaim, CairoInteractionClaim};
+use cairo_air::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
 use cairo_air::relations::CommonLookupElements;
 use indexmap::IndexSet;
 use rayon::scope;
@@ -658,6 +659,7 @@ impl CairoClaimGenerator {
         mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
     ) -> (CairoClaim, CairoInteractionClaimGenerator) {
+        let mut components_log_sizes = vec![];
         let mut add_opcode_result = None;
         let mut add_opcode_small_result = None;
         let mut add_ap_opcode_result = None;
@@ -876,152 +878,166 @@ impl CairoClaimGenerator {
             });
         });
 
-        let (add_opcode_claim, add_opcode_interaction_gen) = add_opcode_result
-            .map(|(trace, claim, interaction_gen)| {
+        let (log_size, add_opcode_interaction_gen) = add_opcode_result
+            .map(|(trace, log_size, interaction_gen)| {
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (add_opcode_small_claim, add_opcode_small_interaction_gen) = add_opcode_small_result
-            .map(|(trace, claim, interaction_gen)| {
+        components_log_sizes.push(log_size);
+        let (log_size, add_opcode_small_interaction_gen) = add_opcode_small_result
+            .map(|(trace, log_size, interaction_gen)| {
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (add_ap_opcode_claim, add_ap_opcode_interaction_gen) = add_ap_opcode_result
-            .map(|(trace, claim, interaction_gen)| {
+        components_log_sizes.push(log_size);
+        let (log_size, add_ap_opcode_interaction_gen) = add_ap_opcode_result
+            .map(|(trace, log_size, interaction_gen)| {
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (assert_eq_opcode_claim, assert_eq_opcode_interaction_gen) = assert_eq_opcode_result
-            .map(|(trace, claim, interaction_gen)| {
+        components_log_sizes.push(log_size);
+        let (log_size, assert_eq_opcode_interaction_gen) = assert_eq_opcode_result
+            .map(|(trace, log_size, interaction_gen)| {
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (assert_eq_opcode_imm_claim, assert_eq_opcode_imm_interaction_gen) =
-            assert_eq_opcode_imm_result
-                .map(|(trace, claim, interaction_gen)| {
-                    tree_builder.extend_evals(trace.to_evals());
-                    (claim, interaction_gen)
-                })
-                .unzip();
-        let (assert_eq_opcode_double_deref_claim, assert_eq_opcode_double_deref_interaction_gen) =
+        components_log_sizes.push(log_size);
+        let (log_size, assert_eq_opcode_imm_interaction_gen) = assert_eq_opcode_imm_result
+            .map(|(trace, log_size, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (log_size, interaction_gen)
+            })
+            .unzip();
+        components_log_sizes.push(log_size);
+        let (log_size, assert_eq_opcode_double_deref_interaction_gen) =
             assert_eq_opcode_double_deref_result
-                .map(|(trace, claim, interaction_gen)| {
+                .map(|(trace, log_size, interaction_gen)| {
                     tree_builder.extend_evals(trace.to_evals());
-                    (claim, interaction_gen)
+                    (log_size, interaction_gen)
                 })
                 .unzip();
-        let (blake_compress_opcode_claim, blake_compress_opcode_interaction_gen) =
-            blake_compress_opcode_result
-                .map(|(trace, claim, interaction_gen)| {
-                    tree_builder.extend_evals(trace.to_evals());
-                    (claim, interaction_gen)
-                })
-                .unzip();
-        let (call_opcode_abs_claim, call_opcode_abs_interaction_gen) = call_opcode_abs_result
-            .map(|(trace, claim, interaction_gen)| {
+        components_log_sizes.push(log_size);
+        let (log_size, blake_compress_opcode_interaction_gen) = blake_compress_opcode_result
+            .map(|(trace, log_size, interaction_gen)| {
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (call_opcode_rel_imm_claim, call_opcode_rel_imm_interaction_gen) =
-            call_opcode_rel_imm_result
-                .map(|(trace, claim, interaction_gen)| {
-                    tree_builder.extend_evals(trace.to_evals());
-                    (claim, interaction_gen)
-                })
-                .unzip();
-        let (generic_opcode_claim, generic_opcode_interaction_gen) = generic_opcode_result
-            .map(|(trace, claim, interaction_gen)| {
+        components_log_sizes.push(log_size);
+        let (log_size, call_opcode_abs_interaction_gen) = call_opcode_abs_result
+            .map(|(trace, log_size, interaction_gen)| {
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (jnz_opcode_non_taken_claim, jnz_opcode_non_taken_interaction_gen) =
-            jnz_opcode_non_taken_result
-                .map(|(trace, claim, interaction_gen)| {
-                    tree_builder.extend_evals(trace.to_evals());
-                    (claim, interaction_gen)
-                })
-                .unzip();
-        let (jnz_opcode_taken_claim, jnz_opcode_taken_interaction_gen) = jnz_opcode_taken_result
-            .map(|(trace, claim, interaction_gen)| {
+        components_log_sizes.push(log_size);
+        let (log_size, call_opcode_rel_imm_interaction_gen) = call_opcode_rel_imm_result
+            .map(|(trace, log_size, interaction_gen)| {
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (jump_opcode_abs_claim, jump_opcode_abs_interaction_gen) = jump_opcode_abs_result
-            .map(|(trace, claim, interaction_gen)| {
+        components_log_sizes.push(log_size);
+        let (log_size, generic_opcode_interaction_gen) = generic_opcode_result
+            .map(|(trace, log_size, interaction_gen)| {
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (jump_opcode_double_deref_claim, jump_opcode_double_deref_interaction_gen) =
-            jump_opcode_double_deref_result
-                .map(|(trace, claim, interaction_gen)| {
-                    tree_builder.extend_evals(trace.to_evals());
-                    (claim, interaction_gen)
-                })
-                .unzip();
-        let (jump_opcode_rel_claim, jump_opcode_rel_interaction_gen) = jump_opcode_rel_result
-            .map(|(trace, claim, interaction_gen)| {
+        components_log_sizes.push(log_size);
+        let (log_size, jnz_opcode_non_taken_interaction_gen) = jnz_opcode_non_taken_result
+            .map(|(trace, log_size, interaction_gen)| {
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (jump_opcode_rel_imm_claim, jump_opcode_rel_imm_interaction_gen) =
-            jump_opcode_rel_imm_result
-                .map(|(trace, claim, interaction_gen)| {
-                    tree_builder.extend_evals(trace.to_evals());
-                    (claim, interaction_gen)
-                })
-                .unzip();
-        let (mul_opcode_claim, mul_opcode_interaction_gen) = mul_opcode_result
-            .map(|(trace, claim, interaction_gen)| {
+        components_log_sizes.push(log_size);
+        let (log_size, jnz_opcode_taken_interaction_gen) = jnz_opcode_taken_result
+            .map(|(trace, log_size, interaction_gen)| {
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (mul_opcode_small_claim, mul_opcode_small_interaction_gen) = mul_opcode_small_result
-            .map(|(trace, claim, interaction_gen)| {
+        components_log_sizes.push(log_size);
+        let (log_size, jump_opcode_abs_interaction_gen) = jump_opcode_abs_result
+            .map(|(trace, log_size, interaction_gen)| {
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (qm_31_add_mul_opcode_claim, qm_31_add_mul_opcode_interaction_gen) =
-            qm_31_add_mul_opcode_result
-                .map(|(trace, claim, interaction_gen)| {
-                    tree_builder.extend_evals(trace.to_evals());
-                    (claim, interaction_gen)
-                })
-                .unzip();
-        let (ret_opcode_claim, ret_opcode_interaction_gen) = ret_opcode_result
-            .map(|(trace, claim, interaction_gen)| {
+        components_log_sizes.push(log_size);
+        let (log_size, jump_opcode_double_deref_interaction_gen) = jump_opcode_double_deref_result
+            .map(|(trace, log_size, interaction_gen)| {
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
+        components_log_sizes.push(log_size);
+        let (log_size, jump_opcode_rel_interaction_gen) = jump_opcode_rel_result
+            .map(|(trace, log_size, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (log_size, interaction_gen)
+            })
+            .unzip();
+        components_log_sizes.push(log_size);
+        let (log_size, jump_opcode_rel_imm_interaction_gen) = jump_opcode_rel_imm_result
+            .map(|(trace, log_size, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (log_size, interaction_gen)
+            })
+            .unzip();
+        components_log_sizes.push(log_size);
+        let (log_size, mul_opcode_interaction_gen) = mul_opcode_result
+            .map(|(trace, log_size, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (log_size, interaction_gen)
+            })
+            .unzip();
+        components_log_sizes.push(log_size);
+        let (log_size, mul_opcode_small_interaction_gen) = mul_opcode_small_result
+            .map(|(trace, log_size, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (log_size, interaction_gen)
+            })
+            .unzip();
+        components_log_sizes.push(log_size);
+        let (log_size, qm_31_add_mul_opcode_interaction_gen) = qm_31_add_mul_opcode_result
+            .map(|(trace, log_size, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (log_size, interaction_gen)
+            })
+            .unzip();
+        components_log_sizes.push(log_size);
+        let (log_size, ret_opcode_interaction_gen) = ret_opcode_result
+            .map(|(trace, log_size, interaction_gen)| {
+                tree_builder.extend_evals(trace.to_evals());
+                (log_size, interaction_gen)
+            })
+            .unzip();
+        components_log_sizes.push(log_size);
 
-        let (verify_instruction_claim, verify_instruction_interaction_gen) = self
+        let (log_size, verify_instruction_interaction_gen) = self
             .verify_instruction
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+                let (trace, log_size, interaction_gen) = gen.write_trace(
                     self.range_check_7_2_5.as_ref().unwrap(),
                     self.range_check_4_3.as_ref().unwrap(),
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.memory_id_to_big.as_ref().unwrap(),
                 );
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (blake_round_claim, blake_round_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, blake_round_interaction_gen) = self
             .blake_round
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+                let (trace, log_size, interaction_gen) = gen.write_trace(
                     self.blake_round_sigma.as_ref().unwrap(),
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.memory_id_to_big.as_ref().unwrap(),
@@ -1029,13 +1045,14 @@ impl CairoClaimGenerator {
                     self.blake_g.as_mut().unwrap(),
                 );
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (blake_g_claim, blake_g_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, blake_g_interaction_gen) = self
             .blake_g
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+                let (trace, log_size, interaction_gen) = gen.write_trace(
                     self.verify_bitwise_xor_8.as_ref().unwrap(),
                     self.verify_bitwise_xor_12.as_ref().unwrap(),
                     self.verify_bitwise_xor_4.as_ref().unwrap(),
@@ -1043,62 +1060,68 @@ impl CairoClaimGenerator {
                     self.verify_bitwise_xor_9.as_ref().unwrap(),
                 );
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (blake_round_sigma_claim, blake_round_sigma_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, blake_round_sigma_interaction_gen) = self
             .blake_round_sigma
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (triple_xor_32_claim, triple_xor_32_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, triple_xor_32_interaction_gen) = self
             .triple_xor_32
             .map(|gen| {
-                let (trace, claim, interaction_gen) =
+                let (trace, log_size, interaction_gen) =
                     gen.write_trace(self.verify_bitwise_xor_8.as_ref().unwrap());
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (verify_bitwise_xor_12_claim, verify_bitwise_xor_12_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, verify_bitwise_xor_12_interaction_gen) = self
             .verify_bitwise_xor_12
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace);
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (add_mod_builtin_claim, add_mod_builtin_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, add_mod_builtin_interaction_gen) = self
             .add_mod_builtin
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+                let (trace, log_size, interaction_gen) = gen.write_trace(
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.memory_id_to_big.as_ref().unwrap(),
                 );
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (bitwise_builtin_claim, bitwise_builtin_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, bitwise_builtin_interaction_gen) = self
             .bitwise_builtin
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+                let (trace, log_size, interaction_gen) = gen.write_trace(
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.memory_id_to_big.as_ref().unwrap(),
                     self.verify_bitwise_xor_9.as_ref().unwrap(),
                     self.verify_bitwise_xor_8.as_ref().unwrap(),
                 );
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (mul_mod_builtin_claim, mul_mod_builtin_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, mul_mod_builtin_interaction_gen) = self
             .mul_mod_builtin
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+                let (trace, log_size, interaction_gen) = gen.write_trace(
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.memory_id_to_big.as_ref().unwrap(),
                     self.range_check_12.as_ref().unwrap(),
@@ -1106,96 +1129,98 @@ impl CairoClaimGenerator {
                     self.range_check_18.as_ref().unwrap(),
                 );
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (pedersen_builtin_claim, pedersen_builtin_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, pedersen_builtin_interaction_gen) = self
             .pedersen_builtin
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+                let (trace, log_size, interaction_gen) = gen.write_trace(
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.pedersen_aggregator_window_bits_18.as_ref().unwrap(),
                 );
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (poseidon_builtin_claim, poseidon_builtin_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, poseidon_builtin_interaction_gen) = self
             .poseidon_builtin
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+                let (trace, log_size, interaction_gen) = gen.write_trace(
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.poseidon_aggregator.as_ref().unwrap(),
                 );
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (range_check96_builtin_claim, range_check96_builtin_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, range_check96_builtin_interaction_gen) = self
             .range_check96_builtin
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+                let (trace, log_size, interaction_gen) = gen.write_trace(
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.memory_id_to_big.as_ref().unwrap(),
                     self.range_check_6.as_ref().unwrap(),
                 );
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (range_check_builtin_claim, range_check_builtin_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, range_check_builtin_interaction_gen) = self
             .range_check_builtin
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+                let (trace, log_size, interaction_gen) = gen.write_trace(
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.memory_id_to_big.as_ref().unwrap(),
                 );
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (
-            pedersen_aggregator_window_bits_18_claim,
-            pedersen_aggregator_window_bits_18_interaction_gen,
-        ) = self
+        components_log_sizes.push(log_size);
+        let (log_size, pedersen_aggregator_window_bits_18_interaction_gen) = self
             .pedersen_aggregator_window_bits_18
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+                let (trace, log_size, interaction_gen) = gen.write_trace(
                     self.memory_id_to_big.as_ref().unwrap(),
                     self.range_check_8.as_ref().unwrap(),
                     self.partial_ec_mul_window_bits_18.as_mut().unwrap(),
                 );
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (partial_ec_mul_window_bits_18_claim, partial_ec_mul_window_bits_18_interaction_gen) =
-            self.partial_ec_mul_window_bits_18
-                .map(|gen| {
-                    let (trace, claim, interaction_gen) = gen.write_trace(
-                        self.pedersen_points_table_window_bits_18.as_ref().unwrap(),
-                        self.range_check_9_9.as_ref().unwrap(),
-                        self.range_check_20.as_ref().unwrap(),
-                    );
-                    tree_builder.extend_evals(trace.to_evals());
-                    (claim, interaction_gen)
-                })
-                .unzip();
-        let (
-            pedersen_points_table_window_bits_18_claim,
-            pedersen_points_table_window_bits_18_interaction_gen,
-        ) = self
+        components_log_sizes.push(log_size);
+        let (log_size, partial_ec_mul_window_bits_18_interaction_gen) = self
+            .partial_ec_mul_window_bits_18
+            .map(|gen| {
+                let (trace, log_size, interaction_gen) = gen.write_trace(
+                    self.pedersen_points_table_window_bits_18.as_ref().unwrap(),
+                    self.range_check_9_9.as_ref().unwrap(),
+                    self.range_check_20.as_ref().unwrap(),
+                );
+                tree_builder.extend_evals(trace.to_evals());
+                (log_size, interaction_gen)
+            })
+            .unzip();
+        components_log_sizes.push(log_size);
+        let (log_size, pedersen_points_table_window_bits_18_interaction_gen) = self
             .pedersen_points_table_window_bits_18
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (poseidon_aggregator_claim, poseidon_aggregator_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, poseidon_aggregator_interaction_gen) = self
             .poseidon_aggregator
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+                let (trace, log_size, interaction_gen) = gen.write_trace(
                     self.memory_id_to_big.as_ref().unwrap(),
                     self.poseidon_full_round_chain.as_mut().unwrap(),
                     self.range_check_252_width_27.as_mut().unwrap(),
@@ -1206,16 +1231,14 @@ impl CairoClaimGenerator {
                     self.poseidon_3_partial_rounds_chain.as_mut().unwrap(),
                 );
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (
-            poseidon_3_partial_rounds_chain_claim,
-            poseidon_3_partial_rounds_chain_interaction_gen,
-        ) = self
+        components_log_sizes.push(log_size);
+        let (log_size, poseidon_3_partial_rounds_chain_interaction_gen) = self
             .poseidon_3_partial_rounds_chain
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+                let (trace, log_size, interaction_gen) = gen.write_trace(
                     self.poseidon_round_keys.as_ref().unwrap(),
                     self.cube_252.as_mut().unwrap(),
                     self.range_check_4_4_4_4.as_ref().unwrap(),
@@ -1223,60 +1246,66 @@ impl CairoClaimGenerator {
                     self.range_check_252_width_27.as_mut().unwrap(),
                 );
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (poseidon_full_round_chain_claim, poseidon_full_round_chain_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, poseidon_full_round_chain_interaction_gen) = self
             .poseidon_full_round_chain
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+                let (trace, log_size, interaction_gen) = gen.write_trace(
                     self.cube_252.as_mut().unwrap(),
                     self.poseidon_round_keys.as_ref().unwrap(),
                     self.range_check_3_3_3_3_3.as_ref().unwrap(),
                 );
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (cube_252_claim, cube_252_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, cube_252_interaction_gen) = self
             .cube_252
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+                let (trace, log_size, interaction_gen) = gen.write_trace(
                     self.range_check_9_9.as_ref().unwrap(),
                     self.range_check_20.as_ref().unwrap(),
                 );
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (poseidon_round_keys_claim, poseidon_round_keys_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, poseidon_round_keys_interaction_gen) = self
             .poseidon_round_keys
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (range_check_252_width_27_claim, range_check_252_width_27_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, range_check_252_width_27_interaction_gen) = self
             .range_check_252_width_27
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+                let (trace, log_size, interaction_gen) = gen.write_trace(
                     self.range_check_9_9.as_ref().unwrap(),
                     self.range_check_18.as_ref().unwrap(),
                 );
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (memory_address_to_id_claim, memory_address_to_id_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, memory_address_to_id_interaction_gen) = self
             .memory_address_to_id
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace);
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (memory_id_to_big_claim, memory_id_to_big_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (claim, memory_id_to_big_interaction_gen) = self
             .memory_id_to_big
             .map(|gen| {
                 const LOG_MAX_BIG_SIZE: u32 = MAX_SEQUENCE_LOG_SIZE;
@@ -1289,207 +1318,176 @@ impl CairoClaimGenerator {
                 (claim, interaction_gen)
             })
             .unzip();
-        let (range_check_6_claim, range_check_6_interaction_gen) = self
+        let memory_id_to_big::Claim {
+            big_log_sizes,
+            small_log_size,
+        } = claim.as_ref().unwrap();
+        assert!(big_log_sizes.len() <= MEMORY_ADDRESS_TO_ID_SPLIT);
+        for log_size in big_log_sizes {
+            components_log_sizes.push(Some(*log_size));
+        }
+        for _ in 0..(MEMORY_ADDRESS_TO_ID_SPLIT - big_log_sizes.len()) {
+            components_log_sizes.push(None);
+        }
+        components_log_sizes.push(Some(*small_log_size));
+        let (log_size, range_check_6_interaction_gen) = self
             .range_check_6
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (range_check_8_claim, range_check_8_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, range_check_8_interaction_gen) = self
             .range_check_8
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (range_check_11_claim, range_check_11_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, range_check_11_interaction_gen) = self
             .range_check_11
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (range_check_12_claim, range_check_12_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, range_check_12_interaction_gen) = self
             .range_check_12
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (range_check_18_claim, range_check_18_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, range_check_18_interaction_gen) = self
             .range_check_18
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (range_check_20_claim, range_check_20_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, range_check_20_interaction_gen) = self
             .range_check_20
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (range_check_4_3_claim, range_check_4_3_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, range_check_4_3_interaction_gen) = self
             .range_check_4_3
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (range_check_4_4_claim, range_check_4_4_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, range_check_4_4_interaction_gen) = self
             .range_check_4_4
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (range_check_9_9_claim, range_check_9_9_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, range_check_9_9_interaction_gen) = self
             .range_check_9_9
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (range_check_7_2_5_claim, range_check_7_2_5_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, range_check_7_2_5_interaction_gen) = self
             .range_check_7_2_5
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (range_check_3_6_6_3_claim, range_check_3_6_6_3_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, range_check_3_6_6_3_interaction_gen) = self
             .range_check_3_6_6_3
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (range_check_4_4_4_4_claim, range_check_4_4_4_4_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, range_check_4_4_4_4_interaction_gen) = self
             .range_check_4_4_4_4
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (range_check_3_3_3_3_3_claim, range_check_3_3_3_3_3_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, range_check_3_3_3_3_3_interaction_gen) = self
             .range_check_3_3_3_3_3
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (verify_bitwise_xor_4_claim, verify_bitwise_xor_4_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, verify_bitwise_xor_4_interaction_gen) = self
             .verify_bitwise_xor_4
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (verify_bitwise_xor_7_claim, verify_bitwise_xor_7_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, verify_bitwise_xor_7_interaction_gen) = self
             .verify_bitwise_xor_7
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (verify_bitwise_xor_8_claim, verify_bitwise_xor_8_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, verify_bitwise_xor_8_interaction_gen) = self
             .verify_bitwise_xor_8
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
-        let (verify_bitwise_xor_9_claim, verify_bitwise_xor_9_interaction_gen) = self
+        components_log_sizes.push(log_size);
+        let (log_size, verify_bitwise_xor_9_interaction_gen) = self
             .verify_bitwise_xor_9
             .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+                let (trace, log_size, interaction_gen) = gen.write_trace();
                 tree_builder.extend_evals(trace.to_evals());
-                (claim, interaction_gen)
+                (log_size, interaction_gen)
             })
             .unzip();
+        components_log_sizes.push(log_size);
 
         (
             CairoClaim {
                 public_data: self.public_data,
-                add_opcode: add_opcode_claim,
-                add_opcode_small: add_opcode_small_claim,
-                add_ap_opcode: add_ap_opcode_claim,
-                assert_eq_opcode: assert_eq_opcode_claim,
-                assert_eq_opcode_imm: assert_eq_opcode_imm_claim,
-                assert_eq_opcode_double_deref: assert_eq_opcode_double_deref_claim,
-                blake_compress_opcode: blake_compress_opcode_claim,
-                call_opcode_abs: call_opcode_abs_claim,
-                call_opcode_rel_imm: call_opcode_rel_imm_claim,
-                generic_opcode: generic_opcode_claim,
-                jnz_opcode_non_taken: jnz_opcode_non_taken_claim,
-                jnz_opcode_taken: jnz_opcode_taken_claim,
-                jump_opcode_abs: jump_opcode_abs_claim,
-                jump_opcode_double_deref: jump_opcode_double_deref_claim,
-                jump_opcode_rel: jump_opcode_rel_claim,
-                jump_opcode_rel_imm: jump_opcode_rel_imm_claim,
-                mul_opcode: mul_opcode_claim,
-                mul_opcode_small: mul_opcode_small_claim,
-                qm_31_add_mul_opcode: qm_31_add_mul_opcode_claim,
-                ret_opcode: ret_opcode_claim,
-                verify_instruction: verify_instruction_claim,
-                blake_round: blake_round_claim,
-                blake_g: blake_g_claim,
-                blake_round_sigma: blake_round_sigma_claim,
-                triple_xor_32: triple_xor_32_claim,
-                verify_bitwise_xor_12: verify_bitwise_xor_12_claim,
-                add_mod_builtin: add_mod_builtin_claim,
-                bitwise_builtin: bitwise_builtin_claim,
-                mul_mod_builtin: mul_mod_builtin_claim,
-                pedersen_builtin: pedersen_builtin_claim,
-                poseidon_builtin: poseidon_builtin_claim,
-                range_check96_builtin: range_check96_builtin_claim,
-                range_check_builtin: range_check_builtin_claim,
-                pedersen_aggregator_window_bits_18: pedersen_aggregator_window_bits_18_claim,
-                partial_ec_mul_window_bits_18: partial_ec_mul_window_bits_18_claim,
-                pedersen_points_table_window_bits_18: pedersen_points_table_window_bits_18_claim,
-                poseidon_aggregator: poseidon_aggregator_claim,
-                poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_claim,
-                poseidon_full_round_chain: poseidon_full_round_chain_claim,
-                cube_252: cube_252_claim,
-                poseidon_round_keys: poseidon_round_keys_claim,
-                range_check_252_width_27: range_check_252_width_27_claim,
-                memory_address_to_id: memory_address_to_id_claim,
-                memory_id_to_big: memory_id_to_big_claim,
-                range_check_6: range_check_6_claim,
-                range_check_8: range_check_8_claim,
-                range_check_11: range_check_11_claim,
-                range_check_12: range_check_12_claim,
-                range_check_18: range_check_18_claim,
-                range_check_20: range_check_20_claim,
-                range_check_4_3: range_check_4_3_claim,
-                range_check_4_4: range_check_4_4_claim,
-                range_check_9_9: range_check_9_9_claim,
-                range_check_7_2_5: range_check_7_2_5_claim,
-                range_check_3_6_6_3: range_check_3_6_6_3_claim,
-                range_check_4_4_4_4: range_check_4_4_4_4_claim,
-                range_check_3_3_3_3_3: range_check_3_3_3_3_3_claim,
-                verify_bitwise_xor_4: verify_bitwise_xor_4_claim,
-                verify_bitwise_xor_7: verify_bitwise_xor_7_claim,
-                verify_bitwise_xor_8: verify_bitwise_xor_8_claim,
-                verify_bitwise_xor_9: verify_bitwise_xor_9_claim,
+                components_log_sizes,
             },
             CairoInteractionClaimGenerator {
                 add_opcode: add_opcode_interaction_gen,
@@ -1635,7 +1633,8 @@ impl CairoInteractionClaimGenerator {
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
-    ) -> CairoInteractionClaim {
+    ) -> Vec<Option<SecureField>> {
+        let mut claimed_sums = vec![];
         let mut add_opcode_result = None;
         let mut add_opcode_small_result = None;
         let mut add_ap_opcode_result = None;
@@ -2006,446 +2005,332 @@ impl CairoInteractionClaimGenerator {
             });
         });
 
-        let (_, add_opcode_interaction_claim) = add_opcode_result
-            .map(|(trace, interaction_claim)| {
+        let claimed_sum = add_opcode_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = add_opcode_small_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = add_ap_opcode_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = assert_eq_opcode_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = assert_eq_opcode_imm_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = assert_eq_opcode_double_deref_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = blake_compress_opcode_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = call_opcode_abs_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = call_opcode_rel_imm_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = generic_opcode_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = jnz_opcode_non_taken_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = jnz_opcode_taken_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = jump_opcode_abs_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = jump_opcode_double_deref_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = jump_opcode_rel_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = jump_opcode_rel_imm_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = mul_opcode_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = mul_opcode_small_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = qm_31_add_mul_opcode_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = ret_opcode_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = verify_instruction_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = blake_round_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = blake_g_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = blake_round_sigma_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = triple_xor_32_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = verify_bitwise_xor_12_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = add_mod_builtin_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = bitwise_builtin_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = mul_mod_builtin_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = pedersen_builtin_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = poseidon_builtin_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = range_check96_builtin_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = range_check_builtin_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum =
+            pedersen_aggregator_window_bits_18_result.map(|(trace, interaction_claim)| {
                 tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, add_opcode_small_interaction_claim) = add_opcode_small_result
-            .map(|(trace, interaction_claim)| {
+                interaction_claim
+            });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = partial_ec_mul_window_bits_18_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum =
+            pedersen_points_table_window_bits_18_result.map(|(trace, interaction_claim)| {
                 tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, add_ap_opcode_interaction_claim) = add_ap_opcode_result
-            .map(|(trace, interaction_claim)| {
+                interaction_claim
+            });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = poseidon_aggregator_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum =
+            poseidon_3_partial_rounds_chain_result.map(|(trace, interaction_claim)| {
                 tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, assert_eq_opcode_interaction_claim) = assert_eq_opcode_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, assert_eq_opcode_imm_interaction_claim) = assert_eq_opcode_imm_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, assert_eq_opcode_double_deref_interaction_claim) =
-            assert_eq_opcode_double_deref_result
-                .map(|(trace, interaction_claim)| {
-                    tree_builder.extend_evals(trace);
-                    ((), interaction_claim)
-                })
-                .unzip();
-        let (_, blake_compress_opcode_interaction_claim) = blake_compress_opcode_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, call_opcode_abs_interaction_claim) = call_opcode_abs_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, call_opcode_rel_imm_interaction_claim) = call_opcode_rel_imm_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, generic_opcode_interaction_claim) = generic_opcode_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, jnz_opcode_non_taken_interaction_claim) = jnz_opcode_non_taken_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, jnz_opcode_taken_interaction_claim) = jnz_opcode_taken_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, jump_opcode_abs_interaction_claim) = jump_opcode_abs_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, jump_opcode_double_deref_interaction_claim) = jump_opcode_double_deref_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, jump_opcode_rel_interaction_claim) = jump_opcode_rel_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, jump_opcode_rel_imm_interaction_claim) = jump_opcode_rel_imm_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, mul_opcode_interaction_claim) = mul_opcode_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, mul_opcode_small_interaction_claim) = mul_opcode_small_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, qm_31_add_mul_opcode_interaction_claim) = qm_31_add_mul_opcode_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, ret_opcode_interaction_claim) = ret_opcode_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, verify_instruction_interaction_claim) = verify_instruction_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, blake_round_interaction_claim) = blake_round_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, blake_g_interaction_claim) = blake_g_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, blake_round_sigma_interaction_claim) = blake_round_sigma_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, triple_xor_32_interaction_claim) = triple_xor_32_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, verify_bitwise_xor_12_interaction_claim) = verify_bitwise_xor_12_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, add_mod_builtin_interaction_claim) = add_mod_builtin_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, bitwise_builtin_interaction_claim) = bitwise_builtin_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, mul_mod_builtin_interaction_claim) = mul_mod_builtin_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, pedersen_builtin_interaction_claim) = pedersen_builtin_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, poseidon_builtin_interaction_claim) = poseidon_builtin_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, range_check96_builtin_interaction_claim) = range_check96_builtin_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, range_check_builtin_interaction_claim) = range_check_builtin_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, pedersen_aggregator_window_bits_18_interaction_claim) =
-            pedersen_aggregator_window_bits_18_result
-                .map(|(trace, interaction_claim)| {
-                    tree_builder.extend_evals(trace);
-                    ((), interaction_claim)
-                })
-                .unzip();
-        let (_, partial_ec_mul_window_bits_18_interaction_claim) =
-            partial_ec_mul_window_bits_18_result
-                .map(|(trace, interaction_claim)| {
-                    tree_builder.extend_evals(trace);
-                    ((), interaction_claim)
-                })
-                .unzip();
-        let (_, pedersen_points_table_window_bits_18_interaction_claim) =
-            pedersen_points_table_window_bits_18_result
-                .map(|(trace, interaction_claim)| {
-                    tree_builder.extend_evals(trace);
-                    ((), interaction_claim)
-                })
-                .unzip();
-        let (_, poseidon_aggregator_interaction_claim) = poseidon_aggregator_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, poseidon_3_partial_rounds_chain_interaction_claim) =
-            poseidon_3_partial_rounds_chain_result
-                .map(|(trace, interaction_claim)| {
-                    tree_builder.extend_evals(trace);
-                    ((), interaction_claim)
-                })
-                .unzip();
-        let (_, poseidon_full_round_chain_interaction_claim) = poseidon_full_round_chain_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, cube_252_interaction_claim) = cube_252_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, poseidon_round_keys_interaction_claim) = poseidon_round_keys_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, range_check_252_width_27_interaction_claim) = range_check_252_width_27_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, memory_address_to_id_interaction_claim) = memory_address_to_id_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, memory_id_to_big_interaction_claim) = memory_id_to_big_result
-            .map(|(big_traces, small_trace, interaction_claim)| {
+                interaction_claim
+            });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = poseidon_full_round_chain_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = cube_252_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = poseidon_round_keys_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = range_check_252_width_27_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = memory_address_to_id_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let interaction_claim =
+            memory_id_to_big_result.map(|(big_traces, small_trace, interaction_claim)| {
                 for big_trace in big_traces {
                     tree_builder.extend_evals(big_trace);
                 }
                 tree_builder.extend_evals(small_trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, range_check_6_interaction_claim) = range_check_6_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, range_check_8_interaction_claim) = range_check_8_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, range_check_11_interaction_claim) = range_check_11_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, range_check_12_interaction_claim) = range_check_12_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, range_check_18_interaction_claim) = range_check_18_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, range_check_20_interaction_claim) = range_check_20_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, range_check_4_3_interaction_claim) = range_check_4_3_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, range_check_4_4_interaction_claim) = range_check_4_4_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, range_check_9_9_interaction_claim) = range_check_9_9_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, range_check_7_2_5_interaction_claim) = range_check_7_2_5_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, range_check_3_6_6_3_interaction_claim) = range_check_3_6_6_3_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, range_check_4_4_4_4_interaction_claim) = range_check_4_4_4_4_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, range_check_3_3_3_3_3_interaction_claim) = range_check_3_3_3_3_3_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, verify_bitwise_xor_4_interaction_claim) = verify_bitwise_xor_4_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, verify_bitwise_xor_7_interaction_claim) = verify_bitwise_xor_7_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, verify_bitwise_xor_8_interaction_claim) = verify_bitwise_xor_8_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-        let (_, verify_bitwise_xor_9_interaction_claim) = verify_bitwise_xor_9_result
-            .map(|(trace, interaction_claim)| {
-                tree_builder.extend_evals(trace);
-                ((), interaction_claim)
-            })
-            .unzip();
-
-        CairoInteractionClaim {
-            add_opcode: add_opcode_interaction_claim,
-            add_opcode_small: add_opcode_small_interaction_claim,
-            add_ap_opcode: add_ap_opcode_interaction_claim,
-            assert_eq_opcode: assert_eq_opcode_interaction_claim,
-            assert_eq_opcode_imm: assert_eq_opcode_imm_interaction_claim,
-            assert_eq_opcode_double_deref: assert_eq_opcode_double_deref_interaction_claim,
-            blake_compress_opcode: blake_compress_opcode_interaction_claim,
-            call_opcode_abs: call_opcode_abs_interaction_claim,
-            call_opcode_rel_imm: call_opcode_rel_imm_interaction_claim,
-            generic_opcode: generic_opcode_interaction_claim,
-            jnz_opcode_non_taken: jnz_opcode_non_taken_interaction_claim,
-            jnz_opcode_taken: jnz_opcode_taken_interaction_claim,
-            jump_opcode_abs: jump_opcode_abs_interaction_claim,
-            jump_opcode_double_deref: jump_opcode_double_deref_interaction_claim,
-            jump_opcode_rel: jump_opcode_rel_interaction_claim,
-            jump_opcode_rel_imm: jump_opcode_rel_imm_interaction_claim,
-            mul_opcode: mul_opcode_interaction_claim,
-            mul_opcode_small: mul_opcode_small_interaction_claim,
-            qm_31_add_mul_opcode: qm_31_add_mul_opcode_interaction_claim,
-            ret_opcode: ret_opcode_interaction_claim,
-            verify_instruction: verify_instruction_interaction_claim,
-            blake_round: blake_round_interaction_claim,
-            blake_g: blake_g_interaction_claim,
-            blake_round_sigma: blake_round_sigma_interaction_claim,
-            triple_xor_32: triple_xor_32_interaction_claim,
-            verify_bitwise_xor_12: verify_bitwise_xor_12_interaction_claim,
-            add_mod_builtin: add_mod_builtin_interaction_claim,
-            bitwise_builtin: bitwise_builtin_interaction_claim,
-            mul_mod_builtin: mul_mod_builtin_interaction_claim,
-            pedersen_builtin: pedersen_builtin_interaction_claim,
-            poseidon_builtin: poseidon_builtin_interaction_claim,
-            range_check96_builtin: range_check96_builtin_interaction_claim,
-            range_check_builtin: range_check_builtin_interaction_claim,
-            pedersen_aggregator_window_bits_18:
-                pedersen_aggregator_window_bits_18_interaction_claim,
-            partial_ec_mul_window_bits_18: partial_ec_mul_window_bits_18_interaction_claim,
-            pedersen_points_table_window_bits_18:
-                pedersen_points_table_window_bits_18_interaction_claim,
-            poseidon_aggregator: poseidon_aggregator_interaction_claim,
-            poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_interaction_claim,
-            poseidon_full_round_chain: poseidon_full_round_chain_interaction_claim,
-            cube_252: cube_252_interaction_claim,
-            poseidon_round_keys: poseidon_round_keys_interaction_claim,
-            range_check_252_width_27: range_check_252_width_27_interaction_claim,
-            memory_address_to_id: memory_address_to_id_interaction_claim,
-            memory_id_to_big: memory_id_to_big_interaction_claim,
-            range_check_6: range_check_6_interaction_claim,
-            range_check_8: range_check_8_interaction_claim,
-            range_check_11: range_check_11_interaction_claim,
-            range_check_12: range_check_12_interaction_claim,
-            range_check_18: range_check_18_interaction_claim,
-            range_check_20: range_check_20_interaction_claim,
-            range_check_4_3: range_check_4_3_interaction_claim,
-            range_check_4_4: range_check_4_4_interaction_claim,
-            range_check_9_9: range_check_9_9_interaction_claim,
-            range_check_7_2_5: range_check_7_2_5_interaction_claim,
-            range_check_3_6_6_3: range_check_3_6_6_3_interaction_claim,
-            range_check_4_4_4_4: range_check_4_4_4_4_interaction_claim,
-            range_check_3_3_3_3_3: range_check_3_3_3_3_3_interaction_claim,
-            verify_bitwise_xor_4: verify_bitwise_xor_4_interaction_claim,
-            verify_bitwise_xor_7: verify_bitwise_xor_7_interaction_claim,
-            verify_bitwise_xor_8: verify_bitwise_xor_8_interaction_claim,
-            verify_bitwise_xor_9: verify_bitwise_xor_9_interaction_claim,
+                interaction_claim
+            });
+        let memory_id_to_big::InteractionClaim {
+            big_claimed_sums,
+            small_claimed_sum,
+            claimed_sum: _,
+        } = interaction_claim;
+        assert!(big_claimed_sums.len() <= MEMORY_ADDRESS_TO_ID_SPLIT);
+        for claimed_sum in big_claimed_sums {
+            claimed_sums.push(Some(*claimed_sum));
         }
+        for _ in 0..(MEMORY_ADDRESS_TO_ID_SPLIT - big_claimed_sums.len()) {
+            claimed_sums.push(None);
+        }
+        claimed_sums.push(Some(*small_claimed_sum));
+        let claimed_sum = range_check_6_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = range_check_8_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = range_check_11_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = range_check_12_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = range_check_18_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = range_check_20_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = range_check_4_3_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = range_check_4_4_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = range_check_9_9_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = range_check_7_2_5_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = range_check_3_6_6_3_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = range_check_4_4_4_4_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = range_check_3_3_3_3_3_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = verify_bitwise_xor_4_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = verify_bitwise_xor_7_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = verify_bitwise_xor_8_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+        let claimed_sum = verify_bitwise_xor_9_result.map(|(trace, interaction_claim)| {
+            tree_builder.extend_evals(trace);
+            interaction_claim
+        });
+        claimed_sums.push(claimed_sum);
+
+        claimed_sums
     }
 }
 pub fn get_sub_components(component_name: &str) -> Vec<&'static str> {

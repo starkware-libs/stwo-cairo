@@ -11,6 +11,7 @@ use cairo_air::relations::{self, MEMORY_ADDRESS_TO_ID_RELATION_ID};
 use itertools::{izip, Itertools};
 use rayon::iter::{IndexedParallelIterator, IntoParallelIterator, ParallelIterator};
 use stwo::core::fields::m31::{BaseField, M31};
+use stwo::core::fields::qm31::QM31;
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::prover::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
 use stwo::prover::backend::simd::qm31::PackedQM31;
@@ -123,7 +124,7 @@ impl ClaimGenerator {
         mut self,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>>,
-        Claim,
+        u32,
         InteractionClaimGenerator,
     ) {
         let size = std::cmp::max(
@@ -173,7 +174,7 @@ impl ClaimGenerator {
 
         (
             trace,
-            Claim { log_size },
+            log_size,
             InteractionClaimGenerator {
                 ids,
                 multiplicities,
@@ -192,7 +193,7 @@ impl InteractionClaimGenerator {
         common_lookup_elements: &relations::CommonLookupElements,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
+        QM31,
     ) {
         let packed_size = self.ids[0].len();
         let log_size = packed_size.ilog2() + LOG_N_LANES;
@@ -227,7 +228,7 @@ impl InteractionClaimGenerator {
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
 
-        (trace, InteractionClaim { claimed_sum })
+        (trace, claimed_sum)
     }
 }
 

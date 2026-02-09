@@ -49,16 +49,16 @@ fn extract_public_segments(
 
     PublicSegmentRanges {
         output: next().unwrap(),
-        pedersen: next(),
-        range_check_128: next(),
+        pedersen_builtin: next(),
+        range_check_builtin: next(),
         ecdsa: next(),
-        bitwise: next(),
+        bitwise_builtin: next(),
         ec_op: next(),
         keccak: next(),
-        poseidon: next(),
-        range_check_96: next(),
-        add_mod: next(),
-        mul_mod: next(),
+        poseidon_builtin: next(),
+        range_check96_builtin: next(),
+        add_mod_builtin: next(),
+        mul_mod_builtin: next(),
     }
 }
 

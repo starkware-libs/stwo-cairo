@@ -29,7 +29,7 @@ impl ClaimGenerator {
 range_check_9_9_state: &range_check_9_9::ClaimGenerator,
 range_check_20_state: &range_check_20::ClaimGenerator,
 
-    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator)
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, u32, InteractionClaimGenerator)
     {
         assert!(!self.packed_inputs.is_empty());
         let n_vec_rows = self.packed_inputs.len();
@@ -42,14 +42,13 @@ range_check_20_state: &range_check_20::ClaimGenerator,
             write_trace_simd(self.packed_inputs,n_rows,range_check_8_state,range_check_9_9_state,range_check_20_state,);
         for inputs in sub_component_inputs.range_check_8 {range_check_8_state.add_packed_inputs(&inputs, 0);};for inputs in sub_component_inputs.range_check_9_9 {range_check_9_9_state.add_packed_inputs(&inputs, 0);};for inputs in sub_component_inputs.range_check_9_9_b {range_check_9_9_state.add_packed_inputs(&inputs, 1);};for inputs in sub_component_inputs.range_check_9_9_c {range_check_9_9_state.add_packed_inputs(&inputs, 2);};for inputs in sub_component_inputs.range_check_9_9_d {range_check_9_9_state.add_packed_inputs(&inputs, 3);};for inputs in sub_component_inputs.range_check_9_9_e {range_check_9_9_state.add_packed_inputs(&inputs, 4);};for inputs in sub_component_inputs.range_check_9_9_f {range_check_9_9_state.add_packed_inputs(&inputs, 5);};for inputs in sub_component_inputs.range_check_9_9_g {range_check_9_9_state.add_packed_inputs(&inputs, 6);};for inputs in sub_component_inputs.range_check_9_9_h {range_check_9_9_state.add_packed_inputs(&inputs, 7);};for inputs in sub_component_inputs.range_check_20 {range_check_20_state.add_packed_inputs(&inputs, 0);};for inputs in sub_component_inputs.range_check_20_b {range_check_20_state.add_packed_inputs(&inputs, 1);};for inputs in sub_component_inputs.range_check_20_c {range_check_20_state.add_packed_inputs(&inputs, 2);};for inputs in sub_component_inputs.range_check_20_d {range_check_20_state.add_packed_inputs(&inputs, 3);};for inputs in sub_component_inputs.range_check_20_e {range_check_20_state.add_packed_inputs(&inputs, 4);};for inputs in sub_component_inputs.range_check_20_f {range_check_20_state.add_packed_inputs(&inputs, 5);};for inputs in sub_component_inputs.range_check_20_g {range_check_20_state.add_packed_inputs(&inputs, 6);};for inputs in sub_component_inputs.range_check_20_h {range_check_20_state.add_packed_inputs(&inputs, 7);};
 
-        (trace,
-        Claim {
+        (
+            trace,
             log_size,
-        },
-        InteractionClaimGenerator {
-            n_rows,log_size,
-            lookup_data,
-        },
+            InteractionClaimGenerator {
+                n_rows,log_size,
+                lookup_data,
+            },
         )
     }
 
@@ -1687,7 +1686,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements
-    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim)
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, QM31)
     {
         let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
@@ -3579,8 +3578,6 @@ let mut col_gen = logup_gen.new_col();
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
 
-        (trace, InteractionClaim {
-            claimed_sum,
-        },)
+        (trace, claimed_sum)
     }
 }

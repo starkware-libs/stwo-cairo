@@ -6,7 +6,7 @@ use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
 use stwo::core::pcs::TreeVec;
 use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, N_M31_IN_SMALL_FELT252};
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{PreProcessedColumn, Seq};
-use stwo_cairo_common::prover_types::cpu::FELT252_N_WORDS;
+use stwo_cairo_common::prover_types::cpu::{FELT252_N_WORDS, PRIME};
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::{
     relation, EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry, TraceLocationAllocator,
@@ -246,6 +246,13 @@ pub fn big_components_from_claim(
         ));
         offset += 1 << log_size;
     }
+
+    // Large value IDs reside in [LARGE_MEMORY_VALUE_ID_BASE..P).
+    // Check that IDs in (ID -> Value) do not overflow P.
+    let largest_id = log_sizes.iter().map(|log_size| 1 << log_size).sum::<u32>() - 1
+        + LARGE_MEMORY_VALUE_ID_BASE;
+    assert!(largest_id < PRIME);
+
     components
 }
 
@@ -254,9 +261,9 @@ pub struct SmallEval {
     pub common_lookup_elements: relations::CommonLookupElements,
 }
 impl SmallEval {
-    pub fn new(claim: &Claim, common_lookup_elements: relations::CommonLookupElements) -> Self {
+    pub fn new(log_n_rows: u32, common_lookup_elements: relations::CommonLookupElements) -> Self {
         Self {
-            log_n_rows: claim.small_log_size,
+            log_n_rows,
             common_lookup_elements,
         }
     }

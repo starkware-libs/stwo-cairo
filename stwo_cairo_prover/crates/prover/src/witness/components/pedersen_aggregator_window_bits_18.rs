@@ -32,7 +32,7 @@ impl ClaimGenerator {
         partial_ec_mul_window_bits_18_state: &mut partial_ec_mul_window_bits_18::ClaimGenerator,
     ) -> (
         ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
+        u32,
         InteractionClaimGenerator,
     ) {
         let mut inputs_mults = self
@@ -75,7 +75,7 @@ impl ClaimGenerator {
 
         (
             trace,
-            Claim { log_size },
+            log_size,
             InteractionClaimGenerator {
                 log_size,
                 lookup_data,
@@ -568,7 +568,7 @@ impl InteractionClaimGenerator {
         common_lookup_elements: &relations::CommonLookupElements,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
+        QM31,
     ) {
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
@@ -660,6 +660,6 @@ impl InteractionClaimGenerator {
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
 
-        (trace, InteractionClaim { claimed_sum })
+        (trace, claimed_sum)
     }
 }

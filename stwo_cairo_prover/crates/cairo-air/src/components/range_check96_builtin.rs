@@ -20,43 +20,22 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 3] = [
 ];
 
 pub struct Eval {
-    pub claim: Claim,
+    pub log_size: u32,
+    pub range_check96_builtin_segment_start: u32,
     pub common_lookup_elements: relations::CommonLookupElements,
 }
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct Claim {
-    pub log_size: u32,
-    pub range_check96_builtin_segment_start: u32,
-}
-impl Claim {
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 2];
-        TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
-    }
-
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_u64(self.log_size as u64);
-        channel.mix_u64(self.range_check96_builtin_segment_start as u64);
-    }
-}
-
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct InteractionClaim {
-    pub claimed_sum: SecureField,
-}
-impl InteractionClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_felts(&[self.claimed_sum]);
-    }
+pub fn log_sizes(log_size: u32) -> TreeVec<Vec<u32>> {
+    let trace_log_sizes = vec![log_size; N_TRACE_COLUMNS];
+    let interaction_log_sizes = vec![log_size; SECURE_EXTENSION_DEGREE * 2];
+    TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
 }
 
 pub type Component = FrameworkComponent<Eval>;
 
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
-        self.claim.log_size
+        self.log_size
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
@@ -82,10 +61,7 @@ impl FrameworkEval for Eval {
         let value_limb_10_col11 = eval.next_trace_mask();
 
         ReadPositiveNumBits96::evaluate(
-            [
-                (E::F::from(M31::from(self.claim.range_check96_builtin_segment_start))
-                    + seq.clone()),
-            ],
+            [(E::F::from(M31::from(self.range_check96_builtin_segment_start)) + seq.clone())],
             value_id_col0.clone(),
             value_limb_0_col1.clone(),
             value_limb_1_col2.clone(),
@@ -121,10 +97,8 @@ mod tests {
     fn range_check96_builtin_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
-            claim: Claim {
-                log_size: 4,
-                range_check96_builtin_segment_start: rng.gen::<u32>(),
-            },
+            log_size: 4,
+            range_check96_builtin_segment_start: rng.gen::<u32>(),
             common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
