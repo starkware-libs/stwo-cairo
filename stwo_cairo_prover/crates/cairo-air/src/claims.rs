@@ -2,7 +2,7 @@
 
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
-use stwo::core::channel::Channel;
+use stwo::core::channel::{Channel, MerkleChannel};
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::pcs::TreeVec;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
@@ -86,9 +86,9 @@ pub struct CairoClaim {
 }
 
 impl CairoClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
+    pub fn mix_into<MC: MerkleChannel>(&self, channel: &mut MC::C) {
         let flat_claim = self.flatten_claim();
-        flat_claim.mix_into(channel);
+        flat_claim.mix_into::<MC>(channel);
     }
 
     pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
