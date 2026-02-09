@@ -11,6 +11,7 @@ use super::pedersen::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
 use super::poseidon::{PoseidonRoundKeys, N_WORDS as POSEIDON_N_WORDS};
 #[cfg(feature = "prover")]
 use super::simd_prelude::*;
+use crate::preprocessed_columns::curr_program;
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
@@ -52,6 +53,24 @@ impl PreProcessedTrace {
             columns,
             column_indices,
         }
+    }
+
+    pub fn canonical_with_program(program: Vec<(u32, [u32; 8])>) -> Self {
+        let canonical_without_program = Self::canonical().columns;
+        let curr_program_columns = (0..curr_program::PROGRAM_N_COLUMNS).map(|x| {
+            Box::new(curr_program::CurrProgramColumn::new(x, &program))
+                as Box<dyn PreProcessedColumn>
+        });
+        let columns = chain!(canonical_without_program, curr_program_columns)
+            .sorted_by_key(|column| column.log_size())
+            .collect_vec();
+
+        assert!(
+            columns.iter().map(|col| 1 << col.log_size()).sum::<u32>() == CANONICAL_SIZE,
+            "Canonical preprocessed trace has unexpected size"
+        );
+
+        Self::from_columns(columns)
     }
 
     /// Generates a canonical preprocessed trace. Used in proving Generic Cairo code & Starknet

@@ -27,13 +27,17 @@ use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTra
 pub enum PreProcessedTraceVariant {
     Canonical,
     CanonicalWithoutPedersen,
+    CanonicalWithProgram,
 }
 impl PreProcessedTraceVariant {
-    pub fn to_preprocessed_trace(&self) -> PreProcessedTrace {
+    pub fn to_preprocessed_trace(&self, program: Vec<(u32, [u32; 8])>) -> PreProcessedTrace {
         match self {
             PreProcessedTraceVariant::Canonical => PreProcessedTrace::canonical(),
             PreProcessedTraceVariant::CanonicalWithoutPedersen => {
                 PreProcessedTrace::canonical_without_pedersen()
+            }
+            PreProcessedTraceVariant::CanonicalWithProgram => {
+                PreProcessedTrace::canonical_with_program(program)
             }
         }
     }

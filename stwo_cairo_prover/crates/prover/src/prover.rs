@@ -78,8 +78,32 @@ where
     if store_polynomials_coefficients {
         commitment_scheme.set_store_polynomials_coefficients();
     }
+
     // Preprocessed trace.
-    let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace());
+    // let ProverInput {
+    //     state_transitions,
+    //     memory,
+    //     pc_count,
+    //     public_memory_addresses,
+    //     builtin_segments,
+    //     public_segment_context,
+    // } = input.clone();
+
+    let memory = input.memory.clone();
+    let initial_state = input.state_transitions.initial_state;
+    let initial_pc = initial_state.pc.0;
+    let initial_ap = initial_state.ap.0;
+    let program_memory_addresses = initial_pc..initial_ap - 2;
+    // let safe_call_addresses = initial_ap - 2..initial_ap;
+    let program = program_memory_addresses
+        .map(|addr| {
+            let id = memory.get_raw_id(addr);
+            let value = memory.get(addr).as_u256();
+            (id, value)
+        })
+        .collect::<Vec<_>>();
+
+    let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace(program.clone()));
     let mut tree_builder = commitment_scheme.tree_builder();
     tree_builder.extend_evals(gen_trace(preprocessed_trace.clone()));
     tree_builder.commit(channel);
@@ -156,6 +180,7 @@ where
         extended_stark_proof: proof,
         channel_salt,
         preprocessed_trace_variant: prover_params.preprocessed_trace,
+        program,
     })
 }
 
