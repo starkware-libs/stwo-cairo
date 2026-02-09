@@ -4,7 +4,9 @@ use anyhow::Result;
 use cairo_air::verifier::verify_cairo;
 use cairo_air::CairoProofForRustVerifier;
 use clap::Parser;
-use stwo::core::vcs_lifted::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
+use stwo::core::vcs_lifted::blake2_merkle::{
+    Blake2sM31MerkleChannel, Blake2sM31MerkleHasher, Blake2sMerkleChannel, Blake2sMerkleHasher,
+};
 use stwo::core::vcs_lifted::poseidon252_merkle::{
     Poseidon252MerkleChannel, Poseidon252MerkleHasher,
 };
@@ -25,7 +27,7 @@ struct Args {
     #[arg(long = "proof_path")]
     proof_path: PathBuf,
 
-    /// Hash variant to use for verification (blake2s or poseidon252)
+    /// Hash variant to use for verification (blake2s, blake2s_m31, or poseidon252)
     #[arg(long = "channel_hash", default_value = "blake2s")]
     channel_hash: String,
 }
@@ -33,14 +35,23 @@ struct Args {
 fn parse_channel_hash(hash_str: &str) -> Result<ChannelHash> {
     match hash_str.to_lowercase().as_str() {
         "blake2s" => Ok(ChannelHash::Blake2s),
+        "blake2s_m31" => Ok(ChannelHash::Blake2sM31),
         "poseidon252" => Ok(ChannelHash::Poseidon252),
-        _ => anyhow::bail!("Invalid channel hash: {hash_str}. Must be 'blake2s' or 'poseidon252'"),
+        _ => anyhow::bail!(
+            "Invalid channel hash: {hash_str}. Must be 'blake2s', 'blake2s_m31', or 'poseidon252'"
+        ),
     }
 }
 
 fn verify_blake2s_proof(proof: String) -> Result<()> {
     let proof: CairoProofForRustVerifier<Blake2sMerkleHasher> = sonic_rs::from_str(&proof)?;
     verify_cairo::<Blake2sMerkleChannel>(proof)?;
+    Ok(())
+}
+
+fn verify_blake2s_m31_proof(proof: String) -> Result<()> {
+    let proof: CairoProofForRustVerifier<Blake2sM31MerkleHasher> = sonic_rs::from_str(&proof)?;
+    verify_cairo::<Blake2sM31MerkleChannel>(proof)?;
     Ok(())
 }
 
@@ -65,6 +76,7 @@ fn main() -> Result<()> {
 
     let result = match channel {
         ChannelHash::Blake2s => verify_blake2s_proof(proof),
+        ChannelHash::Blake2sM31 => verify_blake2s_m31_proof(proof),
         ChannelHash::Poseidon252 => verify_poseidon252_proof(proof),
     };
     match result {
