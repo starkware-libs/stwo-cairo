@@ -75,3 +75,23 @@ fn test_canonical_preprocessed_root_regression() {
 
     assert_eq!(root, expected);
 }
+
+#[cfg(feature = "slow-tests")]
+#[test]
+fn test_small_canonical_preprocessed_root_regression() {
+    use stwo::core::vcs::blake2_hash::Blake2sHash;
+    use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
+
+    let log_blowup_factor = 1;
+    let expected = Blake2sHash::from(
+        hex::decode("5f2c94f9e5f4258999d97a12ddda8999a79e2efc36297a1fbe587e835179713f")
+            .expect("Invalid hex string"),
+    );
+
+    let root = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(
+        log_blowup_factor,
+        PreProcessedTraceVariant::CanonicalSmall,
+    );
+
+    assert_eq!(root, expected);
+}
