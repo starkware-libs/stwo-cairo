@@ -8,6 +8,7 @@ pub mod components;
 pub mod flat_claims;
 pub mod opcodes_air;
 pub mod pedersen;
+pub mod pedersen_narrow_windows;
 pub mod poseidon;
 pub mod range_checks_air;
 pub mod relations;
@@ -27,6 +28,7 @@ use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTra
 pub enum PreProcessedTraceVariant {
     Canonical,
     CanonicalWithoutPedersen,
+    CanonicalSmall,
 }
 impl PreProcessedTraceVariant {
     pub fn to_preprocessed_trace(&self) -> PreProcessedTrace {
@@ -35,6 +37,7 @@ impl PreProcessedTraceVariant {
             PreProcessedTraceVariant::CanonicalWithoutPedersen => {
                 PreProcessedTrace::canonical_without_pedersen()
             }
+            PreProcessedTraceVariant::CanonicalSmall => PreProcessedTrace::canonical_small(),
         }
     }
 }

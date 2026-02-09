@@ -8,11 +8,7 @@ use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::pcs::CommitmentSchemeVerifier;
 use stwo::core::verifier::{verify, VerificationError};
-use stwo_cairo_common::builtins::{
-    ADD_MOD_BUILTIN_MEMORY_CELLS, BITWISE_BUILTIN_MEMORY_CELLS, MUL_MOD_BUILTIN_MEMORY_CELLS,
-    PEDERSEN_BUILTIN_MEMORY_CELLS, POSEIDON_BUILTIN_MEMORY_CELLS,
-    RANGE_CHECK_96_BUILTIN_MEMORY_CELLS, RANGE_CHECK_BUILTIN_MEMORY_CELLS,
-};
+use stwo_cairo_common::builtins::*;
 use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, LOG_MEMORY_ADDRESS_BOUND};
 use stwo_cairo_common::prover_types::cpu::{CasmState, PRIME};
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
@@ -25,8 +21,8 @@ use crate::air::{
 use crate::claims::{lookup_sum, CairoClaim};
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
 use crate::components::{
-    add_mod_builtin, bitwise_builtin, mul_mod_builtin, pedersen_builtin, poseidon_builtin,
-    range_check96_builtin, range_check_builtin,
+    add_mod_builtin, bitwise_builtin, mul_mod_builtin, pedersen_builtin,
+    pedersen_builtin_narrow_windows, poseidon_builtin, range_check96_builtin, range_check_builtin,
 };
 use crate::relations::CommonLookupElements;
 use crate::CairoProofForRustVerifier;
@@ -59,6 +55,7 @@ fn verify_claim(claim: &CairoClaim) {
         &claim.bitwise_builtin,
         &claim.mul_mod_builtin,
         &claim.pedersen_builtin,
+        &claim.pedersen_builtin_narrow_windows,
         &claim.poseidon_builtin,
         &claim.range_check96_builtin,
         &claim.range_check_builtin,
@@ -133,6 +130,7 @@ fn verify_builtins(
     bitwise_builtin_claim: &Option<bitwise_builtin::Claim>,
     mul_mod_builtin_claim: &Option<mul_mod_builtin::Claim>,
     pedersen_builtin_claim: &Option<pedersen_builtin::Claim>,
+    pedersen_builtin_narrow_windows_claim: &Option<pedersen_builtin_narrow_windows::Claim>,
     poseidon_builtin_claim: &Option<poseidon_builtin::Claim>,
     range_check_96_builtin_claim: &Option<range_check96_builtin::Claim>,
     range_check_128_builtin_claim: &Option<range_check_builtin::Claim>,
@@ -212,10 +210,33 @@ fn verify_builtins(
         "range_check_96",
         RANGE_CHECK_96_BUILTIN_MEMORY_CELLS,
     );
+    assert!(
+        !(pedersen_builtin_claim.is_some() && pedersen_builtin_narrow_windows_claim.is_some()),
+        "Both pedersen_builtin_claim and pedersen_builtin_narrow_windows_claim builtins cannot be used together");
+    if let Some(claim) = pedersen_builtin_claim {
+        check_builtin(
+            Some(BuiltinClaim {
+                segment_start: claim.pedersen_builtin_segment_start,
+                log_size: claim.log_size,
+            }),
+            pedersen,
+            "pedersen",
+            PEDERSEN_BUILTIN_MEMORY_CELLS,
+        );
+    } else {
+        check_builtin(
+            pedersen_builtin_narrow_windows_claim.map(|claim| BuiltinClaim {
+                segment_start: claim.pedersen_builtin_segment_start,
+                log_size: claim.log_size,
+            }),
+            pedersen,
+            "pedersen",
+            PEDERSEN_BUILTIN_NARROW_WINDOWS_MEMORY_CELLS,
+        );
+    };
     check_builtin_generic!(bitwise);
     check_builtin_generic!(add_mod);
     check_builtin_generic!(mul_mod);
-    check_builtin_generic!(pedersen);
     check_builtin_generic!(poseidon);
 }
 
