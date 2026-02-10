@@ -100,6 +100,10 @@ pub fn m31(val: u32) -> M31 {
     M31Impl::reduce_u32(val)
 }
 
+pub fn m31_from_u64(val: u64) -> M31 {
+    M31Impl::reduce_u64(val)
+}
+
 #[cfg(test)]
 mod tests {
     use super::{m31, P, M31, M31Trait};

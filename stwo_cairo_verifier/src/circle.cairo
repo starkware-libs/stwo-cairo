@@ -1,4 +1,4 @@
-use stwo_cairo_verifier::fields::m31::{M31, m31};
+use stwo_cairo_verifier::fields::m31::{M31, m31, m31_from_u64};
 use super::utils::pow;
 
 pub const M31_CIRCLE_GEN: CirclePointM31 =
@@ -32,11 +32,12 @@ pub impl CirclePointM31Impl of CirclePointM31Trait {
         let mut result = Self::zero();
         let mut cur = *self;
         while scalar > 0 {
-            if scalar & 1 == 1 {
+            let (q, r) = DivRem::div_rem(scalar, 2);
+            if r == 1 {
                 result = result + cur;
             }
             cur = cur + cur;
-            scalar = scalar / 2;
+            scalar = q;
         };
         result
     }
@@ -45,7 +46,9 @@ pub impl CirclePointM31Impl of CirclePointM31Trait {
 impl CirclePointM31Add of Add<CirclePointM31> {
     // The operation of the circle as a group with additive notation.
     fn add(lhs: CirclePointM31, rhs: CirclePointM31) -> CirclePointM31 {
-        CirclePointM31 { x: lhs.x * rhs.x - lhs.y * rhs.y, y: lhs.x * rhs.y + lhs.y * rhs.x }
+        let x = lhs.x * rhs.x - lhs.y * rhs.y;
+        let y_252: felt252 = lhs.x.into() * rhs.y.into() + lhs.y.into() * rhs.x.into();
+        CirclePointM31 { x: x, y: m31_from_u64(y_252.try_into().unwrap()) }
     }
 }
 
