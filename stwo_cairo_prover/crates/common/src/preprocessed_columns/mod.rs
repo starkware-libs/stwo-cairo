@@ -1,5 +1,6 @@
 pub mod bitwise_xor;
 pub mod blake;
+pub mod curr_program;
 mod felt_batch_inverse;
 pub mod pedersen;
 pub mod poseidon;
