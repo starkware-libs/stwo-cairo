@@ -46,6 +46,8 @@ pub enum ProofFormat {
     /// Binary format.
     /// Additionally compressed to minimize the proof size.
     Binary,
+    /// Extended binary format.
+    ExtendedBinary,
 }
 
 pub fn pack_into_secure_felts<T: Into<BaseField>>(
@@ -116,6 +118,9 @@ where
             let proof_for_rust_verifier: CairoProofForRustVerifier<_> = proof.clone().into();
             binary_serialize_to_file(&proof_for_rust_verifier, &proof_file)?;
         }
+        ProofFormat::ExtendedBinary => {
+            binary_serialize_to_file(&proof, &proof_file)?;
+        }
     }
 
     span.exit();
@@ -141,6 +146,11 @@ where
         ProofFormat::Binary => {
             let proof_file = File::open(proof_path)?;
             binary_deserialize_from_file(&proof_file)
+        }
+        ProofFormat::ExtendedBinary => {
+            let proof_file = File::open(proof_path)?;
+            let extended_proof: CairoProof<H> = binary_deserialize_from_file(&proof_file)?;
+            Ok(extended_proof.into())
         }
     }
 }
