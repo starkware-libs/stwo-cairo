@@ -71,7 +71,7 @@ use crate::components::verify_bitwise_xor_9::InteractionClaimImpl as VerifyBitwi
 use crate::components::verify_instruction::InteractionClaimImpl as VerifyInstructionInteractionClaimImpl;
 use crate::utils::tree_array_concat_cols;
 use crate::{ChannelTrait, PublicDataTrait, components};
-use super::claim::{FlatClaim, FlatClaimTrait, flatten_interaction_claim};
+use super::flat_claims::{FlatClaim, FlatClaimTrait, flatten_interaction_claim};
 
 #[derive(Drop, Serde)]
 pub struct CairoClaim {

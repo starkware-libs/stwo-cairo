@@ -64,6 +64,7 @@ mod hash_imports {
 use hash_imports::*;
 
 pub mod claims;
+pub mod flat_claims;
 use claims::{
     CairoClaim, CairoClaimImpl, CairoInteractionClaim, CairoInteractionClaimImpl, lookup_sum,
 };
