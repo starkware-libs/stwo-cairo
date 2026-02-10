@@ -62,6 +62,27 @@ pub fn pack_into_secure_felts<T: Into<BaseField>>(
         .collect_vec()
 }
 
+pub fn binary_serialize_to_file<T: Serialize>(
+    obj: &T,
+    proof_file: &File,
+) -> Result<(), std::io::Error> {
+    let serialized_bytes = bincode::serialize(&obj).map_err(std::io::Error::other)?;
+
+    let mut bz_encoder = BzEncoder::new(proof_file, Compression::best());
+    bz_encoder.write_all(&serialized_bytes)?;
+    bz_encoder.finish()?;
+    Ok(())
+}
+
+pub fn binary_deserialize_from_file<T: DeserializeOwned>(
+    proof_file: &File,
+) -> Result<T, std::io::Error> {
+    let mut bytes = Vec::new();
+    let mut bz_decoder = BzDecoder::new(proof_file);
+    bz_decoder.read_to_end(&mut bytes)?;
+    bincode::deserialize(&bytes).map_err(std::io::Error::other)
+}
+
 /// Serializes Cairo proof given the desired format and writes it to a file.
 pub fn serialize_proof_to_file<H: MerkleHasherLifted + Serialize>(
     proof: &CairoProof<H>,
@@ -93,12 +114,7 @@ where
         }
         ProofFormat::Binary => {
             let proof_for_rust_verifier: CairoProofForRustVerifier<_> = proof.clone().into();
-            let serialized_bytes =
-                bincode::serialize(&proof_for_rust_verifier).map_err(std::io::Error::other)?;
-
-            let mut bz_encoder = BzEncoder::new(proof_file, Compression::best());
-            bz_encoder.write_all(&serialized_bytes)?;
-            bz_encoder.finish()?;
+            binary_serialize_to_file(&proof_for_rust_verifier, &proof_file)?;
         }
     }
 
@@ -124,10 +140,7 @@ where
         }
         ProofFormat::Binary => {
             let proof_file = File::open(proof_path)?;
-            let mut proof_bytes = Vec::new();
-            let mut bz_decoder = BzDecoder::new(proof_file);
-            bz_decoder.read_to_end(&mut proof_bytes)?;
-            bincode::deserialize(&proof_bytes).map_err(std::io::Error::other)
+            binary_deserialize_from_file(&proof_file)
         }
     }
 }
