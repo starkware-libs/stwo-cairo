@@ -1,5 +1,5 @@
 use std::fs::read_to_string;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use anyhow::Result;
@@ -17,12 +17,14 @@ use stwo::core::fri::FriConfig;
 use stwo::core::pcs::PcsConfig;
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::proof_of_work::GrindOps;
-use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
+use stwo::core::vcs_lifted::blake2_merkle::{Blake2sM31MerkleChannel, Blake2sMerkleChannel};
+use stwo::core::vcs_lifted::merkle_hasher::MerkleHasherLifted;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
 use stwo::prover::poly::circle::PolyOps;
 use stwo::prover::{prove_ex, CommitmentSchemeProver, ProvingError};
 use stwo_cairo_adapter::ProverInput;
+use stwo_cairo_serialize::CairoSerialize;
 use tracing::{event, span, Level};
 
 use crate::utils::cairo_provers;
@@ -38,6 +40,26 @@ mod json {
 }
 
 pub(crate) const LOG_MAX_ROWS: u32 = 27;
+
+fn prove_verify_serialize<MC: MerkleChannel>(
+    input: ProverInput,
+    verify: bool,
+    proof_path: &Path,
+    proof_format: ProofFormat,
+    proof_params: ProverParameters,
+) -> Result<()>
+where
+    SimdBackend: BackendForChannel<MC>,
+    MC::H: MerkleHasherLifted + Serialize,
+    <MC::H as MerkleHasherLifted>::Hash: CairoSerialize,
+{
+    let cairo_proof = prove_cairo::<MC>(input, proof_params)?;
+    if verify {
+        verify_cairo::<MC>(cairo_proof.clone().into())?;
+    }
+    serialize_proof_to_file(&cairo_proof, proof_path, proof_format)?;
+    Ok(())
+}
 
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
@@ -186,6 +208,8 @@ pub struct ProverParameters {
 pub enum ChannelHash {
     /// Default variant, the fastest option.
     Blake2s,
+    /// A variant for Blake2s where modulo M31 is applied to every 32bits in the output.
+    Blake2sM31,
     /// A variant for recursive proof verification.
     /// Note that using `Poseidon252` results in a significant decrease in proving speed compared
     /// to `Blake2s` (because of the large field emulation)
@@ -230,11 +254,22 @@ pub fn create_and_serialize_proof(
 
     match proof_params.channel_hash {
         ChannelHash::Blake2s => {
-            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, proof_params)?;
-            if verify {
-                verify_cairo::<Blake2sMerkleChannel>(cairo_proof.clone().into())?;
-            }
-            serialize_proof_to_file(&cairo_proof, &proof_path, proof_format)?;
+            prove_verify_serialize::<Blake2sMerkleChannel>(
+                input,
+                verify,
+                &proof_path,
+                proof_format,
+                proof_params,
+            )?;
+        }
+        ChannelHash::Blake2sM31 => {
+            prove_verify_serialize::<Blake2sM31MerkleChannel>(
+                input,
+                verify,
+                &proof_path,
+                proof_format,
+                proof_params,
+            )?;
         }
         #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
         ChannelHash::Poseidon252 => {
@@ -243,11 +278,13 @@ pub fn create_and_serialize_proof(
         #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
         ChannelHash::Poseidon252 => {
             use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
-            let cairo_proof = prove_cairo::<Poseidon252MerkleChannel>(input, proof_params)?;
-            if verify {
-                verify_cairo::<Poseidon252MerkleChannel>(cairo_proof.clone().into())?;
-            }
-            serialize_proof_to_file(&cairo_proof, &proof_path, proof_format)?;
+            prove_verify_serialize::<Poseidon252MerkleChannel>(
+                input,
+                verify,
+                &proof_path,
+                proof_format,
+                proof_params,
+            )?;
         }
     };
 
