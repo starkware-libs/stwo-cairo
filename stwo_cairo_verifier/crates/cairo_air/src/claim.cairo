@@ -266,14 +266,7 @@ fn flatten_claim(claim: @CairoClaim) -> (Span<bool>, Span<u32>) {
     }
 
     // Builtins
-    if let Some(c) = claim.range_check_builtin {
-        component_log_sizes.append(*c.log_size);
-        component_enable_bits.append(true);
-    } else {
-        component_log_sizes.append(0_u32);
-        component_enable_bits.append(false);
-    }
-    if let Some(c) = claim.range_check96_builtin {
+    if let Some(c) = claim.add_mod_builtin {
         component_log_sizes.append(*c.log_size);
         component_enable_bits.append(true);
     } else {
@@ -281,13 +274,6 @@ fn flatten_claim(claim: @CairoClaim) -> (Span<bool>, Span<u32>) {
         component_enable_bits.append(false);
     }
     if let Some(c) = claim.bitwise_builtin {
-        component_log_sizes.append(*c.log_size);
-        component_enable_bits.append(true);
-    } else {
-        component_log_sizes.append(0_u32);
-        component_enable_bits.append(false);
-    }
-    if let Some(c) = claim.add_mod_builtin {
         component_log_sizes.append(*c.log_size);
         component_enable_bits.append(true);
     } else {
@@ -309,6 +295,20 @@ fn flatten_claim(claim: @CairoClaim) -> (Span<bool>, Span<u32>) {
         component_enable_bits.append(false);
     }
     if let Some(c) = claim.poseidon_builtin {
+        component_log_sizes.append(*c.log_size);
+        component_enable_bits.append(true);
+    } else {
+        component_log_sizes.append(0_u32);
+        component_enable_bits.append(false);
+    }
+      if let Some(c) = claim.range_check_builtin {
+        component_log_sizes.append(*c.log_size);
+        component_enable_bits.append(true);
+    } else {
+        component_log_sizes.append(0_u32);
+        component_enable_bits.append(false);
+    }
+    if let Some(c) = claim.range_check96_builtin {
         component_log_sizes.append(*c.log_size);
         component_enable_bits.append(true);
     } else {
@@ -603,22 +603,12 @@ pub fn flatten_interaction_claim(interaction_claim: @CairoInteractionClaim) -> S
     }
 
     // Builtins
-    if let Some(c) = interaction_claim.range_check_builtin {
-        claimed_sums.append(*c.claimed_sum);
-    } else {
-        claimed_sums.append(Zero::zero());
-    }
-    if let Some(c) = interaction_claim.range_check96_builtin {
+    if let Some(c) = interaction_claim.add_mod_builtin {
         claimed_sums.append(*c.claimed_sum);
     } else {
         claimed_sums.append(Zero::zero());
     }
     if let Some(c) = interaction_claim.bitwise_builtin {
-        claimed_sums.append(*c.claimed_sum);
-    } else {
-        claimed_sums.append(Zero::zero());
-    }
-    if let Some(c) = interaction_claim.add_mod_builtin {
         claimed_sums.append(*c.claimed_sum);
     } else {
         claimed_sums.append(Zero::zero());
@@ -634,6 +624,16 @@ pub fn flatten_interaction_claim(interaction_claim: @CairoInteractionClaim) -> S
         claimed_sums.append(Zero::zero());
     }
     if let Some(c) = interaction_claim.poseidon_builtin {
+        claimed_sums.append(*c.claimed_sum);
+    } else {
+        claimed_sums.append(Zero::zero());
+    }
+     if let Some(c) = interaction_claim.range_check_builtin {
+        claimed_sums.append(*c.claimed_sum);
+    } else {
+        claimed_sums.append(Zero::zero());
+    }
+    if let Some(c) = interaction_claim.range_check96_builtin {
         claimed_sums.append(*c.claimed_sum);
     } else {
         claimed_sums.append(Zero::zero());
