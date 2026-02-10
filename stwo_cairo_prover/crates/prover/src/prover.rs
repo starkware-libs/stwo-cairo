@@ -116,6 +116,9 @@ where
 
     claim.mix_into(channel);
     tree_builder.commit(channel);
+
+    eprintln!("trace_size: {:?}", commitment_scheme.trees.last().unwrap().commitment.layers.len() - 1);
+
     // Draw interaction elements.
     let interaction_pow = SimdBackend::grind(channel, INTERACTION_POW_BITS);
     channel.mix_u64(interaction_pow);
