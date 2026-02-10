@@ -1140,6 +1140,8 @@ impl CairoClaimGenerator {
                 (claim, interaction_gen)
             })
             .unzip();
+
+            println!("pedersen_builtin: {:?}", self.pedersen_builtin.is_some());
         let (pedersen_builtin_claim, pedersen_builtin_interaction_gen) = self
             .pedersen_builtin
             .map(|gen| {
@@ -1151,6 +1153,8 @@ impl CairoClaimGenerator {
                 (claim, interaction_gen)
             })
             .unzip();
+    
+        println!("pedersen_builtin_narrow_windows: {:?}", self.pedersen_builtin_narrow_windows.is_some());
         let (
             pedersen_builtin_narrow_windows_claim,
             pedersen_builtin_narrow_windows_interaction_gen,

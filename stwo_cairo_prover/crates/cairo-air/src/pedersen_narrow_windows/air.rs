@@ -18,6 +18,7 @@ impl PedersenContextComponents {
         common_lookup_elements: &CommonLookupElements,
         interaction_claim: &CairoInteractionClaim,
     ) -> Self {
+        println!("pedersen_aggregator_window_bits_9: {:?}", interaction_claim.pedersen_aggregator_window_bits_9.is_some());
         let components = interaction_claim
             .pedersen_aggregator_window_bits_9
             .as_ref()
