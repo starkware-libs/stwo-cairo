@@ -223,13 +223,7 @@ fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
 
     // Builtins
     option_log_size(
-        &claim.range_check_builtin,
-        |c| c.log_size,
-        &mut component_log_sizes,
-        &mut component_enable_bits,
-    );
-    option_log_size(
-        &claim.range_check96_builtin,
+        &claim.add_mod_builtin,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
@@ -240,12 +234,7 @@ fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
         &mut component_log_sizes,
         &mut component_enable_bits,
     );
-    option_log_size(
-        &claim.add_mod_builtin,
-        |c| c.log_size,
-        &mut component_log_sizes,
-        &mut component_enable_bits,
-    );
+
     option_log_size(
         &claim.mul_mod_builtin,
         |c| c.log_size,
@@ -260,6 +249,18 @@ fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
     );
     option_log_size(
         &claim.poseidon_builtin,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check96_builtin,
+        |c| c.log_size,
+        &mut component_log_sizes,
+        &mut component_enable_bits,
+    );
+    option_log_size(
+        &claim.range_check_builtin,
         |c| c.log_size,
         &mut component_log_sizes,
         &mut component_enable_bits,
