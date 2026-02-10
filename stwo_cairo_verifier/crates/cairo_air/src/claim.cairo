@@ -628,12 +628,12 @@ pub fn flatten_interaction_claim(interaction_claim: @CairoInteractionClaim) -> S
     } else {
         claimed_sums.append(Zero::zero());
     }
-    if let Some(c) = interaction_claim.range_check_builtin {
+    if let Some(c) = interaction_claim.range_check96_builtin {
         claimed_sums.append(*c.claimed_sum);
     } else {
         claimed_sums.append(Zero::zero());
     }
-    if let Some(c) = interaction_claim.range_check96_builtin {
+    if let Some(c) = interaction_claim.range_check_builtin {
         claimed_sums.append(*c.claimed_sum);
     } else {
         claimed_sums.append(Zero::zero());

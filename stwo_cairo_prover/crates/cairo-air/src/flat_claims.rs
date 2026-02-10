@@ -618,11 +618,11 @@ pub fn flatten_interaction_claim(interaction_claim: &CairoInteractionClaim) -> V
         |c| c.claimed_sum,
     ));
     claimed_sums.push(option_claimed_sum(
-        &interaction_claim.range_check_builtin,
+        &interaction_claim.range_check96_builtin,
         |c| c.claimed_sum,
     ));
     claimed_sums.push(option_claimed_sum(
-        &interaction_claim.range_check96_builtin,
+        &interaction_claim.range_check_builtin,
         |c| c.claimed_sum,
     ));
 
