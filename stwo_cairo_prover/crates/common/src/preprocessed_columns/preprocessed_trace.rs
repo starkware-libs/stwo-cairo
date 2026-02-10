@@ -139,7 +139,7 @@ impl PreProcessedTrace {
             blake_sigma,
             pedersen_points
         )
-        .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
+        .sorted_by_key(|column| column.log_size())
         .collect_vec();
 
         assert_eq!(
