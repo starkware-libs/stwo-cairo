@@ -146,8 +146,9 @@ where
 /// Exports the preprocessed roots for both Blake2s and Poseidon252 channels.
 /// Note: This function is very slow and is intended for generating the preprocessed roots when
 /// needed.
+#[test]
 pub fn export_preprocessed_roots() {
-    let max_log_blowup_factor = 2;
+    let max_log_blowup_factor = 4;
 
     // Blake2s roots.
     let blake_roots = get_preprocessed_roots::<Blake2sMerkleChannel>(
@@ -165,25 +166,25 @@ pub fn export_preprocessed_roots() {
         println!("log_blowup_factor: {}, blake root: [{}]", i + 1, u32s_hex);
     });
 
-    // Poseidon252 roots.
-    #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
-    {
-        use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
-        // Poseidon252 roots.
-        get_preprocessed_roots::<Poseidon252MerkleChannel>(
-            max_log_blowup_factor,
-            PreProcessedTraceVariant::CanonicalWithoutPedersen,
-        )
-        .into_iter()
-        .enumerate()
-        .for_each(|(i, root)| {
-            println!(
-                "log_blowup_factor: {}, poseidon root: [{:#010x}]",
-                i + 1,
-                root
-            );
-        });
-    }
+    // // Poseidon252 roots.
+    // #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+    // {
+    //     use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
+    //     // Poseidon252 roots.
+    //     get_preprocessed_roots::<Poseidon252MerkleChannel>(
+    //         max_log_blowup_factor,
+    //         PreProcessedTraceVariant::CanonicalWithoutPedersen,
+    //     )
+    //     .into_iter()
+    //     .enumerate()
+    //     .for_each(|(i, root)| {
+    //         println!(
+    //             "log_blowup_factor: {}, poseidon root: [{:#010x}]",
+    //             i + 1,
+    //             root
+    //         );
+    //     });
+    // }
 }
 
 /// Create the input_to_row map used in const-size components.
