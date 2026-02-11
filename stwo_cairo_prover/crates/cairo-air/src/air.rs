@@ -21,6 +21,7 @@ use super::builtins_air::BuiltinComponents;
 use super::components::indented_component_display;
 use super::opcodes_air::OpcodeComponents;
 use super::pedersen::air::PedersenContextComponents;
+use super::pedersen_narrow_windows::air::PedersenContextComponents as PedersenNarrowWindowsContextComponents;
 use super::poseidon::air::PoseidonContextComponents;
 use super::range_checks_air::RangeChecksComponents;
 use crate::claims::{CairoClaim, CairoInteractionClaim};
@@ -530,6 +531,7 @@ pub struct CairoComponents {
     pub blake_context: BlakeContextComponents,
     pub builtins: BuiltinComponents,
     pub pedersen_context: PedersenContextComponents,
+    pub pedersen_narrow_windows_context: PedersenNarrowWindowsContextComponents,
     pub poseidon_context: PoseidonContextComponents,
     pub memory_address_to_id: memory_address_to_id::Component,
     pub memory_id_to_value: (
@@ -583,6 +585,12 @@ impl CairoComponents {
             interaction_claim,
         );
         let pedersen_context = PedersenContextComponents::new(
+            tree_span_provider,
+            cairo_claim,
+            common_lookup_elements,
+            interaction_claim,
+        );
+        let pedersen_narrow_windows_context = PedersenNarrowWindowsContextComponents::new(
             tree_span_provider,
             cairo_claim,
             common_lookup_elements,
@@ -668,6 +676,7 @@ impl CairoComponents {
             blake_context,
             builtins: builtin_components,
             pedersen_context,
+            pedersen_narrow_windows_context,
             poseidon_context,
             memory_address_to_id: memory_address_to_id_component,
             memory_id_to_value: (
@@ -689,6 +698,7 @@ impl CairoComponents {
             self.blake_context.components(),
             self.builtins.components(),
             self.pedersen_context.components(),
+            self.pedersen_narrow_windows_context.components(),
             self.poseidon_context.components(),
             [&self.memory_address_to_id as &dyn Component,],
             self.memory_id_to_value
@@ -720,6 +730,7 @@ impl std::fmt::Display for CairoComponents {
         writeln!(f, "BlakeContext: {}", self.blake_context)?;
         writeln!(f, "Builtins: {}", self.builtins)?;
         writeln!(f, "PedersenContext: {}", self.pedersen_context)?;
+        writeln!(f, "PedersenNarrowWindowsContext: {}", self.pedersen_context)?;
         writeln!(f, "PoseidonContext: {}", self.poseidon_context)?;
         writeln!(
             f,
