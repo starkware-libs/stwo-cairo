@@ -75,6 +75,7 @@ where
         pcs_config,
         preprocessed_trace,
         store_polynomials_coefficients,
+        include_all_preprocessed_columns,
     } = prover_params;
 
     let cairo_air_log_degree_bound = 1;
@@ -166,7 +167,12 @@ where
 
     // Prove stark.
     let span = span!(Level::INFO, "Prove STARKs").entered();
-    let proof = prove_ex::<SimdBackend, _>(&components, channel, commitment_scheme)?;
+    let proof = prove_ex::<SimdBackend, _>(
+        &components,
+        channel,
+        commitment_scheme,
+        include_all_preprocessed_columns,
+    )?;
     span.exit();
 
     event!(name: "component_info", Level::DEBUG, "Components: {}", component_builder);
@@ -199,6 +205,9 @@ pub struct ProverParameters {
     /// Whether or not to store the polynomials coefficients. Affects runtime-memory usage
     /// trade-off. Default is `false`.
     pub store_polynomials_coefficients: bool,
+    /// Whether to include samples for every preprocessed column in the proof. Default is `false`.
+    /// If `false`, the proof only includes samples for columns used by at least one component.
+    pub include_all_preprocessed_columns: bool,
 }
 
 /// The hash function used for commitments, for the prover-verifier channel,
@@ -249,6 +258,7 @@ pub fn create_and_serialize_proof(
             },
             preprocessed_trace: PreProcessedTraceVariant::Canonical,
             store_polynomials_coefficients: false,
+            include_all_preprocessed_columns: false,
         }
     };
 
@@ -353,6 +363,7 @@ pub mod tests {
                 preprocessed_trace: PreProcessedTraceVariant::CanonicalWithoutPedersen,
                 channel_salt: 42,
                 store_polynomials_coefficients: false,
+                include_all_preprocessed_columns: false,
             };
             let cairo_proof =
                 prove_cairo::<Poseidon252MerkleChannel>(input, prover_params).unwrap();
@@ -455,6 +466,7 @@ pub mod tests {
                 preprocessed_trace: PreProcessedTraceVariant::CanonicalWithoutPedersen,
                 channel_salt: 0,
                 store_polynomials_coefficients: true,
+                include_all_preprocessed_columns: false,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
@@ -474,6 +486,7 @@ pub mod tests {
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
                 channel_salt: 0,
                 store_polynomials_coefficients: false,
+                include_all_preprocessed_columns: false,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
             let mut proof_file = NamedTempFile::new().unwrap();
@@ -535,6 +548,7 @@ pub mod tests {
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
                 channel_salt: 0,
                 store_polynomials_coefficients: false,
+                include_all_preprocessed_columns: false,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
             let mut proof_file = NamedTempFile::new().unwrap();
@@ -574,6 +588,7 @@ pub mod tests {
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
                 channel_salt: 0,
                 store_polynomials_coefficients: false,
+                include_all_preprocessed_columns: false,
             };
             let proofs = (0..n_proofs_to_compare)
                 .map(|_| {
@@ -635,6 +650,7 @@ pub mod tests {
                     preprocessed_trace: PreProcessedTraceVariant::Canonical,
                     channel_salt: 0,
                     store_polynomials_coefficients: false,
+                    include_all_preprocessed_columns: false,
                 };
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
@@ -736,6 +752,7 @@ pub mod tests {
                     preprocessed_trace: PreProcessedTraceVariant::Canonical,
                     channel_salt: 0,
                     store_polynomials_coefficients: false,
+                    include_all_preprocessed_columns: false,
                 };
 
                 // Run poseidon builtin with 15 different instances.
@@ -793,6 +810,7 @@ pub mod tests {
                     preprocessed_trace: PreProcessedTraceVariant::Canonical,
                     channel_salt: 0,
                     store_polynomials_coefficients: false,
+                    include_all_preprocessed_columns: false,
                 };
 
                 // Run pedersen builtin with 15 different instances.
