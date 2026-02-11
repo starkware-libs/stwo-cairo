@@ -370,9 +370,9 @@ pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
     match log_blowup_factor - 1 {
         0 => 0x1fdacd6e29834987926672fcac7fda0577adce49999ad96fb0195e745e9ce0,
         1 => 0x14103a81a8417d83c41bc877194607103f9e1cb4cb188e5f21b75499709bbb6,
-        2 => 0x71944a190ebd4721f696f8d1c5e7a95e8efc70d104d7391b0de4ac965baba70,
-        3 => 0x5d83b175ae26614b615d51c92927272a7b5b50a74afa6b84536142db0a25728,
-        4 => 0x6ba5cf14072a327807b33acc97bb365a796f9bedfcabde9461a25131205ff83,
+        2 => 0x20861f94b3cf37baf1939d20691d38630596bce389dcee5f224ef1f5682e70f,
+        3 => 0x26f3a39ddf7042fefdd2595bf4739063e044845418839b2b1ec556fdc1aecf,
+        4 => 0x2111b7db0f7fb2f629d493661207663b88609e5abebbe7e59c4f116dc3dac0,
         _ => panic!("invalid blowup factor"),
     }
 }

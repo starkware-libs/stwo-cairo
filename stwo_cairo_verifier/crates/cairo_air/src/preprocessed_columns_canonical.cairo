@@ -428,40 +428,40 @@ pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
         0 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x25c379f7, 0x0f3a2df7, 0x5938e158, 0xef90cfc8, 0x2aad9770, 0x9784175c,
-                    0xcefccd30, 0xf6fa16ff,
+                    0x42228ea9, 0x35d2f53b, 0x360b1f98, 0x56ae39d9, 0x75e23bef, 0x32b0581c,
+                    0x6e1e83b2, 0x6403ba24,
                 ],
             ),
         },
         1 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x6061fc2c, 0x5812ee56, 0xebc383c6, 0x24c50d2f, 0x4e0c5dea, 0x3efd1c21,
-                    0x70dee66f, 0xe6ba6f82,
+                    0x7094e904, 0x210a38ad, 0x126b6cee, 0x57097de8, 0x1c860da1, 0x91b704b1,
+                    0xc6cf280a, 0x8a211523,
                 ],
             ),
         },
         2 => Hash {
             hash: BoxImpl::new(
                 [
-                    0xf937429a, 0x97988c3c, 0x8bc41d5d, 0xeed48adf, 0x0faaade2, 0x49c43f67,
-                    0x76ace5e2, 0xbbd1592b,
+                    0x84cb79b9, 0xb050ad16, 0x69787584, 0xcf7f274f, 0x399792c8, 0xecf77fed,
+                    0x458488fe, 0xe27bbcac,
                 ],
             ),
         },
         3 => Hash {
             hash: BoxImpl::new(
                 [
-                    0xe8de9fb1, 0x1496075a, 0x409c7ae5, 0x92531e0d, 0xd6442f98, 0x65210522,
-                    0x8d9b085d, 0xa296d316,
+                    0x803fe777, 0x1d9267a0, 0xe383c36d, 0x2b1b4bf0, 0x9a47969f, 0xcb683ef4,
+                    0x598eca47, 0x09db42f9,
                 ],
             ),
         },
         4 => Hash {
             hash: BoxImpl::new(
                 [
-                    0xdfd138d0, 0x6f7446ef, 0x25c15cb8, 0x098dcd06, 0x2f478905, 0xca8fe8ff,
-                    0x73484cd8, 0x8a711ab7,
+                    0xbfee7cd5, 0x429ca185, 0xa8d60ba7, 0x3856e072, 0xb88de2aa, 0x12ab5bc3,
+                    0xde44271d, 0x2500318a,
                 ],
             ),
         },
