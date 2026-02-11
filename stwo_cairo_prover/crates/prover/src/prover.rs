@@ -669,6 +669,7 @@ pub mod tests {
                     preprocessed_trace: PreProcessedTraceVariant::CanonicalSmall,
                     channel_salt: 0,
                     store_polynomials_coefficients: false,
+                    include_all_preprocessed_columns: false,
                 };
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
