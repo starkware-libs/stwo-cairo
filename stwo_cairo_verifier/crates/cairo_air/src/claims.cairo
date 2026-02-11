@@ -1,5 +1,6 @@
 // This file was created by the AIR team.
 
+use core::num::traits::Zero;
 use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::{PublicData, PublicDataImpl, RelationUsesDict};
 use stwo_constraint_framework::CommonLookupElements;
@@ -8,74 +9,28 @@ use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::utils::OptionImpl;
 use crate::cairo_air::override_preprocessed_trace_log_sizes;
-use crate::components::add_ap_opcode::InteractionClaimImpl as AddApOpcodeInteractionClaimImpl;
-use crate::components::add_mod_builtin::InteractionClaimImpl as AddModBuiltinInteractionClaimImpl;
-use crate::components::add_opcode::InteractionClaimImpl as AddOpcodeInteractionClaimImpl;
-use crate::components::add_opcode_small::InteractionClaimImpl as AddOpcodeSmallInteractionClaimImpl;
-use crate::components::assert_eq_opcode::InteractionClaimImpl as AssertEqOpcodeInteractionClaimImpl;
-use crate::components::assert_eq_opcode_double_deref::InteractionClaimImpl as AssertEqOpcodeDoubleDerefInteractionClaimImpl;
-use crate::components::assert_eq_opcode_imm::InteractionClaimImpl as AssertEqOpcodeImmInteractionClaimImpl;
-use crate::components::bitwise_builtin::InteractionClaimImpl as BitwiseBuiltinInteractionClaimImpl;
-use crate::components::blake_compress_opcode::InteractionClaimImpl as BlakeCompressOpcodeInteractionClaimImpl;
-use crate::components::blake_g::InteractionClaimImpl as BlakeGInteractionClaimImpl;
-use crate::components::blake_round::InteractionClaimImpl as BlakeRoundInteractionClaimImpl;
-use crate::components::blake_round_sigma::InteractionClaimImpl as BlakeRoundSigmaInteractionClaimImpl;
-use crate::components::call_opcode_abs::InteractionClaimImpl as CallOpcodeAbsInteractionClaimImpl;
-use crate::components::call_opcode_rel_imm::InteractionClaimImpl as CallOpcodeRelImmInteractionClaimImpl;
-use crate::components::cube_252::InteractionClaimImpl as Cube252InteractionClaimImpl;
-use crate::components::generic_opcode::InteractionClaimImpl as GenericOpcodeInteractionClaimImpl;
-use crate::components::jnz_opcode_non_taken::InteractionClaimImpl as JnzOpcodeNonTakenInteractionClaimImpl;
-use crate::components::jnz_opcode_taken::InteractionClaimImpl as JnzOpcodeTakenInteractionClaimImpl;
-use crate::components::jump_opcode_abs::InteractionClaimImpl as JumpOpcodeAbsInteractionClaimImpl;
-use crate::components::jump_opcode_double_deref::InteractionClaimImpl as JumpOpcodeDoubleDerefInteractionClaimImpl;
-use crate::components::jump_opcode_rel::InteractionClaimImpl as JumpOpcodeRelInteractionClaimImpl;
-use crate::components::jump_opcode_rel_imm::InteractionClaimImpl as JumpOpcodeRelImmInteractionClaimImpl;
-use crate::components::memory_address_to_id::InteractionClaimImpl as MemoryAddressToIdInteractionClaimImpl;
-use crate::components::memory_id_to_big::InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl;
-use crate::components::mul_mod_builtin::InteractionClaimImpl as MulModBuiltinInteractionClaimImpl;
-use crate::components::mul_opcode::InteractionClaimImpl as MulOpcodeInteractionClaimImpl;
-use crate::components::mul_opcode_small::InteractionClaimImpl as MulOpcodeSmallInteractionClaimImpl;
-use crate::components::partial_ec_mul_window_bits_18::InteractionClaimImpl as PartialEcMulWindowBits18InteractionClaimImpl;
-use crate::components::partial_ec_mul_window_bits_9::InteractionClaimImpl as PartialEcMulWindowBits9InteractionClaimImpl;
-use crate::components::pedersen_aggregator_window_bits_18::InteractionClaimImpl as PedersenAggregatorWindowBits18InteractionClaimImpl;
-use crate::components::pedersen_aggregator_window_bits_9::InteractionClaimImpl as PedersenAggregatorWindowBits9InteractionClaimImpl;
-use crate::components::pedersen_builtin::InteractionClaimImpl as PedersenBuiltinInteractionClaimImpl;
-use crate::components::pedersen_builtin_narrow_windows::InteractionClaimImpl as PedersenBuiltinNarrowWindowsInteractionClaimImpl;
-use crate::components::pedersen_points_table_window_bits_18::InteractionClaimImpl as PedersenPointsTableWindowBits18InteractionClaimImpl;
-use crate::components::pedersen_points_table_window_bits_9::InteractionClaimImpl as PedersenPointsTableWindowBits9InteractionClaimImpl;
-use crate::components::poseidon_3_partial_rounds_chain::InteractionClaimImpl as Poseidon3PartialRoundsChainInteractionClaimImpl;
-use crate::components::poseidon_aggregator::InteractionClaimImpl as PoseidonAggregatorInteractionClaimImpl;
-use crate::components::poseidon_builtin::InteractionClaimImpl as PoseidonBuiltinInteractionClaimImpl;
-use crate::components::poseidon_full_round_chain::InteractionClaimImpl as PoseidonFullRoundChainInteractionClaimImpl;
-use crate::components::poseidon_round_keys::InteractionClaimImpl as PoseidonRoundKeysInteractionClaimImpl;
-use crate::components::qm_31_add_mul_opcode::InteractionClaimImpl as Qm31AddMulOpcodeInteractionClaimImpl;
-use crate::components::range_check96_builtin::InteractionClaimImpl as RangeCheck96BuiltinInteractionClaimImpl;
-use crate::components::range_check_11::InteractionClaimImpl as RangeCheck11InteractionClaimImpl;
-use crate::components::range_check_12::InteractionClaimImpl as RangeCheck12InteractionClaimImpl;
-use crate::components::range_check_18::InteractionClaimImpl as RangeCheck18InteractionClaimImpl;
-use crate::components::range_check_20::InteractionClaimImpl as RangeCheck20InteractionClaimImpl;
-use crate::components::range_check_252_width_27::InteractionClaimImpl as RangeCheck252Width27InteractionClaimImpl;
-use crate::components::range_check_3_3_3_3_3::InteractionClaimImpl as RangeCheck33333InteractionClaimImpl;
-use crate::components::range_check_3_6_6_3::InteractionClaimImpl as RangeCheck3663InteractionClaimImpl;
-use crate::components::range_check_4_3::InteractionClaimImpl as RangeCheck43InteractionClaimImpl;
-use crate::components::range_check_4_4::InteractionClaimImpl as RangeCheck44InteractionClaimImpl;
-use crate::components::range_check_4_4_4_4::InteractionClaimImpl as RangeCheck4444InteractionClaimImpl;
-use crate::components::range_check_6::InteractionClaimImpl as RangeCheck6InteractionClaimImpl;
-use crate::components::range_check_7_2_5::InteractionClaimImpl as RangeCheck725InteractionClaimImpl;
-use crate::components::range_check_8::InteractionClaimImpl as RangeCheck8InteractionClaimImpl;
-use crate::components::range_check_9_9::InteractionClaimImpl as RangeCheck99InteractionClaimImpl;
-use crate::components::range_check_builtin::InteractionClaimImpl as RangeCheckBuiltinInteractionClaimImpl;
-use crate::components::ret_opcode::InteractionClaimImpl as RetOpcodeInteractionClaimImpl;
-use crate::components::triple_xor_32::InteractionClaimImpl as TripleXor32InteractionClaimImpl;
-use crate::components::verify_bitwise_xor_12::InteractionClaimImpl as VerifyBitwiseXor12InteractionClaimImpl;
-use crate::components::verify_bitwise_xor_4::InteractionClaimImpl as VerifyBitwiseXor4InteractionClaimImpl;
-use crate::components::verify_bitwise_xor_7::InteractionClaimImpl as VerifyBitwiseXor7InteractionClaimImpl;
-use crate::components::verify_bitwise_xor_8::InteractionClaimImpl as VerifyBitwiseXor8InteractionClaimImpl;
-use crate::components::verify_bitwise_xor_9::InteractionClaimImpl as VerifyBitwiseXor9InteractionClaimImpl;
-use crate::components::verify_instruction::InteractionClaimImpl as VerifyInstructionInteractionClaimImpl;
+use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
+use crate::components::{
+    add_ap_opcode, add_mod_builtin, add_opcode, add_opcode_small, assert_eq_opcode,
+    assert_eq_opcode_double_deref, assert_eq_opcode_imm, bitwise_builtin, blake_compress_opcode,
+    blake_g, blake_round, blake_round_sigma, call_opcode_abs, call_opcode_rel_imm, cube_252,
+    generic_opcode, jnz_opcode_non_taken, jnz_opcode_taken, jump_opcode_abs,
+    jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, memory_address_to_id,
+    memory_id_to_big, mul_mod_builtin, mul_opcode, mul_opcode_small, partial_ec_mul_window_bits_18,
+    partial_ec_mul_window_bits_9, pedersen_aggregator_window_bits_18,
+    pedersen_aggregator_window_bits_9, pedersen_builtin, pedersen_builtin_narrow_windows,
+    pedersen_points_table_window_bits_18, pedersen_points_table_window_bits_9,
+    poseidon_3_partial_rounds_chain, poseidon_aggregator, poseidon_builtin,
+    poseidon_full_round_chain, poseidon_round_keys, qm_31_add_mul_opcode, range_check96_builtin,
+    range_check_11, range_check_12, range_check_18, range_check_20, range_check_252_width_27,
+    range_check_3_3_3_3_3, range_check_3_6_6_3, range_check_4_3, range_check_4_4,
+    range_check_4_4_4_4, range_check_6, range_check_7_2_5, range_check_8, range_check_9_9,
+    range_check_builtin, ret_opcode, triple_xor_32, verify_bitwise_xor_12, verify_bitwise_xor_4,
+    verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
+};
 use crate::utils::tree_array_concat_cols;
 use crate::{ChannelTrait, PublicDataTrait, components};
-use super::claim::{FlatClaim, FlatClaimTrait, flatten_interaction_claim};
+use super::claim::{FlatClaim, FlatClaimTrait};
 
 #[derive(Drop, Serde)]
 pub struct CairoClaim {
@@ -358,8 +313,8 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
     }
 
     fn mix_into(self: @CairoClaim, ref channel: Channel) {
-        let claim: FlatClaim = FlatClaimTrait::from_cairo_claim(self);
-        claim.mix_into(ref channel);
+        let flat_claim = self.flatten_claim();
+        flat_claim.mix_into(ref channel);
     }
 
     fn accumulate_relation_uses(self: @CairoClaim, ref relation_uses: RelationUsesDict) {
@@ -495,6 +450,484 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
     }
 }
 
+#[generate_trait]
+pub impl CairoClaimFlattenImpl of CairoClaimFlattenTrait {
+    /// Create flat claim out of the given claim.
+    fn flatten_claim(self: @CairoClaim) -> FlatClaim {
+        let mut component_enable_bits = array![];
+        let mut component_log_sizes = array![];
+
+        if let Some(c) = self.add_opcode {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.add_opcode_small {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.add_ap_opcode {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.assert_eq_opcode {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.assert_eq_opcode_imm {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.assert_eq_opcode_double_deref {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.blake_compress_opcode {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.call_opcode_abs {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.call_opcode_rel_imm {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.generic_opcode {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.jnz_opcode_non_taken {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.jnz_opcode_taken {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.jump_opcode_abs {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.jump_opcode_double_deref {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.jump_opcode_rel {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.jump_opcode_rel_imm {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.mul_opcode {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.mul_opcode_small {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.qm_31_add_mul_opcode {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.ret_opcode {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.verify_instruction {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.blake_round {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.blake_g {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.blake_round_sigma {
+            component_log_sizes.append(blake_round_sigma::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.triple_xor_32 {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.verify_bitwise_xor_12 {
+            component_log_sizes.append(verify_bitwise_xor_12::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.add_mod_builtin {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.bitwise_builtin {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.mul_mod_builtin {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.pedersen_builtin {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.pedersen_builtin_narrow_windows {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.poseidon_builtin {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.range_check96_builtin {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.range_check_builtin {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.pedersen_aggregator_window_bits_18 {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.partial_ec_mul_window_bits_18 {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.pedersen_points_table_window_bits_18 {
+            component_log_sizes.append(pedersen_points_table_window_bits_18::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.pedersen_aggregator_window_bits_9 {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.partial_ec_mul_window_bits_9 {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.pedersen_points_table_window_bits_9 {
+            component_log_sizes.append(pedersen_points_table_window_bits_9::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.poseidon_aggregator {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.poseidon_3_partial_rounds_chain {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.poseidon_full_round_chain {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.cube_252 {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.poseidon_round_keys {
+            component_log_sizes.append(poseidon_round_keys::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.range_check_252_width_27 {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(c) = self.memory_address_to_id {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        let memory_id_to_big::Claim {
+            big_log_sizes, small_log_size,
+        } = self.memory_id_to_big.as_snap().unwrap();
+        assert!(big_log_sizes.len() <= MEMORY_ADDRESS_TO_ID_SPLIT);
+        for log_size in big_log_sizes {
+            component_log_sizes.append(*log_size);
+            component_enable_bits.append(true);
+        }
+        for _ in 0..(MEMORY_ADDRESS_TO_ID_SPLIT - big_log_sizes.len()) {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        component_log_sizes.append(*small_log_size);
+        component_enable_bits.append(true);
+        if let Some(_c) = self.range_check_6 {
+            component_log_sizes.append(range_check_6::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.range_check_8 {
+            component_log_sizes.append(range_check_8::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.range_check_11 {
+            component_log_sizes.append(range_check_11::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.range_check_12 {
+            component_log_sizes.append(range_check_12::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.range_check_18 {
+            component_log_sizes.append(range_check_18::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.range_check_20 {
+            component_log_sizes.append(range_check_20::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.range_check_4_3 {
+            component_log_sizes.append(range_check_4_3::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.range_check_4_4 {
+            component_log_sizes.append(range_check_4_4::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.range_check_9_9 {
+            component_log_sizes.append(range_check_9_9::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.range_check_7_2_5 {
+            component_log_sizes.append(range_check_7_2_5::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.range_check_3_6_6_3 {
+            component_log_sizes.append(range_check_3_6_6_3::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.range_check_4_4_4_4 {
+            component_log_sizes.append(range_check_4_4_4_4::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.range_check_3_3_3_3_3 {
+            component_log_sizes.append(range_check_3_3_3_3_3::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.verify_bitwise_xor_4 {
+            component_log_sizes.append(verify_bitwise_xor_4::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.verify_bitwise_xor_7 {
+            component_log_sizes.append(verify_bitwise_xor_7::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.verify_bitwise_xor_8 {
+            component_log_sizes.append(verify_bitwise_xor_8::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.verify_bitwise_xor_9 {
+            component_log_sizes.append(verify_bitwise_xor_9::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+
+        FlatClaim {
+            component_enable_bits: component_enable_bits.span(),
+            component_log_sizes: component_log_sizes.span(),
+            public_data: self.public_data.clone(),
+        }
+    }
+}
+
 #[derive(Drop, Serde)]
 pub struct CairoInteractionClaim {
     pub add_opcode: Option<components::add_opcode::InteractionClaim>,
@@ -585,8 +1018,350 @@ pub struct CairoInteractionClaim {
 #[generate_trait]
 pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
     fn mix_into(self: @CairoInteractionClaim, ref channel: Channel) {
-        let claim = flatten_interaction_claim(self);
+        let claim = self.flatten_interaction_claim();
         channel.mix_felts(claim);
+    }
+
+    /// Extracts the claimed sums from a [CairoInteractionClaim].
+    /// Returns a vector of all claimed sums for the logup argument, one per component.
+    /// The order must match the order of components as they appear in
+    /// [cairo_air::air::CairoComponents].
+    fn flatten_interaction_claim(self: @CairoInteractionClaim) -> Span<QM31> {
+        let mut claimed_sums = array![];
+
+        if let Some(c) = self.add_opcode {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.add_opcode_small {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.add_ap_opcode {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.assert_eq_opcode {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.assert_eq_opcode_imm {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.assert_eq_opcode_double_deref {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.blake_compress_opcode {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.call_opcode_abs {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.call_opcode_rel_imm {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.generic_opcode {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.jnz_opcode_non_taken {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.jnz_opcode_taken {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.jump_opcode_abs {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.jump_opcode_double_deref {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.jump_opcode_rel {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.jump_opcode_rel_imm {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.mul_opcode {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.mul_opcode_small {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.qm_31_add_mul_opcode {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.ret_opcode {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.verify_instruction {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.blake_round {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.blake_g {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.blake_round_sigma {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.triple_xor_32 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.verify_bitwise_xor_12 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.add_mod_builtin {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.bitwise_builtin {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.mul_mod_builtin {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.pedersen_builtin {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.pedersen_builtin_narrow_windows {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.poseidon_builtin {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.range_check96_builtin {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.range_check_builtin {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.pedersen_aggregator_window_bits_18 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.partial_ec_mul_window_bits_18 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.pedersen_points_table_window_bits_18 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.pedersen_aggregator_window_bits_9 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.partial_ec_mul_window_bits_9 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.pedersen_points_table_window_bits_9 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.poseidon_aggregator {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.poseidon_3_partial_rounds_chain {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.poseidon_full_round_chain {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.cube_252 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.poseidon_round_keys {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.range_check_252_width_27 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.memory_address_to_id {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        let memory_id_to_big::InteractionClaim {
+            big_claimed_sums, small_claimed_sum, claimed_sum: _,
+        } = self.memory_id_to_big.as_snap().unwrap();
+        assert!(big_claimed_sums.len() <= MEMORY_ADDRESS_TO_ID_SPLIT);
+        for claimed_sum in big_claimed_sums {
+            claimed_sums.append(*claimed_sum);
+        }
+        for _ in 0..(MEMORY_ADDRESS_TO_ID_SPLIT - big_claimed_sums.len()) {
+            claimed_sums.append(Zero::zero());
+        }
+        claimed_sums.append(*small_claimed_sum);
+        if let Some(c) = self.range_check_6 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.range_check_8 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.range_check_11 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.range_check_12 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.range_check_18 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.range_check_20 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.range_check_4_3 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.range_check_4_4 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.range_check_9_9 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.range_check_7_2_5 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.range_check_3_6_6_3 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.range_check_4_4_4_4 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.range_check_3_3_3_3_3 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.verify_bitwise_xor_4 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.verify_bitwise_xor_7 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.verify_bitwise_xor_8 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.verify_bitwise_xor_9 {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+
+        claimed_sums.span()
     }
 }
 
