@@ -49,7 +49,7 @@ fn extract_public_segments(
 
     let to_memory_value = |addr: u32| {
         let id = memory.get_raw_id(addr);
-        let value = memory.get(addr).as_small() as u32;
+        let value = memory.get(addr).as_small().try_into().unwrap();
         MemorySmallValue { id, value }
     };
 
