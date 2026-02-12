@@ -1,5 +1,4 @@
-use stwo::core::fields::m31::M31;
-
+use stwo_types::fields::m31::M31;
 // Pads all rows below <padding_offset> with the first row. Uses the <get_m31> function to get the
 // value in a given row and column.
 pub fn pad<F>(get_m31: F, padding_offset: usize, col: usize) -> Vec<M31>

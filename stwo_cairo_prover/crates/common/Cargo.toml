@@ -7,7 +7,16 @@ repository.workspace = true
 description = "Common types and utilities shared across Stwo Cairo crates"
 
 [features]
-prover = ["stwo/parallel", "stwo/prover", "stwo-constraint-framework/parallel", "stwo-constraint-framework/prover"]
+default = ["prover"]
+prover = [
+    "dep:stwo",
+    "dep:stwo-constraint-framework",
+    "dep:stwo-cairo-serialize",
+    "stwo/parallel",
+    "stwo/prover",
+    "stwo-constraint-framework/parallel",
+    "stwo-constraint-framework/prover",
+]
 
 [dependencies]
 bytemuck.workspace = true
@@ -16,9 +25,10 @@ ruint.workspace = true
 serde.workspace = true
 starknet-ff.workspace = true
 starknet-types-core.workspace = true
-stwo-cairo-serialize = { path = "../cairo-serialize", version = "~1.0.0" }
-stwo.workspace = true
-stwo-constraint-framework.workspace = true
+stwo-cairo-serialize = { path = "../cairo-serialize", optional = true }
+stwo = { workspace = true, optional = true }
+stwo-types = { workspace = true, default-features = false }
+stwo-constraint-framework = { workspace = true, optional = true }
 serde_arrays.workspace = true
 starknet-curve.workspace = true
 rayon.workspace = true

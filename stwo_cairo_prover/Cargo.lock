@@ -3356,6 +3356,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
+name = "std-shims"
+version = "1.0.0"
+source = "git+https://github.com/software-mansion-labs/stwo?rev=5715d263ed9a7f1b0e3da84859cd6d371be51be6#5715d263ed9a7f1b0e3da84859cd6d371be51be6"
+
+[[package]]
 name = "string_cache"
 version = "0.8.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3376,7 +3381,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo"
 version = "2.0.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=dcc899bc#dcc899bcd96ecd14327b4a46d0af2a4bd61945fd"
+source = "git+https://github.com/software-mansion-labs/stwo?rev=5715d263ed9a7f1b0e3da84859cd6d371be51be6#5715d263ed9a7f1b0e3da84859cd6d371be51be6"
 dependencies = [
  "blake2",
  "blake3",
@@ -3396,6 +3401,7 @@ dependencies = [
  "starknet-crypto 0.6.2",
  "starknet-ff",
  "stwo-std-shims",
+ "stwo-types",
  "thiserror",
  "tracing",
  "tracing-subscriber",
@@ -3404,7 +3410,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils"
 version = "2.0.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=dcc899bc#dcc899bcd96ecd14327b4a46d0af2a4bd61945fd"
+source = "git+https://github.com/software-mansion-labs/stwo?rev=5715d263ed9a7f1b0e3da84859cd6d371be51be6#5715d263ed9a7f1b0e3da84859cd6d371be51be6"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -3416,7 +3422,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "2.0.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=dcc899bc#dcc899bcd96ecd14327b4a46d0af2a4bd61945fd"
+source = "git+https://github.com/software-mansion-labs/stwo?rev=5715d263ed9a7f1b0e3da84859cd6d371be51be6#5715d263ed9a7f1b0e3da84859cd6d371be51be6"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3444,10 +3450,10 @@ dependencies = [
  "rayon",
  "serde",
  "serde_json",
- "stwo",
  "stwo-cairo-common",
  "stwo-cairo-dev-utils",
  "stwo-cairo-utils",
+ "stwo-types",
  "test-case",
  "thiserror",
  "tracing",
@@ -3470,6 +3476,7 @@ dependencies = [
  "stwo",
  "stwo-cairo-serialize",
  "stwo-constraint-framework",
+ "stwo-types",
 ]
 
 [[package]]
@@ -3548,6 +3555,7 @@ dependencies = [
  "starknet-ff",
  "stwo",
  "stwo-cairo-serialize-derive",
+ "stwo-types",
 ]
 
 [[package]]
@@ -3581,7 +3589,7 @@ dependencies = [
 [[package]]
 name = "stwo-constraint-framework"
 version = "2.0.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=dcc899bc#dcc899bcd96ecd14327b4a46d0af2a4bd61945fd"
+source = "git+https://github.com/software-mansion-labs/stwo?rev=5715d263ed9a7f1b0e3da84859cd6d371be51be6#5715d263ed9a7f1b0e3da84859cd6d371be51be6"
 dependencies = [
  "hashbrown 0.15.5",
  "itertools 0.12.1",
@@ -3598,6 +3606,19 @@ name = "stwo-std-shims"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5c21e2c707fb8926e6c4355a87494c29e8e46640ff4796aa8fbb74952327dfdc"
+
+[[package]]
+name = "stwo-types"
+version = "2.0.0"
+source = "git+https://github.com/software-mansion-labs/stwo?rev=5715d263ed9a7f1b0e3da84859cd6d371be51be6#5715d263ed9a7f1b0e3da84859cd6d371be51be6"
+dependencies = [
+ "bytemuck",
+ "num-traits",
+ "rand 0.8.5",
+ "rayon",
+ "serde",
+ "std-shims",
+]
 
 [[package]]
 name = "subtle"
