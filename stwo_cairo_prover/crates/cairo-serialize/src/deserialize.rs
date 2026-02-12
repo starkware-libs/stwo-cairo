@@ -1,8 +1,6 @@
 use std::array;
 
 use starknet_ff::FieldElement;
-use stwo::core::fields::m31::BaseField;
-use stwo::core::fields::qm31::SecureField;
 use stwo::core::fri::{FriConfig, FriLayerProof, FriProof};
 use stwo::core::pcs::quotients::CommitmentSchemeProof;
 use stwo::core::pcs::{PcsConfig, TreeVec};
@@ -13,6 +11,8 @@ use stwo::core::vcs_lifted::verifier::MerkleDecommitmentLifted;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo::core::ColumnVec;
 pub use stwo_cairo_serialize_derive::CairoDeserialize;
+use stwo_types::fields::m31::BaseField;
+use stwo_types::fields::qm31::SecureField;
 
 /// Deserializes types from a format serialized by corresponding `CairoSerialize` implementations.
 pub trait CairoDeserialize: Sized {
