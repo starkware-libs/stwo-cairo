@@ -255,6 +255,7 @@ pub fn create_and_serialize_proof(
                     // Proving time is not affected much by increasing this value.
                     n_queries: 70,
                 },
+                lifting_log_size: None,
             },
             preprocessed_trace: PreProcessedTraceVariant::Canonical,
             store_polynomials_coefficients: false,
@@ -359,6 +360,7 @@ pub mod tests {
                 pcs_config: PcsConfig {
                     pow_bits: 20,
                     fri_config: FriConfig::new(0, 1, 90),
+                    lifting_log_size: None,
                 },
                 preprocessed_trace: PreProcessedTraceVariant::CanonicalWithoutPedersen,
                 channel_salt: 42,
@@ -482,6 +484,7 @@ pub mod tests {
                 pcs_config: PcsConfig {
                     pow_bits: 26,
                     fri_config: FriConfig::new(0, 1, 70),
+                    lifting_log_size: None,
                 },
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
                 channel_salt: 0,
@@ -544,6 +547,7 @@ pub mod tests {
                 pcs_config: PcsConfig {
                     pow_bits: 26,
                     fri_config: FriConfig::new(0, 1, 70),
+                    lifting_log_size: None,
                 },
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
                 channel_salt: 0,
