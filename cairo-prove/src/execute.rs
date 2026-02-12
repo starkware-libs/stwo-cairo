@@ -66,7 +66,7 @@ fn program_and_hints_from_executable(executable: &Executable) -> (Program, HashM
         entrypoint.builtins.clone(),
         data,
         entrypoint.offset,
-        entrypoint.offset + 4,
+        data.len(),
         hints,
         Default::default(),
         Default::default(),
