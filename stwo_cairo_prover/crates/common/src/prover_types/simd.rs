@@ -705,7 +705,7 @@ impl Unpack for PackedFelt252 {
 mod tests {
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
-    use stwo::core::fields::m31::{M31, P};
+    use stwo_types::fields::m31::{M31, P};
     type BigUInt384 = BigUInt<384, 6, 32>;
     type PackedBigUInt384 = PackedBigUInt<384, 6, 32>;
     type BigUInt768 = BigUInt<768, 12, 64>;

@@ -1,5 +1,5 @@
-use stwo::core::fields::m31::M31;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
+use stwo_types::fields::m31::M31;
 
 use super::preprocessed_trace::PreProcessedColumn;
 #[cfg(feature = "prover")]

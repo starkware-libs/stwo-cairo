@@ -8,8 +8,8 @@ use starknet_curve::curve_params::{
 };
 use starknet_types_core::curve::ProjectivePoint;
 use starknet_types_core::felt::Felt;
-use stwo::core::fields::m31::{BaseField, M31};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
+use stwo_types::fields::m31::{BaseField, M31};
 
 use super::felt_batch_inverse::felt_batch_inverse;
 use super::preprocessed_trace::PreProcessedColumn;

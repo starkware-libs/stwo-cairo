@@ -6,13 +6,16 @@ use ruint::Uint;
 use serde::{Deserialize, Serialize};
 use starknet_ff::FieldElement;
 use starknet_types_core::felt::Felt as StarknetTypesFelt;
+#[cfg(feature = "prover")]
 use stwo::core::channel::Channel;
+#[cfg(feature = "prover")]
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 
-pub type M31 = stwo::core::fields::m31::M31;
-pub type QM31 = stwo::core::fields::qm31::QM31;
+pub type M31 = stwo_types::fields::m31::M31;
+pub type QM31 = stwo_types::fields::qm31::QM31;
 
 pub const PRIME: u32 = 2_u32.pow(31) - 1;
+pub use crate::memory::FELT252_BITS_PER_WORD;
 
 pub trait AlgebraicType: ProverType + Add + Sub + Mul + Div {}
 impl AlgebraicType for M31 {}
@@ -47,6 +50,7 @@ impl ProverType for M31 {
     }
 }
 
+#[cfg_attr(feature = "prover", derive(CairoSerialize, CairoDeserialize))]
 #[derive(
     Copy,
     Clone,
@@ -57,8 +61,6 @@ impl ProverType for M31 {
     Eq,
     PartialEq,
     Hash,
-    CairoSerialize,
-    CairoDeserialize,
 )]
 pub struct CasmState {
     pub pc: M31,
@@ -70,6 +72,7 @@ impl CasmState {
     pub fn values(&self) -> [M31; 3] {
         [self.pc, self.ap, self.fp]
     }
+    #[cfg(feature = "prover")]
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.pc.0 as u64);
         channel.mix_u64(self.ap.0 as u64);
@@ -448,7 +451,6 @@ impl BitXor for UInt64 {
 }
 
 pub const FELT252_N_WORDS: usize = 28;
-pub const FELT252_BITS_PER_WORD: usize = 9;
 
 // NOTE! This assumes Felt252 has shape (28, 9).
 pub const P_FELTS: [u32; FELT252_N_WORDS] = [
