@@ -18,7 +18,7 @@ log.workspace = true
 num-traits.workspace = true
 paste.workspace = true
 # TODO(Ohad): Add parallel config.
-stwo-cairo-common = { path = "../common", version = "~1.1.0" }
+stwo-cairo-common = { path = "../common", version = "~1.1.0", default-features = false, features = ["serialize"] }
 rayon.workspace = true
 serde.workspace = true
 starknet-curve.workspace = true
