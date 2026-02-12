@@ -8,7 +8,7 @@ use crate::builtins::BuiltinSegments;
 use crate::relocator::Relocator;
 use crate::{PublicSegmentContext, StateTransitions};
 
-pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
+pub fn adapt(runner: &CairoRunner, generic_opcode_reroute: bool) -> Result<ProverInput> {
     let _span = span!(Level::INFO, "adapt").entered();
 
     // Extract the relevant information from the Runner.
@@ -32,7 +32,8 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
     let public_memory_addresses = relocator.relocate_public_addresses(public_memory_offsets);
 
     let memory = MemoryBuilder::from_iter(MemoryConfig::default(), relocated_memory);
-    let state_transitions = StateTransitions::from_slice_parallel(&relocated_trace, &memory);
+    let state_transitions =
+        StateTransitions::from_slice_parallel(&relocated_trace, &memory, generic_opcode_reroute);
     info!(
         "Opcode counts: {:?}",
         state_transitions.casm_states_by_opcode.counts()
@@ -74,7 +75,8 @@ mod tests {
         let is_fix_mode = std::env::var("FIX") == Ok("1".to_string());
 
         let compiled_program = get_compiled_cairo_program_path(test_name);
-        let mut prover_input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
+        let mut prover_input =
+            run_and_adapt(&compiled_program, ProgramType::Json, None, false).unwrap();
         // Public memory addresses are not deterministic, sort them.
         prover_input.public_memory_addresses.sort();
 

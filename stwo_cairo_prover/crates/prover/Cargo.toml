@@ -23,7 +23,9 @@ itertools.workspace = true
 num-traits.workspace = true
 paste.workspace = true
 # TODO(Ohad): Add parallel config.
-stwo-cairo-common = { path = "../common", version = "~1.0.0", features = ["prover"] }
+stwo-cairo-common = { path = "../common", version = "~1.0.0", features = [
+    "prover",
+] }
 stwo-cairo-adapter = { path = "../adapter", version = "~1.0.0" }
 rayon.workspace = true
 serde.workspace = true
@@ -35,7 +37,10 @@ starknet-types-core.workspace = true
 stwo-cairo-serialize = { path = "../cairo-serialize", version = "~1.0.0" }
 cairo-air = { path = "../cairo-air", version = "~1.0.0" }
 stwo = { workspace = true, features = ["parallel", "prover"] }
-stwo-constraint-framework = { workspace = true, features = ["parallel", "prover"] }
+stwo-constraint-framework = { workspace = true, features = [
+    "parallel",
+    "prover",
+] }
 tracing.workspace = true
 dashmap.workspace = true
 indexmap.workspace = true
@@ -47,7 +52,9 @@ sonic-rs.workspace = true
 # Override getrandom feature flags for indirect dependencies.
 [target.'cfg(any(target_arch = "wasm32", target_arch = "wasm64"))'.dependencies]
 getrandom_v2 = { version = "0.2", package = "getrandom", features = ["js"] }
-getrandom_v3 = { version = "0.3", package = "getrandom", features = ["wasm_js"] }
+getrandom_v3 = { version = "0.3", package = "getrandom", features = [
+    "wasm_js",
+] }
 
 [dev-dependencies]
 stwo-cairo-dev-utils.workspace = true
