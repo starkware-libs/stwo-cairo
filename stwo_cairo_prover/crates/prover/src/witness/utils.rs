@@ -5,18 +5,21 @@ use cairo_air::claims::CairoClaim;
 use cairo_air::PreProcessedTraceVariant;
 use itertools::Itertools;
 use num_traits::{One, Zero};
+use rayon::iter::{
+    IndexedParallelIterator, IntoParallelIterator, IntoParallelRefMutIterator, ParallelIterator,
+};
 use stwo::core::channel::MerkleChannel;
 use stwo::core::fields::m31::M31;
 use stwo::core::pcs::{TreeSubspan, TreeVec};
 use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
-use stwo::prover::backend::simd::column::BaseColumn;
 use stwo::prover::backend::simd::conversion::Pack;
 use stwo::prover::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
-use stwo::prover::backend::{Backend, BackendForChannel};
+use stwo::prover::backend::{Backend, BackendForChannel, Column};
 use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
+use stwo_cairo_common::preprocessed_columns::simd_prelude::BaseColumn;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
 
@@ -38,8 +41,11 @@ impl AtomicMultiplicityColumn {
     /// Creates a new `AtomicMultiplicityColumn` with the given size. The elements are initialized
     /// to 0.
     pub fn new(size: usize) -> Self {
+        let rounded_size = size.div_ceil(N_LANES) * N_LANES;
         Self {
-            data: (0..size as u32).map(|_| AtomicU32::new(0)).collect(),
+            data: (0..rounded_size as u32)
+                .map(|_| AtomicU32::new(0))
+                .collect(),
         }
     }
 
@@ -47,18 +53,21 @@ impl AtomicMultiplicityColumn {
         self.data[address as usize].fetch_add(1, Ordering::Relaxed);
     }
 
-    /// Returns the internal data as a Vec<PackedM31>. The last element of the vector is padded with
-    /// zeros if needed. This function performs a copy on the inner data, If atomics are not
-    /// necessary, use [`MultiplicityColumn`] instead.
+    /// Returns the internal data as a Vec<PackedM31>.
+    ///
+    /// Assumes that the length of the column is a multiple of N_LANES.
     pub fn into_simd_vec(self) -> Vec<PackedM31> {
-        // Safe because the data is aligned to the size of PackedM31 and the size of the data is a
-        // multiple of N_LANES.
-        BaseColumn::from_iter(
-            self.data
-                .into_iter()
-                .map(|a| M31(a.load(Ordering::Relaxed))),
-        )
-        .data
+        let mut res = unsafe { BaseColumn::uninitialized(self.data.len().div_ceil(N_LANES)) };
+        res.data
+            .par_iter_mut()
+            .zip(self.data.into_par_iter().chunks(N_LANES))
+            .for_each(|(dst, chunk)| {
+                let arr: [_; N_LANES] = chunk.try_into().unwrap();
+
+                *dst = PackedM31::from_array(arr.map(|v| M31::from_u32_unchecked(v.into_inner())));
+            });
+
+        res.data
     }
 }
 
