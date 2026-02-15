@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU32, Ordering};
 
+use bytemuck::Zeroable;
 use cairo_air::claims::CairoClaim;
 use cairo_air::PreProcessedTraceVariant;
 use itertools::Itertools;
@@ -10,9 +11,8 @@ use stwo::core::fields::m31::M31;
 use stwo::core::pcs::{TreeSubspan, TreeVec};
 use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
-use stwo::prover::backend::simd::column::BaseColumn;
 use stwo::prover::backend::simd::conversion::Pack;
-use stwo::prover::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
+use stwo::prover::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
 use stwo::prover::backend::{Backend, BackendForChannel};
 use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
@@ -32,33 +32,31 @@ pub fn pack_values<T: Pack>(values: &[T]) -> Vec<T::SimdType> {
 /// A column of multiplicities for lookup arguments. Allows increasing the multiplicity at a given
 /// index. This version uses atomic operations to increase the multiplicity, and is `Send`.
 pub struct AtomicMultiplicityColumn {
-    data: Vec<AtomicU32>,
+    data: Vec<PackedM31>,
 }
 impl AtomicMultiplicityColumn {
     /// Creates a new `AtomicMultiplicityColumn` with the given size. The elements are initialized
     /// to 0.
     pub fn new(size: usize) -> Self {
         Self {
-            data: (0..size as u32).map(|_| AtomicU32::new(0)).collect(),
+            data: vec![PackedBaseField::zeroed(); size.div_ceil(N_LANES)],
         }
     }
 
+    /// Atomically increments the multiplicity address by 1.
+    ///
+    /// # Safety
+    /// Caller must ensure `address` is in bounds for the column (no bounds check is performed).
     pub fn increase_at(&self, address: u32) {
-        self.data[address as usize].fetch_add(1, Ordering::Relaxed);
+        let ptr = unsafe { (self.data.as_ptr() as *mut u32).add(address as usize) };
+        unsafe { AtomicU32::from_ptr(ptr).fetch_add(1, Ordering::Relaxed) };
     }
 
     /// Returns the internal data as a Vec<PackedM31>. The last element of the vector is padded with
     /// zeros if needed. This function performs a copy on the inner data, If atomics are not
     /// necessary, use [`MultiplicityColumn`] instead.
     pub fn into_simd_vec(self) -> Vec<PackedM31> {
-        // Safe because the data is aligned to the size of PackedM31 and the size of the data is a
-        // multiple of N_LANES.
-        BaseColumn::from_iter(
-            self.data
-                .into_iter()
-                .map(|a| M31(a.load(Ordering::Relaxed))),
-        )
-        .data
+        self.data
     }
 }
 
