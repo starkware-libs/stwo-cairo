@@ -7,17 +7,7 @@ repository.workspace = true
 description = "Utility functions for Stwo Cairo prover"
 
 [dependencies]
-cairo-lang-executable.workspace = true
-cairo-lang-runner.workspace = true
-cairo-lang-utils.workspace = true
-cairo-vm = { workspace = true, default_features = true }
-stwo-cairo-adapter = { path = "../adapter", version = "~1.0.0" }
-anyhow.workspace = true
-clap.workspace = true
 env_logger.workspace = true
 log.workspace = true
-thiserror.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
-serde.workspace = true
-serde_json.workspace = true

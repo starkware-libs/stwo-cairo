@@ -100,26 +100,6 @@ jobs:
           RUST_LOG_SPAN_EVENTS: enter,close
           RUST_LOG: info
 
-  cairo-prove-test:
-    runs-on: stwo-cairo-avx-l
-    defaults:
-      run:
-        working-directory: ./cairo-prove
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install build dependencies
-        run: sudo apt-get update && sudo apt-get install -y build-essential
-      - name: Install Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-      - uses: software-mansion/setup-scarb@v1
-        with:
-          scarb-version: "2.12.2"
-      - name: Fetch cache
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: cairo-prove
-      - run: ./scripts/test_flow.sh
-
   cairo-prover-wasm:
     runs-on: ubuntu-latest
     defaults:

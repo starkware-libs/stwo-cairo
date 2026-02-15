@@ -13,7 +13,6 @@ extract-mem-trace = []
 
 [dependencies]
 bytemuck.workspace = true
-cairo-lang-casm.workspace = true
 cairo-vm.workspace = true
 indoc.workspace = true
 itertools.workspace = true
@@ -33,8 +32,7 @@ crypto-bigint = "0.5.1"
 anyhow.workspace = true
 
 [dev-dependencies]
-stwo-cairo-utils.workspace = true
-cairo-lang-casm.workspace = true
+cairo-lang-casm = "=2.14.1-dev.0"
 rand.workspace = true
 test-case.workspace = true
 stwo-cairo-dev-utils.workspace = true
