@@ -28,9 +28,9 @@ log.workspace = true
 regex = "1.11.1"
 num-bigint = "0.4.6"
 bincode = "1.3.3"
-cairo-lang-runner = "=2.14.1-dev.0"
-cairo-lang-executable = "=2.14.1-dev.0"
-cairo-lang-utils = "=2.14.1-dev.0"
+cairo-lang-runner = "=2.15.0"
+cairo-lang-executable = "=2.15.0"
+cairo-lang-utils = "=2.15.0"
 
 serde_json.workspace = true
 cairo-vm.workspace = true

@@ -22,7 +22,7 @@ jobs:
       - name: Install Scarb
         uses: software-mansion/setup-scarb@v1
         with:
-          scarb-version: "2.12.2"
+          scarb-version: "2.15.0"
       - uses: Swatinem/rust-cache@v2
       - name: Run tests
         run: cargo test --release --features="nightly"
