@@ -50,12 +50,12 @@ pub impl FlatClaimImpl of FlatClaimTrait {
     }
 
     fn mix_into(self: @FlatClaim, ref channel: Channel) {
-        channel.mix_felts(pack_into_qm31s(array![self.component_enable_bits.len().into()].span()));
+        channel.mix_felts(pack_into_qm31s(array![self.component_enable_bits.len()].span()));
         channel.mix_felts(pack_into_qm31s(enable_bits_to_u32s(*self.component_enable_bits)));
         channel.mix_felts(pack_into_qm31s(*self.component_log_sizes));
         channel
             .mix_felts(
-                pack_into_qm31s(array![self.public_data.public_memory.program.len().into()].span()),
+                pack_into_qm31s(array![self.public_data.public_memory.program.len()].span()),
             );
         self.public_data.mix_into(ref channel);
     }

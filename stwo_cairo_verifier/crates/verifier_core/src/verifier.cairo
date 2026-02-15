@@ -135,16 +135,35 @@ fn try_extract_composition_eval(
     oods_point: CirclePoint<QM31>,
     composition_log_size: u32,
 ) -> Option<QM31> {
-    let cols = *mask.last()?;
-    let [c0, c1, c2, c3, c4, c5, c6, c7] = (*cols.try_into()?).unbox();
-    let [v0] = (*c0.try_into()?).unbox();
-    let [v1] = (*c1.try_into()?).unbox();
-    let [v2] = (*c2.try_into()?).unbox();
-    let [v3] = (*c3.try_into()?).unbox();
-    let [v4] = (*c4.try_into()?).unbox();
-    let [v5] = (*c5.try_into()?).unbox();
-    let [v6] = (*c6.try_into()?).unbox();
-    let [v7] = (*c7.try_into()?).unbox();
+    // `multi_pop_front` + `pop_front` is used as a workaround for a compiler regression in
+    // nested span-to-fixed-size-array conversion.
+    // TODO(Gil): Revert to fixed-size-array extraction (`try_into`) once that compiler issue is
+    // fixed.
+    let mut cols = *mask.last()?;
+    let [mut c0, mut c1, mut c2, mut c3, mut c4, mut c5, mut c6, mut c7] = (*(cols
+        .multi_pop_front()?))
+        .unbox();
+    let v0 = *c0.pop_front()?;
+    let v1 = *c1.pop_front()?;
+    let v2 = *c2.pop_front()?;
+    let v3 = *c3.pop_front()?;
+    let v4 = *c4.pop_front()?;
+    let v5 = *c5.pop_front()?;
+    let v6 = *c6.pop_front()?;
+    let v7 = *c7.pop_front()?;
+
+    // Keep strict shape validation here: exactly 8 columns and exactly 1 value per column.
+    if !cols.is_empty()
+        || !c0.is_empty()
+        || !c1.is_empty()
+        || !c2.is_empty()
+        || !c3.is_empty()
+        || !c4.is_empty()
+        || !c5.is_empty()
+        || !c6.is_empty()
+        || !c7.is_empty() {
+        return None;
+    }
 
     let [left, right] = [
         QM31Trait::from_partial_evals([v0, v1, v2, v3]),

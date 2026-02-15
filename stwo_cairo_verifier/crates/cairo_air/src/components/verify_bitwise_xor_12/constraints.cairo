@@ -104,11 +104,10 @@ pub fn evaluate_constraints_at_point(
     let constraint_quotient = ((curr_cum_sum
         - prev_cum_sum
         - neg_1_cum_sum
-        + claimed_sum * column_size.inverse().into())
+        + claimed_sum * column_size.inverse())
         * combination_0
         * combination_1
         + multiplicity_0 * combination_1
         + multiplicity_1 * combination_0);
     sum = sum * random_coeff + constraint_quotient;
 }
-

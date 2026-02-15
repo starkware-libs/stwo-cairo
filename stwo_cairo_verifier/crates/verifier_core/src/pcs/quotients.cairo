@@ -7,7 +7,10 @@ use crate::circle::{
 };
 use crate::fields::cm31::{CM31, CM31Trait, MulByCM31Trait};
 use crate::fields::m31::{M31, M31Zero, MulByM31Trait};
-use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31One, QM31Trait};
+use crate::fields::qm31::{
+    PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31One, QM31Trait,
+    to_packed_unreduced_qm31,
+};
 use crate::fields::{BatchInvertible, Invertible};
 use crate::poly::circle::{
     CanonicCosetImpl, CanonicCosetTrait, CircleDomainImpl, CircleEvaluationImpl,
@@ -419,16 +422,16 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
                 let alpha_mul_c = minus_two_c * *random_pow;
                 let re_cv = CM31Trait::pack(re_cv_a, re_cv_b);
                 let im_cv = CM31Trait::pack(im_cv_a, im_cv_b);
-                let alpha_mul_c_packed: PackedUnreducedQM31 = alpha_mul_c.into();
+                let alpha_mul_c_packed = to_packed_unreduced_qm31(alpha_mul_c);
 
                 alpha_mul_c_mul_re_sum += alpha_mul_c_packed.mul_cm31(re_cv);
                 alpha_mul_c_mul_im_sum += alpha_mul_c_packed.mul_cm31(im_cv);
                 indexed_alpha_mul_c.append((*column_idx, alpha_mul_c_packed));
             }
 
-            let alpha_mul_c_mul_im_sum_reduced: PackedUnreducedQM31 = alpha_mul_c_mul_im_sum
-                .reduce()
-                .into();
+            let alpha_mul_c_mul_im_sum_reduced = to_packed_unreduced_qm31(
+                alpha_mul_c_mul_im_sum.reduce(),
+            );
             let alpha_mul_a_sum = alpha_mul_c_mul_im_sum_reduced.mul_cm31(im_py_inv);
             let alpha_mul_b_sum = alpha_mul_c_mul_re_sum - alpha_mul_a_sum.mul_cm31(re_py);
 
