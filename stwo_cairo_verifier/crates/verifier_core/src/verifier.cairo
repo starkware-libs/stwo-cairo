@@ -136,15 +136,15 @@ fn try_extract_composition_eval(
     composition_log_size: u32,
 ) -> Option<QM31> {
     let cols = *mask.last()?;
-    let [c0, c1, c2, c3, c4, c5, c6, c7] = (*cols.try_into()?).unbox();
-    let [v0] = (*c0.try_into()?).unbox();
-    let [v1] = (*c1.try_into()?).unbox();
-    let [v2] = (*c2.try_into()?).unbox();
-    let [v3] = (*c3.try_into()?).unbox();
-    let [v4] = (*c4.try_into()?).unbox();
-    let [v5] = (*c5.try_into()?).unbox();
-    let [v6] = (*c6.try_into()?).unbox();
-    let [v7] = (*c7.try_into()?).unbox();
+    let [c0, c1, c2, c3, c4, c5, c6, c7]: [Span<QM31>; 8] = (*cols.try_into()?).unbox();
+    let [v0]: [QM31; 1] = (*c0.try_into()?).unbox();
+    let [v1]: [QM31; 1] = (*c1.try_into()?).unbox();
+    let [v2]: [QM31; 1] = (*c2.try_into()?).unbox();
+    let [v3]: [QM31; 1] = (*c3.try_into()?).unbox();
+    let [v4]: [QM31; 1] = (*c4.try_into()?).unbox();
+    let [v5]: [QM31; 1] = (*c5.try_into()?).unbox();
+    let [v6]: [QM31; 1] = (*c6.try_into()?).unbox();
+    let [v7]: [QM31; 1] = (*c7.try_into()?).unbox();
 
     let [left, right] = [
         QM31Trait::from_partial_evals([v0, v1, v2, v3]),

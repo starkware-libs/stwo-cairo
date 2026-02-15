@@ -81,7 +81,7 @@ impl U32TryIntoM31 of TryInto<u32, M31> {
     /// Returns Some if value is in the range `[0, P)`, else returns None.
     #[inline]
     fn try_into(self: u32) -> Option<M31> {
-        match bounded_int::constrain::<u32, P>(self.into()) {
+        match bounded_int::constrain::<u32, P>(self) {
             Ok(x) => Some(M31Trait::new(x)),
             Err(_) => None,
         }
