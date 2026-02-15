@@ -15,9 +15,8 @@ use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
 use thiserror::Error;
 use tracing::{span, Level};
 
-use crate::air::{
-    CairoComponents, MemorySection, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange,
-};
+use crate::air::{MemorySection, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange};
+use crate::cairo_components::CairoComponents;
 use crate::claims::{lookup_sum, CairoClaim};
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
 use crate::components::{

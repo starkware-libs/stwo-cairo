@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use anyhow::Result;
-use cairo_air::air::CairoComponents;
+use cairo_air::cairo_components::{cairo_provers, CairoComponents};
 use cairo_air::claims::lookup_sum;
 use cairo_air::relations::CommonLookupElements;
 use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
@@ -27,7 +27,6 @@ use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_serialize::CairoSerialize;
 use tracing::{event, span, Level};
 
-use crate::utils::cairo_provers;
 use crate::witness::cairo::create_cairo_claim_generator;
 use crate::witness::preprocessed_trace::gen_trace;
 use crate::witness::utils::witness_trace_cells;
@@ -669,6 +668,7 @@ pub mod tests {
                     preprocessed_trace: PreProcessedTraceVariant::CanonicalSmall,
                     channel_salt: 0,
                     store_polynomials_coefficients: false,
+                    include_all_preprocessed_columns: false,
                 };
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();

@@ -1,9 +1,12 @@
 use itertools::{chain, Itertools};
 use serde::{Deserialize, Serialize};
+use stwo::core::air::Component as StwoComponent;
 use stwo::core::channel::Channel;
 use stwo::core::fields::m31::M31;
 use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
 use stwo::core::pcs::TreeVec;
+use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::ComponentProver;
 use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, N_M31_IN_SMALL_FELT252};
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{PreProcessedColumn, Seq};
 use stwo_cairo_common::prover_types::cpu::FELT252_N_WORDS;
@@ -371,6 +374,59 @@ impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_felts(&self.big_claimed_sums);
         channel.mix_felts(&[self.small_claimed_sum]);
+    }
+}
+
+/// The memory_id_to_big component contains Vec<BigComponent> and SmallComponent.
+pub struct Component {
+    pub big_components: Vec<BigComponent>,
+    pub small_component: SmallComponent,
+}
+
+impl Component {
+    pub fn new(
+        tree_span_provider: &mut TraceLocationAllocator,
+        claim: &Claim,
+        common_lookup_elements: relations::CommonLookupElements,
+        interaction_claim: &InteractionClaim,
+    ) -> Self {
+        let big_components = big_components_from_claim(
+            &claim.big_log_sizes,
+            &interaction_claim.big_claimed_sums,
+            &common_lookup_elements,
+            tree_span_provider,
+        );
+
+        let small_component = SmallComponent::new(
+            tree_span_provider,
+            SmallEval::new(claim, common_lookup_elements),
+            interaction_claim.small_claimed_sum,
+        );
+
+        Self {
+            big_components,
+            small_component,
+        }
+    }
+
+    pub fn components(&self) -> Vec<&dyn StwoComponent> {
+        let mut components: Vec<&dyn StwoComponent> = self
+            .big_components
+            .iter()
+            .map(|c| c as &dyn StwoComponent)
+            .collect();
+        components.push(&self.small_component as &dyn StwoComponent);
+        components
+    }
+
+    pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
+        let mut provers: Vec<&dyn ComponentProver<SimdBackend>> = self
+            .big_components
+            .iter()
+            .map(|c| c as &dyn ComponentProver<SimdBackend>)
+            .collect();
+        provers.push(&self.small_component as &dyn ComponentProver<SimdBackend>);
+        provers
     }
 }
 

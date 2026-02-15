@@ -86,9 +86,3 @@ pub(crate) fn indented_component_display<E: FrameworkEval>(
         .join("\n")
 }
 
-pub(crate) fn display_components<E: FrameworkEval>(components: &[FrameworkComponent<E>]) -> String {
-    components
-        .iter()
-        .map(|component| indented_component_display(component))
-        .join("\n")
-}
