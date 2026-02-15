@@ -82,17 +82,29 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut memory_id_to_big_sum_0: QM31 = Zero::zero();
+        let mut numerator_0: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_1: QM31 = Zero::zero();
+        let mut numerator_1: QM31 = Zero::zero();
         let mut range_check_8_sum_2: QM31 = Zero::zero();
+        let mut numerator_2: QM31 = Zero::zero();
         let mut range_check_8_sum_3: QM31 = Zero::zero();
+        let mut numerator_3: QM31 = Zero::zero();
         let mut range_check_8_sum_4: QM31 = Zero::zero();
+        let mut numerator_4: QM31 = Zero::zero();
         let mut range_check_8_sum_5: QM31 = Zero::zero();
+        let mut numerator_5: QM31 = Zero::zero();
         let mut partial_ec_mul_window_bits_18_sum_6: QM31 = Zero::zero();
+        let mut numerator_6: QM31 = Zero::zero();
         let mut partial_ec_mul_window_bits_18_sum_7: QM31 = Zero::zero();
+        let mut numerator_7: QM31 = Zero::zero();
         let mut partial_ec_mul_window_bits_18_sum_8: QM31 = Zero::zero();
+        let mut numerator_8: QM31 = Zero::zero();
         let mut partial_ec_mul_window_bits_18_sum_9: QM31 = Zero::zero();
+        let mut numerator_9: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_10: QM31 = Zero::zero();
+        let mut numerator_10: QM31 = Zero::zero();
         let mut pedersen_aggregator_window_bits_18_sum_11: QM31 = Zero::zero();
+        let mut numerator_11: QM31 = Zero::zero();
         let seq = preprocessed_mask_values
             .get_and_mark_used(seq_column_idx(*(self.claim.log_size)));
 
@@ -302,7 +314,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             partial_ec_mul_window_bits_18_output_limb_67_col202,
             partial_ec_mul_window_bits_18_output_limb_68_col203,
             partial_ec_mul_window_bits_18_output_limb_69_col204,
-            pedersen_aggregator_window_bits_18_multiplicity,
+            multiplicity_0_col205,
         ]: [Span<QM31>; 206] =
             (*trace_mask_values
             .multi_pop_front()
@@ -1079,10 +1091,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_aggregator_window_bits_18_multiplicity]: [QM31; 1] =
-            (*pedersen_aggregator_window_bits_18_multiplicity
-            .try_into()
-            .unwrap())
+        let [multiplicity_0_col205]: [QM31; 1] = (*multiplicity_0_col205.try_into().unwrap())
             .unbox();
 
         core::internal::revoke_ap_tracking();
@@ -1119,6 +1128,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             value_limb_27_col30,
             self.common_lookup_elements,
             ref memory_id_to_big_sum_0,
+            ref numerator_0,
             ref sum,
             random_coeff,
         );
@@ -1154,6 +1164,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             value_limb_27_col58,
             self.common_lookup_elements,
             ref memory_id_to_big_sum_1,
+            ref numerator_1,
             ref sum,
             random_coeff,
         );
@@ -1172,7 +1183,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             rc_input_col61,
             self.common_lookup_elements,
             ref range_check_8_sum_2,
+            ref numerator_2,
             ref range_check_8_sum_3,
+            ref numerator_3,
             ref sum,
             random_coeff,
         );
@@ -1191,7 +1204,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             rc_input_col64,
             self.common_lookup_elements,
             ref range_check_8_sum_4,
+            ref numerator_4,
             ref range_check_8_sum_5,
+            ref numerator_5,
             ref sum,
             random_coeff,
         );
@@ -1249,6 +1264,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ]
                     .span(),
             );
+        numerator_6 = qm31_const::<1, 0, 0, 0>();
 
         partial_ec_mul_window_bits_18_sum_7 = self
             .common_lookup_elements
@@ -1329,6 +1345,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ]
                     .span(),
             );
+        numerator_7 = qm31_const::<1, 0, 0, 0>();
         let partial_ec_mul_window_bits_18_chain_id_tmp_94cb4_23: QM31 =
             (partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8
             + qm31_const::<1, 0, 0, 0>());
@@ -1413,6 +1430,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ]
                     .span(),
             );
+        numerator_8 = qm31_const::<1, 0, 0, 0>();
 
         partial_ec_mul_window_bits_18_sum_9 = self
             .common_lookup_elements
@@ -1493,6 +1511,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ]
                     .span(),
             );
+        numerator_9 = qm31_const::<1, 0, 0, 0>();
 
         memory_id_to_big_sum_10 = self
             .common_lookup_elements
@@ -1530,6 +1549,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ]
                     .span(),
             );
+        numerator_10 = qm31_const::<1, 0, 0, 0>();
 
         pedersen_aggregator_window_bits_18_sum_11 = self
             .common_lookup_elements
@@ -1540,12 +1560,24 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ]
                     .span(),
             );
+        numerator_11 = multiplicity_0_col205;
 
         lookup_constraints(
             ref sum,
             random_coeff,
             claimed_sum,
-            pedersen_aggregator_window_bits_18_multiplicity,
+            numerator_0,
+            numerator_1,
+            numerator_2,
+            numerator_3,
+            numerator_4,
+            numerator_5,
+            numerator_6,
+            numerator_7,
+            numerator_8,
+            numerator_9,
+            numerator_10,
+            numerator_11,
             column_size,
             ref interaction_trace_mask_values,
             memory_id_to_big_sum_0,
@@ -1569,7 +1601,18 @@ fn lookup_constraints(
     ref sum: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    pedersen_aggregator_window_bits_18_multiplicity: QM31,
+    numerator_0: QM31,
+    numerator_1: QM31,
+    numerator_2: QM31,
+    numerator_3: QM31,
+    numerator_4: QM31,
+    numerator_5: QM31,
+    numerator_6: QM31,
+    numerator_7: QM31,
+    numerator_8: QM31,
+    numerator_9: QM31,
+    numerator_10: QM31,
+    numerator_11: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     memory_id_to_big_sum_0: QM31,
@@ -1652,8 +1695,8 @@ fn lookup_constraints(
     ))
         * memory_id_to_big_sum_0
         * memory_id_to_big_sum_1)
-        - memory_id_to_big_sum_0
-        - memory_id_to_big_sum_1);
+        - (memory_id_to_big_sum_0 * numerator_1)
+        - (memory_id_to_big_sum_1 * numerator_0));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1662,8 +1705,8 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]))
         * range_check_8_sum_2
         * range_check_8_sum_3)
-        - range_check_8_sum_2
-        - range_check_8_sum_3);
+        - (range_check_8_sum_2 * numerator_3)
+        - (range_check_8_sum_3 * numerator_2));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1672,8 +1715,8 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7]))
         * range_check_8_sum_4
         * range_check_8_sum_5)
-        - range_check_8_sum_4
-        - range_check_8_sum_5);
+        - (range_check_8_sum_4 * numerator_5)
+        - (range_check_8_sum_5 * numerator_4));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1682,8 +1725,8 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals([trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11]))
         * partial_ec_mul_window_bits_18_sum_6
         * partial_ec_mul_window_bits_18_sum_7)
-        - partial_ec_mul_window_bits_18_sum_6
-        + partial_ec_mul_window_bits_18_sum_7);
+        - (partial_ec_mul_window_bits_18_sum_6 * numerator_7)
+        + (partial_ec_mul_window_bits_18_sum_7 * numerator_6));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1694,8 +1737,8 @@ fn lookup_constraints(
         ))
         * partial_ec_mul_window_bits_18_sum_8
         * partial_ec_mul_window_bits_18_sum_9)
-        - partial_ec_mul_window_bits_18_sum_8
-        + partial_ec_mul_window_bits_18_sum_9);
+        - (partial_ec_mul_window_bits_18_sum_8 * numerator_9)
+        + (partial_ec_mul_window_bits_18_sum_9 * numerator_8));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1708,8 +1751,8 @@ fn lookup_constraints(
         + (claimed_sum * (column_size.inverse().into())))
         * memory_id_to_big_sum_10
         * pedersen_aggregator_window_bits_18_sum_11)
-        + (memory_id_to_big_sum_10 * pedersen_aggregator_window_bits_18_multiplicity)
-        - pedersen_aggregator_window_bits_18_sum_11);
+        + (memory_id_to_big_sum_10 * numerator_11)
+        - (pedersen_aggregator_window_bits_18_sum_11 * numerator_10));
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]

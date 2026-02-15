@@ -8,6 +8,7 @@ pub fn bitwise_xor_num_bits_9_evaluate(
     xor_col0: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref verify_bitwise_xor_9_sum_0: QM31,
+    ref numerator_0: QM31,
     ref sum: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
@@ -21,6 +22,7 @@ pub fn bitwise_xor_num_bits_9_evaluate(
             ]
                 .span(),
         );
+    numerator_0 = qm31_const::<1, 0, 0, 0>();
 
     []
 }

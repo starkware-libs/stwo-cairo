@@ -100,11 +100,11 @@ impl FrameworkEval for Eval {
         let blake_sigma_15 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "blake_sigma_15".to_owned(),
         });
-        let multiplicity_0 = eval.next_trace_mask();
+        let multiplicity_0_col0 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_0),
+            -E::EF::from(multiplicity_0_col0.clone()),
             &[
                 M31_1805967942.clone(),
                 seq_4.clone(),

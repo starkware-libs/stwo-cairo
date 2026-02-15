@@ -19,6 +19,7 @@ impl MemVerifyEqual {
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
+        let M31_1 = E::F::from(M31::from(1));
         let M31_1444891767 = E::F::from(M31::from(1444891767));
 
         ReadId::evaluate(
@@ -29,7 +30,7 @@ impl MemVerifyEqual {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1444891767.clone(),
                 mem_verify_equal_input_address2.clone(),

@@ -220,11 +220,11 @@ impl FrameworkEval for Eval {
         let pedersen_points_small_55 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "pedersen_points_small_55".to_owned(),
         });
-        let multiplicity_0 = eval.next_trace_mask();
+        let multiplicity_0_col0 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_0),
+            -E::EF::from(multiplicity_0_col0.clone()),
             &[
                 M31_1791500038.clone(),
                 seq_15.clone(),

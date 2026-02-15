@@ -86,79 +86,153 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut verify_instruction_sum_0: QM31 = Zero::zero();
+        let mut numerator_0: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_1: QM31 = Zero::zero();
+        let mut numerator_1: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_2: QM31 = Zero::zero();
+        let mut numerator_2: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_3: QM31 = Zero::zero();
+        let mut numerator_3: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_4: QM31 = Zero::zero();
+        let mut numerator_4: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_5: QM31 = Zero::zero();
+        let mut numerator_5: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_6: QM31 = Zero::zero();
+        let mut numerator_6: QM31 = Zero::zero();
         let mut range_check_7_2_5_sum_7: QM31 = Zero::zero();
+        let mut numerator_7: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_8: QM31 = Zero::zero();
+        let mut numerator_8: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_9: QM31 = Zero::zero();
+        let mut numerator_9: QM31 = Zero::zero();
         let mut range_check_7_2_5_sum_10: QM31 = Zero::zero();
+        let mut numerator_10: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_11: QM31 = Zero::zero();
+        let mut numerator_11: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_12: QM31 = Zero::zero();
+        let mut numerator_12: QM31 = Zero::zero();
         let mut range_check_7_2_5_sum_13: QM31 = Zero::zero();
+        let mut numerator_13: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_14: QM31 = Zero::zero();
+        let mut numerator_14: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_15: QM31 = Zero::zero();
+        let mut numerator_15: QM31 = Zero::zero();
         let mut range_check_7_2_5_sum_16: QM31 = Zero::zero();
+        let mut numerator_16: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_17: QM31 = Zero::zero();
+        let mut numerator_17: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_18: QM31 = Zero::zero();
+        let mut numerator_18: QM31 = Zero::zero();
         let mut range_check_7_2_5_sum_19: QM31 = Zero::zero();
+        let mut numerator_19: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_20: QM31 = Zero::zero();
+        let mut numerator_20: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_21: QM31 = Zero::zero();
+        let mut numerator_21: QM31 = Zero::zero();
         let mut range_check_7_2_5_sum_22: QM31 = Zero::zero();
+        let mut numerator_22: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_23: QM31 = Zero::zero();
+        let mut numerator_23: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_24: QM31 = Zero::zero();
+        let mut numerator_24: QM31 = Zero::zero();
         let mut range_check_7_2_5_sum_25: QM31 = Zero::zero();
+        let mut numerator_25: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_26: QM31 = Zero::zero();
+        let mut numerator_26: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_27: QM31 = Zero::zero();
+        let mut numerator_27: QM31 = Zero::zero();
         let mut range_check_7_2_5_sum_28: QM31 = Zero::zero();
+        let mut numerator_28: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_29: QM31 = Zero::zero();
+        let mut numerator_29: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_30: QM31 = Zero::zero();
+        let mut numerator_30: QM31 = Zero::zero();
         let mut range_check_7_2_5_sum_31: QM31 = Zero::zero();
+        let mut numerator_31: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_32: QM31 = Zero::zero();
+        let mut numerator_32: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_33: QM31 = Zero::zero();
+        let mut numerator_33: QM31 = Zero::zero();
         let mut verify_bitwise_xor_8_sum_34: QM31 = Zero::zero();
+        let mut numerator_34: QM31 = Zero::zero();
         let mut verify_bitwise_xor_8_sum_35: QM31 = Zero::zero();
+        let mut numerator_35: QM31 = Zero::zero();
         let mut verify_bitwise_xor_8_sum_36: QM31 = Zero::zero();
+        let mut numerator_36: QM31 = Zero::zero();
         let mut verify_bitwise_xor_8_sum_37: QM31 = Zero::zero();
+        let mut numerator_37: QM31 = Zero::zero();
         let mut blake_round_sum_38: QM31 = Zero::zero();
+        let mut numerator_38: QM31 = Zero::zero();
         let mut blake_round_sum_39: QM31 = Zero::zero();
+        let mut numerator_39: QM31 = Zero::zero();
         let mut triple_xor_32_sum_40: QM31 = Zero::zero();
+        let mut numerator_40: QM31 = Zero::zero();
         let mut triple_xor_32_sum_41: QM31 = Zero::zero();
+        let mut numerator_41: QM31 = Zero::zero();
         let mut triple_xor_32_sum_42: QM31 = Zero::zero();
+        let mut numerator_42: QM31 = Zero::zero();
         let mut triple_xor_32_sum_43: QM31 = Zero::zero();
+        let mut numerator_43: QM31 = Zero::zero();
         let mut triple_xor_32_sum_44: QM31 = Zero::zero();
+        let mut numerator_44: QM31 = Zero::zero();
         let mut triple_xor_32_sum_45: QM31 = Zero::zero();
+        let mut numerator_45: QM31 = Zero::zero();
         let mut triple_xor_32_sum_46: QM31 = Zero::zero();
+        let mut numerator_46: QM31 = Zero::zero();
         let mut triple_xor_32_sum_47: QM31 = Zero::zero();
+        let mut numerator_47: QM31 = Zero::zero();
         let mut range_check_7_2_5_sum_48: QM31 = Zero::zero();
+        let mut numerator_48: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_49: QM31 = Zero::zero();
+        let mut numerator_49: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_50: QM31 = Zero::zero();
+        let mut numerator_50: QM31 = Zero::zero();
         let mut range_check_7_2_5_sum_51: QM31 = Zero::zero();
+        let mut numerator_51: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_52: QM31 = Zero::zero();
+        let mut numerator_52: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_53: QM31 = Zero::zero();
+        let mut numerator_53: QM31 = Zero::zero();
         let mut range_check_7_2_5_sum_54: QM31 = Zero::zero();
+        let mut numerator_54: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_55: QM31 = Zero::zero();
+        let mut numerator_55: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_56: QM31 = Zero::zero();
+        let mut numerator_56: QM31 = Zero::zero();
         let mut range_check_7_2_5_sum_57: QM31 = Zero::zero();
+        let mut numerator_57: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_58: QM31 = Zero::zero();
+        let mut numerator_58: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_59: QM31 = Zero::zero();
+        let mut numerator_59: QM31 = Zero::zero();
         let mut range_check_7_2_5_sum_60: QM31 = Zero::zero();
+        let mut numerator_60: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_61: QM31 = Zero::zero();
+        let mut numerator_61: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_62: QM31 = Zero::zero();
+        let mut numerator_62: QM31 = Zero::zero();
         let mut range_check_7_2_5_sum_63: QM31 = Zero::zero();
+        let mut numerator_63: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_64: QM31 = Zero::zero();
+        let mut numerator_64: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_65: QM31 = Zero::zero();
+        let mut numerator_65: QM31 = Zero::zero();
         let mut range_check_7_2_5_sum_66: QM31 = Zero::zero();
+        let mut numerator_66: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_67: QM31 = Zero::zero();
+        let mut numerator_67: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_68: QM31 = Zero::zero();
+        let mut numerator_68: QM31 = Zero::zero();
         let mut range_check_7_2_5_sum_69: QM31 = Zero::zero();
+        let mut numerator_69: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_70: QM31 = Zero::zero();
+        let mut numerator_70: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_71: QM31 = Zero::zero();
+        let mut numerator_71: QM31 = Zero::zero();
         let mut opcodes_sum_72: QM31 = Zero::zero();
+        let mut numerator_72: QM31 = Zero::zero();
         let mut opcodes_sum_73: QM31 = Zero::zero();
+        let mut numerator_73: QM31 = Zero::zero();
         let seq = preprocessed_mask_values
             .get_and_mark_used(seq_column_idx(*(self.claim.log_size)));
 
@@ -336,7 +410,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             high_14_ms_bits_col170,
             high_5_ms_bits_col171,
             new_state_7_id_col172,
-            opcodes_multiplicity,
+            enabler_col173,
         ]: [Span<QM31>; 174] =
             (*trace_mask_values
             .multi_pop_front()
@@ -699,12 +773,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .unbox();
         let [new_state_7_id_col172]: [QM31; 1] = (*new_state_7_id_col172.try_into().unwrap())
             .unbox();
-        let [opcodes_multiplicity]: [QM31; 1] = (*opcodes_multiplicity.try_into().unwrap()).unbox();
+        let [enabler_col173]: [QM31; 1] = (*enabler_col173.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
-        let constraint_quotient = (opcodes_multiplicity * opcodes_multiplicity
-            - opcodes_multiplicity);
+        // Constraint -
+        let constraint_quotient = (((enabler_col173 * enabler_col173) - enabler_col173));
         sum = sum * random_coeff + constraint_quotient;
         let [
             decode_blake_opcode_output_tmp_53f39_42_limb_0,
@@ -751,15 +825,25 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             dst_id_col37,
             self.common_lookup_elements,
             ref verify_instruction_sum_0,
+            ref numerator_0,
             ref memory_address_to_id_sum_1,
+            ref numerator_1,
             ref memory_id_to_big_sum_2,
+            ref numerator_2,
             ref memory_address_to_id_sum_3,
+            ref numerator_3,
             ref memory_id_to_big_sum_4,
+            ref numerator_4,
             ref memory_address_to_id_sum_5,
+            ref numerator_5,
             ref memory_id_to_big_sum_6,
+            ref numerator_6,
             ref range_check_7_2_5_sum_7,
+            ref numerator_7,
             ref memory_address_to_id_sum_8,
+            ref numerator_8,
             ref memory_id_to_big_sum_9,
+            ref numerator_9,
             ref sum,
             random_coeff,
         );
@@ -830,33 +914,61 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             xor_col91,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_10,
+            ref numerator_10,
             ref memory_address_to_id_sum_11,
+            ref numerator_11,
             ref memory_id_to_big_sum_12,
+            ref numerator_12,
             ref range_check_7_2_5_sum_13,
+            ref numerator_13,
             ref memory_address_to_id_sum_14,
+            ref numerator_14,
             ref memory_id_to_big_sum_15,
+            ref numerator_15,
             ref range_check_7_2_5_sum_16,
+            ref numerator_16,
             ref memory_address_to_id_sum_17,
+            ref numerator_17,
             ref memory_id_to_big_sum_18,
+            ref numerator_18,
             ref range_check_7_2_5_sum_19,
+            ref numerator_19,
             ref memory_address_to_id_sum_20,
+            ref numerator_20,
             ref memory_id_to_big_sum_21,
+            ref numerator_21,
             ref range_check_7_2_5_sum_22,
+            ref numerator_22,
             ref memory_address_to_id_sum_23,
+            ref numerator_23,
             ref memory_id_to_big_sum_24,
+            ref numerator_24,
             ref range_check_7_2_5_sum_25,
+            ref numerator_25,
             ref memory_address_to_id_sum_26,
+            ref numerator_26,
             ref memory_id_to_big_sum_27,
+            ref numerator_27,
             ref range_check_7_2_5_sum_28,
+            ref numerator_28,
             ref memory_address_to_id_sum_29,
+            ref numerator_29,
             ref memory_id_to_big_sum_30,
+            ref numerator_30,
             ref range_check_7_2_5_sum_31,
+            ref numerator_31,
             ref memory_address_to_id_sum_32,
+            ref numerator_32,
             ref memory_id_to_big_sum_33,
+            ref numerator_33,
             ref verify_bitwise_xor_8_sum_34,
+            ref numerator_34,
             ref verify_bitwise_xor_8_sum_35,
+            ref numerator_35,
             ref verify_bitwise_xor_8_sum_36,
+            ref numerator_36,
             ref verify_bitwise_xor_8_sum_37,
+            ref numerator_37,
             ref sum,
             random_coeff,
         );
@@ -884,6 +996,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ]
                     .span(),
             );
+        numerator_38 = qm31_const::<1, 0, 0, 0>();
 
         blake_round_sum_39 = self
             .common_lookup_elements
@@ -910,6 +1023,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ]
                     .span(),
             );
+        numerator_39 = qm31_const::<1, 0, 0, 0>();
         create_blake_output_evaluate(
             [
                 low_16_bits_col38, high_16_bits_col39, low_16_bits_col44, high_16_bits_col45,
@@ -951,13 +1065,21 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             triple_xor_32_output_limb_1_col140,
             self.common_lookup_elements,
             ref triple_xor_32_sum_40,
+            ref numerator_40,
             ref triple_xor_32_sum_41,
+            ref numerator_41,
             ref triple_xor_32_sum_42,
+            ref numerator_42,
             ref triple_xor_32_sum_43,
+            ref numerator_43,
             ref triple_xor_32_sum_44,
+            ref numerator_44,
             ref triple_xor_32_sum_45,
+            ref numerator_45,
             ref triple_xor_32_sum_46,
+            ref numerator_46,
             ref triple_xor_32_sum_47,
+            ref numerator_47,
             ref sum,
             random_coeff,
         );
@@ -972,8 +1094,11 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             new_state_0_id_col144,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_48,
+            ref numerator_48,
             ref memory_address_to_id_sum_49,
+            ref numerator_49,
             ref memory_id_to_big_sum_50,
+            ref numerator_50,
             ref sum,
             random_coeff,
         );
@@ -988,8 +1113,11 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             new_state_1_id_col148,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_51,
+            ref numerator_51,
             ref memory_address_to_id_sum_52,
+            ref numerator_52,
             ref memory_id_to_big_sum_53,
+            ref numerator_53,
             ref sum,
             random_coeff,
         );
@@ -1004,8 +1132,11 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             new_state_2_id_col152,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_54,
+            ref numerator_54,
             ref memory_address_to_id_sum_55,
+            ref numerator_55,
             ref memory_id_to_big_sum_56,
+            ref numerator_56,
             ref sum,
             random_coeff,
         );
@@ -1020,8 +1151,11 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             new_state_3_id_col156,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_57,
+            ref numerator_57,
             ref memory_address_to_id_sum_58,
+            ref numerator_58,
             ref memory_id_to_big_sum_59,
+            ref numerator_59,
             ref sum,
             random_coeff,
         );
@@ -1036,8 +1170,11 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             new_state_4_id_col160,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_60,
+            ref numerator_60,
             ref memory_address_to_id_sum_61,
+            ref numerator_61,
             ref memory_id_to_big_sum_62,
+            ref numerator_62,
             ref sum,
             random_coeff,
         );
@@ -1052,8 +1189,11 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             new_state_5_id_col164,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_63,
+            ref numerator_63,
             ref memory_address_to_id_sum_64,
+            ref numerator_64,
             ref memory_id_to_big_sum_65,
+            ref numerator_65,
             ref sum,
             random_coeff,
         );
@@ -1068,8 +1208,11 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             new_state_6_id_col168,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_66,
+            ref numerator_66,
             ref memory_address_to_id_sum_67,
+            ref numerator_67,
             ref memory_id_to_big_sum_68,
+            ref numerator_68,
             ref sum,
             random_coeff,
         );
@@ -1084,8 +1227,11 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             new_state_7_id_col172,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_69,
+            ref numerator_69,
             ref memory_address_to_id_sum_70,
+            ref numerator_70,
             ref memory_id_to_big_sum_71,
+            ref numerator_71,
             ref sum,
             random_coeff,
         );
@@ -1096,6 +1242,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 [qm31_const::<428564188, 0, 0, 0>(), input_pc_col0, input_ap_col1, input_fp_col2]
                     .span(),
             );
+        numerator_72 = enabler_col173;
 
         opcodes_sum_73 = self
             .common_lookup_elements
@@ -1107,12 +1254,86 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ]
                     .span(),
             );
+        numerator_73 = enabler_col173;
 
         lookup_constraints(
             ref sum,
             random_coeff,
             claimed_sum,
-            opcodes_multiplicity,
+            numerator_0,
+            numerator_1,
+            numerator_2,
+            numerator_3,
+            numerator_4,
+            numerator_5,
+            numerator_6,
+            numerator_7,
+            numerator_8,
+            numerator_9,
+            numerator_10,
+            numerator_11,
+            numerator_12,
+            numerator_13,
+            numerator_14,
+            numerator_15,
+            numerator_16,
+            numerator_17,
+            numerator_18,
+            numerator_19,
+            numerator_20,
+            numerator_21,
+            numerator_22,
+            numerator_23,
+            numerator_24,
+            numerator_25,
+            numerator_26,
+            numerator_27,
+            numerator_28,
+            numerator_29,
+            numerator_30,
+            numerator_31,
+            numerator_32,
+            numerator_33,
+            numerator_34,
+            numerator_35,
+            numerator_36,
+            numerator_37,
+            numerator_38,
+            numerator_39,
+            numerator_40,
+            numerator_41,
+            numerator_42,
+            numerator_43,
+            numerator_44,
+            numerator_45,
+            numerator_46,
+            numerator_47,
+            numerator_48,
+            numerator_49,
+            numerator_50,
+            numerator_51,
+            numerator_52,
+            numerator_53,
+            numerator_54,
+            numerator_55,
+            numerator_56,
+            numerator_57,
+            numerator_58,
+            numerator_59,
+            numerator_60,
+            numerator_61,
+            numerator_62,
+            numerator_63,
+            numerator_64,
+            numerator_65,
+            numerator_66,
+            numerator_67,
+            numerator_68,
+            numerator_69,
+            numerator_70,
+            numerator_71,
+            numerator_72,
+            numerator_73,
             column_size,
             ref interaction_trace_mask_values,
             verify_instruction_sum_0,
@@ -1198,7 +1419,80 @@ fn lookup_constraints(
     ref sum: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    opcodes_multiplicity: QM31,
+    numerator_0: QM31,
+    numerator_1: QM31,
+    numerator_2: QM31,
+    numerator_3: QM31,
+    numerator_4: QM31,
+    numerator_5: QM31,
+    numerator_6: QM31,
+    numerator_7: QM31,
+    numerator_8: QM31,
+    numerator_9: QM31,
+    numerator_10: QM31,
+    numerator_11: QM31,
+    numerator_12: QM31,
+    numerator_13: QM31,
+    numerator_14: QM31,
+    numerator_15: QM31,
+    numerator_16: QM31,
+    numerator_17: QM31,
+    numerator_18: QM31,
+    numerator_19: QM31,
+    numerator_20: QM31,
+    numerator_21: QM31,
+    numerator_22: QM31,
+    numerator_23: QM31,
+    numerator_24: QM31,
+    numerator_25: QM31,
+    numerator_26: QM31,
+    numerator_27: QM31,
+    numerator_28: QM31,
+    numerator_29: QM31,
+    numerator_30: QM31,
+    numerator_31: QM31,
+    numerator_32: QM31,
+    numerator_33: QM31,
+    numerator_34: QM31,
+    numerator_35: QM31,
+    numerator_36: QM31,
+    numerator_37: QM31,
+    numerator_38: QM31,
+    numerator_39: QM31,
+    numerator_40: QM31,
+    numerator_41: QM31,
+    numerator_42: QM31,
+    numerator_43: QM31,
+    numerator_44: QM31,
+    numerator_45: QM31,
+    numerator_46: QM31,
+    numerator_47: QM31,
+    numerator_48: QM31,
+    numerator_49: QM31,
+    numerator_50: QM31,
+    numerator_51: QM31,
+    numerator_52: QM31,
+    numerator_53: QM31,
+    numerator_54: QM31,
+    numerator_55: QM31,
+    numerator_56: QM31,
+    numerator_57: QM31,
+    numerator_58: QM31,
+    numerator_59: QM31,
+    numerator_60: QM31,
+    numerator_61: QM31,
+    numerator_62: QM31,
+    numerator_63: QM31,
+    numerator_64: QM31,
+    numerator_65: QM31,
+    numerator_66: QM31,
+    numerator_67: QM31,
+    numerator_68: QM31,
+    numerator_69: QM31,
+    numerator_70: QM31,
+    numerator_71: QM31,
+    numerator_72: QM31,
+    numerator_73: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     verify_instruction_sum_0: QM31,
@@ -1591,8 +1885,8 @@ fn lookup_constraints(
     ))
         * verify_instruction_sum_0
         * memory_address_to_id_sum_1)
-        - verify_instruction_sum_0
-        - memory_address_to_id_sum_1);
+        - (verify_instruction_sum_0 * numerator_1)
+        - (memory_address_to_id_sum_1 * numerator_0));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1601,8 +1895,8 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]))
         * memory_id_to_big_sum_2
         * memory_address_to_id_sum_3)
-        - memory_id_to_big_sum_2
-        - memory_address_to_id_sum_3);
+        - (memory_id_to_big_sum_2 * numerator_3)
+        - (memory_address_to_id_sum_3 * numerator_2));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1611,8 +1905,8 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7]))
         * memory_id_to_big_sum_4
         * memory_address_to_id_sum_5)
-        - memory_id_to_big_sum_4
-        - memory_address_to_id_sum_5);
+        - (memory_id_to_big_sum_4 * numerator_5)
+        - (memory_address_to_id_sum_5 * numerator_4));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1621,8 +1915,8 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals([trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11]))
         * memory_id_to_big_sum_6
         * range_check_7_2_5_sum_7)
-        - memory_id_to_big_sum_6
-        - range_check_7_2_5_sum_7);
+        - (memory_id_to_big_sum_6 * numerator_7)
+        - (range_check_7_2_5_sum_7 * numerator_6));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1633,8 +1927,8 @@ fn lookup_constraints(
         ))
         * memory_address_to_id_sum_8
         * memory_id_to_big_sum_9)
-        - memory_address_to_id_sum_8
-        - memory_id_to_big_sum_9);
+        - (memory_address_to_id_sum_8 * numerator_9)
+        - (memory_id_to_big_sum_9 * numerator_8));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1645,8 +1939,8 @@ fn lookup_constraints(
         ))
         * range_check_7_2_5_sum_10
         * memory_address_to_id_sum_11)
-        - range_check_7_2_5_sum_10
-        - memory_address_to_id_sum_11);
+        - (range_check_7_2_5_sum_10 * numerator_11)
+        - (memory_address_to_id_sum_11 * numerator_10));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1657,8 +1951,8 @@ fn lookup_constraints(
         ))
         * memory_id_to_big_sum_12
         * range_check_7_2_5_sum_13)
-        - memory_id_to_big_sum_12
-        - range_check_7_2_5_sum_13);
+        - (memory_id_to_big_sum_12 * numerator_13)
+        - (range_check_7_2_5_sum_13 * numerator_12));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1669,8 +1963,8 @@ fn lookup_constraints(
         ))
         * memory_address_to_id_sum_14
         * memory_id_to_big_sum_15)
-        - memory_address_to_id_sum_14
-        - memory_id_to_big_sum_15);
+        - (memory_address_to_id_sum_14 * numerator_15)
+        - (memory_id_to_big_sum_15 * numerator_14));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1681,8 +1975,8 @@ fn lookup_constraints(
         ))
         * range_check_7_2_5_sum_16
         * memory_address_to_id_sum_17)
-        - range_check_7_2_5_sum_16
-        - memory_address_to_id_sum_17);
+        - (range_check_7_2_5_sum_16 * numerator_17)
+        - (memory_address_to_id_sum_17 * numerator_16));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1693,8 +1987,8 @@ fn lookup_constraints(
         ))
         * memory_id_to_big_sum_18
         * range_check_7_2_5_sum_19)
-        - memory_id_to_big_sum_18
-        - range_check_7_2_5_sum_19);
+        - (memory_id_to_big_sum_18 * numerator_19)
+        - (range_check_7_2_5_sum_19 * numerator_18));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1705,8 +1999,8 @@ fn lookup_constraints(
         ))
         * memory_address_to_id_sum_20
         * memory_id_to_big_sum_21)
-        - memory_address_to_id_sum_20
-        - memory_id_to_big_sum_21);
+        - (memory_address_to_id_sum_20 * numerator_21)
+        - (memory_id_to_big_sum_21 * numerator_20));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1717,8 +2011,8 @@ fn lookup_constraints(
         ))
         * range_check_7_2_5_sum_22
         * memory_address_to_id_sum_23)
-        - range_check_7_2_5_sum_22
-        - memory_address_to_id_sum_23);
+        - (range_check_7_2_5_sum_22 * numerator_23)
+        - (memory_address_to_id_sum_23 * numerator_22));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1729,8 +2023,8 @@ fn lookup_constraints(
         ))
         * memory_id_to_big_sum_24
         * range_check_7_2_5_sum_25)
-        - memory_id_to_big_sum_24
-        - range_check_7_2_5_sum_25);
+        - (memory_id_to_big_sum_24 * numerator_25)
+        - (range_check_7_2_5_sum_25 * numerator_24));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1741,8 +2035,8 @@ fn lookup_constraints(
         ))
         * memory_address_to_id_sum_26
         * memory_id_to_big_sum_27)
-        - memory_address_to_id_sum_26
-        - memory_id_to_big_sum_27);
+        - (memory_address_to_id_sum_26 * numerator_27)
+        - (memory_id_to_big_sum_27 * numerator_26));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1753,8 +2047,8 @@ fn lookup_constraints(
         ))
         * range_check_7_2_5_sum_28
         * memory_address_to_id_sum_29)
-        - range_check_7_2_5_sum_28
-        - memory_address_to_id_sum_29);
+        - (range_check_7_2_5_sum_28 * numerator_29)
+        - (memory_address_to_id_sum_29 * numerator_28));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1765,8 +2059,8 @@ fn lookup_constraints(
         ))
         * memory_id_to_big_sum_30
         * range_check_7_2_5_sum_31)
-        - memory_id_to_big_sum_30
-        - range_check_7_2_5_sum_31);
+        - (memory_id_to_big_sum_30 * numerator_31)
+        - (range_check_7_2_5_sum_31 * numerator_30));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1777,8 +2071,8 @@ fn lookup_constraints(
         ))
         * memory_address_to_id_sum_32
         * memory_id_to_big_sum_33)
-        - memory_address_to_id_sum_32
-        - memory_id_to_big_sum_33);
+        - (memory_address_to_id_sum_32 * numerator_33)
+        - (memory_id_to_big_sum_33 * numerator_32));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1789,8 +2083,8 @@ fn lookup_constraints(
         ))
         * verify_bitwise_xor_8_sum_34
         * verify_bitwise_xor_8_sum_35)
-        - verify_bitwise_xor_8_sum_34
-        - verify_bitwise_xor_8_sum_35);
+        - (verify_bitwise_xor_8_sum_34 * numerator_35)
+        - (verify_bitwise_xor_8_sum_35 * numerator_34));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1801,8 +2095,8 @@ fn lookup_constraints(
         ))
         * verify_bitwise_xor_8_sum_36
         * verify_bitwise_xor_8_sum_37)
-        - verify_bitwise_xor_8_sum_36
-        - verify_bitwise_xor_8_sum_37);
+        - (verify_bitwise_xor_8_sum_36 * numerator_37)
+        - (verify_bitwise_xor_8_sum_37 * numerator_36));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1813,8 +2107,8 @@ fn lookup_constraints(
         ))
         * blake_round_sum_38
         * blake_round_sum_39)
-        - blake_round_sum_38
-        + blake_round_sum_39);
+        - (blake_round_sum_38 * numerator_39)
+        + (blake_round_sum_39 * numerator_38));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1825,8 +2119,8 @@ fn lookup_constraints(
         ))
         * triple_xor_32_sum_40
         * triple_xor_32_sum_41)
-        - triple_xor_32_sum_40
-        - triple_xor_32_sum_41);
+        - (triple_xor_32_sum_40 * numerator_41)
+        - (triple_xor_32_sum_41 * numerator_40));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1837,8 +2131,8 @@ fn lookup_constraints(
         ))
         * triple_xor_32_sum_42
         * triple_xor_32_sum_43)
-        - triple_xor_32_sum_42
-        - triple_xor_32_sum_43);
+        - (triple_xor_32_sum_42 * numerator_43)
+        - (triple_xor_32_sum_43 * numerator_42));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1849,8 +2143,8 @@ fn lookup_constraints(
         ))
         * triple_xor_32_sum_44
         * triple_xor_32_sum_45)
-        - triple_xor_32_sum_44
-        - triple_xor_32_sum_45);
+        - (triple_xor_32_sum_44 * numerator_45)
+        - (triple_xor_32_sum_45 * numerator_44));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1861,8 +2155,8 @@ fn lookup_constraints(
         ))
         * triple_xor_32_sum_46
         * triple_xor_32_sum_47)
-        - triple_xor_32_sum_46
-        - triple_xor_32_sum_47);
+        - (triple_xor_32_sum_46 * numerator_47)
+        - (triple_xor_32_sum_47 * numerator_46));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1873,8 +2167,8 @@ fn lookup_constraints(
         ))
         * range_check_7_2_5_sum_48
         * memory_address_to_id_sum_49)
-        - range_check_7_2_5_sum_48
-        - memory_address_to_id_sum_49);
+        - (range_check_7_2_5_sum_48 * numerator_49)
+        - (memory_address_to_id_sum_49 * numerator_48));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1885,8 +2179,8 @@ fn lookup_constraints(
         ))
         * memory_id_to_big_sum_50
         * range_check_7_2_5_sum_51)
-        - memory_id_to_big_sum_50
-        - range_check_7_2_5_sum_51);
+        - (memory_id_to_big_sum_50 * numerator_51)
+        - (range_check_7_2_5_sum_51 * numerator_50));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1897,8 +2191,8 @@ fn lookup_constraints(
         ))
         * memory_address_to_id_sum_52
         * memory_id_to_big_sum_53)
-        - memory_address_to_id_sum_52
-        - memory_id_to_big_sum_53);
+        - (memory_address_to_id_sum_52 * numerator_53)
+        - (memory_id_to_big_sum_53 * numerator_52));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1909,8 +2203,8 @@ fn lookup_constraints(
         ))
         * range_check_7_2_5_sum_54
         * memory_address_to_id_sum_55)
-        - range_check_7_2_5_sum_54
-        - memory_address_to_id_sum_55);
+        - (range_check_7_2_5_sum_54 * numerator_55)
+        - (memory_address_to_id_sum_55 * numerator_54));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1921,8 +2215,8 @@ fn lookup_constraints(
         ))
         * memory_id_to_big_sum_56
         * range_check_7_2_5_sum_57)
-        - memory_id_to_big_sum_56
-        - range_check_7_2_5_sum_57);
+        - (memory_id_to_big_sum_56 * numerator_57)
+        - (range_check_7_2_5_sum_57 * numerator_56));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1933,8 +2227,8 @@ fn lookup_constraints(
         ))
         * memory_address_to_id_sum_58
         * memory_id_to_big_sum_59)
-        - memory_address_to_id_sum_58
-        - memory_id_to_big_sum_59);
+        - (memory_address_to_id_sum_58 * numerator_59)
+        - (memory_id_to_big_sum_59 * numerator_58));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1945,8 +2239,8 @@ fn lookup_constraints(
         ))
         * range_check_7_2_5_sum_60
         * memory_address_to_id_sum_61)
-        - range_check_7_2_5_sum_60
-        - memory_address_to_id_sum_61);
+        - (range_check_7_2_5_sum_60 * numerator_61)
+        - (memory_address_to_id_sum_61 * numerator_60));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1957,8 +2251,8 @@ fn lookup_constraints(
         ))
         * memory_id_to_big_sum_62
         * range_check_7_2_5_sum_63)
-        - memory_id_to_big_sum_62
-        - range_check_7_2_5_sum_63);
+        - (memory_id_to_big_sum_62 * numerator_63)
+        - (range_check_7_2_5_sum_63 * numerator_62));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1969,8 +2263,8 @@ fn lookup_constraints(
         ))
         * memory_address_to_id_sum_64
         * memory_id_to_big_sum_65)
-        - memory_address_to_id_sum_64
-        - memory_id_to_big_sum_65);
+        - (memory_address_to_id_sum_64 * numerator_65)
+        - (memory_id_to_big_sum_65 * numerator_64));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1981,8 +2275,8 @@ fn lookup_constraints(
         ))
         * range_check_7_2_5_sum_66
         * memory_address_to_id_sum_67)
-        - range_check_7_2_5_sum_66
-        - memory_address_to_id_sum_67);
+        - (range_check_7_2_5_sum_66 * numerator_67)
+        - (memory_address_to_id_sum_67 * numerator_66));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1993,8 +2287,8 @@ fn lookup_constraints(
         ))
         * memory_id_to_big_sum_68
         * range_check_7_2_5_sum_69)
-        - memory_id_to_big_sum_68
-        - range_check_7_2_5_sum_69);
+        - (memory_id_to_big_sum_68 * numerator_69)
+        - (range_check_7_2_5_sum_69 * numerator_68));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -2005,8 +2299,8 @@ fn lookup_constraints(
         ))
         * memory_address_to_id_sum_70
         * memory_id_to_big_sum_71)
-        - memory_address_to_id_sum_70
-        - memory_id_to_big_sum_71);
+        - (memory_address_to_id_sum_70 * numerator_71)
+        - (memory_id_to_big_sum_71 * numerator_70));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -2021,8 +2315,8 @@ fn lookup_constraints(
         + (claimed_sum * (column_size.inverse().into())))
         * opcodes_sum_72
         * opcodes_sum_73)
-        + (opcodes_sum_72 * opcodes_multiplicity)
-        - (opcodes_sum_73 * opcodes_multiplicity));
+        + (opcodes_sum_72 * numerator_73)
+        - (opcodes_sum_73 * numerator_72));
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]

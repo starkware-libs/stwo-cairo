@@ -248,13 +248,14 @@ impl FrameworkEval for Eval {
         let combination_limb_8_col165 = eval.next_trace_mask();
         let combination_limb_9_col166 = eval.next_trace_mask();
         let p_coef_col167 = eval.next_trace_mask();
-        let enabler = eval.next_trace_mask();
+        let enabler_col168 = eval.next_trace_mask();
 
-        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
-
+        eval.add_constraint(
+            ((enabler_col168.clone() * enabler_col168.clone()) - enabler_col168.clone()),
+        );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1024310512.clone(),
                 input_limb_1_col1.clone(),
@@ -557,7 +558,7 @@ impl FrameworkEval for Eval {
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::from(enabler.clone()),
+            E::EF::from(enabler_col168.clone()),
             &[
                 M31_1343313504.clone(),
                 input_limb_0_col0.clone(),
@@ -607,7 +608,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler.clone()),
+            -E::EF::from(enabler_col168.clone()),
             &[
                 M31_1343313504.clone(),
                 input_limb_0_col0.clone(),

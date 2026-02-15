@@ -72,108 +72,100 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut range_check_20_sum_0: QM31 = Zero::zero();
+        let mut numerator_0: QM31 = Zero::zero();
         let mut range_check_20_b_sum_1: QM31 = Zero::zero();
+        let mut numerator_1: QM31 = Zero::zero();
         let mut range_check_20_c_sum_2: QM31 = Zero::zero();
+        let mut numerator_2: QM31 = Zero::zero();
         let mut range_check_20_d_sum_3: QM31 = Zero::zero();
+        let mut numerator_3: QM31 = Zero::zero();
         let mut range_check_20_e_sum_4: QM31 = Zero::zero();
+        let mut numerator_4: QM31 = Zero::zero();
         let mut range_check_20_f_sum_5: QM31 = Zero::zero();
+        let mut numerator_5: QM31 = Zero::zero();
         let mut range_check_20_g_sum_6: QM31 = Zero::zero();
+        let mut numerator_6: QM31 = Zero::zero();
         let mut range_check_20_h_sum_7: QM31 = Zero::zero();
+        let mut numerator_7: QM31 = Zero::zero();
         let seq_20 = preprocessed_mask_values.get_and_mark_used(SEQ_20_IDX);
 
         let [
-            range_check_20_multiplicity,
-            range_check_20_b_multiplicity,
-            range_check_20_c_multiplicity,
-            range_check_20_d_multiplicity,
-            range_check_20_e_multiplicity,
-            range_check_20_f_multiplicity,
-            range_check_20_g_multiplicity,
-            range_check_20_h_multiplicity,
+            multiplicity_0_col0,
+            multiplicity_1_col1,
+            multiplicity_2_col2,
+            multiplicity_3_col3,
+            multiplicity_4_col4,
+            multiplicity_5_col5,
+            multiplicity_6_col6,
+            multiplicity_7_col7,
         ]: [Span<QM31>; 8] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
             .unbox();
-        let [range_check_20_multiplicity]: [QM31; 1] = (*range_check_20_multiplicity
-            .try_into()
-            .unwrap())
-            .unbox();
-        let [range_check_20_b_multiplicity]: [QM31; 1] = (*range_check_20_b_multiplicity
-            .try_into()
-            .unwrap())
-            .unbox();
-        let [range_check_20_c_multiplicity]: [QM31; 1] = (*range_check_20_c_multiplicity
-            .try_into()
-            .unwrap())
-            .unbox();
-        let [range_check_20_d_multiplicity]: [QM31; 1] = (*range_check_20_d_multiplicity
-            .try_into()
-            .unwrap())
-            .unbox();
-        let [range_check_20_e_multiplicity]: [QM31; 1] = (*range_check_20_e_multiplicity
-            .try_into()
-            .unwrap())
-            .unbox();
-        let [range_check_20_f_multiplicity]: [QM31; 1] = (*range_check_20_f_multiplicity
-            .try_into()
-            .unwrap())
-            .unbox();
-        let [range_check_20_g_multiplicity]: [QM31; 1] = (*range_check_20_g_multiplicity
-            .try_into()
-            .unwrap())
-            .unbox();
-        let [range_check_20_h_multiplicity]: [QM31; 1] = (*range_check_20_h_multiplicity
-            .try_into()
-            .unwrap())
-            .unbox();
+        let [multiplicity_0_col0]: [QM31; 1] = (*multiplicity_0_col0.try_into().unwrap()).unbox();
+        let [multiplicity_1_col1]: [QM31; 1] = (*multiplicity_1_col1.try_into().unwrap()).unbox();
+        let [multiplicity_2_col2]: [QM31; 1] = (*multiplicity_2_col2.try_into().unwrap()).unbox();
+        let [multiplicity_3_col3]: [QM31; 1] = (*multiplicity_3_col3.try_into().unwrap()).unbox();
+        let [multiplicity_4_col4]: [QM31; 1] = (*multiplicity_4_col4.try_into().unwrap()).unbox();
+        let [multiplicity_5_col5]: [QM31; 1] = (*multiplicity_5_col5.try_into().unwrap()).unbox();
+        let [multiplicity_6_col6]: [QM31; 1] = (*multiplicity_6_col6.try_into().unwrap()).unbox();
+        let [multiplicity_7_col7]: [QM31; 1] = (*multiplicity_7_col7.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
         range_check_20_sum_0 = self
             .common_lookup_elements
             .combine_qm31([qm31_const::<1410849886, 0, 0, 0>(), seq_20].span());
+        numerator_0 = multiplicity_0_col0;
 
         range_check_20_b_sum_1 = self
             .common_lookup_elements
             .combine_qm31([qm31_const::<514232941, 0, 0, 0>(), seq_20].span());
+        numerator_1 = multiplicity_1_col1;
 
         range_check_20_c_sum_2 = self
             .common_lookup_elements
             .combine_qm31([qm31_const::<531010560, 0, 0, 0>(), seq_20].span());
+        numerator_2 = multiplicity_2_col2;
 
         range_check_20_d_sum_3 = self
             .common_lookup_elements
             .combine_qm31([qm31_const::<480677703, 0, 0, 0>(), seq_20].span());
+        numerator_3 = multiplicity_3_col3;
 
         range_check_20_e_sum_4 = self
             .common_lookup_elements
             .combine_qm31([qm31_const::<497455322, 0, 0, 0>(), seq_20].span());
+        numerator_4 = multiplicity_4_col4;
 
         range_check_20_f_sum_5 = self
             .common_lookup_elements
             .combine_qm31([qm31_const::<447122465, 0, 0, 0>(), seq_20].span());
+        numerator_5 = multiplicity_5_col5;
 
         range_check_20_g_sum_6 = self
             .common_lookup_elements
             .combine_qm31([qm31_const::<463900084, 0, 0, 0>(), seq_20].span());
+        numerator_6 = multiplicity_6_col6;
 
         range_check_20_h_sum_7 = self
             .common_lookup_elements
             .combine_qm31([qm31_const::<682009131, 0, 0, 0>(), seq_20].span());
+        numerator_7 = multiplicity_7_col7;
 
         lookup_constraints(
             ref sum,
             random_coeff,
             claimed_sum,
-            range_check_20_multiplicity,
-            range_check_20_b_multiplicity,
-            range_check_20_c_multiplicity,
-            range_check_20_d_multiplicity,
-            range_check_20_e_multiplicity,
-            range_check_20_f_multiplicity,
-            range_check_20_g_multiplicity,
-            range_check_20_h_multiplicity,
+            numerator_0,
+            numerator_1,
+            numerator_2,
+            numerator_3,
+            numerator_4,
+            numerator_5,
+            numerator_6,
+            numerator_7,
             column_size,
             ref interaction_trace_mask_values,
             range_check_20_sum_0,
@@ -193,14 +185,14 @@ fn lookup_constraints(
     ref sum: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    range_check_20_multiplicity: QM31,
-    range_check_20_b_multiplicity: QM31,
-    range_check_20_c_multiplicity: QM31,
-    range_check_20_d_multiplicity: QM31,
-    range_check_20_e_multiplicity: QM31,
-    range_check_20_f_multiplicity: QM31,
-    range_check_20_g_multiplicity: QM31,
-    range_check_20_h_multiplicity: QM31,
+    numerator_0: QM31,
+    numerator_1: QM31,
+    numerator_2: QM31,
+    numerator_3: QM31,
+    numerator_4: QM31,
+    numerator_5: QM31,
+    numerator_6: QM31,
+    numerator_7: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     range_check_20_sum_0: QM31,
@@ -263,8 +255,8 @@ fn lookup_constraints(
     ))
         * range_check_20_sum_0
         * range_check_20_b_sum_1)
-        + (range_check_20_sum_0 * range_check_20_b_multiplicity)
-        + (range_check_20_b_sum_1 * range_check_20_multiplicity));
+        + (range_check_20_sum_0 * numerator_1)
+        + (range_check_20_b_sum_1 * numerator_0));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -273,8 +265,8 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]))
         * range_check_20_c_sum_2
         * range_check_20_d_sum_3)
-        + (range_check_20_c_sum_2 * range_check_20_d_multiplicity)
-        + (range_check_20_d_sum_3 * range_check_20_c_multiplicity));
+        + (range_check_20_c_sum_2 * numerator_3)
+        + (range_check_20_d_sum_3 * numerator_2));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -283,8 +275,8 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7]))
         * range_check_20_e_sum_4
         * range_check_20_f_sum_5)
-        + (range_check_20_e_sum_4 * range_check_20_f_multiplicity)
-        + (range_check_20_f_sum_5 * range_check_20_e_multiplicity));
+        + (range_check_20_e_sum_4 * numerator_5)
+        + (range_check_20_f_sum_5 * numerator_4));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -297,8 +289,8 @@ fn lookup_constraints(
         + (claimed_sum * (column_size.inverse().into())))
         * range_check_20_g_sum_6
         * range_check_20_h_sum_7)
-        + (range_check_20_g_sum_6 * range_check_20_h_multiplicity)
-        + (range_check_20_h_sum_7 * range_check_20_g_multiplicity));
+        + (range_check_20_g_sum_6 * numerator_7)
+        + (range_check_20_h_sum_7 * numerator_6));
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]

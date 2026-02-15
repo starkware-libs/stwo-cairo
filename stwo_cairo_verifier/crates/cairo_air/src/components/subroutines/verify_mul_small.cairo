@@ -10,8 +10,11 @@ pub fn verify_mul_small_evaluate(
     carry_5_col2: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref range_check_11_sum_0: QM31,
+    ref numerator_0: QM31,
     ref range_check_11_sum_1: QM31,
+    ref numerator_1: QM31,
     ref range_check_11_sum_2: QM31,
+    ref numerator_2: QM31,
     ref sum: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
@@ -37,6 +40,7 @@ pub fn verify_mul_small_evaluate(
 
     range_check_11_sum_0 = common_lookup_elements
         .combine_qm31([qm31_const::<991608089, 0, 0, 0>(), carry_1_col0].span());
+    numerator_0 = qm31_const::<1, 0, 0, 0>();
 
     // Constraint - carry 1 definition
     let constraint_quotient = (((carry_1_col0 * qm31_const::<262144, 0, 0, 0>())
@@ -50,6 +54,7 @@ pub fn verify_mul_small_evaluate(
 
     range_check_11_sum_1 = common_lookup_elements
         .combine_qm31([qm31_const::<991608089, 0, 0, 0>(), carry_3_col1].span());
+    numerator_1 = qm31_const::<1, 0, 0, 0>();
 
     // Constraint - carry 3 definition
     let constraint_quotient = (((carry_3_col1 * qm31_const::<262144, 0, 0, 0>())
@@ -68,6 +73,7 @@ pub fn verify_mul_small_evaluate(
 
     range_check_11_sum_2 = common_lookup_elements
         .combine_qm31([qm31_const::<991608089, 0, 0, 0>(), carry_5_col2].span());
+    numerator_2 = qm31_const::<1, 0, 0, 0>();
 
     // Constraint - carry 5 definition
     let constraint_quotient = (((carry_5_col2 * qm31_const::<262144, 0, 0, 0>())

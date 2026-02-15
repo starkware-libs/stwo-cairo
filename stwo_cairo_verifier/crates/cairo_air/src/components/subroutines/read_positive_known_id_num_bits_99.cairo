@@ -18,6 +18,7 @@ pub fn read_positive_known_id_num_bits_99_evaluate(
     value_limb_10_col10: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref memory_id_to_big_sum_0: QM31,
+    ref numerator_0: QM31,
     ref sum: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
@@ -39,6 +40,7 @@ pub fn read_positive_known_id_num_bits_99_evaluate(
             ]
                 .span(),
         );
+    numerator_0 = qm31_const::<1, 0, 0, 0>();
 
     []
 }

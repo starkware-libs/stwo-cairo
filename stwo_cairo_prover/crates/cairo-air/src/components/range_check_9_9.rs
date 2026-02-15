@@ -62,18 +62,18 @@ impl FrameworkEval for Eval {
         let range_check_9_9_column_1 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "range_check_9_9_column_1".to_owned(),
         });
-        let multiplicity_0 = eval.next_trace_mask();
-        let multiplicity_1 = eval.next_trace_mask();
-        let multiplicity_2 = eval.next_trace_mask();
-        let multiplicity_3 = eval.next_trace_mask();
-        let multiplicity_4 = eval.next_trace_mask();
-        let multiplicity_5 = eval.next_trace_mask();
-        let multiplicity_6 = eval.next_trace_mask();
-        let multiplicity_7 = eval.next_trace_mask();
+        let multiplicity_0_col0 = eval.next_trace_mask();
+        let multiplicity_1_col1 = eval.next_trace_mask();
+        let multiplicity_2_col2 = eval.next_trace_mask();
+        let multiplicity_3_col3 = eval.next_trace_mask();
+        let multiplicity_4_col4 = eval.next_trace_mask();
+        let multiplicity_5_col5 = eval.next_trace_mask();
+        let multiplicity_6_col6 = eval.next_trace_mask();
+        let multiplicity_7_col7 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_0),
+            -E::EF::from(multiplicity_0_col0.clone()),
             &[
                 M31_517791011.clone(),
                 range_check_9_9_column_0.clone(),
@@ -83,7 +83,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_1),
+            -E::EF::from(multiplicity_1_col1.clone()),
             &[
                 M31_1897792095.clone(),
                 range_check_9_9_column_0.clone(),
@@ -93,7 +93,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_2),
+            -E::EF::from(multiplicity_2_col2.clone()),
             &[
                 M31_1881014476.clone(),
                 range_check_9_9_column_0.clone(),
@@ -103,7 +103,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_3),
+            -E::EF::from(multiplicity_3_col3.clone()),
             &[
                 M31_1864236857.clone(),
                 range_check_9_9_column_0.clone(),
@@ -113,7 +113,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_4),
+            -E::EF::from(multiplicity_4_col4.clone()),
             &[
                 M31_1847459238.clone(),
                 range_check_9_9_column_0.clone(),
@@ -123,7 +123,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_5),
+            -E::EF::from(multiplicity_5_col5.clone()),
             &[
                 M31_1830681619.clone(),
                 range_check_9_9_column_0.clone(),
@@ -133,7 +133,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_6),
+            -E::EF::from(multiplicity_6_col6.clone()),
             &[
                 M31_1813904000.clone(),
                 range_check_9_9_column_0.clone(),
@@ -143,7 +143,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_7),
+            -E::EF::from(multiplicity_7_col7.clone()),
             &[
                 M31_2065568285.clone(),
                 range_check_9_9_column_0.clone(),

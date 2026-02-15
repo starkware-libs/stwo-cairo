@@ -574,7 +574,7 @@ impl FrameworkEval for Eval {
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::one(),
+            -E::EF::from(M31_1.clone()),
             &[
                 M31_183619546.clone(),
                 seq.clone(),
@@ -716,7 +716,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_183619546.clone(),
                 seq.clone(),

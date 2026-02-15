@@ -45,11 +45,12 @@ impl ReadPositiveKnownIdNumBits252 {
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
+        let M31_1 = E::F::from(M31::from(1));
         let M31_1662111297 = E::F::from(M31::from(1662111297));
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1662111297.clone(),
                 read_positive_known_id_num_bits_252_input.clone(),

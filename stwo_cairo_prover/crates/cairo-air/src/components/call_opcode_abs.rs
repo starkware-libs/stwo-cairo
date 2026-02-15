@@ -100,10 +100,11 @@ impl FrameworkEval for Eval {
         let next_pc_limb_2_col21 = eval.next_trace_mask();
         let next_pc_limb_3_col22 = eval.next_trace_mask();
         let partial_limb_msb_col23 = eval.next_trace_mask();
-        let enabler = eval.next_trace_mask();
+        let enabler_col24 = eval.next_trace_mask();
 
-        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
-
+        eval.add_constraint(
+            ((enabler_col24.clone() * enabler_col24.clone()) - enabler_col24.clone()),
+        );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [decode_instruction_f1edd_output_tmp_32b66_4_offset2, decode_instruction_f1edd_output_tmp_32b66_4_op1_base_ap] =
@@ -173,7 +174,7 @@ impl FrameworkEval for Eval {
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::from(enabler.clone()),
+            E::EF::from(enabler_col24.clone()),
             &[
                 M31_428564188.clone(),
                 input_pc_col0.clone(),
@@ -184,7 +185,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler.clone()),
+            -E::EF::from(enabler_col24.clone()),
             &[
                 M31_428564188.clone(),
                 (((next_pc_limb_0_col19.clone()

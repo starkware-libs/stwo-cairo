@@ -77,10 +77,9 @@ impl FrameworkEval for Eval {
         let ap_update_add_1_col5 = eval.next_trace_mask();
         let mem_dst_base_col6 = eval.next_trace_mask();
         let dst_id_col7 = eval.next_trace_mask();
-        let enabler = eval.next_trace_mask();
+        let enabler_col8 = eval.next_trace_mask();
 
-        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
-
+        eval.add_constraint(((enabler_col8.clone() * enabler_col8.clone()) - enabler_col8.clone()));
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [decode_instruction_161c9_output_tmp_bb09e_5_offset0] =
@@ -110,7 +109,7 @@ impl FrameworkEval for Eval {
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::from(enabler.clone()),
+            E::EF::from(enabler_col8.clone()),
             &[
                 M31_428564188.clone(),
                 input_pc_col0.clone(),
@@ -121,7 +120,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler.clone()),
+            -E::EF::from(enabler_col8.clone()),
             &[
                 M31_428564188.clone(),
                 (input_pc_col0.clone() + M31_2.clone()),

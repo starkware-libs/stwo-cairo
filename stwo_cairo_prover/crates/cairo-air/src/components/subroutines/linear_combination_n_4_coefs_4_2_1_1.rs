@@ -134,7 +134,7 @@ impl LinearCombinationN4Coefs4211 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1027333874.clone(),
                 (p_coef_col10.clone() + M31_1.clone()),
@@ -146,7 +146,7 @@ impl LinearCombinationN4Coefs4211 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1027333874.clone(),
                 (carry_3_tmp_e46f5_5.clone() + M31_1.clone()),
@@ -158,7 +158,7 @@ impl LinearCombinationN4Coefs4211 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1651211826.clone(),
                 (carry_7_tmp_e46f5_9.clone() + M31_1.clone()),

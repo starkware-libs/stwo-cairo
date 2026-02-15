@@ -58,11 +58,11 @@ impl FrameworkEval for Eval {
         let bitwise_xor_4_2 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "bitwise_xor_4_2".to_owned(),
         });
-        let multiplicity_0 = eval.next_trace_mask();
+        let multiplicity_0_col0 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_0),
+            -E::EF::from(multiplicity_0_col0.clone()),
             &[
                 M31_45448144.clone(),
                 bitwise_xor_4_0.clone(),

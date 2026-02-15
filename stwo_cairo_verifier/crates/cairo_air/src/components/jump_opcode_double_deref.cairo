@@ -82,12 +82,19 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut verify_instruction_sum_0: QM31 = Zero::zero();
+        let mut numerator_0: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_1: QM31 = Zero::zero();
+        let mut numerator_1: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_2: QM31 = Zero::zero();
+        let mut numerator_2: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_3: QM31 = Zero::zero();
+        let mut numerator_3: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_4: QM31 = Zero::zero();
+        let mut numerator_4: QM31 = Zero::zero();
         let mut opcodes_sum_5: QM31 = Zero::zero();
+        let mut numerator_5: QM31 = Zero::zero();
         let mut opcodes_sum_6: QM31 = Zero::zero();
+        let mut numerator_6: QM31 = Zero::zero();
 
         let [
             input_pc_col0,
@@ -110,7 +117,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             next_pc_limb_2_col17,
             next_pc_limb_3_col18,
             partial_limb_msb_col19,
-            opcodes_multiplicity,
+            enabler_col20,
         ]: [Span<QM31>; 21] =
             (*trace_mask_values
             .multi_pop_front()
@@ -142,12 +149,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [next_pc_limb_3_col18]: [QM31; 1] = (*next_pc_limb_3_col18.try_into().unwrap()).unbox();
         let [partial_limb_msb_col19]: [QM31; 1] = (*partial_limb_msb_col19.try_into().unwrap())
             .unbox();
-        let [opcodes_multiplicity]: [QM31; 1] = (*opcodes_multiplicity.try_into().unwrap()).unbox();
+        let [enabler_col20]: [QM31; 1] = (*enabler_col20.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
-        let constraint_quotient = (opcodes_multiplicity * opcodes_multiplicity
-            - opcodes_multiplicity);
+        // Constraint -
+        let constraint_quotient = (((enabler_col20 * enabler_col20) - enabler_col20));
         sum = sum * random_coeff + constraint_quotient;
         let [
             decode_instruction_9bd86_output_tmp_22134_6_offset1,
@@ -161,6 +168,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ap_update_add_1_col6,
             self.common_lookup_elements,
             ref verify_instruction_sum_0,
+            ref numerator_0,
             ref sum,
             random_coeff,
         );
@@ -180,7 +188,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             partial_limb_msb_col13,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_1,
+            ref numerator_1,
             ref memory_id_to_big_sum_2,
+            ref numerator_2,
             ref sum,
             random_coeff,
         );
@@ -197,7 +207,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             partial_limb_msb_col19,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_3,
+            ref numerator_3,
             ref memory_id_to_big_sum_4,
+            ref numerator_4,
             ref sum,
             random_coeff,
         );
@@ -208,6 +220,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 [qm31_const::<428564188, 0, 0, 0>(), input_pc_col0, input_ap_col1, input_fp_col2]
                     .span(),
             );
+        numerator_5 = enabler_col20;
 
         opcodes_sum_6 = self
             .common_lookup_elements
@@ -221,12 +234,19 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ]
                     .span(),
             );
+        numerator_6 = enabler_col20;
 
         lookup_constraints(
             ref sum,
             random_coeff,
             claimed_sum,
-            opcodes_multiplicity,
+            numerator_0,
+            numerator_1,
+            numerator_2,
+            numerator_3,
+            numerator_4,
+            numerator_5,
+            numerator_6,
             column_size,
             ref interaction_trace_mask_values,
             verify_instruction_sum_0,
@@ -245,7 +265,13 @@ fn lookup_constraints(
     ref sum: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    opcodes_multiplicity: QM31,
+    numerator_0: QM31,
+    numerator_1: QM31,
+    numerator_2: QM31,
+    numerator_3: QM31,
+    numerator_4: QM31,
+    numerator_5: QM31,
+    numerator_6: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     verify_instruction_sum_0: QM31,
@@ -307,8 +333,8 @@ fn lookup_constraints(
     ))
         * verify_instruction_sum_0
         * memory_address_to_id_sum_1)
-        - verify_instruction_sum_0
-        - memory_address_to_id_sum_1);
+        - (verify_instruction_sum_0 * numerator_1)
+        - (memory_address_to_id_sum_1 * numerator_0));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -317,8 +343,8 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]))
         * memory_id_to_big_sum_2
         * memory_address_to_id_sum_3)
-        - memory_id_to_big_sum_2
-        - memory_address_to_id_sum_3);
+        - (memory_id_to_big_sum_2 * numerator_3)
+        - (memory_address_to_id_sum_3 * numerator_2));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -327,8 +353,8 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7]))
         * memory_id_to_big_sum_4
         * opcodes_sum_5)
-        - (memory_id_to_big_sum_4 * opcodes_multiplicity)
-        - opcodes_sum_5);
+        - (memory_id_to_big_sum_4 * numerator_5)
+        - (opcodes_sum_5 * numerator_4));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -340,7 +366,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * opcodes_sum_6)
-        + opcodes_multiplicity);
+        + numerator_6);
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]

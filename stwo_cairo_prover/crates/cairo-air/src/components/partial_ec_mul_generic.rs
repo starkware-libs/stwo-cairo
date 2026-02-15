@@ -754,10 +754,11 @@ impl FrameworkEval for Eval {
         let carry_24_col620 = eval.next_trace_mask();
         let carry_25_col621 = eval.next_trace_mask();
         let carry_26_col622 = eval.next_trace_mask();
-        let enabler = eval.next_trace_mask();
+        let enabler_col623 = eval.next_trace_mask();
 
-        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
-
+        eval.add_constraint(
+            ((enabler_col623.clone() * enabler_col623.clone()) - enabler_col623.clone()),
+        );
         // to_add_bit is bool.
         eval.add_constraint(
             (to_add_bit_col125.clone() * (M31_1.clone() - to_add_bit_col125.clone())),
@@ -2101,7 +2102,7 @@ impl FrameworkEval for Eval {
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::from(enabler.clone()),
+            E::EF::from(enabler_col623.clone()),
             &[
                 M31_183619546.clone(),
                 input_chain_id_col0.clone(),
@@ -2234,7 +2235,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler.clone()),
+            -E::EF::from(enabler_col623.clone()),
             &[
                 M31_183619546.clone(),
                 input_chain_id_col0.clone(),

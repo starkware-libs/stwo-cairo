@@ -261,10 +261,11 @@ impl FrameworkEval for Eval {
         let carry_24_col137 = eval.next_trace_mask();
         let carry_25_col138 = eval.next_trace_mask();
         let carry_26_col139 = eval.next_trace_mask();
-        let enabler = eval.next_trace_mask();
+        let enabler_col140 = eval.next_trace_mask();
 
-        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
-
+        eval.add_constraint(
+            ((enabler_col140.clone() * enabler_col140.clone()) - enabler_col140.clone()),
+        );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_2, felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_5, felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_8, felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_11, felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_14, felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_17, felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_20, felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_23, felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_26, felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_27] =
@@ -540,7 +541,7 @@ impl FrameworkEval for Eval {
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler.clone()),
+            -E::EF::from(enabler_col140.clone()),
             &[
                 M31_1987997202.clone(),
                 input_limb_0_col0.clone(),

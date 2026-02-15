@@ -12,8 +12,11 @@ pub fn verify_u_32_evaluate(
     id_col3: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref range_check_7_2_5_sum_0: QM31,
+    ref numerator_0: QM31,
     ref memory_address_to_id_sum_1: QM31,
+    ref numerator_1: QM31,
     ref memory_id_to_big_sum_2: QM31,
+    ref numerator_2: QM31,
     ref sum: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
@@ -29,6 +32,7 @@ pub fn verify_u_32_evaluate(
             ]
                 .span(),
         );
+    numerator_0 = qm31_const::<1, 0, 0, 0>();
     mem_verify_evaluate(
         [
             verify_u_32_input_limb_0,
@@ -48,7 +52,9 @@ pub fn verify_u_32_evaluate(
         id_col3,
         common_lookup_elements,
         ref memory_address_to_id_sum_1,
+        ref numerator_1,
         ref memory_id_to_big_sum_2,
+        ref numerator_2,
         ref sum,
         random_coeff,
     );

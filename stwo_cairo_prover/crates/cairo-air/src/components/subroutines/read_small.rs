@@ -58,7 +58,7 @@ impl ReadSmall {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1662111297.clone(),
                 id_col0.clone(),

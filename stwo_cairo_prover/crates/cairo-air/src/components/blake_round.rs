@@ -292,13 +292,14 @@ impl FrameworkEval for Eval {
         let blake_g_output_limb_5_col208 = eval.next_trace_mask();
         let blake_g_output_limb_6_col209 = eval.next_trace_mask();
         let blake_g_output_limb_7_col210 = eval.next_trace_mask();
-        let enabler = eval.next_trace_mask();
+        let enabler_col211 = eval.next_trace_mask();
 
-        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
-
+        eval.add_constraint(
+            ((enabler_col211.clone() * enabler_col211.clone()) - enabler_col211.clone()),
+        );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1805967942.clone(),
                 input_limb_1_col1.clone(),
@@ -499,7 +500,7 @@ impl FrameworkEval for Eval {
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1139985212.clone(),
                 input_limb_2_col2.clone(),
@@ -527,7 +528,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1139985212.clone(),
                 input_limb_4_col4.clone(),
@@ -555,7 +556,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1139985212.clone(),
                 input_limb_6_col6.clone(),
@@ -583,7 +584,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1139985212.clone(),
                 input_limb_8_col8.clone(),
@@ -611,7 +612,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1139985212.clone(),
                 blake_g_output_limb_0_col147.clone(),
@@ -639,7 +640,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1139985212.clone(),
                 blake_g_output_limb_0_col155.clone(),
@@ -667,7 +668,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1139985212.clone(),
                 blake_g_output_limb_0_col163.clone(),
@@ -695,7 +696,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1139985212.clone(),
                 blake_g_output_limb_0_col171.clone(),
@@ -723,7 +724,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::from(enabler.clone()),
+            E::EF::from(enabler_col211.clone()),
             &[
                 M31_40528774.clone(),
                 input_limb_0_col0.clone(),
@@ -766,7 +767,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler.clone()),
+            -E::EF::from(enabler_col211.clone()),
             &[
                 M31_40528774.clone(),
                 input_limb_0_col0.clone(),
