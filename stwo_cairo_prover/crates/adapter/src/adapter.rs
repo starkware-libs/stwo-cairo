@@ -66,7 +66,7 @@ mod tests {
 
     use serde_json::{to_string_pretty, to_value};
     use stwo_cairo_dev_utils::utils::get_compiled_cairo_program_path;
-    use stwo_cairo_utils::vm_utils::{run_and_adapt, ProgramType};
+    use stwo_cairo_dev_utils::vm_utils::{run_and_adapt, ProgramType};
 
     use crate::test_utils::get_prover_input_path;
 

@@ -3447,7 +3447,6 @@ dependencies = [
  "stwo",
  "stwo-cairo-common",
  "stwo-cairo-dev-utils",
- "stwo-cairo-utils",
  "test-case",
  "thiserror",
  "tracing",
@@ -3495,7 +3494,6 @@ dependencies = [
  "stwo-cairo-adapter",
  "stwo-cairo-prover",
  "stwo-cairo-serialize",
- "stwo-cairo-utils",
  "tempfile",
  "thiserror",
  "tracing",
@@ -3533,7 +3531,6 @@ dependencies = [
  "stwo-cairo-common",
  "stwo-cairo-dev-utils",
  "stwo-cairo-serialize",
- "stwo-cairo-utils",
  "stwo-constraint-framework",
  "tempfile",
  "test-log",
@@ -3562,18 +3559,8 @@ dependencies = [
 name = "stwo-cairo-utils"
 version = "1.0.0"
 dependencies = [
- "anyhow",
- "cairo-lang-executable",
- "cairo-lang-runner",
- "cairo-lang-utils",
- "cairo-vm",
- "clap",
  "env_logger",
  "log",
- "serde",
- "serde_json",
- "stwo-cairo-adapter",
- "thiserror",
  "tracing",
  "tracing-subscriber",
 ]

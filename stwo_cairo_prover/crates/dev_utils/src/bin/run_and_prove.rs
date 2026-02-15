@@ -3,8 +3,8 @@ use std::path::PathBuf;
 use anyhow::Result;
 use cairo_air::utils::ProofFormat;
 use clap::Parser;
+use stwo_cairo_dev_utils::vm_utils::{run_and_adapt, ProgramType};
 use stwo_cairo_prover::prover::create_and_serialize_proof;
-use stwo_cairo_utils::vm_utils::{run_and_adapt, ProgramType};
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
 
