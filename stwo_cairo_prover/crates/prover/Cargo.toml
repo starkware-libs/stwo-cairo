@@ -23,8 +23,8 @@ itertools.workspace = true
 num-traits.workspace = true
 paste.workspace = true
 # TODO(Ohad): Add parallel config.
-stwo-cairo-common = { path = "../common", version = "~1.0.0", features = ["prover"] }
-stwo-cairo-adapter = { path = "../adapter", version = "~1.0.0" }
+stwo-cairo-common = { path = "../common", version = "~1.0.1", features = ["prover"] }
+stwo-cairo-adapter = { path = "../adapter", version = "~1.0.1" }
 rayon.workspace = true
 serde.workspace = true
 serde_json.workspace = true
@@ -32,8 +32,8 @@ anyhow.workspace = true
 starknet-curve.workspace = true
 starknet-ff.workspace = true
 starknet-types-core.workspace = true
-stwo-cairo-serialize = { path = "../cairo-serialize", version = "~1.0.0" }
-cairo-air = { path = "../cairo-air", version = "~1.0.0" }
+stwo-cairo-serialize = { path = "../cairo-serialize", version = "~1.0.1" }
+cairo-air = { path = "../cairo-air", version = "~1.0.1" }
 stwo = { workspace = true, features = ["parallel", "prover"] }
 stwo-constraint-framework = { workspace = true, features = ["parallel", "prover"] }
 tracing.workspace = true
