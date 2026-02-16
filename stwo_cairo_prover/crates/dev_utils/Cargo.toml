@@ -12,15 +12,15 @@ required-features = ["stwo-cairo-adapter/extract-mem-trace"]
 
 [dependencies]
 anyhow.workspace = true
-cairo-air = { path = "../cairo-air", version = "~1.0.0" }
+cairo-air = { path = "../cairo-air", version = "~1.0.1" }
 clap.workspace = true
 serde.workspace = true
 starknet-ff.workspace = true
 sonic-rs.workspace = true
-stwo-cairo-adapter = { path = "../adapter", version = "~1.0.0" }
-stwo-cairo-serialize = { path = "../cairo-serialize", version = "~1.0.0" }
+stwo-cairo-adapter = { path = "../adapter", version = "~1.0.1" }
+stwo-cairo-serialize = { path = "../cairo-serialize", version = "~1.0.1" }
 stwo.workspace = true
-stwo-cairo-prover = { path = "../prover", version = "~1.0.0" }
+stwo-cairo-prover = { path = "../prover", version = "~1.0.1" }
 tracing-subscriber.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
