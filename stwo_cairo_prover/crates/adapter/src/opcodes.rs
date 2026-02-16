@@ -1,7 +1,6 @@
 use std::fmt::Display;
 
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
-use crypto_bigint::U256;
 use rayon::iter::ParallelIterator;
 use rayon::slice::ParallelSlice;
 use serde::{Deserialize, Serialize};
@@ -11,7 +10,7 @@ use stwo_cairo_common::prover_types::cpu::CasmState;
 use tracing::{span, Level};
 
 use super::decode::{Instruction, OpcodeExtension};
-use super::memory::{MemoryBuilder, MemoryValue};
+use super::memory::MemoryBuilder;
 
 // TODO (Stav): Ensure it stays synced with that opcdode AIR's list.
 /// This struct holds the components used to prove the opcodes in a Cairo program,
@@ -43,439 +42,455 @@ impl CasmStatesByOpcode {
     fn from_iter(
         iter: impl DoubleEndedIterator<Item = RelocatedTraceEntry>,
         memory: &MemoryBuilder,
+        generic_opcode_reroute: bool,
     ) -> Self {
         let mut res = CasmStatesByOpcode::default();
         for entry in iter {
-            res.push_instr(memory, into_casm_state(&entry));
+            res.push_instr(memory, into_casm_state(&entry), generic_opcode_reroute);
         }
         res
     }
 
     /// Pushes the state transition at pc into the appropriate opcode component.
-    fn push_instr(&mut self, memory: &MemoryBuilder, state: CasmState) {
+    fn push_instr(
+        &mut self,
+        memory: &MemoryBuilder,
+        state: CasmState,
+        generic_opcode_reroute: bool,
+    ) {
         assert_state_in_address_space(state);
         let CasmState { ap, fp, pc } = state;
         let encoded_instruction = memory.get_inst(pc.0);
         let instruction = Instruction::decode(encoded_instruction);
 
-        match instruction {
-            // ret.
-            Instruction {
-                offset0: -2,
-                offset1: -1,
-                offset2: -1,
-                dst_base_fp: true,
-                op0_base_fp: true,
-                op_1_imm: false,
-                op_1_base_fp: true,
-                op_1_base_ap: false,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump: true,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: false,
-                opcode_call: false,
-                opcode_ret: true,
-                opcode_assert_eq: false,
-                opcode_extension: OpcodeExtension::Stone,
-            } => self.ret_opcode.push(state),
+        if matches!(instruction.opcode_extension, OpcodeExtension::Stone) {
+            if generic_opcode_reroute {
+                self.generic_opcode.push(state);
+            } else {
+                match instruction {
+                    // ret.
+                    Instruction {
+                        offset0: -2,
+                        offset1: -1,
+                        offset2: -1,
+                        dst_base_fp: true,
+                        op0_base_fp: true,
+                        op_1_imm: false,
+                        op_1_base_fp: true,
+                        op_1_base_ap: false,
+                        res_add: false,
+                        res_mul: false,
+                        pc_update_jump: true,
+                        pc_update_jump_rel: false,
+                        pc_update_jnz: false,
+                        ap_update_add: false,
+                        ap_update_add_1: false,
+                        opcode_call: false,
+                        opcode_ret: true,
+                        opcode_assert_eq: false,
+                        opcode_extension: OpcodeExtension::Stone,
+                    } => self.ret_opcode.push(state),
 
-            // add ap.
-            Instruction {
-                offset0: -1,
-                offset1: -1,
-                offset2,
-                dst_base_fp: true,
-                op0_base_fp: true,
-                op_1_imm,
-                op_1_base_fp,
-                op_1_base_ap,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump: false,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: true,
-                ap_update_add_1: false,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: false,
-                opcode_extension: OpcodeExtension::Stone,
-            } => {
-                // ap += imm.
-                // ap += [ap/fp + offset2].
-                assert_eq!(
+                    // add ap.
+                    Instruction {
+                        offset0: -1,
+                        offset1: -1,
+                        offset2,
+                        dst_base_fp: true,
+                        op0_base_fp: true,
+                        op_1_imm,
+                        op_1_base_fp,
+                        op_1_base_ap,
+                        res_add: false,
+                        res_mul: false,
+                        pc_update_jump: false,
+                        pc_update_jump_rel: false,
+                        pc_update_jnz: false,
+                        ap_update_add: true,
+                        ap_update_add_1: false,
+                        opcode_call: false,
+                        opcode_ret: false,
+                        opcode_assert_eq: false,
+                        opcode_extension: OpcodeExtension::Stone,
+                    } => {
+                        // ap += imm.
+                        // ap += [ap/fp + offset2].
+                        assert_eq!(
                     (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
                     1,
                     "add_ap opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
                 );
-                assert!(
-                    (!op_1_imm) || offset2 == 1,
-                    "add_ap opcode requires that if op_1_imm is true, offset2 must be 1"
-                );
-                self.add_ap_opcode.push(state);
-            }
-            // jump.
-            Instruction {
-                offset0: -1,
-                offset1,
-                offset2,
-                dst_base_fp: true,
-                op0_base_fp,
-                op_1_imm,
-                op_1_base_fp,
-                op_1_base_ap,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump,
-                pc_update_jump_rel,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: _,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: false,
-                opcode_extension: OpcodeExtension::Stone,
-            } => {
-                if op_1_imm {
-                    // jump rel imm.
-                    assert!(
-                        pc_update_jump_rel
-                            && !pc_update_jump
-                            && !op_1_base_fp
-                            && !op_1_base_ap
-                            && op0_base_fp
-                            && offset1 == -1
-                            && offset2 == 1
-                    );
-                    self.jump_opcode_rel_imm.push(state);
-                } else if pc_update_jump_rel {
-                    // jump rel [ap/fp + offset2].
-                    assert!(
-                        !pc_update_jump
-                            && (op_1_base_fp || op_1_base_ap)
-                            && op0_base_fp
-                            && offset1 == -1
-                    );
-                    self.jump_opcode_rel.push(state);
-                } else if !op_1_base_fp && !op_1_base_ap {
-                    // jump abs [[ap/fp + offset1] + offset2].
-                    assert!(pc_update_jump);
-                    self.jump_opcode_double_deref.push(state);
-                } else {
-                    // jump abs [ap/fp + offset2].
-                    assert!(
-                        (op_1_base_fp || op_1_base_ap)
-                            && op0_base_fp
-                            && pc_update_jump
-                            && offset1 == -1
-                    );
-                    self.jump_opcode_abs.push(state);
-                }
-            }
+                        assert!(
+                            (!op_1_imm) || offset2 == 1,
+                            "add_ap opcode requires that if op_1_imm is true, offset2 must be 1"
+                        );
+                        self.add_ap_opcode.push(state);
+                    }
+                    // jump.
+                    Instruction {
+                        offset0: -1,
+                        offset1,
+                        offset2,
+                        dst_base_fp: true,
+                        op0_base_fp,
+                        op_1_imm,
+                        op_1_base_fp,
+                        op_1_base_ap,
+                        res_add: false,
+                        res_mul: false,
+                        pc_update_jump,
+                        pc_update_jump_rel,
+                        pc_update_jnz: false,
+                        ap_update_add: false,
+                        ap_update_add_1: _,
+                        opcode_call: false,
+                        opcode_ret: false,
+                        opcode_assert_eq: false,
+                        opcode_extension: OpcodeExtension::Stone,
+                    } => {
+                        if op_1_imm {
+                            // jump rel imm.
+                            assert!(
+                                pc_update_jump_rel
+                                    && !pc_update_jump
+                                    && !op_1_base_fp
+                                    && !op_1_base_ap
+                                    && op0_base_fp
+                                    && offset1 == -1
+                                    && offset2 == 1
+                            );
+                            self.jump_opcode_rel_imm.push(state);
+                        } else if pc_update_jump_rel {
+                            // jump rel [ap/fp + offset2].
+                            assert!(
+                                !pc_update_jump
+                                    && (op_1_base_fp || op_1_base_ap)
+                                    && op0_base_fp
+                                    && offset1 == -1
+                            );
+                            self.jump_opcode_rel.push(state);
+                        } else if !op_1_base_fp && !op_1_base_ap {
+                            // jump abs [[ap/fp + offset1] + offset2].
+                            assert!(pc_update_jump);
+                            self.jump_opcode_double_deref.push(state);
+                        } else {
+                            // jump abs [ap/fp + offset2].
+                            assert!(
+                                (op_1_base_fp || op_1_base_ap)
+                                    && op0_base_fp
+                                    && pc_update_jump
+                                    && offset1 == -1
+                            );
+                            self.jump_opcode_abs.push(state);
+                        }
+                    }
 
-            // call.
-            Instruction {
-                offset0: 0,
-                offset1: 1,
-                offset2,
-                dst_base_fp: false,
-                op0_base_fp: false,
-                op_1_imm,
-                op_1_base_fp,
-                op_1_base_ap,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump,
-                pc_update_jump_rel,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: false,
-                opcode_call: true,
-                opcode_ret: false,
-                opcode_assert_eq: false,
-                opcode_extension: OpcodeExtension::Stone,
-            } => {
-                if pc_update_jump_rel {
-                    // call rel imm.
-                    assert!(
-                        op_1_imm
-                            && !op_1_base_fp
-                            && !op_1_base_ap
-                            && offset2 == 1
-                            && !pc_update_jump
-                    );
-                    self.call_opcode_rel_imm.push(state);
-                } else {
-                    // call abs [ap/fp + offset2].
-                    assert!((op_1_base_ap ^ op_1_base_fp) && !op_1_imm && pc_update_jump);
-                    self.call_opcode_abs.push(state);
-                }
-            }
+                    // call.
+                    Instruction {
+                        offset0: 0,
+                        offset1: 1,
+                        offset2,
+                        dst_base_fp: false,
+                        op0_base_fp: false,
+                        op_1_imm,
+                        op_1_base_fp,
+                        op_1_base_ap,
+                        res_add: false,
+                        res_mul: false,
+                        pc_update_jump,
+                        pc_update_jump_rel,
+                        pc_update_jnz: false,
+                        ap_update_add: false,
+                        ap_update_add_1: false,
+                        opcode_call: true,
+                        opcode_ret: false,
+                        opcode_assert_eq: false,
+                        opcode_extension: OpcodeExtension::Stone,
+                    } => {
+                        if pc_update_jump_rel {
+                            // call rel imm.
+                            assert!(
+                                op_1_imm
+                                    && !op_1_base_fp
+                                    && !op_1_base_ap
+                                    && offset2 == 1
+                                    && !pc_update_jump
+                            );
+                            self.call_opcode_rel_imm.push(state);
+                        } else {
+                            // call abs [ap/fp + offset2].
+                            assert!((op_1_base_ap ^ op_1_base_fp) && !op_1_imm && pc_update_jump);
+                            self.call_opcode_abs.push(state);
+                        }
+                    }
 
-            // jnz.
-            Instruction {
-                offset0,
-                offset1: -1,
-                offset2: 1,
-                dst_base_fp,
-                op0_base_fp: true,
-                op_1_imm: true,
-                op_1_base_fp: false,
-                op_1_base_ap: false,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump: false,
-                pc_update_jump_rel: false,
-                pc_update_jnz: true,
-                ap_update_add: false,
-                ap_update_add_1: _,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: false,
-                opcode_extension: OpcodeExtension::Stone,
-            } => {
-                // jump rel imm if [ap/fp + offset0] != 0.
-                let dst_addr = if dst_base_fp { fp } else { ap };
-                let dst = memory.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap());
-                let taken = !dst.is_zero();
-                if taken {
-                    self.jnz_opcode_taken.push(state);
-                } else {
-                    self.jnz_opcode_non_taken.push(state);
-                }
-            }
+                    // jnz.
+                    Instruction {
+                        offset0,
+                        offset1: -1,
+                        offset2: 1,
+                        dst_base_fp,
+                        op0_base_fp: true,
+                        op_1_imm: true,
+                        op_1_base_fp: false,
+                        op_1_base_ap: false,
+                        res_add: false,
+                        res_mul: false,
+                        pc_update_jump: false,
+                        pc_update_jump_rel: false,
+                        pc_update_jnz: true,
+                        ap_update_add: false,
+                        ap_update_add_1: _,
+                        opcode_call: false,
+                        opcode_ret: false,
+                        opcode_assert_eq: false,
+                        opcode_extension: OpcodeExtension::Stone,
+                    } => {
+                        // jump rel imm if [ap/fp + offset0] != 0.
+                        let dst_addr = if dst_base_fp { fp } else { ap };
+                        let dst =
+                            memory.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap());
+                        let taken = !dst.is_zero();
+                        if taken {
+                            self.jnz_opcode_taken.push(state);
+                        } else {
+                            self.jnz_opcode_non_taken.push(state);
+                        }
+                    }
 
-            // assert equal.
-            Instruction {
-                offset0: _,
-                offset1,
-                offset2,
-                dst_base_fp: _,
-                op0_base_fp,
-                op_1_imm,
-                op_1_base_fp,
-                op_1_base_ap,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump: false,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: _,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: true,
-                opcode_extension: OpcodeExtension::Stone,
-            } => {
-                if op_1_imm {
-                    // [ap/fp + offset0] = imm.
-                    assert!(
-                        !op_1_base_fp
-                            && !op_1_base_ap
-                            && offset2 == 1
-                            && op0_base_fp
-                            && offset1 == -1
-                    );
-                    self.assert_eq_opcode_imm.push(state);
-                } else if !op_1_base_fp && !op_1_base_ap {
-                    // [ap/fp + offset0] = [[ap/fp + offset1] + offset2].
-                    self.assert_eq_opcode_double_deref.push(state);
-                } else {
-                    // [ap/fp + offset0] = [ap/fp + offset1].
-                    assert!((op_1_base_fp || op_1_base_ap) && offset1 == -1 && op0_base_fp);
-                    self.assert_eq_opcode.push(state);
-                }
-            }
+                    // assert equal.
+                    Instruction {
+                        offset0: _,
+                        offset1,
+                        offset2,
+                        dst_base_fp: _,
+                        op0_base_fp,
+                        op_1_imm,
+                        op_1_base_fp,
+                        op_1_base_ap,
+                        res_add: false,
+                        res_mul: false,
+                        pc_update_jump: false,
+                        pc_update_jump_rel: false,
+                        pc_update_jnz: false,
+                        ap_update_add: false,
+                        ap_update_add_1: _,
+                        opcode_call: false,
+                        opcode_ret: false,
+                        opcode_assert_eq: true,
+                        opcode_extension: OpcodeExtension::Stone,
+                    } => {
+                        if op_1_imm {
+                            // [ap/fp + offset0] = imm.
+                            assert!(
+                                !op_1_base_fp
+                                    && !op_1_base_ap
+                                    && offset2 == 1
+                                    && op0_base_fp
+                                    && offset1 == -1
+                            );
+                            self.assert_eq_opcode_imm.push(state);
+                        } else if !op_1_base_fp && !op_1_base_ap {
+                            // [ap/fp + offset0] = [[ap/fp + offset1] + offset2].
+                            self.assert_eq_opcode_double_deref.push(state);
+                        } else {
+                            // [ap/fp + offset0] = [ap/fp + offset1].
+                            assert!((op_1_base_fp || op_1_base_ap) && offset1 == -1 && op0_base_fp);
+                            self.assert_eq_opcode.push(state);
+                        }
+                    }
 
-            // mul.
-            Instruction {
-                offset0: _,
-                offset1,
-                offset2,
-                dst_base_fp: _,
-                op0_base_fp,
-                op_1_imm,
-                op_1_base_fp,
-                op_1_base_ap,
-                res_add: false,
-                res_mul: true,
-                pc_update_jump: false,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: _,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: true,
-                opcode_extension: OpcodeExtension::Stone,
-            } => {
-                let (op0_addr, op_1_addr) = (
-                    if op0_base_fp { fp } else { ap },
-                    if op_1_imm {
-                        pc
-                    } else if op_1_base_fp {
-                        fp
-                    } else {
-                        ap
-                    },
-                );
-                let (op0, op_1) = (
-                    memory.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
-                    memory.get(op_1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
-                );
+                    // mul.
+                    Instruction {
+                        offset0: _,
+                        offset1,
+                        offset2,
+                        dst_base_fp: _,
+                        op0_base_fp,
+                        op_1_imm,
+                        op_1_base_fp,
+                        op_1_base_ap,
+                        res_add: false,
+                        res_mul: true,
+                        pc_update_jump: false,
+                        pc_update_jump_rel: false,
+                        pc_update_jnz: false,
+                        ap_update_add: false,
+                        ap_update_add_1: _,
+                        opcode_call: false,
+                        opcode_ret: false,
+                        opcode_assert_eq: true,
+                        opcode_extension: OpcodeExtension::Stone,
+                    } => {
+                        let (op0_addr, op_1_addr) = (
+                            if op0_base_fp { fp } else { ap },
+                            if op_1_imm {
+                                pc
+                            } else if op_1_base_fp {
+                                fp
+                            } else {
+                                ap
+                            },
+                        );
+                        let (op0, op_1) = (
+                            memory.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
+                            memory.get(op_1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
+                        );
 
-                // [ap/fp + offset0] = [ap/fp + offset1] * imm.
-                // [ap/fp + offset0] = [ap/fp + offset1] * [ap/fp + offset2].
-                assert_eq!(
+                        // [ap/fp + offset0] = [ap/fp + offset1] * imm.
+                        // [ap/fp + offset0] = [ap/fp + offset1] * [ap/fp + offset2].
+                        assert_eq!(
                     (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
                     1,
                     "mul opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
                 );
-                assert!(
-                    (!op_1_imm) || offset2 == 1,
-                    "mul opcode requires that if op_1_imm is true, offset2 must be 1"
-                );
-                if is_small_mul(op0, op_1) {
-                    self.mul_opcode_small.push(state);
-                } else {
-                    self.mul_opcode.push(state);
-                }
-            }
+                        assert!(
+                            (!op_1_imm) || offset2 == 1,
+                            "mul opcode requires that if op_1_imm is true, offset2 must be 1"
+                        );
+                        if is_small_mul(op0, op_1) {
+                            self.mul_opcode_small.push(state);
+                        } else {
+                            self.mul_opcode.push(state);
+                        }
+                    }
 
-            // add.
-            Instruction {
-                offset0,
-                offset1,
-                offset2,
-                dst_base_fp,
-                op0_base_fp,
-                op_1_imm,
-                op_1_base_fp,
-                op_1_base_ap,
-                res_add: true,
-                res_mul: false,
-                pc_update_jump: false,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: _,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: true,
-                opcode_extension: OpcodeExtension::Stone,
-            } => {
-                let (dst_addr, op0_addr, op_1_addr) = (
-                    if dst_base_fp { fp } else { ap },
-                    if op0_base_fp { fp } else { ap },
-                    if op_1_imm {
-                        pc
-                    } else if op_1_base_fp {
-                        fp
-                    } else {
-                        ap
-                    },
-                );
-                let (dst, op0, op_1) = (
-                    memory.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap()),
-                    memory.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
-                    memory.get(op_1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
-                );
+                    // add.
+                    Instruction {
+                        offset0,
+                        offset1,
+                        offset2,
+                        dst_base_fp,
+                        op0_base_fp,
+                        op_1_imm,
+                        op_1_base_fp,
+                        op_1_base_ap,
+                        res_add: true,
+                        res_mul: false,
+                        pc_update_jump: false,
+                        pc_update_jump_rel: false,
+                        pc_update_jnz: false,
+                        ap_update_add: false,
+                        ap_update_add_1: _,
+                        opcode_call: false,
+                        opcode_ret: false,
+                        opcode_assert_eq: true,
+                        opcode_extension: OpcodeExtension::Stone,
+                    } => {
+                        let (dst_addr, op0_addr, op_1_addr) = (
+                            if dst_base_fp { fp } else { ap },
+                            if op0_base_fp { fp } else { ap },
+                            if op_1_imm {
+                                pc
+                            } else if op_1_base_fp {
+                                fp
+                            } else {
+                                ap
+                            },
+                        );
+                        let (dst, op0, op_1) = (
+                            memory.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap()),
+                            memory.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
+                            memory.get(op_1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
+                        );
 
-                // [ap/fp + offset0] = [ap/fp + offset1] + imm.
-                // [ap/fp + offset0] = [ap/fp + offset1] + [ap/fp + offset2].
-                assert_eq!(
+                        // [ap/fp + offset0] = [ap/fp + offset1] + imm.
+                        // [ap/fp + offset0] = [ap/fp + offset1] + [ap/fp + offset2].
+                        assert_eq!(
                     (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
                     1,
                     "add opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
                 );
-                assert!(
-                    (!op_1_imm) || offset2 == 1,
-                    "add opcode requires that if op_1_imm is true, offset2 must be 1"
-                );
-                if is_small_add(dst, op0, op_1) {
-                    self.add_opcode_small.push(state);
-                } else {
-                    self.add_opcode.push(state);
+                        assert!(
+                            (!op_1_imm) || offset2 == 1,
+                            "add opcode requires that if op_1_imm is true, offset2 must be 1"
+                        );
+                        if is_small_add(dst, op0, op_1) {
+                            self.add_opcode_small.push(state);
+                        } else {
+                            self.add_opcode.push(state);
+                        }
+                    }
+                    // generic opcode.
+                    _ => {
+                        self.generic_opcode.push(state);
+                    }
                 }
             }
-
-            // Blake.
-            Instruction {
-                offset0: _,
-                offset1: _,
-                offset2: _,
-                dst_base_fp: _,
-                op0_base_fp: _,
-                op_1_imm: false,
-                op_1_base_fp,
-                op_1_base_ap,
-                res_add: false,
-                res_mul: false,
-                pc_update_jump: false,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: _,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: false,
-                opcode_extension: OpcodeExtension::Blake | OpcodeExtension::BlakeFinalize,
-            } => {
-                assert!(
+        } else {
+            match instruction {
+                // Blake.
+                Instruction {
+                    offset0: _,
+                    offset1: _,
+                    offset2: _,
+                    dst_base_fp: _,
+                    op0_base_fp: _,
+                    op_1_imm: false,
+                    op_1_base_fp,
+                    op_1_base_ap,
+                    res_add: false,
+                    res_mul: false,
+                    pc_update_jump: false,
+                    pc_update_jump_rel: false,
+                    pc_update_jnz: false,
+                    ap_update_add: false,
+                    ap_update_add_1: _,
+                    opcode_call: false,
+                    opcode_ret: false,
+                    opcode_assert_eq: false,
+                    opcode_extension: OpcodeExtension::Blake | OpcodeExtension::BlakeFinalize,
+                } => {
+                    assert!(
                     op_1_base_fp ^ op_1_base_ap,
                     "Blake opcode requires exactly one of op_1_base_fp and op_1_base_ap to be true"
                 );
-                self.blake_compress_opcode.push(state);
-            }
-
-            // QM31 add mul.
-            Instruction {
-                offset0: _,
-                offset1: _,
-                offset2,
-                dst_base_fp: _,
-                op0_base_fp: _,
-                op_1_imm,
-                op_1_base_fp,
-                op_1_base_ap,
-                res_add,
-                res_mul,
-                pc_update_jump: false,
-                pc_update_jump_rel: false,
-                pc_update_jnz: false,
-                ap_update_add: false,
-                ap_update_add_1: _,
-                opcode_call: false,
-                opcode_ret: false,
-                opcode_assert_eq: true,
-                opcode_extension: OpcodeExtension::QM31Operation,
-            } => {
-                // [ap/fp + offset0] = [ap/fp + offset1] +/* [ap/fp/pc + offset2]
-                assert_eq!(
-                    (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
-                    1,
-                    "qm31_add_mul opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
-                );
-                assert!(
-                    res_add ^ res_mul,
-                    "qm31_add_mul opcode requires exactly one of res_add, res_mul must be true"
-                );
-                assert!(
-                    (!op_1_imm) || offset2 == 1,
-                    "qm31_add_mul opcode requires that if op_1_imm is true, offset2 must be 1"
-                );
-                self.qm_31_add_mul_opcode.push(state);
-            }
-
-            // generic opcode.
-            _ => {
-                if !matches!(instruction.opcode_extension, OpcodeExtension::Stone) {
-                    panic!("`generic_opcode` component supports `Stone` opcodes only.");
+                    self.blake_compress_opcode.push(state);
                 }
-                self.generic_opcode.push(state);
+
+                // QM31 add mul.
+                Instruction {
+                    offset0: _,
+                    offset1: _,
+                    offset2,
+                    dst_base_fp: _,
+                    op0_base_fp: _,
+                    op_1_imm,
+                    op_1_base_fp,
+                    op_1_base_ap,
+                    res_add,
+                    res_mul,
+                    pc_update_jump: false,
+                    pc_update_jump_rel: false,
+                    pc_update_jnz: false,
+                    ap_update_add: false,
+                    ap_update_add_1: _,
+                    opcode_call: false,
+                    opcode_ret: false,
+                    opcode_assert_eq: true,
+                    opcode_extension: OpcodeExtension::QM31Operation,
+                } => {
+                    // [ap/fp + offset0] = [ap/fp + offset1] +/* [ap/fp/pc + offset2]
+                    assert_eq!(
+                (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
+                1,
+                "qm31_add_mul opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
+            );
+                    assert!(
+                        res_add ^ res_mul,
+                        "qm31_add_mul opcode requires exactly one of res_add, res_mul must be true"
+                    );
+                    assert!(
+                        (!op_1_imm) || offset2 == 1,
+                        "qm31_add_mul opcode requires that if op_1_imm is true, offset2 must be 1"
+                    );
+                    self.qm_31_add_mul_opcode.push(state);
+                }
+
+                // invalid opcode.
+                _ => {
+                    panic!("Invalid opcode encoding.");
+                }
             }
         }
     }
@@ -640,6 +655,7 @@ impl StateTransitions {
     pub fn from_iter(
         iter: impl DoubleEndedIterator<Item = RelocatedTraceEntry>,
         memory: &MemoryBuilder,
+        generic_opcode_reroute: bool,
     ) -> Self {
         let _span = span!(Level::INFO, "StateTransitions::from_iter").entered();
         let mut iter = iter.peekable();
@@ -651,7 +667,7 @@ impl StateTransitions {
         let final_state = into_casm_state(&iter.next_back().expect("Must have a final state."));
         assert_state_in_address_space(final_state);
 
-        let states = CasmStatesByOpcode::from_iter(iter, memory);
+        let states = CasmStatesByOpcode::from_iter(iter, memory, generic_opcode_reroute);
 
         StateTransitions {
             initial_state,
@@ -660,7 +676,11 @@ impl StateTransitions {
         }
     }
 
-    pub fn from_slice_parallel(trace: &[RelocatedTraceEntry], memory: &MemoryBuilder) -> Self {
+    pub fn from_slice_parallel(
+        trace: &[RelocatedTraceEntry],
+        memory: &MemoryBuilder,
+        generic_opcode_reroute: bool,
+    ) -> Self {
         let _span = span!(Level::INFO, "StateTransitions::from_slice_parallel").entered();
         let initial_state = into_casm_state(trace.first().unwrap());
         assert_state_in_address_space(initial_state);
@@ -675,7 +695,9 @@ impl StateTransitions {
         let chunk_size = trace.len().div_ceil(n_workers);
         let casm_states_by_opcode = trace
             .par_chunks(chunk_size)
-            .map(|chunk| CasmStatesByOpcode::from_iter(chunk.iter().cloned(), memory))
+            .map(|chunk| {
+                CasmStatesByOpcode::from_iter(chunk.iter().cloned(), memory, generic_opcode_reroute)
+            })
             .reduce(Default::default, |mut acc, chunk| {
                 acc.merge(&chunk);
                 acc
@@ -688,6 +710,10 @@ impl StateTransitions {
         }
     }
 }
+
+use crypto_bigint::U256;
+
+use super::memory::MemoryValue;
 
 fn u256_from_le_array(arr: [u32; 8]) -> U256 {
     let mut buf = [0u8; 32];
@@ -766,7 +792,7 @@ mod mappings_tests {
             )
             .expect("Run failed");
 
-        adapt(&runner).expect("Adapter failed")
+        adapt(&runner, false).expect("Adapter failed")
     }
 
     #[test]
@@ -866,7 +892,8 @@ mod mappings_tests {
         memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
 
         let trace_entry = relocated_trace_entry!(1, 1, 1);
-        let states = CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+        let states =
+            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder, false);
         assert_eq!(states.jump_opcode_rel.len(), 1);
     }
 
@@ -881,7 +908,8 @@ mod mappings_tests {
         memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
 
         let trace_entry = relocated_trace_entry!(1, 1, 1);
-        let states = CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+        let states =
+            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder, false);
         assert_eq!(states.jump_opcode_double_deref.len(), 1);
     }
 
@@ -948,7 +976,7 @@ mod mappings_tests {
 
         let trace_entry = relocated_trace_entry!(ap as usize, fp as usize, pc as usize);
         let casm_states_by_opcode =
-            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder, false);
         assert_eq!(casm_states_by_opcode.add_ap_opcode.len(), 1);
     }
 
@@ -1089,7 +1117,7 @@ mod mappings_tests {
         let trace_entry = relocated_trace_entry!(ap as usize, fp as usize, pc as usize);
 
         let casm_states_by_opcode =
-            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder, false);
 
         assert_eq!(casm_states_by_opcode.add_opcode_small.len(), 1);
     }
@@ -1110,7 +1138,7 @@ mod mappings_tests {
         let trace_entry = relocated_trace_entry!(ap as usize, fp as usize, pc as usize);
 
         let casm_states_by_opcode =
-            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder, false);
 
         assert_eq!(casm_states_by_opcode.add_opcode.len(), 1);
     }
@@ -1232,7 +1260,8 @@ mod mappings_tests {
         let instruction = Instruction::decode(memory_builder.get_inst(1));
         let trace_entry = relocated_trace_entry!(1, 1, 1);
 
-        let states = CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+        let states =
+            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder, false);
 
         matches!(instruction.opcode_extension, OpcodeExtension::BlakeFinalize);
         assert_eq!(states.blake_compress_opcode.len(), 1);
@@ -1248,7 +1277,8 @@ mod mappings_tests {
 
         let instruction = Instruction::decode(memory_builder.get_inst(1));
         let trace_entry = relocated_trace_entry!(1, 1, 1);
-        let states = CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder);
+        let states =
+            CasmStatesByOpcode::from_iter([trace_entry].into_iter(), &memory_builder, false);
 
         matches!(instruction.opcode_extension, OpcodeExtension::QM31Operation);
         assert_eq!(states.qm_31_add_mul_opcode.len(), 1);
@@ -1286,6 +1316,7 @@ mod mappings_tests {
                 .relocate_trace(&get_test_relocatble_trace())
                 .into_iter(),
             &memory_builder,
+            false,
         );
         assert_eq!(
             state_transitions.casm_states_by_opcode.qm_31_add_mul_opcode,
@@ -1302,6 +1333,7 @@ mod mappings_tests {
         StateTransitions::from_iter(
             reloctated_trace.into_iter(),
             &MemoryBuilder::new(MemoryConfig::default()),
+            false,
         );
     }
 
@@ -1318,6 +1350,39 @@ mod mappings_tests {
         let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
         memory_builder.set(1, MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]));
 
-        StateTransitions::from_slice_parallel(&reloctated_trace, &memory_builder);
+        StateTransitions::from_slice_parallel(&reloctated_trace, &memory_builder, false);
+    }
+
+    #[test]
+    fn test_generic_opcode_full_program() {
+        use stwo_cairo_dev_utils::utils::get_compiled_cairo_program_path;
+        use stwo_cairo_dev_utils::vm_utils::{run_and_adapt, ProgramType};
+
+        let compiled_program =
+            get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
+        let input = run_and_adapt(&compiled_program, ProgramType::Json, None, true).unwrap();
+        let casm_states = input.state_transitions.casm_states_by_opcode;
+
+        assert_eq!(casm_states.blake_compress_opcode.len(), 2);
+        assert_eq!(casm_states.qm_31_add_mul_opcode.len(), 10);
+        assert_eq!(casm_states.generic_opcode.len(), 1482);
+
+        assert!(casm_states.ret_opcode.is_empty());
+        assert!(casm_states.add_ap_opcode.is_empty());
+        assert!(casm_states.add_opcode.is_empty());
+        assert!(casm_states.add_opcode_small.is_empty());
+        assert!(casm_states.assert_eq_opcode.is_empty());
+        assert!(casm_states.assert_eq_opcode_double_deref.is_empty());
+        assert!(casm_states.assert_eq_opcode_imm.is_empty());
+        assert!(casm_states.call_opcode_abs.is_empty());
+        assert!(casm_states.call_opcode_rel_imm.is_empty());
+        assert!(casm_states.jnz_opcode_non_taken.is_empty());
+        assert!(casm_states.jnz_opcode_taken.is_empty());
+        assert!(casm_states.jump_opcode_rel_imm.is_empty());
+        assert!(casm_states.jump_opcode_rel.is_empty());
+        assert!(casm_states.jump_opcode_double_deref.is_empty());
+        assert!(casm_states.jump_opcode_abs.is_empty());
+        assert!(casm_states.mul_opcode_small.is_empty());
+        assert!(casm_states.mul_opcode.is_empty());
     }
 }
