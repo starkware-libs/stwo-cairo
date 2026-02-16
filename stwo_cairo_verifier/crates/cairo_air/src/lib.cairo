@@ -882,7 +882,7 @@ impl PublicDataImpl of PublicDataTrait {
         // Collect output values.
         let mut output_claim = array![];
         for (_, value) in output {
-            let fixed_arr: [u32; 8] = (*value).try_into().unwrap();
+            let fixed_arr: [u32; 8] = *value;
             let new_value: [u32; N_M31_IN_FELT252] = split(fixed_arr);
             let arr: Array<u32> = new_value.span().into_iter().map(|x| *x).collect();
             output_claim.extend(arr);
@@ -891,7 +891,7 @@ impl PublicDataImpl of PublicDataTrait {
         // Collect program values.
         let mut program_claim = array![];
         for (_, value) in program {
-            let fixed_arr: [u32; 8] = (*value).try_into().unwrap();
+            let fixed_arr: [u32; 8] = *value;
             let new_value: [u32; N_M31_IN_FELT252] = split(fixed_arr);
             let arr: Array<u32> = new_value.span().into_iter().map(|x| *x).collect();
             program_claim.extend(arr);

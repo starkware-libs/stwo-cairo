@@ -70,6 +70,19 @@ pub trait PackedUnreducedQM31Trait {
     fn packed_fused_mul_add(a: PackedUnreducedQM31, b: QM31, c: PackedUnreducedQM31) -> QM31;
 }
 
+/// Converts `QM31` into `PackedUnreducedQM31`.
+// This version is needed to avoid linting errors in the `qm31_opcode` feature.
+#[cfg(feature: "qm31_opcode")]
+pub fn to_packed_unreduced_qm31(value: QM31) -> PackedUnreducedQM31 {
+    value
+}
+
+/// Converts `QM31` into `PackedUnreducedQM31`.
+#[cfg(not(feature: "qm31_opcode"))]
+pub fn to_packed_unreduced_qm31(value: QM31) -> PackedUnreducedQM31 {
+    value.into()
+}
+
 impl QM31Display of core::fmt::Display<QM31> {
     fn fmt(self: @QM31, ref f: core::fmt::Formatter) -> Result<(), core::fmt::Error> {
         let [a, b, c, d] = (*self).to_fixed_array();
