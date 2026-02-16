@@ -7,7 +7,7 @@ use cairo_air::air::CairoComponents;
 use cairo_air::claims::lookup_sum;
 use cairo_air::relations::CommonLookupElements;
 use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
-use cairo_air::verifier::{verify_cairo, INTERACTION_POW_BITS};
+use cairo_air::verifier::{verify_cairo_ex, INTERACTION_POW_BITS};
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
@@ -55,7 +55,10 @@ where
 {
     let cairo_proof = prove_cairo::<MC>(input, proof_params)?;
     if verify {
-        verify_cairo::<MC>(cairo_proof.clone().into())?;
+        verify_cairo_ex::<MC>(
+            cairo_proof.clone().into(),
+            proof_params.include_all_preprocessed_columns,
+        )?;
     }
     serialize_proof_to_file(&cairo_proof, proof_path, proof_format)?;
     Ok(())
