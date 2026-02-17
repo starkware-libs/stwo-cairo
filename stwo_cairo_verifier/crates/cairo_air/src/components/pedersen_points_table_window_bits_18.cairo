@@ -72,6 +72,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut pedersen_points_table_window_bits_18_sum_0: QM31 = Zero::zero();
+        let mut numerator_0: QM31 = Zero::zero();
         let seq_23 = preprocessed_mask_values.get_and_mark_used(SEQ_23_IDX);
         let pedersen_points_0 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_0_IDX);
         let pedersen_points_1 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_1_IDX);
@@ -130,16 +131,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let pedersen_points_54 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_54_IDX);
         let pedersen_points_55 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_55_IDX);
 
-        let [pedersen_points_table_window_bits_18_multiplicity]: [Span<QM31>; 1] =
-            (*trace_mask_values
-            .multi_pop_front()
-            .unwrap())
+        let [multiplicity_0_col0]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_18_multiplicity]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_18_multiplicity
-            .try_into()
-            .unwrap())
-            .unbox();
+        let [multiplicity_0_col0]: [QM31; 1] = (*multiplicity_0_col0.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
@@ -165,12 +159,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ]
                     .span(),
             );
+        numerator_0 = multiplicity_0_col0;
 
         lookup_constraints(
             ref sum,
             random_coeff,
             claimed_sum,
-            pedersen_points_table_window_bits_18_multiplicity,
+            numerator_0,
             column_size,
             ref interaction_trace_mask_values,
             pedersen_points_table_window_bits_18_sum_0,
@@ -183,7 +178,7 @@ fn lookup_constraints(
     ref sum: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    pedersen_points_table_window_bits_18_multiplicity: QM31,
+    numerator_0: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     pedersen_points_table_window_bits_18_sum_0: QM31,
@@ -209,7 +204,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * pedersen_points_table_window_bits_18_sum_0)
-        + pedersen_points_table_window_bits_18_multiplicity);
+        + numerator_0);
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]

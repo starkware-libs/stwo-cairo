@@ -1,4 +1,3 @@
-pub use num_traits::One;
 pub use serde::{Deserialize, Serialize};
 pub use stwo::core::channel::Channel;
 pub use stwo::core::fields::m31::M31;

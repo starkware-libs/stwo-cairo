@@ -41,10 +41,15 @@ pub fn poseidon_partial_round_evaluate(
     p_coef_col31: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref cube_252_sum_0: QM31,
+    ref numerator_0: QM31,
     ref range_check_4_4_4_4_sum_1: QM31,
+    ref numerator_1: QM31,
     ref range_check_4_4_4_4_sum_2: QM31,
+    ref numerator_2: QM31,
     ref range_check_4_4_sum_3: QM31,
+    ref numerator_3: QM31,
     ref range_check_252_width_27_sum_4: QM31,
+    ref numerator_4: QM31,
     ref sum: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
@@ -119,6 +124,7 @@ pub fn poseidon_partial_round_evaluate(
             ]
                 .span(),
         );
+    numerator_0 = qm31_const::<1, 0, 0, 0>();
     linear_combination_n_6_coefs_4_2_3_1_m1_1_evaluate(
         [
             poseidon_partial_round_input_z0_3_limb_0, poseidon_partial_round_input_z0_3_limb_1,
@@ -168,8 +174,11 @@ pub fn poseidon_partial_round_evaluate(
         p_coef_col20,
         common_lookup_elements,
         ref range_check_4_4_4_4_sum_1,
+        ref numerator_1,
         ref range_check_4_4_4_4_sum_2,
+        ref numerator_2,
         ref range_check_4_4_sum_3,
+        ref numerator_3,
         ref sum,
         random_coeff,
     );
@@ -184,6 +193,7 @@ pub fn poseidon_partial_round_evaluate(
             ]
                 .span(),
         );
+    numerator_4 = qm31_const::<1, 0, 0, 0>();
     linear_combination_n_1_coefs_2_evaluate(
         [
             combination_limb_0_col10, combination_limb_1_col11, combination_limb_2_col12,

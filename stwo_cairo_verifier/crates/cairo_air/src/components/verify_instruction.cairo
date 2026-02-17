@@ -82,10 +82,15 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut range_check_7_2_5_sum_0: QM31 = Zero::zero();
+        let mut numerator_0: QM31 = Zero::zero();
         let mut range_check_4_3_sum_1: QM31 = Zero::zero();
+        let mut numerator_1: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_2: QM31 = Zero::zero();
+        let mut numerator_2: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_3: QM31 = Zero::zero();
+        let mut numerator_3: QM31 = Zero::zero();
         let mut verify_instruction_sum_4: QM31 = Zero::zero();
+        let mut numerator_4: QM31 = Zero::zero();
 
         let [
             input_pc_col0,
@@ -104,7 +109,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             offset2_mid_col13,
             offset2_high_col14,
             instruction_id_col15,
-            verify_instruction_multiplicity,
+            multiplicity_0_col16,
         ]: [Span<QM31>; 17] =
             (*trace_mask_values
             .multi_pop_front()
@@ -133,10 +138,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [offset2_mid_col13]: [QM31; 1] = (*offset2_mid_col13.try_into().unwrap()).unbox();
         let [offset2_high_col14]: [QM31; 1] = (*offset2_high_col14.try_into().unwrap()).unbox();
         let [instruction_id_col15]: [QM31; 1] = (*instruction_id_col15.try_into().unwrap()).unbox();
-        let [verify_instruction_multiplicity]: [QM31; 1] = (*verify_instruction_multiplicity
-            .try_into()
-            .unwrap())
-            .unbox();
+        let [multiplicity_0_col16]: [QM31; 1] = (*multiplicity_0_col16.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
@@ -153,7 +155,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             offset2_high_col14,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_0,
+            ref numerator_0,
             ref range_check_4_3_sum_1,
+            ref numerator_1,
             ref sum,
             random_coeff,
         );
@@ -173,7 +177,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             instruction_id_col15,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_2,
+            ref numerator_2,
             ref memory_id_to_big_sum_3,
+            ref numerator_3,
             ref sum,
             random_coeff,
         );
@@ -188,12 +194,17 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ]
                     .span(),
             );
+        numerator_4 = multiplicity_0_col16;
 
         lookup_constraints(
             ref sum,
             random_coeff,
             claimed_sum,
-            verify_instruction_multiplicity,
+            numerator_0,
+            numerator_1,
+            numerator_2,
+            numerator_3,
+            numerator_4,
             column_size,
             ref interaction_trace_mask_values,
             range_check_7_2_5_sum_0,
@@ -210,7 +221,11 @@ fn lookup_constraints(
     ref sum: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    verify_instruction_multiplicity: QM31,
+    numerator_0: QM31,
+    numerator_1: QM31,
+    numerator_2: QM31,
+    numerator_3: QM31,
+    numerator_4: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     range_check_7_2_5_sum_0: QM31,
@@ -260,8 +275,8 @@ fn lookup_constraints(
     ))
         * range_check_7_2_5_sum_0
         * range_check_4_3_sum_1)
-        - range_check_7_2_5_sum_0
-        - range_check_4_3_sum_1);
+        - (range_check_7_2_5_sum_0 * numerator_1)
+        - (range_check_4_3_sum_1 * numerator_0));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -270,8 +285,8 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]))
         * memory_address_to_id_sum_2
         * memory_id_to_big_sum_3)
-        - memory_address_to_id_sum_2
-        - memory_id_to_big_sum_3);
+        - (memory_address_to_id_sum_2 * numerator_3)
+        - (memory_id_to_big_sum_3 * numerator_2));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -283,7 +298,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * verify_instruction_sum_4)
-        + verify_instruction_multiplicity);
+        + numerator_4);
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]

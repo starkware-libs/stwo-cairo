@@ -80,6 +80,7 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let M31_1 = E::F::from(M31::from(1));
         let M31_1090315331 = E::F::from(M31::from(1090315331));
         let M31_1109051422 = E::F::from(M31::from(1109051422));
         let M31_1424798916 = E::F::from(M31::from(1424798916));
@@ -109,13 +110,14 @@ impl FrameworkEval for Eval {
         let limb_6_high_part_col16 = eval.next_trace_mask();
         let limb_7_low_part_col17 = eval.next_trace_mask();
         let limb_8_high_part_col18 = eval.next_trace_mask();
-        let enabler = eval.next_trace_mask();
+        let enabler_col19 = eval.next_trace_mask();
 
-        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
-
+        eval.add_constraint(
+            ((enabler_col19.clone() * enabler_col19.clone()) - enabler_col19.clone()),
+        );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_517791011.clone(),
                 limb_0_high_part_col10.clone(),
@@ -125,7 +127,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1109051422.clone(),
                 (input_limb_0_col0.clone() - (limb_0_high_part_col10.clone() * M31_262144.clone())),
@@ -134,7 +136,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1109051422.clone(),
                 ((input_limb_1_col1.clone() - limb_1_low_part_col11.clone()) * M31_4194304.clone()),
@@ -143,7 +145,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1897792095.clone(),
                 limb_2_high_part_col12.clone(),
@@ -153,7 +155,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1424798916.clone(),
                 (input_limb_2_col2.clone() - (limb_2_high_part_col12.clone() * M31_262144.clone())),
@@ -162,7 +164,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1109051422.clone(),
                 ((input_limb_3_col3.clone() - limb_3_low_part_col13.clone()) * M31_4194304.clone()),
@@ -171,7 +173,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1881014476.clone(),
                 limb_4_high_part_col14.clone(),
@@ -181,7 +183,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1109051422.clone(),
                 (input_limb_4_col4.clone() - (limb_4_high_part_col14.clone() * M31_262144.clone())),
@@ -190,7 +192,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1109051422.clone(),
                 ((input_limb_5_col5.clone() - limb_5_low_part_col15.clone()) * M31_4194304.clone()),
@@ -199,7 +201,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1864236857.clone(),
                 limb_6_high_part_col16.clone(),
@@ -209,7 +211,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1424798916.clone(),
                 (input_limb_6_col6.clone() - (limb_6_high_part_col16.clone() * M31_262144.clone())),
@@ -218,7 +220,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1109051422.clone(),
                 ((input_limb_7_col7.clone() - limb_7_low_part_col17.clone()) * M31_4194304.clone()),
@@ -227,7 +229,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1847459238.clone(),
                 limb_8_high_part_col18.clone(),
@@ -237,7 +239,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1109051422.clone(),
                 (input_limb_8_col8.clone() - (limb_8_high_part_col18.clone() * M31_262144.clone())),
@@ -246,7 +248,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler.clone()),
+            -E::EF::from(enabler_col19.clone()),
             &[
                 M31_1090315331.clone(),
                 input_limb_0_col0.clone(),

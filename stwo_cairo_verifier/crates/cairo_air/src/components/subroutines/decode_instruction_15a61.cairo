@@ -7,6 +7,7 @@ pub fn decode_instruction_15a61_evaluate(
     input: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref verify_instruction_sum_0: QM31,
+    ref numerator_0: QM31,
     ref sum: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
@@ -22,6 +23,7 @@ pub fn decode_instruction_15a61_evaluate(
             ]
                 .span(),
         );
+    numerator_0 = qm31_const::<1, 0, 0, 0>();
 
     []
 }

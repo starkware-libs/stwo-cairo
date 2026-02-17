@@ -88,12 +88,19 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .unwrap())
             .into();
         let mut memory_address_to_id_sum_0: QM31 = Zero::zero();
+        let mut numerator_0: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_1: QM31 = Zero::zero();
+        let mut numerator_1: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_2: QM31 = Zero::zero();
+        let mut numerator_2: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_3: QM31 = Zero::zero();
+        let mut numerator_3: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_4: QM31 = Zero::zero();
+        let mut numerator_4: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_5: QM31 = Zero::zero();
+        let mut numerator_5: QM31 = Zero::zero();
         let mut poseidon_aggregator_sum_6: QM31 = Zero::zero();
+        let mut numerator_6: QM31 = Zero::zero();
         let seq = preprocessed_mask_values
             .get_and_mark_used(seq_column_idx(*(self.claim.log_size)));
 
@@ -131,6 +138,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             input_state_0_id_col0,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_0,
+            ref numerator_0,
             ref sum,
             random_coeff,
         );
@@ -139,6 +147,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             input_state_1_id_col1,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_1,
+            ref numerator_1,
             ref sum,
             random_coeff,
         );
@@ -147,6 +156,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             input_state_2_id_col2,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_2,
+            ref numerator_2,
             ref sum,
             random_coeff,
         );
@@ -155,6 +165,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             output_state_0_id_col3,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_3,
+            ref numerator_3,
             ref sum,
             random_coeff,
         );
@@ -163,6 +174,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             output_state_1_id_col4,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_4,
+            ref numerator_4,
             ref sum,
             random_coeff,
         );
@@ -171,6 +183,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             output_state_2_id_col5,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_5,
+            ref numerator_5,
             ref sum,
             random_coeff,
         );
@@ -185,11 +198,19 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ]
                     .span(),
             );
+        numerator_6 = qm31_const::<1, 0, 0, 0>();
 
         lookup_constraints(
             ref sum,
             random_coeff,
             claimed_sum,
+            numerator_0,
+            numerator_1,
+            numerator_2,
+            numerator_3,
+            numerator_4,
+            numerator_5,
+            numerator_6,
             column_size,
             ref interaction_trace_mask_values,
             memory_address_to_id_sum_0,
@@ -208,6 +229,13 @@ fn lookup_constraints(
     ref sum: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
+    numerator_0: QM31,
+    numerator_1: QM31,
+    numerator_2: QM31,
+    numerator_3: QM31,
+    numerator_4: QM31,
+    numerator_5: QM31,
+    numerator_6: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     memory_address_to_id_sum_0: QM31,
@@ -269,8 +297,8 @@ fn lookup_constraints(
     ))
         * memory_address_to_id_sum_0
         * memory_address_to_id_sum_1)
-        - memory_address_to_id_sum_0
-        - memory_address_to_id_sum_1);
+        - (memory_address_to_id_sum_0 * numerator_1)
+        - (memory_address_to_id_sum_1 * numerator_0));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -279,8 +307,8 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]))
         * memory_address_to_id_sum_2
         * memory_address_to_id_sum_3)
-        - memory_address_to_id_sum_2
-        - memory_address_to_id_sum_3);
+        - (memory_address_to_id_sum_2 * numerator_3)
+        - (memory_address_to_id_sum_3 * numerator_2));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -289,8 +317,8 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7]))
         * memory_address_to_id_sum_4
         * memory_address_to_id_sum_5)
-        - memory_address_to_id_sum_4
-        - memory_address_to_id_sum_5);
+        - (memory_address_to_id_sum_4 * numerator_5)
+        - (memory_address_to_id_sum_5 * numerator_4));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -302,7 +330,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * poseidon_aggregator_sum_6)
-        - qm31_const::<1, 0, 0, 0>());
+        - numerator_6);
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]

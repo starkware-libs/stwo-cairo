@@ -17,10 +17,15 @@ pub fn mod_words_to_12_bit_array_evaluate(
     limb9b_1_col9: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref range_check_3_6_6_3_sum_0: QM31,
+    ref numerator_0: QM31,
     ref range_check_3_6_6_3_sum_1: QM31,
+    ref numerator_1: QM31,
     ref range_check_3_6_6_3_sum_2: QM31,
+    ref numerator_2: QM31,
     ref range_check_3_6_6_3_sum_3: QM31,
+    ref numerator_3: QM31,
     ref range_check_3_6_6_3_sum_4: QM31,
+    ref numerator_4: QM31,
     ref sum: QM31,
     random_coeff: QM31,
 ) -> [QM31; 16] {
@@ -62,6 +67,7 @@ pub fn mod_words_to_12_bit_array_evaluate(
             ]
                 .span(),
         );
+    numerator_0 = qm31_const::<1, 0, 0, 0>();
     let limb5a_0_tmp_f4497_5: QM31 = (mod_words_to_12_bit_array_input_limb_5
         - (limb5b_0_col2 * qm31_const::<8, 0, 0, 0>()));
     let limb6a_0_tmp_f4497_7: QM31 = (mod_words_to_12_bit_array_input_limb_6
@@ -75,6 +81,7 @@ pub fn mod_words_to_12_bit_array_evaluate(
             ]
                 .span(),
         );
+    numerator_1 = qm31_const::<1, 0, 0, 0>();
     let limb9a_0_tmp_f4497_9: QM31 = (mod_words_to_12_bit_array_input_limb_9
         - (limb9b_0_col4 * qm31_const::<8, 0, 0, 0>()));
     let limb1a_1_tmp_f4497_11: QM31 = (mod_words_to_12_bit_array_input_limb_29
@@ -90,6 +97,7 @@ pub fn mod_words_to_12_bit_array_evaluate(
             ]
                 .span(),
         );
+    numerator_2 = qm31_const::<1, 0, 0, 0>();
     let limb5a_1_tmp_f4497_15: QM31 = (mod_words_to_12_bit_array_input_limb_33
         - (limb5b_1_col7 * qm31_const::<8, 0, 0, 0>()));
     let limb6a_1_tmp_f4497_17: QM31 = (mod_words_to_12_bit_array_input_limb_34
@@ -103,6 +111,7 @@ pub fn mod_words_to_12_bit_array_evaluate(
             ]
                 .span(),
         );
+    numerator_3 = qm31_const::<1, 0, 0, 0>();
     let limb9a_1_tmp_f4497_19: QM31 = (mod_words_to_12_bit_array_input_limb_37
         - (limb9b_1_col9 * qm31_const::<8, 0, 0, 0>()));
 
@@ -114,6 +123,7 @@ pub fn mod_words_to_12_bit_array_evaluate(
             ]
                 .span(),
         );
+    numerator_4 = qm31_const::<1, 0, 0, 0>();
 
     [
         (mod_words_to_12_bit_array_input_limb_0

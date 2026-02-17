@@ -84,10 +84,11 @@ impl FrameworkEval for Eval {
         let next_pc_limb_2_col9 = eval.next_trace_mask();
         let remainder_bits_col10 = eval.next_trace_mask();
         let partial_limb_msb_col11 = eval.next_trace_mask();
-        let enabler = eval.next_trace_mask();
+        let enabler_col12 = eval.next_trace_mask();
 
-        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
-
+        eval.add_constraint(
+            ((enabler_col12.clone() * enabler_col12.clone()) - enabler_col12.clone()),
+        );
         DecodeInstruction7Ebc4::evaluate(
             [input_pc_col0.clone()],
             ap_update_add_1_col3.clone(),
@@ -111,7 +112,7 @@ impl FrameworkEval for Eval {
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::from(enabler.clone()),
+            E::EF::from(enabler_col12.clone()),
             &[
                 M31_428564188.clone(),
                 input_pc_col0.clone(),
@@ -122,7 +123,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler.clone()),
+            -E::EF::from(enabler_col12.clone()),
             &[
                 M31_428564188.clone(),
                 (input_pc_col0.clone() + read_small_output_tmp_81a39_13_limb_0.clone()),

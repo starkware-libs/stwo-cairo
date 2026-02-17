@@ -72,26 +72,19 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut verify_bitwise_xor_8_sum_0: QM31 = Zero::zero();
+        let mut numerator_0: QM31 = Zero::zero();
         let mut verify_bitwise_xor_8_b_sum_1: QM31 = Zero::zero();
+        let mut numerator_1: QM31 = Zero::zero();
         let bitwise_xor_8_0 = preprocessed_mask_values.get_and_mark_used(BITWISE_XOR_8_0_IDX);
         let bitwise_xor_8_1 = preprocessed_mask_values.get_and_mark_used(BITWISE_XOR_8_1_IDX);
         let bitwise_xor_8_2 = preprocessed_mask_values.get_and_mark_used(BITWISE_XOR_8_2_IDX);
 
-        let [
-            verify_bitwise_xor_8_multiplicity, verify_bitwise_xor_8_b_multiplicity,
-        ]: [Span<QM31>; 2] =
-            (*trace_mask_values
+        let [multiplicity_0_col0, multiplicity_1_col1]: [Span<QM31>; 2] = (*trace_mask_values
             .multi_pop_front()
             .unwrap())
             .unbox();
-        let [verify_bitwise_xor_8_multiplicity]: [QM31; 1] = (*verify_bitwise_xor_8_multiplicity
-            .try_into()
-            .unwrap())
-            .unbox();
-        let [verify_bitwise_xor_8_b_multiplicity]: [QM31; 1] = (*verify_bitwise_xor_8_b_multiplicity
-            .try_into()
-            .unwrap())
-            .unbox();
+        let [multiplicity_0_col0]: [QM31; 1] = (*multiplicity_0_col0.try_into().unwrap()).unbox();
+        let [multiplicity_1_col1]: [QM31; 1] = (*multiplicity_1_col1.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
@@ -104,6 +97,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ]
                     .span(),
             );
+        numerator_0 = multiplicity_0_col0;
 
         verify_bitwise_xor_8_b_sum_1 = self
             .common_lookup_elements
@@ -114,13 +108,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ]
                     .span(),
             );
+        numerator_1 = multiplicity_1_col1;
 
         lookup_constraints(
             ref sum,
             random_coeff,
             claimed_sum,
-            verify_bitwise_xor_8_multiplicity,
-            verify_bitwise_xor_8_b_multiplicity,
+            numerator_0,
+            numerator_1,
             column_size,
             ref interaction_trace_mask_values,
             verify_bitwise_xor_8_sum_0,
@@ -134,8 +129,8 @@ fn lookup_constraints(
     ref sum: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    verify_bitwise_xor_8_multiplicity: QM31,
-    verify_bitwise_xor_8_b_multiplicity: QM31,
+    numerator_0: QM31,
+    numerator_1: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     verify_bitwise_xor_8_sum_0: QM31,
@@ -163,8 +158,8 @@ fn lookup_constraints(
         + (claimed_sum * (column_size.inverse().into())))
         * verify_bitwise_xor_8_sum_0
         * verify_bitwise_xor_8_b_sum_1)
-        + (verify_bitwise_xor_8_sum_0 * verify_bitwise_xor_8_b_multiplicity)
-        + (verify_bitwise_xor_8_b_sum_1 * verify_bitwise_xor_8_multiplicity));
+        + (verify_bitwise_xor_8_sum_0 * numerator_1)
+        + (verify_bitwise_xor_8_b_sum_1 * numerator_0));
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]

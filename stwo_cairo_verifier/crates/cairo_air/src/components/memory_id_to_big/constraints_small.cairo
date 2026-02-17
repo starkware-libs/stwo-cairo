@@ -19,10 +19,15 @@ pub fn evaluate_constraints_at_point(
 ) {
     let ConstraintParams { common_lookup_elements, claimed_sum, seq, column_size } = params;
     let mut range_check_9_9_sum_0: QM31 = Zero::zero();
+    let mut numerator_0: QM31 = Zero::zero();
     let mut range_check_9_9_b_sum_1: QM31 = Zero::zero();
+    let mut numerator_1: QM31 = Zero::zero();
     let mut range_check_9_9_c_sum_2: QM31 = Zero::zero();
+    let mut numerator_2: QM31 = Zero::zero();
     let mut range_check_9_9_d_sum_3: QM31 = Zero::zero();
+    let mut numerator_3: QM31 = Zero::zero();
     let mut memory_id_to_big_sum_4: QM31 = Zero::zero();
+    let mut numerator_4: QM31 = Zero::zero();
 
     let [
         memory_id_to_small_output_col0,
@@ -33,7 +38,7 @@ pub fn evaluate_constraints_at_point(
         memory_id_to_small_output_col5,
         memory_id_to_small_output_col6,
         memory_id_to_small_output_col7,
-        enabler,
+        multiplicity_0_col8,
     ]: [Span<QM31>; 9] =
         (*trace_mask_values
         .multi_pop_front()
@@ -71,7 +76,7 @@ pub fn evaluate_constraints_at_point(
         .try_into()
         .unwrap())
         .unbox();
-    let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
+    let [multiplicity_0_col8]: [QM31; 1] = (*multiplicity_0_col8.try_into().unwrap()).unbox();
 
     core::internal::revoke_ap_tracking();
 
@@ -84,9 +89,13 @@ pub fn evaluate_constraints_at_point(
         ],
         @common_lookup_elements,
         ref range_check_9_9_sum_0,
+        ref numerator_0,
         ref range_check_9_9_b_sum_1,
+        ref numerator_1,
         ref range_check_9_9_c_sum_2,
+        ref numerator_2,
         ref range_check_9_9_d_sum_3,
+        ref numerator_3,
         ref sum,
         random_coeff,
     );
@@ -102,12 +111,17 @@ pub fn evaluate_constraints_at_point(
             ]
                 .span(),
         );
+    numerator_4 = multiplicity_0_col8;
 
     lookup_constraints(
         ref sum,
         random_coeff,
         claimed_sum,
-        enabler,
+        numerator_0,
+        numerator_1,
+        numerator_2,
+        numerator_3,
+        numerator_4,
         column_size,
         ref interaction_trace_mask_values,
         range_check_9_9_sum_0,
@@ -123,7 +137,11 @@ fn lookup_constraints(
     ref sum: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    enabler: QM31,
+    numerator_0: QM31,
+    numerator_1: QM31,
+    numerator_2: QM31,
+    numerator_3: QM31,
+    numerator_4: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     range_check_9_9_sum_0: QM31,
@@ -173,8 +191,8 @@ fn lookup_constraints(
     ))
         * range_check_9_9_sum_0
         * range_check_9_9_b_sum_1)
-        - range_check_9_9_sum_0
-        - range_check_9_9_b_sum_1);
+        - (range_check_9_9_sum_0 * numerator_1)
+        - (range_check_9_9_b_sum_1 * numerator_0));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -183,8 +201,8 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]))
         * range_check_9_9_c_sum_2
         * range_check_9_9_d_sum_3)
-        - range_check_9_9_c_sum_2
-        - range_check_9_9_d_sum_3);
+        - (range_check_9_9_c_sum_2 * numerator_3)
+        - (range_check_9_9_d_sum_3 * numerator_2));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -196,7 +214,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * memory_id_to_big_sum_4)
-        + enabler);
+        + numerator_4);
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]

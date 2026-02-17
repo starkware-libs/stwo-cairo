@@ -10,7 +10,9 @@ pub fn verify_reduced_252_evaluate(
     rc_input_col2: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref range_check_8_sum_0: QM31,
+    ref numerator_0: QM31,
     ref range_check_8_sum_1: QM31,
+    ref numerator_1: QM31,
     ref sum: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
@@ -64,6 +66,7 @@ pub fn verify_reduced_252_evaluate(
             ]
                 .span(),
         );
+    numerator_0 = qm31_const::<1, 0, 0, 0>();
 
     // Constraint - If the MS limb is max, high limbs should be 0
     let constraint_quotient = ((ms_limb_is_max_col0
@@ -82,6 +85,7 @@ pub fn verify_reduced_252_evaluate(
 
     range_check_8_sum_1 = common_lookup_elements
         .combine_qm31([qm31_const::<1420243005, 0, 0, 0>(), rc_input_col2].span());
+    numerator_1 = qm31_const::<1, 0, 0, 0>();
 
     // Constraint - If the MS and mid limbs are max, low limbs should be 0
     let constraint_quotient = ((ms_and_mid_limbs_are_max_col1

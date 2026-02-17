@@ -72,6 +72,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut range_check_3_6_6_3_sum_0: QM31 = Zero::zero();
+        let mut numerator_0: QM31 = Zero::zero();
         let range_check_3_6_6_3_column_0 = preprocessed_mask_values
             .get_and_mark_used(RANGE_CHECK_3_6_6_3_COLUMN_0_IDX);
         let range_check_3_6_6_3_column_1 = preprocessed_mask_values
@@ -81,14 +82,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let range_check_3_6_6_3_column_3 = preprocessed_mask_values
             .get_and_mark_used(RANGE_CHECK_3_6_6_3_COLUMN_3_IDX);
 
-        let [range_check_3_6_6_3_multiplicity]: [Span<QM31>; 1] = (*trace_mask_values
-            .multi_pop_front()
-            .unwrap())
+        let [multiplicity_0_col0]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap())
             .unbox();
-        let [range_check_3_6_6_3_multiplicity]: [QM31; 1] = (*range_check_3_6_6_3_multiplicity
-            .try_into()
-            .unwrap())
-            .unbox();
+        let [multiplicity_0_col0]: [QM31; 1] = (*multiplicity_0_col0.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
@@ -102,12 +98,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ]
                     .span(),
             );
+        numerator_0 = multiplicity_0_col0;
 
         lookup_constraints(
             ref sum,
             random_coeff,
             claimed_sum,
-            range_check_3_6_6_3_multiplicity,
+            numerator_0,
             column_size,
             ref interaction_trace_mask_values,
             range_check_3_6_6_3_sum_0,
@@ -120,7 +117,7 @@ fn lookup_constraints(
     ref sum: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    range_check_3_6_6_3_multiplicity: QM31,
+    numerator_0: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     range_check_3_6_6_3_sum_0: QM31,
@@ -146,7 +143,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * range_check_3_6_6_3_sum_0)
-        + range_check_3_6_6_3_multiplicity);
+        + numerator_0);
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]

@@ -28,6 +28,7 @@ impl LinearCombinationN4Coefs42M21 {
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
+        let M31_1 = E::F::from(M31::from(1));
         let M31_1027333874 = E::F::from(M31::from(1027333874));
         let M31_136 = E::F::from(M31::from(136));
         let M31_16 = E::F::from(M31::from(16));
@@ -153,7 +154,7 @@ impl LinearCombinationN4Coefs42M21 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1027333874.clone(),
                 (p_coef_col10.clone() + M31_3.clone()),
@@ -165,7 +166,7 @@ impl LinearCombinationN4Coefs42M21 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1027333874.clone(),
                 (carry_3_tmp_57464_5.clone() + M31_3.clone()),
@@ -177,7 +178,7 @@ impl LinearCombinationN4Coefs42M21 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1651211826.clone(),
                 (carry_7_tmp_57464_9.clone() + M31_3.clone()),

@@ -35,7 +35,7 @@ impl VerifyReduced252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1420243005.clone(),
                 (verify_reduced_252_input_limb_27.clone() - ms_limb_is_max_col0.clone()),
@@ -60,7 +60,7 @@ impl VerifyReduced252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[M31_1420243005.clone(), rc_input_col2.clone()],
         ));
 

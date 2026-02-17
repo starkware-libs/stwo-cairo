@@ -87,6 +87,7 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let M31_1 = E::F::from(M31::from(1));
         let M31_1551892206 = E::F::from(M31::from(1551892206));
         let M31_1662111297 = E::F::from(M31::from(1662111297));
         let M31_262144 = E::F::from(M31::from(262144));
@@ -433,7 +434,7 @@ impl FrameworkEval for Eval {
         let unpacked_limb_22_col338 = eval.next_trace_mask();
         let unpacked_limb_24_col339 = eval.next_trace_mask();
         let unpacked_limb_25_col340 = eval.next_trace_mask();
-        let multiplicity_0 = eval.next_trace_mask();
+        let multiplicity_0_col341 = eval.next_trace_mask();
 
         ReadPositiveKnownIdNumBits252::evaluate(
             [input_limb_0_col0.clone()],
@@ -915,7 +916,7 @@ impl FrameworkEval for Eval {
             );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1662111297.clone(),
                 input_limb_3_col3.clone(),
@@ -989,7 +990,7 @@ impl FrameworkEval for Eval {
             );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1662111297.clone(),
                 input_limb_4_col4.clone(),
@@ -1063,7 +1064,7 @@ impl FrameworkEval for Eval {
             );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1662111297.clone(),
                 input_limb_5_col5.clone(),
@@ -1100,7 +1101,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_0),
+            -E::EF::from(multiplicity_0_col341.clone()),
             &[
                 M31_1551892206.clone(),
                 input_limb_0_col0.clone(),

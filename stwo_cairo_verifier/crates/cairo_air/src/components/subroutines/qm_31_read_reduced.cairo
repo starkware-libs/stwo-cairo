@@ -27,8 +27,11 @@ pub fn qm_31_read_reduced_evaluate(
     delta_cd_inv_col18: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref memory_address_to_id_sum_0: QM31,
+    ref numerator_0: QM31,
     ref memory_id_to_big_sum_1: QM31,
+    ref numerator_1: QM31,
     ref range_check_4_4_4_4_sum_2: QM31,
+    ref numerator_2: QM31,
     ref sum: QM31,
     random_coeff: QM31,
 ) -> [QM31; 4] {
@@ -54,7 +57,9 @@ pub fn qm_31_read_reduced_evaluate(
         value_limb_15_col16,
         common_lookup_elements,
         ref memory_address_to_id_sum_0,
+        ref numerator_0,
         ref memory_id_to_big_sum_1,
+        ref numerator_1,
         ref sum,
         random_coeff,
     );
@@ -67,6 +72,7 @@ pub fn qm_31_read_reduced_evaluate(
             ]
                 .span(),
         );
+    numerator_2 = qm31_const::<1, 0, 0, 0>();
 
     // Constraint - delta_ab doesn't equal 0
     let constraint_quotient = ((((((((value_limb_0_col1 + value_limb_1_col2) + value_limb_2_col3)

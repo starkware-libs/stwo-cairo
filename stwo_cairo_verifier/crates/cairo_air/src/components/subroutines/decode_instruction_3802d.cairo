@@ -16,6 +16,7 @@ pub fn decode_instruction_3802d_evaluate(
     ap_update_add_1_col8: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref verify_instruction_sum_0: QM31,
+    ref numerator_0: QM31,
     ref sum: QM31,
     random_coeff: QM31,
 ) -> [QM31; 5] {
@@ -74,6 +75,7 @@ pub fn decode_instruction_3802d_evaluate(
             ]
                 .span(),
         );
+    numerator_0 = qm31_const::<1, 0, 0, 0>();
 
     [
         (offset0_col0 - qm31_const::<32768, 0, 0, 0>()),

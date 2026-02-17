@@ -68,7 +68,7 @@ impl Qm31ReadReduced {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1027333874.clone(),
                 value_limb_3_col4.clone(),

@@ -45,7 +45,7 @@ impl DecodeInstructionCb32B {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1719106205.clone(),
                 decode_instruction_cb32b_input_pc.clone(),

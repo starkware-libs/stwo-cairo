@@ -21,7 +21,9 @@ pub fn read_positive_num_bits_99_evaluate(
     value_limb_10_col11: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref memory_address_to_id_sum_0: QM31,
+    ref numerator_0: QM31,
     ref memory_id_to_big_sum_1: QM31,
+    ref numerator_1: QM31,
     ref sum: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
@@ -31,6 +33,7 @@ pub fn read_positive_num_bits_99_evaluate(
         id_col0,
         common_lookup_elements,
         ref memory_address_to_id_sum_0,
+        ref numerator_0,
         ref sum,
         random_coeff,
     );
@@ -49,6 +52,7 @@ pub fn read_positive_num_bits_99_evaluate(
         value_limb_10_col11,
         common_lookup_elements,
         ref memory_id_to_big_sum_1,
+        ref numerator_1,
         ref sum,
         random_coeff,
     );

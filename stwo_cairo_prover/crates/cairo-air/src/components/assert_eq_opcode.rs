@@ -79,10 +79,11 @@ impl FrameworkEval for Eval {
         let mem_dst_base_col8 = eval.next_trace_mask();
         let mem1_base_col9 = eval.next_trace_mask();
         let dst_id_col10 = eval.next_trace_mask();
-        let enabler = eval.next_trace_mask();
+        let enabler_col11 = eval.next_trace_mask();
 
-        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
-
+        eval.add_constraint(
+            ((enabler_col11.clone() * enabler_col11.clone()) - enabler_col11.clone()),
+        );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [decode_instruction_fe864_output_tmp_d6f03_7_offset0, decode_instruction_fe864_output_tmp_d6f03_7_offset2, decode_instruction_fe864_output_tmp_d6f03_7_op1_base_ap] =
@@ -122,7 +123,7 @@ impl FrameworkEval for Eval {
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::from(enabler.clone()),
+            E::EF::from(enabler_col11.clone()),
             &[
                 M31_428564188.clone(),
                 input_pc_col0.clone(),
@@ -133,7 +134,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler.clone()),
+            -E::EF::from(enabler_col11.clone()),
             &[
                 M31_428564188.clone(),
                 (input_pc_col0.clone() + M31_1.clone()),

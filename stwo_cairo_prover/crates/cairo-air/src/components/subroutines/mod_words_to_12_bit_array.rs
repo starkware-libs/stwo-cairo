@@ -27,6 +27,7 @@ impl ModWordsTo12BitArray {
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 16] {
+        let M31_1 = E::F::from(M31::from(1));
         let M31_1005786011 = E::F::from(M31::from(1005786011));
         let M31_512 = E::F::from(M31::from(512));
         let M31_64 = E::F::from(M31::from(64));
@@ -42,7 +43,7 @@ impl ModWordsTo12BitArray {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1005786011.clone(),
                 limb1a_0_tmp_f4497_1.clone(),
@@ -62,7 +63,7 @@ impl ModWordsTo12BitArray {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1005786011.clone(),
                 limb5a_0_tmp_f4497_5.clone(),
@@ -86,7 +87,7 @@ impl ModWordsTo12BitArray {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1005786011.clone(),
                 limb1a_1_tmp_f4497_11.clone(),
@@ -106,7 +107,7 @@ impl ModWordsTo12BitArray {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1005786011.clone(),
                 limb5a_1_tmp_f4497_15.clone(),
@@ -122,7 +123,7 @@ impl ModWordsTo12BitArray {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1005786011.clone(),
                 limb9a_0_tmp_f4497_9.clone(),

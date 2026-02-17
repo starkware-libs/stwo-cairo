@@ -10,6 +10,7 @@ pub fn decode_instruction_161c9_evaluate(
     ap_update_add_1_col2: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref verify_instruction_sum_0: QM31,
+    ref numerator_0: QM31,
     ref sum: QM31,
     random_coeff: QM31,
 ) -> QM31 {
@@ -38,6 +39,7 @@ pub fn decode_instruction_161c9_evaluate(
             ]
                 .span(),
         );
+    numerator_0 = qm31_const::<1, 0, 0, 0>();
 
     (offset0_col0 - qm31_const::<32768, 0, 0, 0>())
 }

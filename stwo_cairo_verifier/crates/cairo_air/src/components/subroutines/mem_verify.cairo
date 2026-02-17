@@ -9,7 +9,9 @@ pub fn mem_verify_evaluate(
     id_col0: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref memory_address_to_id_sum_0: QM31,
+    ref numerator_0: QM31,
     ref memory_id_to_big_sum_1: QM31,
+    ref numerator_1: QM31,
     ref sum: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
@@ -50,6 +52,7 @@ pub fn mem_verify_evaluate(
         id_col0,
         common_lookup_elements,
         ref memory_address_to_id_sum_0,
+        ref numerator_0,
         ref sum,
         random_coeff,
     );
@@ -75,6 +78,7 @@ pub fn mem_verify_evaluate(
             ]
                 .span(),
         );
+    numerator_1 = qm31_const::<1, 0, 0, 0>();
 
     []
 }

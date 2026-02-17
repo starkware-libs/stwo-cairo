@@ -285,10 +285,11 @@ impl FrameworkEval for Eval {
         let high_14_ms_bits_col170 = eval.next_trace_mask();
         let high_5_ms_bits_col171 = eval.next_trace_mask();
         let new_state_7_id_col172 = eval.next_trace_mask();
-        let enabler = eval.next_trace_mask();
+        let enabler_col173 = eval.next_trace_mask();
 
-        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
-
+        eval.add_constraint(
+            ((enabler_col173.clone() * enabler_col173.clone()) - enabler_col173.clone()),
+        );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [decode_blake_opcode_output_tmp_53f39_42_limb_0, decode_blake_opcode_output_tmp_53f39_42_limb_1, decode_blake_opcode_output_tmp_53f39_42_limb_2, decode_blake_opcode_output_tmp_53f39_42_limb_6] =
@@ -405,7 +406,7 @@ impl FrameworkEval for Eval {
             );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::one(),
+            -E::EF::from(M31_1.clone()),
             &[
                 M31_40528774.clone(),
                 seq.clone(),
@@ -448,7 +449,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_40528774.clone(),
                 seq.clone(),
@@ -665,7 +666,7 @@ impl FrameworkEval for Eval {
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::from(enabler.clone()),
+            E::EF::from(enabler_col173.clone()),
             &[
                 M31_428564188.clone(),
                 input_pc_col0.clone(),
@@ -676,7 +677,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler.clone()),
+            -E::EF::from(enabler_col173.clone()),
             &[
                 M31_428564188.clone(),
                 (input_pc_col0.clone() + M31_1.clone()),

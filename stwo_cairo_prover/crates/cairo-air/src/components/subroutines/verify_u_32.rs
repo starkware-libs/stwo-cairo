@@ -23,6 +23,7 @@ impl VerifyU32 {
         eval: &mut E,
     ) -> [E::F; 0] {
         let M31_0 = E::F::from(M31::from(0));
+        let M31_1 = E::F::from(M31::from(1));
         let M31_128 = E::F::from(M31::from(128));
         let M31_371240602 = E::F::from(M31::from(371240602));
         let M31_4 = E::F::from(M31::from(4));
@@ -33,7 +34,7 @@ impl VerifyU32 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_371240602.clone(),
                 low_7_ms_bits_col0.clone(),

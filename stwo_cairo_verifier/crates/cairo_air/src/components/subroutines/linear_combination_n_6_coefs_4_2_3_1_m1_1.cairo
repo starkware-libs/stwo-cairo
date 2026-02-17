@@ -18,8 +18,11 @@ pub fn linear_combination_n_6_coefs_4_2_3_1_m1_1_evaluate(
     p_coef_col10: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref range_check_4_4_4_4_sum_0: QM31,
+    ref numerator_0: QM31,
     ref range_check_4_4_4_4_sum_1: QM31,
+    ref numerator_1: QM31,
     ref range_check_4_4_sum_2: QM31,
+    ref numerator_2: QM31,
     ref sum: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
@@ -192,6 +195,7 @@ pub fn linear_combination_n_6_coefs_4_2_3_1_m1_1_evaluate(
             ]
                 .span(),
         );
+    numerator_0 = qm31_const::<1, 0, 0, 0>();
 
     range_check_4_4_4_4_sum_1 = common_lookup_elements
         .combine_qm31(
@@ -204,6 +208,7 @@ pub fn linear_combination_n_6_coefs_4_2_3_1_m1_1_evaluate(
             ]
                 .span(),
         );
+    numerator_1 = qm31_const::<1, 0, 0, 0>();
 
     range_check_4_4_sum_2 = common_lookup_elements
         .combine_qm31(
@@ -214,6 +219,7 @@ pub fn linear_combination_n_6_coefs_4_2_3_1_m1_1_evaluate(
             ]
                 .span(),
         );
+    numerator_2 = qm31_const::<1, 0, 0, 0>();
 
     []
 }

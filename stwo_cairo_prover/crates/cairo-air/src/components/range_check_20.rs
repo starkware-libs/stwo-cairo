@@ -59,60 +59,60 @@ impl FrameworkEval for Eval {
         let seq_20 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "seq_20".to_owned(),
         });
-        let multiplicity_0 = eval.next_trace_mask();
-        let multiplicity_1 = eval.next_trace_mask();
-        let multiplicity_2 = eval.next_trace_mask();
-        let multiplicity_3 = eval.next_trace_mask();
-        let multiplicity_4 = eval.next_trace_mask();
-        let multiplicity_5 = eval.next_trace_mask();
-        let multiplicity_6 = eval.next_trace_mask();
-        let multiplicity_7 = eval.next_trace_mask();
+        let multiplicity_0_col0 = eval.next_trace_mask();
+        let multiplicity_1_col1 = eval.next_trace_mask();
+        let multiplicity_2_col2 = eval.next_trace_mask();
+        let multiplicity_3_col3 = eval.next_trace_mask();
+        let multiplicity_4_col4 = eval.next_trace_mask();
+        let multiplicity_5_col5 = eval.next_trace_mask();
+        let multiplicity_6_col6 = eval.next_trace_mask();
+        let multiplicity_7_col7 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_0),
+            -E::EF::from(multiplicity_0_col0.clone()),
             &[M31_1410849886.clone(), seq_20.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_1),
+            -E::EF::from(multiplicity_1_col1.clone()),
             &[M31_514232941.clone(), seq_20.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_2),
+            -E::EF::from(multiplicity_2_col2.clone()),
             &[M31_531010560.clone(), seq_20.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_3),
+            -E::EF::from(multiplicity_3_col3.clone()),
             &[M31_480677703.clone(), seq_20.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_4),
+            -E::EF::from(multiplicity_4_col4.clone()),
             &[M31_497455322.clone(), seq_20.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_5),
+            -E::EF::from(multiplicity_5_col5.clone()),
             &[M31_447122465.clone(), seq_20.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_6),
+            -E::EF::from(multiplicity_6_col6.clone()),
             &[M31_463900084.clone(), seq_20.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_7),
+            -E::EF::from(multiplicity_7_col7.clone()),
             &[M31_682009131.clone(), seq_20.clone()],
         ));
 

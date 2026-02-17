@@ -88,319 +88,633 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut range_check_8_sum_0: QM31 = Zero::zero();
+        let mut numerator_0: QM31 = Zero::zero();
         let mut range_check_8_sum_1: QM31 = Zero::zero();
+        let mut numerator_1: QM31 = Zero::zero();
         let mut range_check_8_sum_2: QM31 = Zero::zero();
+        let mut numerator_2: QM31 = Zero::zero();
         let mut range_check_8_sum_3: QM31 = Zero::zero();
+        let mut numerator_3: QM31 = Zero::zero();
         let mut range_check_9_9_sum_4: QM31 = Zero::zero();
+        let mut numerator_4: QM31 = Zero::zero();
         let mut range_check_9_9_b_sum_5: QM31 = Zero::zero();
+        let mut numerator_5: QM31 = Zero::zero();
         let mut range_check_9_9_c_sum_6: QM31 = Zero::zero();
+        let mut numerator_6: QM31 = Zero::zero();
         let mut range_check_9_9_d_sum_7: QM31 = Zero::zero();
+        let mut numerator_7: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_8: QM31 = Zero::zero();
+        let mut numerator_8: QM31 = Zero::zero();
         let mut range_check_9_9_f_sum_9: QM31 = Zero::zero();
+        let mut numerator_9: QM31 = Zero::zero();
         let mut range_check_9_9_g_sum_10: QM31 = Zero::zero();
+        let mut numerator_10: QM31 = Zero::zero();
         let mut range_check_9_9_h_sum_11: QM31 = Zero::zero();
+        let mut numerator_11: QM31 = Zero::zero();
         let mut range_check_9_9_sum_12: QM31 = Zero::zero();
+        let mut numerator_12: QM31 = Zero::zero();
         let mut range_check_9_9_b_sum_13: QM31 = Zero::zero();
+        let mut numerator_13: QM31 = Zero::zero();
         let mut range_check_9_9_c_sum_14: QM31 = Zero::zero();
+        let mut numerator_14: QM31 = Zero::zero();
         let mut range_check_9_9_d_sum_15: QM31 = Zero::zero();
+        let mut numerator_15: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_16: QM31 = Zero::zero();
+        let mut numerator_16: QM31 = Zero::zero();
         let mut range_check_9_9_f_sum_17: QM31 = Zero::zero();
+        let mut numerator_17: QM31 = Zero::zero();
         let mut range_check_20_sum_18: QM31 = Zero::zero();
+        let mut numerator_18: QM31 = Zero::zero();
         let mut range_check_20_b_sum_19: QM31 = Zero::zero();
+        let mut numerator_19: QM31 = Zero::zero();
         let mut range_check_20_c_sum_20: QM31 = Zero::zero();
+        let mut numerator_20: QM31 = Zero::zero();
         let mut range_check_20_d_sum_21: QM31 = Zero::zero();
+        let mut numerator_21: QM31 = Zero::zero();
         let mut range_check_20_e_sum_22: QM31 = Zero::zero();
+        let mut numerator_22: QM31 = Zero::zero();
         let mut range_check_20_f_sum_23: QM31 = Zero::zero();
+        let mut numerator_23: QM31 = Zero::zero();
         let mut range_check_20_g_sum_24: QM31 = Zero::zero();
+        let mut numerator_24: QM31 = Zero::zero();
         let mut range_check_20_h_sum_25: QM31 = Zero::zero();
+        let mut numerator_25: QM31 = Zero::zero();
         let mut range_check_20_sum_26: QM31 = Zero::zero();
+        let mut numerator_26: QM31 = Zero::zero();
         let mut range_check_20_b_sum_27: QM31 = Zero::zero();
+        let mut numerator_27: QM31 = Zero::zero();
         let mut range_check_20_c_sum_28: QM31 = Zero::zero();
+        let mut numerator_28: QM31 = Zero::zero();
         let mut range_check_20_d_sum_29: QM31 = Zero::zero();
+        let mut numerator_29: QM31 = Zero::zero();
         let mut range_check_20_e_sum_30: QM31 = Zero::zero();
+        let mut numerator_30: QM31 = Zero::zero();
         let mut range_check_20_f_sum_31: QM31 = Zero::zero();
+        let mut numerator_31: QM31 = Zero::zero();
         let mut range_check_20_g_sum_32: QM31 = Zero::zero();
+        let mut numerator_32: QM31 = Zero::zero();
         let mut range_check_20_h_sum_33: QM31 = Zero::zero();
+        let mut numerator_33: QM31 = Zero::zero();
         let mut range_check_20_sum_34: QM31 = Zero::zero();
+        let mut numerator_34: QM31 = Zero::zero();
         let mut range_check_20_b_sum_35: QM31 = Zero::zero();
+        let mut numerator_35: QM31 = Zero::zero();
         let mut range_check_20_c_sum_36: QM31 = Zero::zero();
+        let mut numerator_36: QM31 = Zero::zero();
         let mut range_check_20_d_sum_37: QM31 = Zero::zero();
+        let mut numerator_37: QM31 = Zero::zero();
         let mut range_check_20_e_sum_38: QM31 = Zero::zero();
+        let mut numerator_38: QM31 = Zero::zero();
         let mut range_check_20_f_sum_39: QM31 = Zero::zero();
+        let mut numerator_39: QM31 = Zero::zero();
         let mut range_check_20_g_sum_40: QM31 = Zero::zero();
+        let mut numerator_40: QM31 = Zero::zero();
         let mut range_check_20_h_sum_41: QM31 = Zero::zero();
+        let mut numerator_41: QM31 = Zero::zero();
         let mut range_check_20_sum_42: QM31 = Zero::zero();
+        let mut numerator_42: QM31 = Zero::zero();
         let mut range_check_20_b_sum_43: QM31 = Zero::zero();
+        let mut numerator_43: QM31 = Zero::zero();
         let mut range_check_20_c_sum_44: QM31 = Zero::zero();
+        let mut numerator_44: QM31 = Zero::zero();
         let mut range_check_20_d_sum_45: QM31 = Zero::zero();
+        let mut numerator_45: QM31 = Zero::zero();
         let mut range_check_9_9_sum_46: QM31 = Zero::zero();
+        let mut numerator_46: QM31 = Zero::zero();
         let mut range_check_9_9_b_sum_47: QM31 = Zero::zero();
+        let mut numerator_47: QM31 = Zero::zero();
         let mut range_check_9_9_c_sum_48: QM31 = Zero::zero();
+        let mut numerator_48: QM31 = Zero::zero();
         let mut range_check_9_9_d_sum_49: QM31 = Zero::zero();
+        let mut numerator_49: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_50: QM31 = Zero::zero();
+        let mut numerator_50: QM31 = Zero::zero();
         let mut range_check_9_9_f_sum_51: QM31 = Zero::zero();
+        let mut numerator_51: QM31 = Zero::zero();
         let mut range_check_9_9_g_sum_52: QM31 = Zero::zero();
+        let mut numerator_52: QM31 = Zero::zero();
         let mut range_check_9_9_h_sum_53: QM31 = Zero::zero();
+        let mut numerator_53: QM31 = Zero::zero();
         let mut range_check_9_9_sum_54: QM31 = Zero::zero();
+        let mut numerator_54: QM31 = Zero::zero();
         let mut range_check_9_9_b_sum_55: QM31 = Zero::zero();
+        let mut numerator_55: QM31 = Zero::zero();
         let mut range_check_9_9_c_sum_56: QM31 = Zero::zero();
+        let mut numerator_56: QM31 = Zero::zero();
         let mut range_check_9_9_d_sum_57: QM31 = Zero::zero();
+        let mut numerator_57: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_58: QM31 = Zero::zero();
+        let mut numerator_58: QM31 = Zero::zero();
         let mut range_check_9_9_f_sum_59: QM31 = Zero::zero();
+        let mut numerator_59: QM31 = Zero::zero();
         let mut range_check_20_sum_60: QM31 = Zero::zero();
+        let mut numerator_60: QM31 = Zero::zero();
         let mut range_check_20_b_sum_61: QM31 = Zero::zero();
+        let mut numerator_61: QM31 = Zero::zero();
         let mut range_check_20_c_sum_62: QM31 = Zero::zero();
+        let mut numerator_62: QM31 = Zero::zero();
         let mut range_check_20_d_sum_63: QM31 = Zero::zero();
+        let mut numerator_63: QM31 = Zero::zero();
         let mut range_check_20_e_sum_64: QM31 = Zero::zero();
+        let mut numerator_64: QM31 = Zero::zero();
         let mut range_check_20_f_sum_65: QM31 = Zero::zero();
+        let mut numerator_65: QM31 = Zero::zero();
         let mut range_check_20_g_sum_66: QM31 = Zero::zero();
+        let mut numerator_66: QM31 = Zero::zero();
         let mut range_check_20_h_sum_67: QM31 = Zero::zero();
+        let mut numerator_67: QM31 = Zero::zero();
         let mut range_check_20_sum_68: QM31 = Zero::zero();
+        let mut numerator_68: QM31 = Zero::zero();
         let mut range_check_20_b_sum_69: QM31 = Zero::zero();
+        let mut numerator_69: QM31 = Zero::zero();
         let mut range_check_20_c_sum_70: QM31 = Zero::zero();
+        let mut numerator_70: QM31 = Zero::zero();
         let mut range_check_20_d_sum_71: QM31 = Zero::zero();
+        let mut numerator_71: QM31 = Zero::zero();
         let mut range_check_20_e_sum_72: QM31 = Zero::zero();
+        let mut numerator_72: QM31 = Zero::zero();
         let mut range_check_20_f_sum_73: QM31 = Zero::zero();
+        let mut numerator_73: QM31 = Zero::zero();
         let mut range_check_20_g_sum_74: QM31 = Zero::zero();
+        let mut numerator_74: QM31 = Zero::zero();
         let mut range_check_20_h_sum_75: QM31 = Zero::zero();
+        let mut numerator_75: QM31 = Zero::zero();
         let mut range_check_20_sum_76: QM31 = Zero::zero();
+        let mut numerator_76: QM31 = Zero::zero();
         let mut range_check_20_b_sum_77: QM31 = Zero::zero();
+        let mut numerator_77: QM31 = Zero::zero();
         let mut range_check_20_c_sum_78: QM31 = Zero::zero();
+        let mut numerator_78: QM31 = Zero::zero();
         let mut range_check_20_d_sum_79: QM31 = Zero::zero();
+        let mut numerator_79: QM31 = Zero::zero();
         let mut range_check_20_e_sum_80: QM31 = Zero::zero();
+        let mut numerator_80: QM31 = Zero::zero();
         let mut range_check_20_f_sum_81: QM31 = Zero::zero();
+        let mut numerator_81: QM31 = Zero::zero();
         let mut range_check_20_g_sum_82: QM31 = Zero::zero();
+        let mut numerator_82: QM31 = Zero::zero();
         let mut range_check_20_h_sum_83: QM31 = Zero::zero();
+        let mut numerator_83: QM31 = Zero::zero();
         let mut range_check_20_sum_84: QM31 = Zero::zero();
+        let mut numerator_84: QM31 = Zero::zero();
         let mut range_check_20_b_sum_85: QM31 = Zero::zero();
+        let mut numerator_85: QM31 = Zero::zero();
         let mut range_check_20_c_sum_86: QM31 = Zero::zero();
+        let mut numerator_86: QM31 = Zero::zero();
         let mut range_check_20_d_sum_87: QM31 = Zero::zero();
+        let mut numerator_87: QM31 = Zero::zero();
         let mut range_check_9_9_sum_88: QM31 = Zero::zero();
+        let mut numerator_88: QM31 = Zero::zero();
         let mut range_check_9_9_b_sum_89: QM31 = Zero::zero();
+        let mut numerator_89: QM31 = Zero::zero();
         let mut range_check_9_9_c_sum_90: QM31 = Zero::zero();
+        let mut numerator_90: QM31 = Zero::zero();
         let mut range_check_9_9_d_sum_91: QM31 = Zero::zero();
+        let mut numerator_91: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_92: QM31 = Zero::zero();
+        let mut numerator_92: QM31 = Zero::zero();
         let mut range_check_9_9_f_sum_93: QM31 = Zero::zero();
+        let mut numerator_93: QM31 = Zero::zero();
         let mut range_check_9_9_g_sum_94: QM31 = Zero::zero();
+        let mut numerator_94: QM31 = Zero::zero();
         let mut range_check_9_9_h_sum_95: QM31 = Zero::zero();
+        let mut numerator_95: QM31 = Zero::zero();
         let mut range_check_9_9_sum_96: QM31 = Zero::zero();
+        let mut numerator_96: QM31 = Zero::zero();
         let mut range_check_9_9_b_sum_97: QM31 = Zero::zero();
+        let mut numerator_97: QM31 = Zero::zero();
         let mut range_check_9_9_c_sum_98: QM31 = Zero::zero();
+        let mut numerator_98: QM31 = Zero::zero();
         let mut range_check_9_9_d_sum_99: QM31 = Zero::zero();
+        let mut numerator_99: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_100: QM31 = Zero::zero();
+        let mut numerator_100: QM31 = Zero::zero();
         let mut range_check_9_9_f_sum_101: QM31 = Zero::zero();
+        let mut numerator_101: QM31 = Zero::zero();
         let mut range_check_20_sum_102: QM31 = Zero::zero();
+        let mut numerator_102: QM31 = Zero::zero();
         let mut range_check_20_b_sum_103: QM31 = Zero::zero();
+        let mut numerator_103: QM31 = Zero::zero();
         let mut range_check_20_c_sum_104: QM31 = Zero::zero();
+        let mut numerator_104: QM31 = Zero::zero();
         let mut range_check_20_d_sum_105: QM31 = Zero::zero();
+        let mut numerator_105: QM31 = Zero::zero();
         let mut range_check_20_e_sum_106: QM31 = Zero::zero();
+        let mut numerator_106: QM31 = Zero::zero();
         let mut range_check_20_f_sum_107: QM31 = Zero::zero();
+        let mut numerator_107: QM31 = Zero::zero();
         let mut range_check_20_g_sum_108: QM31 = Zero::zero();
+        let mut numerator_108: QM31 = Zero::zero();
         let mut range_check_20_h_sum_109: QM31 = Zero::zero();
+        let mut numerator_109: QM31 = Zero::zero();
         let mut range_check_20_sum_110: QM31 = Zero::zero();
+        let mut numerator_110: QM31 = Zero::zero();
         let mut range_check_20_b_sum_111: QM31 = Zero::zero();
+        let mut numerator_111: QM31 = Zero::zero();
         let mut range_check_20_c_sum_112: QM31 = Zero::zero();
+        let mut numerator_112: QM31 = Zero::zero();
         let mut range_check_20_d_sum_113: QM31 = Zero::zero();
+        let mut numerator_113: QM31 = Zero::zero();
         let mut range_check_20_e_sum_114: QM31 = Zero::zero();
+        let mut numerator_114: QM31 = Zero::zero();
         let mut range_check_20_f_sum_115: QM31 = Zero::zero();
+        let mut numerator_115: QM31 = Zero::zero();
         let mut range_check_20_g_sum_116: QM31 = Zero::zero();
+        let mut numerator_116: QM31 = Zero::zero();
         let mut range_check_20_h_sum_117: QM31 = Zero::zero();
+        let mut numerator_117: QM31 = Zero::zero();
         let mut range_check_20_sum_118: QM31 = Zero::zero();
+        let mut numerator_118: QM31 = Zero::zero();
         let mut range_check_20_b_sum_119: QM31 = Zero::zero();
+        let mut numerator_119: QM31 = Zero::zero();
         let mut range_check_20_c_sum_120: QM31 = Zero::zero();
+        let mut numerator_120: QM31 = Zero::zero();
         let mut range_check_20_d_sum_121: QM31 = Zero::zero();
+        let mut numerator_121: QM31 = Zero::zero();
         let mut range_check_20_e_sum_122: QM31 = Zero::zero();
+        let mut numerator_122: QM31 = Zero::zero();
         let mut range_check_20_f_sum_123: QM31 = Zero::zero();
+        let mut numerator_123: QM31 = Zero::zero();
         let mut range_check_20_g_sum_124: QM31 = Zero::zero();
+        let mut numerator_124: QM31 = Zero::zero();
         let mut range_check_20_h_sum_125: QM31 = Zero::zero();
+        let mut numerator_125: QM31 = Zero::zero();
         let mut range_check_20_sum_126: QM31 = Zero::zero();
+        let mut numerator_126: QM31 = Zero::zero();
         let mut range_check_20_b_sum_127: QM31 = Zero::zero();
+        let mut numerator_127: QM31 = Zero::zero();
         let mut range_check_20_c_sum_128: QM31 = Zero::zero();
+        let mut numerator_128: QM31 = Zero::zero();
         let mut range_check_20_d_sum_129: QM31 = Zero::zero();
+        let mut numerator_129: QM31 = Zero::zero();
         let mut range_check_9_9_sum_130: QM31 = Zero::zero();
+        let mut numerator_130: QM31 = Zero::zero();
         let mut range_check_9_9_b_sum_131: QM31 = Zero::zero();
+        let mut numerator_131: QM31 = Zero::zero();
         let mut range_check_9_9_c_sum_132: QM31 = Zero::zero();
+        let mut numerator_132: QM31 = Zero::zero();
         let mut range_check_9_9_d_sum_133: QM31 = Zero::zero();
+        let mut numerator_133: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_134: QM31 = Zero::zero();
+        let mut numerator_134: QM31 = Zero::zero();
         let mut range_check_9_9_f_sum_135: QM31 = Zero::zero();
+        let mut numerator_135: QM31 = Zero::zero();
         let mut range_check_9_9_g_sum_136: QM31 = Zero::zero();
+        let mut numerator_136: QM31 = Zero::zero();
         let mut range_check_9_9_h_sum_137: QM31 = Zero::zero();
+        let mut numerator_137: QM31 = Zero::zero();
         let mut range_check_9_9_sum_138: QM31 = Zero::zero();
+        let mut numerator_138: QM31 = Zero::zero();
         let mut range_check_9_9_b_sum_139: QM31 = Zero::zero();
+        let mut numerator_139: QM31 = Zero::zero();
         let mut range_check_9_9_c_sum_140: QM31 = Zero::zero();
+        let mut numerator_140: QM31 = Zero::zero();
         let mut range_check_9_9_d_sum_141: QM31 = Zero::zero();
+        let mut numerator_141: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_142: QM31 = Zero::zero();
+        let mut numerator_142: QM31 = Zero::zero();
         let mut range_check_9_9_f_sum_143: QM31 = Zero::zero();
+        let mut numerator_143: QM31 = Zero::zero();
         let mut range_check_20_sum_144: QM31 = Zero::zero();
+        let mut numerator_144: QM31 = Zero::zero();
         let mut range_check_20_b_sum_145: QM31 = Zero::zero();
+        let mut numerator_145: QM31 = Zero::zero();
         let mut range_check_20_c_sum_146: QM31 = Zero::zero();
+        let mut numerator_146: QM31 = Zero::zero();
         let mut range_check_20_d_sum_147: QM31 = Zero::zero();
+        let mut numerator_147: QM31 = Zero::zero();
         let mut range_check_20_e_sum_148: QM31 = Zero::zero();
+        let mut numerator_148: QM31 = Zero::zero();
         let mut range_check_20_f_sum_149: QM31 = Zero::zero();
+        let mut numerator_149: QM31 = Zero::zero();
         let mut range_check_20_g_sum_150: QM31 = Zero::zero();
+        let mut numerator_150: QM31 = Zero::zero();
         let mut range_check_20_h_sum_151: QM31 = Zero::zero();
+        let mut numerator_151: QM31 = Zero::zero();
         let mut range_check_20_sum_152: QM31 = Zero::zero();
+        let mut numerator_152: QM31 = Zero::zero();
         let mut range_check_20_b_sum_153: QM31 = Zero::zero();
+        let mut numerator_153: QM31 = Zero::zero();
         let mut range_check_20_c_sum_154: QM31 = Zero::zero();
+        let mut numerator_154: QM31 = Zero::zero();
         let mut range_check_20_d_sum_155: QM31 = Zero::zero();
+        let mut numerator_155: QM31 = Zero::zero();
         let mut range_check_20_e_sum_156: QM31 = Zero::zero();
+        let mut numerator_156: QM31 = Zero::zero();
         let mut range_check_20_f_sum_157: QM31 = Zero::zero();
+        let mut numerator_157: QM31 = Zero::zero();
         let mut range_check_20_g_sum_158: QM31 = Zero::zero();
+        let mut numerator_158: QM31 = Zero::zero();
         let mut range_check_20_h_sum_159: QM31 = Zero::zero();
+        let mut numerator_159: QM31 = Zero::zero();
         let mut range_check_20_sum_160: QM31 = Zero::zero();
+        let mut numerator_160: QM31 = Zero::zero();
         let mut range_check_20_b_sum_161: QM31 = Zero::zero();
+        let mut numerator_161: QM31 = Zero::zero();
         let mut range_check_20_c_sum_162: QM31 = Zero::zero();
+        let mut numerator_162: QM31 = Zero::zero();
         let mut range_check_20_d_sum_163: QM31 = Zero::zero();
+        let mut numerator_163: QM31 = Zero::zero();
         let mut range_check_20_e_sum_164: QM31 = Zero::zero();
+        let mut numerator_164: QM31 = Zero::zero();
         let mut range_check_20_f_sum_165: QM31 = Zero::zero();
+        let mut numerator_165: QM31 = Zero::zero();
         let mut range_check_20_g_sum_166: QM31 = Zero::zero();
+        let mut numerator_166: QM31 = Zero::zero();
         let mut range_check_20_h_sum_167: QM31 = Zero::zero();
+        let mut numerator_167: QM31 = Zero::zero();
         let mut range_check_20_sum_168: QM31 = Zero::zero();
+        let mut numerator_168: QM31 = Zero::zero();
         let mut range_check_20_b_sum_169: QM31 = Zero::zero();
+        let mut numerator_169: QM31 = Zero::zero();
         let mut range_check_20_c_sum_170: QM31 = Zero::zero();
+        let mut numerator_170: QM31 = Zero::zero();
         let mut range_check_20_d_sum_171: QM31 = Zero::zero();
+        let mut numerator_171: QM31 = Zero::zero();
         let mut range_check_9_9_sum_172: QM31 = Zero::zero();
+        let mut numerator_172: QM31 = Zero::zero();
         let mut range_check_9_9_b_sum_173: QM31 = Zero::zero();
+        let mut numerator_173: QM31 = Zero::zero();
         let mut range_check_9_9_c_sum_174: QM31 = Zero::zero();
+        let mut numerator_174: QM31 = Zero::zero();
         let mut range_check_9_9_d_sum_175: QM31 = Zero::zero();
+        let mut numerator_175: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_176: QM31 = Zero::zero();
+        let mut numerator_176: QM31 = Zero::zero();
         let mut range_check_9_9_f_sum_177: QM31 = Zero::zero();
+        let mut numerator_177: QM31 = Zero::zero();
         let mut range_check_9_9_g_sum_178: QM31 = Zero::zero();
+        let mut numerator_178: QM31 = Zero::zero();
         let mut range_check_9_9_h_sum_179: QM31 = Zero::zero();
+        let mut numerator_179: QM31 = Zero::zero();
         let mut range_check_9_9_sum_180: QM31 = Zero::zero();
+        let mut numerator_180: QM31 = Zero::zero();
         let mut range_check_9_9_b_sum_181: QM31 = Zero::zero();
+        let mut numerator_181: QM31 = Zero::zero();
         let mut range_check_9_9_c_sum_182: QM31 = Zero::zero();
+        let mut numerator_182: QM31 = Zero::zero();
         let mut range_check_9_9_d_sum_183: QM31 = Zero::zero();
+        let mut numerator_183: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_184: QM31 = Zero::zero();
+        let mut numerator_184: QM31 = Zero::zero();
         let mut range_check_9_9_f_sum_185: QM31 = Zero::zero();
+        let mut numerator_185: QM31 = Zero::zero();
         let mut range_check_9_9_sum_186: QM31 = Zero::zero();
+        let mut numerator_186: QM31 = Zero::zero();
         let mut range_check_9_9_b_sum_187: QM31 = Zero::zero();
+        let mut numerator_187: QM31 = Zero::zero();
         let mut range_check_9_9_c_sum_188: QM31 = Zero::zero();
+        let mut numerator_188: QM31 = Zero::zero();
         let mut range_check_9_9_d_sum_189: QM31 = Zero::zero();
+        let mut numerator_189: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_190: QM31 = Zero::zero();
+        let mut numerator_190: QM31 = Zero::zero();
         let mut range_check_9_9_f_sum_191: QM31 = Zero::zero();
+        let mut numerator_191: QM31 = Zero::zero();
         let mut range_check_9_9_g_sum_192: QM31 = Zero::zero();
+        let mut numerator_192: QM31 = Zero::zero();
         let mut range_check_9_9_h_sum_193: QM31 = Zero::zero();
+        let mut numerator_193: QM31 = Zero::zero();
         let mut range_check_9_9_sum_194: QM31 = Zero::zero();
+        let mut numerator_194: QM31 = Zero::zero();
         let mut range_check_9_9_b_sum_195: QM31 = Zero::zero();
+        let mut numerator_195: QM31 = Zero::zero();
         let mut range_check_9_9_c_sum_196: QM31 = Zero::zero();
+        let mut numerator_196: QM31 = Zero::zero();
         let mut range_check_9_9_d_sum_197: QM31 = Zero::zero();
+        let mut numerator_197: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_198: QM31 = Zero::zero();
+        let mut numerator_198: QM31 = Zero::zero();
         let mut range_check_9_9_f_sum_199: QM31 = Zero::zero();
+        let mut numerator_199: QM31 = Zero::zero();
         let mut range_check_20_sum_200: QM31 = Zero::zero();
+        let mut numerator_200: QM31 = Zero::zero();
         let mut range_check_20_b_sum_201: QM31 = Zero::zero();
+        let mut numerator_201: QM31 = Zero::zero();
         let mut range_check_20_c_sum_202: QM31 = Zero::zero();
+        let mut numerator_202: QM31 = Zero::zero();
         let mut range_check_20_d_sum_203: QM31 = Zero::zero();
+        let mut numerator_203: QM31 = Zero::zero();
         let mut range_check_20_e_sum_204: QM31 = Zero::zero();
+        let mut numerator_204: QM31 = Zero::zero();
         let mut range_check_20_f_sum_205: QM31 = Zero::zero();
+        let mut numerator_205: QM31 = Zero::zero();
         let mut range_check_20_g_sum_206: QM31 = Zero::zero();
+        let mut numerator_206: QM31 = Zero::zero();
         let mut range_check_20_h_sum_207: QM31 = Zero::zero();
+        let mut numerator_207: QM31 = Zero::zero();
         let mut range_check_20_sum_208: QM31 = Zero::zero();
+        let mut numerator_208: QM31 = Zero::zero();
         let mut range_check_20_b_sum_209: QM31 = Zero::zero();
+        let mut numerator_209: QM31 = Zero::zero();
         let mut range_check_20_c_sum_210: QM31 = Zero::zero();
+        let mut numerator_210: QM31 = Zero::zero();
         let mut range_check_20_d_sum_211: QM31 = Zero::zero();
+        let mut numerator_211: QM31 = Zero::zero();
         let mut range_check_20_e_sum_212: QM31 = Zero::zero();
+        let mut numerator_212: QM31 = Zero::zero();
         let mut range_check_20_f_sum_213: QM31 = Zero::zero();
+        let mut numerator_213: QM31 = Zero::zero();
         let mut range_check_20_g_sum_214: QM31 = Zero::zero();
+        let mut numerator_214: QM31 = Zero::zero();
         let mut range_check_20_h_sum_215: QM31 = Zero::zero();
+        let mut numerator_215: QM31 = Zero::zero();
         let mut range_check_20_sum_216: QM31 = Zero::zero();
+        let mut numerator_216: QM31 = Zero::zero();
         let mut range_check_20_b_sum_217: QM31 = Zero::zero();
+        let mut numerator_217: QM31 = Zero::zero();
         let mut range_check_20_c_sum_218: QM31 = Zero::zero();
+        let mut numerator_218: QM31 = Zero::zero();
         let mut range_check_20_d_sum_219: QM31 = Zero::zero();
+        let mut numerator_219: QM31 = Zero::zero();
         let mut range_check_20_e_sum_220: QM31 = Zero::zero();
+        let mut numerator_220: QM31 = Zero::zero();
         let mut range_check_20_f_sum_221: QM31 = Zero::zero();
+        let mut numerator_221: QM31 = Zero::zero();
         let mut range_check_20_g_sum_222: QM31 = Zero::zero();
+        let mut numerator_222: QM31 = Zero::zero();
         let mut range_check_20_h_sum_223: QM31 = Zero::zero();
+        let mut numerator_223: QM31 = Zero::zero();
         let mut range_check_20_sum_224: QM31 = Zero::zero();
+        let mut numerator_224: QM31 = Zero::zero();
         let mut range_check_20_b_sum_225: QM31 = Zero::zero();
+        let mut numerator_225: QM31 = Zero::zero();
         let mut range_check_20_c_sum_226: QM31 = Zero::zero();
+        let mut numerator_226: QM31 = Zero::zero();
         let mut range_check_20_d_sum_227: QM31 = Zero::zero();
+        let mut numerator_227: QM31 = Zero::zero();
         let mut range_check_9_9_sum_228: QM31 = Zero::zero();
+        let mut numerator_228: QM31 = Zero::zero();
         let mut range_check_9_9_b_sum_229: QM31 = Zero::zero();
+        let mut numerator_229: QM31 = Zero::zero();
         let mut range_check_9_9_c_sum_230: QM31 = Zero::zero();
+        let mut numerator_230: QM31 = Zero::zero();
         let mut range_check_9_9_d_sum_231: QM31 = Zero::zero();
+        let mut numerator_231: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_232: QM31 = Zero::zero();
+        let mut numerator_232: QM31 = Zero::zero();
         let mut range_check_9_9_f_sum_233: QM31 = Zero::zero();
+        let mut numerator_233: QM31 = Zero::zero();
         let mut range_check_9_9_g_sum_234: QM31 = Zero::zero();
+        let mut numerator_234: QM31 = Zero::zero();
         let mut range_check_9_9_h_sum_235: QM31 = Zero::zero();
+        let mut numerator_235: QM31 = Zero::zero();
         let mut range_check_9_9_sum_236: QM31 = Zero::zero();
+        let mut numerator_236: QM31 = Zero::zero();
         let mut range_check_9_9_b_sum_237: QM31 = Zero::zero();
+        let mut numerator_237: QM31 = Zero::zero();
         let mut range_check_9_9_c_sum_238: QM31 = Zero::zero();
+        let mut numerator_238: QM31 = Zero::zero();
         let mut range_check_9_9_d_sum_239: QM31 = Zero::zero();
+        let mut numerator_239: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_240: QM31 = Zero::zero();
+        let mut numerator_240: QM31 = Zero::zero();
         let mut range_check_9_9_f_sum_241: QM31 = Zero::zero();
+        let mut numerator_241: QM31 = Zero::zero();
         let mut range_check_20_sum_242: QM31 = Zero::zero();
+        let mut numerator_242: QM31 = Zero::zero();
         let mut range_check_20_b_sum_243: QM31 = Zero::zero();
+        let mut numerator_243: QM31 = Zero::zero();
         let mut range_check_20_c_sum_244: QM31 = Zero::zero();
+        let mut numerator_244: QM31 = Zero::zero();
         let mut range_check_20_d_sum_245: QM31 = Zero::zero();
+        let mut numerator_245: QM31 = Zero::zero();
         let mut range_check_20_e_sum_246: QM31 = Zero::zero();
+        let mut numerator_246: QM31 = Zero::zero();
         let mut range_check_20_f_sum_247: QM31 = Zero::zero();
+        let mut numerator_247: QM31 = Zero::zero();
         let mut range_check_20_g_sum_248: QM31 = Zero::zero();
+        let mut numerator_248: QM31 = Zero::zero();
         let mut range_check_20_h_sum_249: QM31 = Zero::zero();
+        let mut numerator_249: QM31 = Zero::zero();
         let mut range_check_20_sum_250: QM31 = Zero::zero();
+        let mut numerator_250: QM31 = Zero::zero();
         let mut range_check_20_b_sum_251: QM31 = Zero::zero();
+        let mut numerator_251: QM31 = Zero::zero();
         let mut range_check_20_c_sum_252: QM31 = Zero::zero();
+        let mut numerator_252: QM31 = Zero::zero();
         let mut range_check_20_d_sum_253: QM31 = Zero::zero();
+        let mut numerator_253: QM31 = Zero::zero();
         let mut range_check_20_e_sum_254: QM31 = Zero::zero();
+        let mut numerator_254: QM31 = Zero::zero();
         let mut range_check_20_f_sum_255: QM31 = Zero::zero();
+        let mut numerator_255: QM31 = Zero::zero();
         let mut range_check_20_g_sum_256: QM31 = Zero::zero();
+        let mut numerator_256: QM31 = Zero::zero();
         let mut range_check_20_h_sum_257: QM31 = Zero::zero();
+        let mut numerator_257: QM31 = Zero::zero();
         let mut range_check_20_sum_258: QM31 = Zero::zero();
+        let mut numerator_258: QM31 = Zero::zero();
         let mut range_check_20_b_sum_259: QM31 = Zero::zero();
+        let mut numerator_259: QM31 = Zero::zero();
         let mut range_check_20_c_sum_260: QM31 = Zero::zero();
+        let mut numerator_260: QM31 = Zero::zero();
         let mut range_check_20_d_sum_261: QM31 = Zero::zero();
+        let mut numerator_261: QM31 = Zero::zero();
         let mut range_check_20_e_sum_262: QM31 = Zero::zero();
+        let mut numerator_262: QM31 = Zero::zero();
         let mut range_check_20_f_sum_263: QM31 = Zero::zero();
+        let mut numerator_263: QM31 = Zero::zero();
         let mut range_check_20_g_sum_264: QM31 = Zero::zero();
+        let mut numerator_264: QM31 = Zero::zero();
         let mut range_check_20_h_sum_265: QM31 = Zero::zero();
+        let mut numerator_265: QM31 = Zero::zero();
         let mut range_check_20_sum_266: QM31 = Zero::zero();
+        let mut numerator_266: QM31 = Zero::zero();
         let mut range_check_20_b_sum_267: QM31 = Zero::zero();
+        let mut numerator_267: QM31 = Zero::zero();
         let mut range_check_20_c_sum_268: QM31 = Zero::zero();
+        let mut numerator_268: QM31 = Zero::zero();
         let mut range_check_20_d_sum_269: QM31 = Zero::zero();
+        let mut numerator_269: QM31 = Zero::zero();
         let mut range_check_9_9_sum_270: QM31 = Zero::zero();
+        let mut numerator_270: QM31 = Zero::zero();
         let mut range_check_9_9_b_sum_271: QM31 = Zero::zero();
+        let mut numerator_271: QM31 = Zero::zero();
         let mut range_check_9_9_c_sum_272: QM31 = Zero::zero();
+        let mut numerator_272: QM31 = Zero::zero();
         let mut range_check_9_9_d_sum_273: QM31 = Zero::zero();
+        let mut numerator_273: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_274: QM31 = Zero::zero();
+        let mut numerator_274: QM31 = Zero::zero();
         let mut range_check_9_9_f_sum_275: QM31 = Zero::zero();
+        let mut numerator_275: QM31 = Zero::zero();
         let mut range_check_9_9_g_sum_276: QM31 = Zero::zero();
+        let mut numerator_276: QM31 = Zero::zero();
         let mut range_check_9_9_h_sum_277: QM31 = Zero::zero();
+        let mut numerator_277: QM31 = Zero::zero();
         let mut range_check_9_9_sum_278: QM31 = Zero::zero();
+        let mut numerator_278: QM31 = Zero::zero();
         let mut range_check_9_9_b_sum_279: QM31 = Zero::zero();
+        let mut numerator_279: QM31 = Zero::zero();
         let mut range_check_9_9_c_sum_280: QM31 = Zero::zero();
+        let mut numerator_280: QM31 = Zero::zero();
         let mut range_check_9_9_d_sum_281: QM31 = Zero::zero();
+        let mut numerator_281: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_282: QM31 = Zero::zero();
+        let mut numerator_282: QM31 = Zero::zero();
         let mut range_check_9_9_f_sum_283: QM31 = Zero::zero();
+        let mut numerator_283: QM31 = Zero::zero();
         let mut range_check_20_sum_284: QM31 = Zero::zero();
+        let mut numerator_284: QM31 = Zero::zero();
         let mut range_check_20_b_sum_285: QM31 = Zero::zero();
+        let mut numerator_285: QM31 = Zero::zero();
         let mut range_check_20_c_sum_286: QM31 = Zero::zero();
+        let mut numerator_286: QM31 = Zero::zero();
         let mut range_check_20_d_sum_287: QM31 = Zero::zero();
+        let mut numerator_287: QM31 = Zero::zero();
         let mut range_check_20_e_sum_288: QM31 = Zero::zero();
+        let mut numerator_288: QM31 = Zero::zero();
         let mut range_check_20_f_sum_289: QM31 = Zero::zero();
+        let mut numerator_289: QM31 = Zero::zero();
         let mut range_check_20_g_sum_290: QM31 = Zero::zero();
+        let mut numerator_290: QM31 = Zero::zero();
         let mut range_check_20_h_sum_291: QM31 = Zero::zero();
+        let mut numerator_291: QM31 = Zero::zero();
         let mut range_check_20_sum_292: QM31 = Zero::zero();
+        let mut numerator_292: QM31 = Zero::zero();
         let mut range_check_20_b_sum_293: QM31 = Zero::zero();
+        let mut numerator_293: QM31 = Zero::zero();
         let mut range_check_20_c_sum_294: QM31 = Zero::zero();
+        let mut numerator_294: QM31 = Zero::zero();
         let mut range_check_20_d_sum_295: QM31 = Zero::zero();
+        let mut numerator_295: QM31 = Zero::zero();
         let mut range_check_20_e_sum_296: QM31 = Zero::zero();
+        let mut numerator_296: QM31 = Zero::zero();
         let mut range_check_20_f_sum_297: QM31 = Zero::zero();
+        let mut numerator_297: QM31 = Zero::zero();
         let mut range_check_20_g_sum_298: QM31 = Zero::zero();
+        let mut numerator_298: QM31 = Zero::zero();
         let mut range_check_20_h_sum_299: QM31 = Zero::zero();
+        let mut numerator_299: QM31 = Zero::zero();
         let mut range_check_20_sum_300: QM31 = Zero::zero();
+        let mut numerator_300: QM31 = Zero::zero();
         let mut range_check_20_b_sum_301: QM31 = Zero::zero();
+        let mut numerator_301: QM31 = Zero::zero();
         let mut range_check_20_c_sum_302: QM31 = Zero::zero();
+        let mut numerator_302: QM31 = Zero::zero();
         let mut range_check_20_d_sum_303: QM31 = Zero::zero();
+        let mut numerator_303: QM31 = Zero::zero();
         let mut range_check_20_e_sum_304: QM31 = Zero::zero();
+        let mut numerator_304: QM31 = Zero::zero();
         let mut range_check_20_f_sum_305: QM31 = Zero::zero();
+        let mut numerator_305: QM31 = Zero::zero();
         let mut range_check_20_g_sum_306: QM31 = Zero::zero();
+        let mut numerator_306: QM31 = Zero::zero();
         let mut range_check_20_h_sum_307: QM31 = Zero::zero();
+        let mut numerator_307: QM31 = Zero::zero();
         let mut range_check_20_sum_308: QM31 = Zero::zero();
+        let mut numerator_308: QM31 = Zero::zero();
         let mut range_check_20_b_sum_309: QM31 = Zero::zero();
+        let mut numerator_309: QM31 = Zero::zero();
         let mut range_check_20_c_sum_310: QM31 = Zero::zero();
+        let mut numerator_310: QM31 = Zero::zero();
         let mut range_check_20_d_sum_311: QM31 = Zero::zero();
+        let mut numerator_311: QM31 = Zero::zero();
         let mut partial_ec_mul_generic_sum_312: QM31 = Zero::zero();
+        let mut numerator_312: QM31 = Zero::zero();
         let mut partial_ec_mul_generic_sum_313: QM31 = Zero::zero();
+        let mut numerator_313: QM31 = Zero::zero();
 
         let [
             input_chain_id_col0,
@@ -1026,7 +1340,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             carry_24_col620,
             carry_25_col621,
             carry_26_col622,
-            partial_ec_mul_generic_multiplicity,
+            enabler_col623,
         ]: [Span<QM31>; 624] =
             (*trace_mask_values
             .multi_pop_front()
@@ -2228,16 +2542,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [carry_24_col620]: [QM31; 1] = (*carry_24_col620.try_into().unwrap()).unbox();
         let [carry_25_col621]: [QM31; 1] = (*carry_25_col621.try_into().unwrap()).unbox();
         let [carry_26_col622]: [QM31; 1] = (*carry_26_col622.try_into().unwrap()).unbox();
-        let [partial_ec_mul_generic_multiplicity]: [QM31; 1] = (*partial_ec_mul_generic_multiplicity
-            .try_into()
-            .unwrap())
-            .unbox();
+        let [enabler_col623]: [QM31; 1] = (*enabler_col623.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
-        let constraint_quotient = (partial_ec_mul_generic_multiplicity
-            * partial_ec_mul_generic_multiplicity
-            - partial_ec_mul_generic_multiplicity);
+        // Constraint -
+        let constraint_quotient = (((enabler_col623 * enabler_col623) - enabler_col623));
         sum = sum * random_coeff + constraint_quotient;
 
         // Constraint - to_add_bit is bool
@@ -2357,7 +2667,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             rc_input_col141,
             self.common_lookup_elements,
             ref range_check_8_sum_0,
+            ref numerator_0,
             ref range_check_8_sum_1,
+            ref numerator_1,
             ref sum,
             random_coeff,
         );
@@ -2379,7 +2691,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             rc_input_col144,
             self.common_lookup_elements,
             ref range_check_8_sum_2,
+            ref numerator_2,
             ref range_check_8_sum_3,
+            ref numerator_3,
             ref sum,
             random_coeff,
         );
@@ -2693,131 +3007,257 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             carry_26_col313,
             self.common_lookup_elements,
             ref range_check_9_9_sum_4,
+            ref numerator_4,
             ref range_check_9_9_b_sum_5,
+            ref numerator_5,
             ref range_check_9_9_c_sum_6,
+            ref numerator_6,
             ref range_check_9_9_d_sum_7,
+            ref numerator_7,
             ref range_check_9_9_e_sum_8,
+            ref numerator_8,
             ref range_check_9_9_f_sum_9,
+            ref numerator_9,
             ref range_check_9_9_g_sum_10,
+            ref numerator_10,
             ref range_check_9_9_h_sum_11,
+            ref numerator_11,
             ref range_check_9_9_sum_12,
+            ref numerator_12,
             ref range_check_9_9_b_sum_13,
+            ref numerator_13,
             ref range_check_9_9_c_sum_14,
+            ref numerator_14,
             ref range_check_9_9_d_sum_15,
+            ref numerator_15,
             ref range_check_9_9_e_sum_16,
+            ref numerator_16,
             ref range_check_9_9_f_sum_17,
+            ref numerator_17,
             ref range_check_20_sum_18,
+            ref numerator_18,
             ref range_check_20_b_sum_19,
+            ref numerator_19,
             ref range_check_20_c_sum_20,
+            ref numerator_20,
             ref range_check_20_d_sum_21,
+            ref numerator_21,
             ref range_check_20_e_sum_22,
+            ref numerator_22,
             ref range_check_20_f_sum_23,
+            ref numerator_23,
             ref range_check_20_g_sum_24,
+            ref numerator_24,
             ref range_check_20_h_sum_25,
+            ref numerator_25,
             ref range_check_20_sum_26,
+            ref numerator_26,
             ref range_check_20_b_sum_27,
+            ref numerator_27,
             ref range_check_20_c_sum_28,
+            ref numerator_28,
             ref range_check_20_d_sum_29,
+            ref numerator_29,
             ref range_check_20_e_sum_30,
+            ref numerator_30,
             ref range_check_20_f_sum_31,
+            ref numerator_31,
             ref range_check_20_g_sum_32,
+            ref numerator_32,
             ref range_check_20_h_sum_33,
+            ref numerator_33,
             ref range_check_20_sum_34,
+            ref numerator_34,
             ref range_check_20_b_sum_35,
+            ref numerator_35,
             ref range_check_20_c_sum_36,
+            ref numerator_36,
             ref range_check_20_d_sum_37,
+            ref numerator_37,
             ref range_check_20_e_sum_38,
+            ref numerator_38,
             ref range_check_20_f_sum_39,
+            ref numerator_39,
             ref range_check_20_g_sum_40,
+            ref numerator_40,
             ref range_check_20_h_sum_41,
+            ref numerator_41,
             ref range_check_20_sum_42,
+            ref numerator_42,
             ref range_check_20_b_sum_43,
+            ref numerator_43,
             ref range_check_20_c_sum_44,
+            ref numerator_44,
             ref range_check_20_d_sum_45,
+            ref numerator_45,
             ref range_check_9_9_sum_46,
+            ref numerator_46,
             ref range_check_9_9_b_sum_47,
+            ref numerator_47,
             ref range_check_9_9_c_sum_48,
+            ref numerator_48,
             ref range_check_9_9_d_sum_49,
+            ref numerator_49,
             ref range_check_9_9_e_sum_50,
+            ref numerator_50,
             ref range_check_9_9_f_sum_51,
+            ref numerator_51,
             ref range_check_9_9_g_sum_52,
+            ref numerator_52,
             ref range_check_9_9_h_sum_53,
+            ref numerator_53,
             ref range_check_9_9_sum_54,
+            ref numerator_54,
             ref range_check_9_9_b_sum_55,
+            ref numerator_55,
             ref range_check_9_9_c_sum_56,
+            ref numerator_56,
             ref range_check_9_9_d_sum_57,
+            ref numerator_57,
             ref range_check_9_9_e_sum_58,
+            ref numerator_58,
             ref range_check_9_9_f_sum_59,
+            ref numerator_59,
             ref range_check_20_sum_60,
+            ref numerator_60,
             ref range_check_20_b_sum_61,
+            ref numerator_61,
             ref range_check_20_c_sum_62,
+            ref numerator_62,
             ref range_check_20_d_sum_63,
+            ref numerator_63,
             ref range_check_20_e_sum_64,
+            ref numerator_64,
             ref range_check_20_f_sum_65,
+            ref numerator_65,
             ref range_check_20_g_sum_66,
+            ref numerator_66,
             ref range_check_20_h_sum_67,
+            ref numerator_67,
             ref range_check_20_sum_68,
+            ref numerator_68,
             ref range_check_20_b_sum_69,
+            ref numerator_69,
             ref range_check_20_c_sum_70,
+            ref numerator_70,
             ref range_check_20_d_sum_71,
+            ref numerator_71,
             ref range_check_20_e_sum_72,
+            ref numerator_72,
             ref range_check_20_f_sum_73,
+            ref numerator_73,
             ref range_check_20_g_sum_74,
+            ref numerator_74,
             ref range_check_20_h_sum_75,
+            ref numerator_75,
             ref range_check_20_sum_76,
+            ref numerator_76,
             ref range_check_20_b_sum_77,
+            ref numerator_77,
             ref range_check_20_c_sum_78,
+            ref numerator_78,
             ref range_check_20_d_sum_79,
+            ref numerator_79,
             ref range_check_20_e_sum_80,
+            ref numerator_80,
             ref range_check_20_f_sum_81,
+            ref numerator_81,
             ref range_check_20_g_sum_82,
+            ref numerator_82,
             ref range_check_20_h_sum_83,
+            ref numerator_83,
             ref range_check_20_sum_84,
+            ref numerator_84,
             ref range_check_20_b_sum_85,
+            ref numerator_85,
             ref range_check_20_c_sum_86,
+            ref numerator_86,
             ref range_check_20_d_sum_87,
+            ref numerator_87,
             ref range_check_9_9_sum_88,
+            ref numerator_88,
             ref range_check_9_9_b_sum_89,
+            ref numerator_89,
             ref range_check_9_9_c_sum_90,
+            ref numerator_90,
             ref range_check_9_9_d_sum_91,
+            ref numerator_91,
             ref range_check_9_9_e_sum_92,
+            ref numerator_92,
             ref range_check_9_9_f_sum_93,
+            ref numerator_93,
             ref range_check_9_9_g_sum_94,
+            ref numerator_94,
             ref range_check_9_9_h_sum_95,
+            ref numerator_95,
             ref range_check_9_9_sum_96,
+            ref numerator_96,
             ref range_check_9_9_b_sum_97,
+            ref numerator_97,
             ref range_check_9_9_c_sum_98,
+            ref numerator_98,
             ref range_check_9_9_d_sum_99,
+            ref numerator_99,
             ref range_check_9_9_e_sum_100,
+            ref numerator_100,
             ref range_check_9_9_f_sum_101,
+            ref numerator_101,
             ref range_check_20_sum_102,
+            ref numerator_102,
             ref range_check_20_b_sum_103,
+            ref numerator_103,
             ref range_check_20_c_sum_104,
+            ref numerator_104,
             ref range_check_20_d_sum_105,
+            ref numerator_105,
             ref range_check_20_e_sum_106,
+            ref numerator_106,
             ref range_check_20_f_sum_107,
+            ref numerator_107,
             ref range_check_20_g_sum_108,
+            ref numerator_108,
             ref range_check_20_h_sum_109,
+            ref numerator_109,
             ref range_check_20_sum_110,
+            ref numerator_110,
             ref range_check_20_b_sum_111,
+            ref numerator_111,
             ref range_check_20_c_sum_112,
+            ref numerator_112,
             ref range_check_20_d_sum_113,
+            ref numerator_113,
             ref range_check_20_e_sum_114,
+            ref numerator_114,
             ref range_check_20_f_sum_115,
+            ref numerator_115,
             ref range_check_20_g_sum_116,
+            ref numerator_116,
             ref range_check_20_h_sum_117,
+            ref numerator_117,
             ref range_check_20_sum_118,
+            ref numerator_118,
             ref range_check_20_b_sum_119,
+            ref numerator_119,
             ref range_check_20_c_sum_120,
+            ref numerator_120,
             ref range_check_20_d_sum_121,
+            ref numerator_121,
             ref range_check_20_e_sum_122,
+            ref numerator_122,
             ref range_check_20_f_sum_123,
+            ref numerator_123,
             ref range_check_20_g_sum_124,
+            ref numerator_124,
             ref range_check_20_h_sum_125,
+            ref numerator_125,
             ref range_check_20_sum_126,
+            ref numerator_126,
             ref range_check_20_b_sum_127,
+            ref numerator_127,
             ref range_check_20_c_sum_128,
+            ref numerator_128,
             ref range_check_20_d_sum_129,
+            ref numerator_129,
             ref sum,
             random_coeff,
         );
@@ -3434,187 +3874,369 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             carry_26_col622,
             self.common_lookup_elements,
             ref range_check_9_9_sum_130,
+            ref numerator_130,
             ref range_check_9_9_b_sum_131,
+            ref numerator_131,
             ref range_check_9_9_c_sum_132,
+            ref numerator_132,
             ref range_check_9_9_d_sum_133,
+            ref numerator_133,
             ref range_check_9_9_e_sum_134,
+            ref numerator_134,
             ref range_check_9_9_f_sum_135,
+            ref numerator_135,
             ref range_check_9_9_g_sum_136,
+            ref numerator_136,
             ref range_check_9_9_h_sum_137,
+            ref numerator_137,
             ref range_check_9_9_sum_138,
+            ref numerator_138,
             ref range_check_9_9_b_sum_139,
+            ref numerator_139,
             ref range_check_9_9_c_sum_140,
+            ref numerator_140,
             ref range_check_9_9_d_sum_141,
+            ref numerator_141,
             ref range_check_9_9_e_sum_142,
+            ref numerator_142,
             ref range_check_9_9_f_sum_143,
+            ref numerator_143,
             ref range_check_20_sum_144,
+            ref numerator_144,
             ref range_check_20_b_sum_145,
+            ref numerator_145,
             ref range_check_20_c_sum_146,
+            ref numerator_146,
             ref range_check_20_d_sum_147,
+            ref numerator_147,
             ref range_check_20_e_sum_148,
+            ref numerator_148,
             ref range_check_20_f_sum_149,
+            ref numerator_149,
             ref range_check_20_g_sum_150,
+            ref numerator_150,
             ref range_check_20_h_sum_151,
+            ref numerator_151,
             ref range_check_20_sum_152,
+            ref numerator_152,
             ref range_check_20_b_sum_153,
+            ref numerator_153,
             ref range_check_20_c_sum_154,
+            ref numerator_154,
             ref range_check_20_d_sum_155,
+            ref numerator_155,
             ref range_check_20_e_sum_156,
+            ref numerator_156,
             ref range_check_20_f_sum_157,
+            ref numerator_157,
             ref range_check_20_g_sum_158,
+            ref numerator_158,
             ref range_check_20_h_sum_159,
+            ref numerator_159,
             ref range_check_20_sum_160,
+            ref numerator_160,
             ref range_check_20_b_sum_161,
+            ref numerator_161,
             ref range_check_20_c_sum_162,
+            ref numerator_162,
             ref range_check_20_d_sum_163,
+            ref numerator_163,
             ref range_check_20_e_sum_164,
+            ref numerator_164,
             ref range_check_20_f_sum_165,
+            ref numerator_165,
             ref range_check_20_g_sum_166,
+            ref numerator_166,
             ref range_check_20_h_sum_167,
+            ref numerator_167,
             ref range_check_20_sum_168,
+            ref numerator_168,
             ref range_check_20_b_sum_169,
+            ref numerator_169,
             ref range_check_20_c_sum_170,
+            ref numerator_170,
             ref range_check_20_d_sum_171,
+            ref numerator_171,
             ref range_check_9_9_sum_172,
+            ref numerator_172,
             ref range_check_9_9_b_sum_173,
+            ref numerator_173,
             ref range_check_9_9_c_sum_174,
+            ref numerator_174,
             ref range_check_9_9_d_sum_175,
+            ref numerator_175,
             ref range_check_9_9_e_sum_176,
+            ref numerator_176,
             ref range_check_9_9_f_sum_177,
+            ref numerator_177,
             ref range_check_9_9_g_sum_178,
+            ref numerator_178,
             ref range_check_9_9_h_sum_179,
+            ref numerator_179,
             ref range_check_9_9_sum_180,
+            ref numerator_180,
             ref range_check_9_9_b_sum_181,
+            ref numerator_181,
             ref range_check_9_9_c_sum_182,
+            ref numerator_182,
             ref range_check_9_9_d_sum_183,
+            ref numerator_183,
             ref range_check_9_9_e_sum_184,
+            ref numerator_184,
             ref range_check_9_9_f_sum_185,
+            ref numerator_185,
             ref range_check_9_9_sum_186,
+            ref numerator_186,
             ref range_check_9_9_b_sum_187,
+            ref numerator_187,
             ref range_check_9_9_c_sum_188,
+            ref numerator_188,
             ref range_check_9_9_d_sum_189,
+            ref numerator_189,
             ref range_check_9_9_e_sum_190,
+            ref numerator_190,
             ref range_check_9_9_f_sum_191,
+            ref numerator_191,
             ref range_check_9_9_g_sum_192,
+            ref numerator_192,
             ref range_check_9_9_h_sum_193,
+            ref numerator_193,
             ref range_check_9_9_sum_194,
+            ref numerator_194,
             ref range_check_9_9_b_sum_195,
+            ref numerator_195,
             ref range_check_9_9_c_sum_196,
+            ref numerator_196,
             ref range_check_9_9_d_sum_197,
+            ref numerator_197,
             ref range_check_9_9_e_sum_198,
+            ref numerator_198,
             ref range_check_9_9_f_sum_199,
+            ref numerator_199,
             ref range_check_20_sum_200,
+            ref numerator_200,
             ref range_check_20_b_sum_201,
+            ref numerator_201,
             ref range_check_20_c_sum_202,
+            ref numerator_202,
             ref range_check_20_d_sum_203,
+            ref numerator_203,
             ref range_check_20_e_sum_204,
+            ref numerator_204,
             ref range_check_20_f_sum_205,
+            ref numerator_205,
             ref range_check_20_g_sum_206,
+            ref numerator_206,
             ref range_check_20_h_sum_207,
+            ref numerator_207,
             ref range_check_20_sum_208,
+            ref numerator_208,
             ref range_check_20_b_sum_209,
+            ref numerator_209,
             ref range_check_20_c_sum_210,
+            ref numerator_210,
             ref range_check_20_d_sum_211,
+            ref numerator_211,
             ref range_check_20_e_sum_212,
+            ref numerator_212,
             ref range_check_20_f_sum_213,
+            ref numerator_213,
             ref range_check_20_g_sum_214,
+            ref numerator_214,
             ref range_check_20_h_sum_215,
+            ref numerator_215,
             ref range_check_20_sum_216,
+            ref numerator_216,
             ref range_check_20_b_sum_217,
+            ref numerator_217,
             ref range_check_20_c_sum_218,
+            ref numerator_218,
             ref range_check_20_d_sum_219,
+            ref numerator_219,
             ref range_check_20_e_sum_220,
+            ref numerator_220,
             ref range_check_20_f_sum_221,
+            ref numerator_221,
             ref range_check_20_g_sum_222,
+            ref numerator_222,
             ref range_check_20_h_sum_223,
+            ref numerator_223,
             ref range_check_20_sum_224,
+            ref numerator_224,
             ref range_check_20_b_sum_225,
+            ref numerator_225,
             ref range_check_20_c_sum_226,
+            ref numerator_226,
             ref range_check_20_d_sum_227,
+            ref numerator_227,
             ref range_check_9_9_sum_228,
+            ref numerator_228,
             ref range_check_9_9_b_sum_229,
+            ref numerator_229,
             ref range_check_9_9_c_sum_230,
+            ref numerator_230,
             ref range_check_9_9_d_sum_231,
+            ref numerator_231,
             ref range_check_9_9_e_sum_232,
+            ref numerator_232,
             ref range_check_9_9_f_sum_233,
+            ref numerator_233,
             ref range_check_9_9_g_sum_234,
+            ref numerator_234,
             ref range_check_9_9_h_sum_235,
+            ref numerator_235,
             ref range_check_9_9_sum_236,
+            ref numerator_236,
             ref range_check_9_9_b_sum_237,
+            ref numerator_237,
             ref range_check_9_9_c_sum_238,
+            ref numerator_238,
             ref range_check_9_9_d_sum_239,
+            ref numerator_239,
             ref range_check_9_9_e_sum_240,
+            ref numerator_240,
             ref range_check_9_9_f_sum_241,
+            ref numerator_241,
             ref range_check_20_sum_242,
+            ref numerator_242,
             ref range_check_20_b_sum_243,
+            ref numerator_243,
             ref range_check_20_c_sum_244,
+            ref numerator_244,
             ref range_check_20_d_sum_245,
+            ref numerator_245,
             ref range_check_20_e_sum_246,
+            ref numerator_246,
             ref range_check_20_f_sum_247,
+            ref numerator_247,
             ref range_check_20_g_sum_248,
+            ref numerator_248,
             ref range_check_20_h_sum_249,
+            ref numerator_249,
             ref range_check_20_sum_250,
+            ref numerator_250,
             ref range_check_20_b_sum_251,
+            ref numerator_251,
             ref range_check_20_c_sum_252,
+            ref numerator_252,
             ref range_check_20_d_sum_253,
+            ref numerator_253,
             ref range_check_20_e_sum_254,
+            ref numerator_254,
             ref range_check_20_f_sum_255,
+            ref numerator_255,
             ref range_check_20_g_sum_256,
+            ref numerator_256,
             ref range_check_20_h_sum_257,
+            ref numerator_257,
             ref range_check_20_sum_258,
+            ref numerator_258,
             ref range_check_20_b_sum_259,
+            ref numerator_259,
             ref range_check_20_c_sum_260,
+            ref numerator_260,
             ref range_check_20_d_sum_261,
+            ref numerator_261,
             ref range_check_20_e_sum_262,
+            ref numerator_262,
             ref range_check_20_f_sum_263,
+            ref numerator_263,
             ref range_check_20_g_sum_264,
+            ref numerator_264,
             ref range_check_20_h_sum_265,
+            ref numerator_265,
             ref range_check_20_sum_266,
+            ref numerator_266,
             ref range_check_20_b_sum_267,
+            ref numerator_267,
             ref range_check_20_c_sum_268,
+            ref numerator_268,
             ref range_check_20_d_sum_269,
+            ref numerator_269,
             ref range_check_9_9_sum_270,
+            ref numerator_270,
             ref range_check_9_9_b_sum_271,
+            ref numerator_271,
             ref range_check_9_9_c_sum_272,
+            ref numerator_272,
             ref range_check_9_9_d_sum_273,
+            ref numerator_273,
             ref range_check_9_9_e_sum_274,
+            ref numerator_274,
             ref range_check_9_9_f_sum_275,
+            ref numerator_275,
             ref range_check_9_9_g_sum_276,
+            ref numerator_276,
             ref range_check_9_9_h_sum_277,
+            ref numerator_277,
             ref range_check_9_9_sum_278,
+            ref numerator_278,
             ref range_check_9_9_b_sum_279,
+            ref numerator_279,
             ref range_check_9_9_c_sum_280,
+            ref numerator_280,
             ref range_check_9_9_d_sum_281,
+            ref numerator_281,
             ref range_check_9_9_e_sum_282,
+            ref numerator_282,
             ref range_check_9_9_f_sum_283,
+            ref numerator_283,
             ref range_check_20_sum_284,
+            ref numerator_284,
             ref range_check_20_b_sum_285,
+            ref numerator_285,
             ref range_check_20_c_sum_286,
+            ref numerator_286,
             ref range_check_20_d_sum_287,
+            ref numerator_287,
             ref range_check_20_e_sum_288,
+            ref numerator_288,
             ref range_check_20_f_sum_289,
+            ref numerator_289,
             ref range_check_20_g_sum_290,
+            ref numerator_290,
             ref range_check_20_h_sum_291,
+            ref numerator_291,
             ref range_check_20_sum_292,
+            ref numerator_292,
             ref range_check_20_b_sum_293,
+            ref numerator_293,
             ref range_check_20_c_sum_294,
+            ref numerator_294,
             ref range_check_20_d_sum_295,
+            ref numerator_295,
             ref range_check_20_e_sum_296,
+            ref numerator_296,
             ref range_check_20_f_sum_297,
+            ref numerator_297,
             ref range_check_20_g_sum_298,
+            ref numerator_298,
             ref range_check_20_h_sum_299,
+            ref numerator_299,
             ref range_check_20_sum_300,
+            ref numerator_300,
             ref range_check_20_b_sum_301,
+            ref numerator_301,
             ref range_check_20_c_sum_302,
+            ref numerator_302,
             ref range_check_20_d_sum_303,
+            ref numerator_303,
             ref range_check_20_e_sum_304,
+            ref numerator_304,
             ref range_check_20_f_sum_305,
+            ref numerator_305,
             ref range_check_20_g_sum_306,
+            ref numerator_306,
             ref range_check_20_h_sum_307,
+            ref numerator_307,
             ref range_check_20_sum_308,
+            ref numerator_308,
             ref range_check_20_b_sum_309,
+            ref numerator_309,
             ref range_check_20_c_sum_310,
+            ref numerator_310,
             ref range_check_20_d_sum_311,
+            ref numerator_311,
             ref sum,
             random_coeff,
         );
@@ -3678,6 +4300,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ]
                     .span(),
             );
+        numerator_312 = enabler_col623;
 
         partial_ec_mul_generic_sum_313 = self
             .common_lookup_elements
@@ -3737,12 +4360,326 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ]
                     .span(),
             );
+        numerator_313 = enabler_col623;
 
         lookup_constraints(
             ref sum,
             random_coeff,
             claimed_sum,
-            partial_ec_mul_generic_multiplicity,
+            numerator_0,
+            numerator_1,
+            numerator_2,
+            numerator_3,
+            numerator_4,
+            numerator_5,
+            numerator_6,
+            numerator_7,
+            numerator_8,
+            numerator_9,
+            numerator_10,
+            numerator_11,
+            numerator_12,
+            numerator_13,
+            numerator_14,
+            numerator_15,
+            numerator_16,
+            numerator_17,
+            numerator_18,
+            numerator_19,
+            numerator_20,
+            numerator_21,
+            numerator_22,
+            numerator_23,
+            numerator_24,
+            numerator_25,
+            numerator_26,
+            numerator_27,
+            numerator_28,
+            numerator_29,
+            numerator_30,
+            numerator_31,
+            numerator_32,
+            numerator_33,
+            numerator_34,
+            numerator_35,
+            numerator_36,
+            numerator_37,
+            numerator_38,
+            numerator_39,
+            numerator_40,
+            numerator_41,
+            numerator_42,
+            numerator_43,
+            numerator_44,
+            numerator_45,
+            numerator_46,
+            numerator_47,
+            numerator_48,
+            numerator_49,
+            numerator_50,
+            numerator_51,
+            numerator_52,
+            numerator_53,
+            numerator_54,
+            numerator_55,
+            numerator_56,
+            numerator_57,
+            numerator_58,
+            numerator_59,
+            numerator_60,
+            numerator_61,
+            numerator_62,
+            numerator_63,
+            numerator_64,
+            numerator_65,
+            numerator_66,
+            numerator_67,
+            numerator_68,
+            numerator_69,
+            numerator_70,
+            numerator_71,
+            numerator_72,
+            numerator_73,
+            numerator_74,
+            numerator_75,
+            numerator_76,
+            numerator_77,
+            numerator_78,
+            numerator_79,
+            numerator_80,
+            numerator_81,
+            numerator_82,
+            numerator_83,
+            numerator_84,
+            numerator_85,
+            numerator_86,
+            numerator_87,
+            numerator_88,
+            numerator_89,
+            numerator_90,
+            numerator_91,
+            numerator_92,
+            numerator_93,
+            numerator_94,
+            numerator_95,
+            numerator_96,
+            numerator_97,
+            numerator_98,
+            numerator_99,
+            numerator_100,
+            numerator_101,
+            numerator_102,
+            numerator_103,
+            numerator_104,
+            numerator_105,
+            numerator_106,
+            numerator_107,
+            numerator_108,
+            numerator_109,
+            numerator_110,
+            numerator_111,
+            numerator_112,
+            numerator_113,
+            numerator_114,
+            numerator_115,
+            numerator_116,
+            numerator_117,
+            numerator_118,
+            numerator_119,
+            numerator_120,
+            numerator_121,
+            numerator_122,
+            numerator_123,
+            numerator_124,
+            numerator_125,
+            numerator_126,
+            numerator_127,
+            numerator_128,
+            numerator_129,
+            numerator_130,
+            numerator_131,
+            numerator_132,
+            numerator_133,
+            numerator_134,
+            numerator_135,
+            numerator_136,
+            numerator_137,
+            numerator_138,
+            numerator_139,
+            numerator_140,
+            numerator_141,
+            numerator_142,
+            numerator_143,
+            numerator_144,
+            numerator_145,
+            numerator_146,
+            numerator_147,
+            numerator_148,
+            numerator_149,
+            numerator_150,
+            numerator_151,
+            numerator_152,
+            numerator_153,
+            numerator_154,
+            numerator_155,
+            numerator_156,
+            numerator_157,
+            numerator_158,
+            numerator_159,
+            numerator_160,
+            numerator_161,
+            numerator_162,
+            numerator_163,
+            numerator_164,
+            numerator_165,
+            numerator_166,
+            numerator_167,
+            numerator_168,
+            numerator_169,
+            numerator_170,
+            numerator_171,
+            numerator_172,
+            numerator_173,
+            numerator_174,
+            numerator_175,
+            numerator_176,
+            numerator_177,
+            numerator_178,
+            numerator_179,
+            numerator_180,
+            numerator_181,
+            numerator_182,
+            numerator_183,
+            numerator_184,
+            numerator_185,
+            numerator_186,
+            numerator_187,
+            numerator_188,
+            numerator_189,
+            numerator_190,
+            numerator_191,
+            numerator_192,
+            numerator_193,
+            numerator_194,
+            numerator_195,
+            numerator_196,
+            numerator_197,
+            numerator_198,
+            numerator_199,
+            numerator_200,
+            numerator_201,
+            numerator_202,
+            numerator_203,
+            numerator_204,
+            numerator_205,
+            numerator_206,
+            numerator_207,
+            numerator_208,
+            numerator_209,
+            numerator_210,
+            numerator_211,
+            numerator_212,
+            numerator_213,
+            numerator_214,
+            numerator_215,
+            numerator_216,
+            numerator_217,
+            numerator_218,
+            numerator_219,
+            numerator_220,
+            numerator_221,
+            numerator_222,
+            numerator_223,
+            numerator_224,
+            numerator_225,
+            numerator_226,
+            numerator_227,
+            numerator_228,
+            numerator_229,
+            numerator_230,
+            numerator_231,
+            numerator_232,
+            numerator_233,
+            numerator_234,
+            numerator_235,
+            numerator_236,
+            numerator_237,
+            numerator_238,
+            numerator_239,
+            numerator_240,
+            numerator_241,
+            numerator_242,
+            numerator_243,
+            numerator_244,
+            numerator_245,
+            numerator_246,
+            numerator_247,
+            numerator_248,
+            numerator_249,
+            numerator_250,
+            numerator_251,
+            numerator_252,
+            numerator_253,
+            numerator_254,
+            numerator_255,
+            numerator_256,
+            numerator_257,
+            numerator_258,
+            numerator_259,
+            numerator_260,
+            numerator_261,
+            numerator_262,
+            numerator_263,
+            numerator_264,
+            numerator_265,
+            numerator_266,
+            numerator_267,
+            numerator_268,
+            numerator_269,
+            numerator_270,
+            numerator_271,
+            numerator_272,
+            numerator_273,
+            numerator_274,
+            numerator_275,
+            numerator_276,
+            numerator_277,
+            numerator_278,
+            numerator_279,
+            numerator_280,
+            numerator_281,
+            numerator_282,
+            numerator_283,
+            numerator_284,
+            numerator_285,
+            numerator_286,
+            numerator_287,
+            numerator_288,
+            numerator_289,
+            numerator_290,
+            numerator_291,
+            numerator_292,
+            numerator_293,
+            numerator_294,
+            numerator_295,
+            numerator_296,
+            numerator_297,
+            numerator_298,
+            numerator_299,
+            numerator_300,
+            numerator_301,
+            numerator_302,
+            numerator_303,
+            numerator_304,
+            numerator_305,
+            numerator_306,
+            numerator_307,
+            numerator_308,
+            numerator_309,
+            numerator_310,
+            numerator_311,
+            numerator_312,
+            numerator_313,
             column_size,
             ref interaction_trace_mask_values,
             range_check_8_sum_0,
@@ -4068,7 +5005,320 @@ fn lookup_constraints(
     ref sum: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    partial_ec_mul_generic_multiplicity: QM31,
+    numerator_0: QM31,
+    numerator_1: QM31,
+    numerator_2: QM31,
+    numerator_3: QM31,
+    numerator_4: QM31,
+    numerator_5: QM31,
+    numerator_6: QM31,
+    numerator_7: QM31,
+    numerator_8: QM31,
+    numerator_9: QM31,
+    numerator_10: QM31,
+    numerator_11: QM31,
+    numerator_12: QM31,
+    numerator_13: QM31,
+    numerator_14: QM31,
+    numerator_15: QM31,
+    numerator_16: QM31,
+    numerator_17: QM31,
+    numerator_18: QM31,
+    numerator_19: QM31,
+    numerator_20: QM31,
+    numerator_21: QM31,
+    numerator_22: QM31,
+    numerator_23: QM31,
+    numerator_24: QM31,
+    numerator_25: QM31,
+    numerator_26: QM31,
+    numerator_27: QM31,
+    numerator_28: QM31,
+    numerator_29: QM31,
+    numerator_30: QM31,
+    numerator_31: QM31,
+    numerator_32: QM31,
+    numerator_33: QM31,
+    numerator_34: QM31,
+    numerator_35: QM31,
+    numerator_36: QM31,
+    numerator_37: QM31,
+    numerator_38: QM31,
+    numerator_39: QM31,
+    numerator_40: QM31,
+    numerator_41: QM31,
+    numerator_42: QM31,
+    numerator_43: QM31,
+    numerator_44: QM31,
+    numerator_45: QM31,
+    numerator_46: QM31,
+    numerator_47: QM31,
+    numerator_48: QM31,
+    numerator_49: QM31,
+    numerator_50: QM31,
+    numerator_51: QM31,
+    numerator_52: QM31,
+    numerator_53: QM31,
+    numerator_54: QM31,
+    numerator_55: QM31,
+    numerator_56: QM31,
+    numerator_57: QM31,
+    numerator_58: QM31,
+    numerator_59: QM31,
+    numerator_60: QM31,
+    numerator_61: QM31,
+    numerator_62: QM31,
+    numerator_63: QM31,
+    numerator_64: QM31,
+    numerator_65: QM31,
+    numerator_66: QM31,
+    numerator_67: QM31,
+    numerator_68: QM31,
+    numerator_69: QM31,
+    numerator_70: QM31,
+    numerator_71: QM31,
+    numerator_72: QM31,
+    numerator_73: QM31,
+    numerator_74: QM31,
+    numerator_75: QM31,
+    numerator_76: QM31,
+    numerator_77: QM31,
+    numerator_78: QM31,
+    numerator_79: QM31,
+    numerator_80: QM31,
+    numerator_81: QM31,
+    numerator_82: QM31,
+    numerator_83: QM31,
+    numerator_84: QM31,
+    numerator_85: QM31,
+    numerator_86: QM31,
+    numerator_87: QM31,
+    numerator_88: QM31,
+    numerator_89: QM31,
+    numerator_90: QM31,
+    numerator_91: QM31,
+    numerator_92: QM31,
+    numerator_93: QM31,
+    numerator_94: QM31,
+    numerator_95: QM31,
+    numerator_96: QM31,
+    numerator_97: QM31,
+    numerator_98: QM31,
+    numerator_99: QM31,
+    numerator_100: QM31,
+    numerator_101: QM31,
+    numerator_102: QM31,
+    numerator_103: QM31,
+    numerator_104: QM31,
+    numerator_105: QM31,
+    numerator_106: QM31,
+    numerator_107: QM31,
+    numerator_108: QM31,
+    numerator_109: QM31,
+    numerator_110: QM31,
+    numerator_111: QM31,
+    numerator_112: QM31,
+    numerator_113: QM31,
+    numerator_114: QM31,
+    numerator_115: QM31,
+    numerator_116: QM31,
+    numerator_117: QM31,
+    numerator_118: QM31,
+    numerator_119: QM31,
+    numerator_120: QM31,
+    numerator_121: QM31,
+    numerator_122: QM31,
+    numerator_123: QM31,
+    numerator_124: QM31,
+    numerator_125: QM31,
+    numerator_126: QM31,
+    numerator_127: QM31,
+    numerator_128: QM31,
+    numerator_129: QM31,
+    numerator_130: QM31,
+    numerator_131: QM31,
+    numerator_132: QM31,
+    numerator_133: QM31,
+    numerator_134: QM31,
+    numerator_135: QM31,
+    numerator_136: QM31,
+    numerator_137: QM31,
+    numerator_138: QM31,
+    numerator_139: QM31,
+    numerator_140: QM31,
+    numerator_141: QM31,
+    numerator_142: QM31,
+    numerator_143: QM31,
+    numerator_144: QM31,
+    numerator_145: QM31,
+    numerator_146: QM31,
+    numerator_147: QM31,
+    numerator_148: QM31,
+    numerator_149: QM31,
+    numerator_150: QM31,
+    numerator_151: QM31,
+    numerator_152: QM31,
+    numerator_153: QM31,
+    numerator_154: QM31,
+    numerator_155: QM31,
+    numerator_156: QM31,
+    numerator_157: QM31,
+    numerator_158: QM31,
+    numerator_159: QM31,
+    numerator_160: QM31,
+    numerator_161: QM31,
+    numerator_162: QM31,
+    numerator_163: QM31,
+    numerator_164: QM31,
+    numerator_165: QM31,
+    numerator_166: QM31,
+    numerator_167: QM31,
+    numerator_168: QM31,
+    numerator_169: QM31,
+    numerator_170: QM31,
+    numerator_171: QM31,
+    numerator_172: QM31,
+    numerator_173: QM31,
+    numerator_174: QM31,
+    numerator_175: QM31,
+    numerator_176: QM31,
+    numerator_177: QM31,
+    numerator_178: QM31,
+    numerator_179: QM31,
+    numerator_180: QM31,
+    numerator_181: QM31,
+    numerator_182: QM31,
+    numerator_183: QM31,
+    numerator_184: QM31,
+    numerator_185: QM31,
+    numerator_186: QM31,
+    numerator_187: QM31,
+    numerator_188: QM31,
+    numerator_189: QM31,
+    numerator_190: QM31,
+    numerator_191: QM31,
+    numerator_192: QM31,
+    numerator_193: QM31,
+    numerator_194: QM31,
+    numerator_195: QM31,
+    numerator_196: QM31,
+    numerator_197: QM31,
+    numerator_198: QM31,
+    numerator_199: QM31,
+    numerator_200: QM31,
+    numerator_201: QM31,
+    numerator_202: QM31,
+    numerator_203: QM31,
+    numerator_204: QM31,
+    numerator_205: QM31,
+    numerator_206: QM31,
+    numerator_207: QM31,
+    numerator_208: QM31,
+    numerator_209: QM31,
+    numerator_210: QM31,
+    numerator_211: QM31,
+    numerator_212: QM31,
+    numerator_213: QM31,
+    numerator_214: QM31,
+    numerator_215: QM31,
+    numerator_216: QM31,
+    numerator_217: QM31,
+    numerator_218: QM31,
+    numerator_219: QM31,
+    numerator_220: QM31,
+    numerator_221: QM31,
+    numerator_222: QM31,
+    numerator_223: QM31,
+    numerator_224: QM31,
+    numerator_225: QM31,
+    numerator_226: QM31,
+    numerator_227: QM31,
+    numerator_228: QM31,
+    numerator_229: QM31,
+    numerator_230: QM31,
+    numerator_231: QM31,
+    numerator_232: QM31,
+    numerator_233: QM31,
+    numerator_234: QM31,
+    numerator_235: QM31,
+    numerator_236: QM31,
+    numerator_237: QM31,
+    numerator_238: QM31,
+    numerator_239: QM31,
+    numerator_240: QM31,
+    numerator_241: QM31,
+    numerator_242: QM31,
+    numerator_243: QM31,
+    numerator_244: QM31,
+    numerator_245: QM31,
+    numerator_246: QM31,
+    numerator_247: QM31,
+    numerator_248: QM31,
+    numerator_249: QM31,
+    numerator_250: QM31,
+    numerator_251: QM31,
+    numerator_252: QM31,
+    numerator_253: QM31,
+    numerator_254: QM31,
+    numerator_255: QM31,
+    numerator_256: QM31,
+    numerator_257: QM31,
+    numerator_258: QM31,
+    numerator_259: QM31,
+    numerator_260: QM31,
+    numerator_261: QM31,
+    numerator_262: QM31,
+    numerator_263: QM31,
+    numerator_264: QM31,
+    numerator_265: QM31,
+    numerator_266: QM31,
+    numerator_267: QM31,
+    numerator_268: QM31,
+    numerator_269: QM31,
+    numerator_270: QM31,
+    numerator_271: QM31,
+    numerator_272: QM31,
+    numerator_273: QM31,
+    numerator_274: QM31,
+    numerator_275: QM31,
+    numerator_276: QM31,
+    numerator_277: QM31,
+    numerator_278: QM31,
+    numerator_279: QM31,
+    numerator_280: QM31,
+    numerator_281: QM31,
+    numerator_282: QM31,
+    numerator_283: QM31,
+    numerator_284: QM31,
+    numerator_285: QM31,
+    numerator_286: QM31,
+    numerator_287: QM31,
+    numerator_288: QM31,
+    numerator_289: QM31,
+    numerator_290: QM31,
+    numerator_291: QM31,
+    numerator_292: QM31,
+    numerator_293: QM31,
+    numerator_294: QM31,
+    numerator_295: QM31,
+    numerator_296: QM31,
+    numerator_297: QM31,
+    numerator_298: QM31,
+    numerator_299: QM31,
+    numerator_300: QM31,
+    numerator_301: QM31,
+    numerator_302: QM31,
+    numerator_303: QM31,
+    numerator_304: QM31,
+    numerator_305: QM31,
+    numerator_306: QM31,
+    numerator_307: QM31,
+    numerator_308: QM31,
+    numerator_309: QM31,
+    numerator_310: QM31,
+    numerator_311: QM31,
+    numerator_312: QM31,
+    numerator_313: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     range_check_8_sum_0: QM31,
@@ -5661,8 +6911,8 @@ fn lookup_constraints(
     ))
         * range_check_8_sum_0
         * range_check_8_sum_1)
-        - range_check_8_sum_0
-        - range_check_8_sum_1);
+        - (range_check_8_sum_0 * numerator_1)
+        - (range_check_8_sum_1 * numerator_0));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5671,8 +6921,8 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]))
         * range_check_8_sum_2
         * range_check_8_sum_3)
-        - range_check_8_sum_2
-        - range_check_8_sum_3);
+        - (range_check_8_sum_2 * numerator_3)
+        - (range_check_8_sum_3 * numerator_2));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5681,8 +6931,8 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7]))
         * range_check_9_9_sum_4
         * range_check_9_9_b_sum_5)
-        - range_check_9_9_sum_4
-        - range_check_9_9_b_sum_5);
+        - (range_check_9_9_sum_4 * numerator_5)
+        - (range_check_9_9_b_sum_5 * numerator_4));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5691,8 +6941,8 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals([trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11]))
         * range_check_9_9_c_sum_6
         * range_check_9_9_d_sum_7)
-        - range_check_9_9_c_sum_6
-        - range_check_9_9_d_sum_7);
+        - (range_check_9_9_c_sum_6 * numerator_7)
+        - (range_check_9_9_d_sum_7 * numerator_6));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5703,8 +6953,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_e_sum_8
         * range_check_9_9_f_sum_9)
-        - range_check_9_9_e_sum_8
-        - range_check_9_9_f_sum_9);
+        - (range_check_9_9_e_sum_8 * numerator_9)
+        - (range_check_9_9_f_sum_9 * numerator_8));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5715,8 +6965,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_g_sum_10
         * range_check_9_9_h_sum_11)
-        - range_check_9_9_g_sum_10
-        - range_check_9_9_h_sum_11);
+        - (range_check_9_9_g_sum_10 * numerator_11)
+        - (range_check_9_9_h_sum_11 * numerator_10));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5727,8 +6977,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_sum_12
         * range_check_9_9_b_sum_13)
-        - range_check_9_9_sum_12
-        - range_check_9_9_b_sum_13);
+        - (range_check_9_9_sum_12 * numerator_13)
+        - (range_check_9_9_b_sum_13 * numerator_12));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5739,8 +6989,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_c_sum_14
         * range_check_9_9_d_sum_15)
-        - range_check_9_9_c_sum_14
-        - range_check_9_9_d_sum_15);
+        - (range_check_9_9_c_sum_14 * numerator_15)
+        - (range_check_9_9_d_sum_15 * numerator_14));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5751,8 +7001,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_e_sum_16
         * range_check_9_9_f_sum_17)
-        - range_check_9_9_e_sum_16
-        - range_check_9_9_f_sum_17);
+        - (range_check_9_9_e_sum_16 * numerator_17)
+        - (range_check_9_9_f_sum_17 * numerator_16));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5763,8 +7013,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_18
         * range_check_20_b_sum_19)
-        - range_check_20_sum_18
-        - range_check_20_b_sum_19);
+        - (range_check_20_sum_18 * numerator_19)
+        - (range_check_20_b_sum_19 * numerator_18));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5775,8 +7025,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_20
         * range_check_20_d_sum_21)
-        - range_check_20_c_sum_20
-        - range_check_20_d_sum_21);
+        - (range_check_20_c_sum_20 * numerator_21)
+        - (range_check_20_d_sum_21 * numerator_20));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5787,8 +7037,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_22
         * range_check_20_f_sum_23)
-        - range_check_20_e_sum_22
-        - range_check_20_f_sum_23);
+        - (range_check_20_e_sum_22 * numerator_23)
+        - (range_check_20_f_sum_23 * numerator_22));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5799,8 +7049,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_24
         * range_check_20_h_sum_25)
-        - range_check_20_g_sum_24
-        - range_check_20_h_sum_25);
+        - (range_check_20_g_sum_24 * numerator_25)
+        - (range_check_20_h_sum_25 * numerator_24));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5811,8 +7061,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_26
         * range_check_20_b_sum_27)
-        - range_check_20_sum_26
-        - range_check_20_b_sum_27);
+        - (range_check_20_sum_26 * numerator_27)
+        - (range_check_20_b_sum_27 * numerator_26));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5823,8 +7073,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_28
         * range_check_20_d_sum_29)
-        - range_check_20_c_sum_28
-        - range_check_20_d_sum_29);
+        - (range_check_20_c_sum_28 * numerator_29)
+        - (range_check_20_d_sum_29 * numerator_28));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5835,8 +7085,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_30
         * range_check_20_f_sum_31)
-        - range_check_20_e_sum_30
-        - range_check_20_f_sum_31);
+        - (range_check_20_e_sum_30 * numerator_31)
+        - (range_check_20_f_sum_31 * numerator_30));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5847,8 +7097,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_32
         * range_check_20_h_sum_33)
-        - range_check_20_g_sum_32
-        - range_check_20_h_sum_33);
+        - (range_check_20_g_sum_32 * numerator_33)
+        - (range_check_20_h_sum_33 * numerator_32));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5859,8 +7109,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_34
         * range_check_20_b_sum_35)
-        - range_check_20_sum_34
-        - range_check_20_b_sum_35);
+        - (range_check_20_sum_34 * numerator_35)
+        - (range_check_20_b_sum_35 * numerator_34));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5871,8 +7121,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_36
         * range_check_20_d_sum_37)
-        - range_check_20_c_sum_36
-        - range_check_20_d_sum_37);
+        - (range_check_20_c_sum_36 * numerator_37)
+        - (range_check_20_d_sum_37 * numerator_36));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5883,8 +7133,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_38
         * range_check_20_f_sum_39)
-        - range_check_20_e_sum_38
-        - range_check_20_f_sum_39);
+        - (range_check_20_e_sum_38 * numerator_39)
+        - (range_check_20_f_sum_39 * numerator_38));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5895,8 +7145,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_40
         * range_check_20_h_sum_41)
-        - range_check_20_g_sum_40
-        - range_check_20_h_sum_41);
+        - (range_check_20_g_sum_40 * numerator_41)
+        - (range_check_20_h_sum_41 * numerator_40));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5907,8 +7157,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_42
         * range_check_20_b_sum_43)
-        - range_check_20_sum_42
-        - range_check_20_b_sum_43);
+        - (range_check_20_sum_42 * numerator_43)
+        - (range_check_20_b_sum_43 * numerator_42));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5919,8 +7169,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_44
         * range_check_20_d_sum_45)
-        - range_check_20_c_sum_44
-        - range_check_20_d_sum_45);
+        - (range_check_20_c_sum_44 * numerator_45)
+        - (range_check_20_d_sum_45 * numerator_44));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5931,8 +7181,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_sum_46
         * range_check_9_9_b_sum_47)
-        - range_check_9_9_sum_46
-        - range_check_9_9_b_sum_47);
+        - (range_check_9_9_sum_46 * numerator_47)
+        - (range_check_9_9_b_sum_47 * numerator_46));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5943,8 +7193,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_c_sum_48
         * range_check_9_9_d_sum_49)
-        - range_check_9_9_c_sum_48
-        - range_check_9_9_d_sum_49);
+        - (range_check_9_9_c_sum_48 * numerator_49)
+        - (range_check_9_9_d_sum_49 * numerator_48));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5955,8 +7205,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_e_sum_50
         * range_check_9_9_f_sum_51)
-        - range_check_9_9_e_sum_50
-        - range_check_9_9_f_sum_51);
+        - (range_check_9_9_e_sum_50 * numerator_51)
+        - (range_check_9_9_f_sum_51 * numerator_50));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5967,8 +7217,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_g_sum_52
         * range_check_9_9_h_sum_53)
-        - range_check_9_9_g_sum_52
-        - range_check_9_9_h_sum_53);
+        - (range_check_9_9_g_sum_52 * numerator_53)
+        - (range_check_9_9_h_sum_53 * numerator_52));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5979,8 +7229,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_sum_54
         * range_check_9_9_b_sum_55)
-        - range_check_9_9_sum_54
-        - range_check_9_9_b_sum_55);
+        - (range_check_9_9_sum_54 * numerator_55)
+        - (range_check_9_9_b_sum_55 * numerator_54));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -5991,8 +7241,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_c_sum_56
         * range_check_9_9_d_sum_57)
-        - range_check_9_9_c_sum_56
-        - range_check_9_9_d_sum_57);
+        - (range_check_9_9_c_sum_56 * numerator_57)
+        - (range_check_9_9_d_sum_57 * numerator_56));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6003,8 +7253,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_e_sum_58
         * range_check_9_9_f_sum_59)
-        - range_check_9_9_e_sum_58
-        - range_check_9_9_f_sum_59);
+        - (range_check_9_9_e_sum_58 * numerator_59)
+        - (range_check_9_9_f_sum_59 * numerator_58));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6015,8 +7265,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_60
         * range_check_20_b_sum_61)
-        - range_check_20_sum_60
-        - range_check_20_b_sum_61);
+        - (range_check_20_sum_60 * numerator_61)
+        - (range_check_20_b_sum_61 * numerator_60));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6027,8 +7277,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_62
         * range_check_20_d_sum_63)
-        - range_check_20_c_sum_62
-        - range_check_20_d_sum_63);
+        - (range_check_20_c_sum_62 * numerator_63)
+        - (range_check_20_d_sum_63 * numerator_62));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6039,8 +7289,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_64
         * range_check_20_f_sum_65)
-        - range_check_20_e_sum_64
-        - range_check_20_f_sum_65);
+        - (range_check_20_e_sum_64 * numerator_65)
+        - (range_check_20_f_sum_65 * numerator_64));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6051,8 +7301,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_66
         * range_check_20_h_sum_67)
-        - range_check_20_g_sum_66
-        - range_check_20_h_sum_67);
+        - (range_check_20_g_sum_66 * numerator_67)
+        - (range_check_20_h_sum_67 * numerator_66));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6063,8 +7313,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_68
         * range_check_20_b_sum_69)
-        - range_check_20_sum_68
-        - range_check_20_b_sum_69);
+        - (range_check_20_sum_68 * numerator_69)
+        - (range_check_20_b_sum_69 * numerator_68));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6075,8 +7325,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_70
         * range_check_20_d_sum_71)
-        - range_check_20_c_sum_70
-        - range_check_20_d_sum_71);
+        - (range_check_20_c_sum_70 * numerator_71)
+        - (range_check_20_d_sum_71 * numerator_70));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6087,8 +7337,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_72
         * range_check_20_f_sum_73)
-        - range_check_20_e_sum_72
-        - range_check_20_f_sum_73);
+        - (range_check_20_e_sum_72 * numerator_73)
+        - (range_check_20_f_sum_73 * numerator_72));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6099,8 +7349,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_74
         * range_check_20_h_sum_75)
-        - range_check_20_g_sum_74
-        - range_check_20_h_sum_75);
+        - (range_check_20_g_sum_74 * numerator_75)
+        - (range_check_20_h_sum_75 * numerator_74));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6111,8 +7361,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_76
         * range_check_20_b_sum_77)
-        - range_check_20_sum_76
-        - range_check_20_b_sum_77);
+        - (range_check_20_sum_76 * numerator_77)
+        - (range_check_20_b_sum_77 * numerator_76));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6123,8 +7373,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_78
         * range_check_20_d_sum_79)
-        - range_check_20_c_sum_78
-        - range_check_20_d_sum_79);
+        - (range_check_20_c_sum_78 * numerator_79)
+        - (range_check_20_d_sum_79 * numerator_78));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6135,8 +7385,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_80
         * range_check_20_f_sum_81)
-        - range_check_20_e_sum_80
-        - range_check_20_f_sum_81);
+        - (range_check_20_e_sum_80 * numerator_81)
+        - (range_check_20_f_sum_81 * numerator_80));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6147,8 +7397,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_82
         * range_check_20_h_sum_83)
-        - range_check_20_g_sum_82
-        - range_check_20_h_sum_83);
+        - (range_check_20_g_sum_82 * numerator_83)
+        - (range_check_20_h_sum_83 * numerator_82));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6159,8 +7409,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_84
         * range_check_20_b_sum_85)
-        - range_check_20_sum_84
-        - range_check_20_b_sum_85);
+        - (range_check_20_sum_84 * numerator_85)
+        - (range_check_20_b_sum_85 * numerator_84));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6171,8 +7421,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_86
         * range_check_20_d_sum_87)
-        - range_check_20_c_sum_86
-        - range_check_20_d_sum_87);
+        - (range_check_20_c_sum_86 * numerator_87)
+        - (range_check_20_d_sum_87 * numerator_86));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6183,8 +7433,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_sum_88
         * range_check_9_9_b_sum_89)
-        - range_check_9_9_sum_88
-        - range_check_9_9_b_sum_89);
+        - (range_check_9_9_sum_88 * numerator_89)
+        - (range_check_9_9_b_sum_89 * numerator_88));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6195,8 +7445,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_c_sum_90
         * range_check_9_9_d_sum_91)
-        - range_check_9_9_c_sum_90
-        - range_check_9_9_d_sum_91);
+        - (range_check_9_9_c_sum_90 * numerator_91)
+        - (range_check_9_9_d_sum_91 * numerator_90));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6207,8 +7457,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_e_sum_92
         * range_check_9_9_f_sum_93)
-        - range_check_9_9_e_sum_92
-        - range_check_9_9_f_sum_93);
+        - (range_check_9_9_e_sum_92 * numerator_93)
+        - (range_check_9_9_f_sum_93 * numerator_92));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6219,8 +7469,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_g_sum_94
         * range_check_9_9_h_sum_95)
-        - range_check_9_9_g_sum_94
-        - range_check_9_9_h_sum_95);
+        - (range_check_9_9_g_sum_94 * numerator_95)
+        - (range_check_9_9_h_sum_95 * numerator_94));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6231,8 +7481,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_sum_96
         * range_check_9_9_b_sum_97)
-        - range_check_9_9_sum_96
-        - range_check_9_9_b_sum_97);
+        - (range_check_9_9_sum_96 * numerator_97)
+        - (range_check_9_9_b_sum_97 * numerator_96));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6243,8 +7493,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_c_sum_98
         * range_check_9_9_d_sum_99)
-        - range_check_9_9_c_sum_98
-        - range_check_9_9_d_sum_99);
+        - (range_check_9_9_c_sum_98 * numerator_99)
+        - (range_check_9_9_d_sum_99 * numerator_98));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6255,8 +7505,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_e_sum_100
         * range_check_9_9_f_sum_101)
-        - range_check_9_9_e_sum_100
-        - range_check_9_9_f_sum_101);
+        - (range_check_9_9_e_sum_100 * numerator_101)
+        - (range_check_9_9_f_sum_101 * numerator_100));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6267,8 +7517,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_102
         * range_check_20_b_sum_103)
-        - range_check_20_sum_102
-        - range_check_20_b_sum_103);
+        - (range_check_20_sum_102 * numerator_103)
+        - (range_check_20_b_sum_103 * numerator_102));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6279,8 +7529,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_104
         * range_check_20_d_sum_105)
-        - range_check_20_c_sum_104
-        - range_check_20_d_sum_105);
+        - (range_check_20_c_sum_104 * numerator_105)
+        - (range_check_20_d_sum_105 * numerator_104));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6291,8 +7541,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_106
         * range_check_20_f_sum_107)
-        - range_check_20_e_sum_106
-        - range_check_20_f_sum_107);
+        - (range_check_20_e_sum_106 * numerator_107)
+        - (range_check_20_f_sum_107 * numerator_106));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6303,8 +7553,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_108
         * range_check_20_h_sum_109)
-        - range_check_20_g_sum_108
-        - range_check_20_h_sum_109);
+        - (range_check_20_g_sum_108 * numerator_109)
+        - (range_check_20_h_sum_109 * numerator_108));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6315,8 +7565,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_110
         * range_check_20_b_sum_111)
-        - range_check_20_sum_110
-        - range_check_20_b_sum_111);
+        - (range_check_20_sum_110 * numerator_111)
+        - (range_check_20_b_sum_111 * numerator_110));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6327,8 +7577,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_112
         * range_check_20_d_sum_113)
-        - range_check_20_c_sum_112
-        - range_check_20_d_sum_113);
+        - (range_check_20_c_sum_112 * numerator_113)
+        - (range_check_20_d_sum_113 * numerator_112));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6339,8 +7589,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_114
         * range_check_20_f_sum_115)
-        - range_check_20_e_sum_114
-        - range_check_20_f_sum_115);
+        - (range_check_20_e_sum_114 * numerator_115)
+        - (range_check_20_f_sum_115 * numerator_114));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6351,8 +7601,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_116
         * range_check_20_h_sum_117)
-        - range_check_20_g_sum_116
-        - range_check_20_h_sum_117);
+        - (range_check_20_g_sum_116 * numerator_117)
+        - (range_check_20_h_sum_117 * numerator_116));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6363,8 +7613,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_118
         * range_check_20_b_sum_119)
-        - range_check_20_sum_118
-        - range_check_20_b_sum_119);
+        - (range_check_20_sum_118 * numerator_119)
+        - (range_check_20_b_sum_119 * numerator_118));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6375,8 +7625,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_120
         * range_check_20_d_sum_121)
-        - range_check_20_c_sum_120
-        - range_check_20_d_sum_121);
+        - (range_check_20_c_sum_120 * numerator_121)
+        - (range_check_20_d_sum_121 * numerator_120));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6387,8 +7637,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_122
         * range_check_20_f_sum_123)
-        - range_check_20_e_sum_122
-        - range_check_20_f_sum_123);
+        - (range_check_20_e_sum_122 * numerator_123)
+        - (range_check_20_f_sum_123 * numerator_122));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6399,8 +7649,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_124
         * range_check_20_h_sum_125)
-        - range_check_20_g_sum_124
-        - range_check_20_h_sum_125);
+        - (range_check_20_g_sum_124 * numerator_125)
+        - (range_check_20_h_sum_125 * numerator_124));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6411,8 +7661,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_126
         * range_check_20_b_sum_127)
-        - range_check_20_sum_126
-        - range_check_20_b_sum_127);
+        - (range_check_20_sum_126 * numerator_127)
+        - (range_check_20_b_sum_127 * numerator_126));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6423,8 +7673,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_128
         * range_check_20_d_sum_129)
-        - range_check_20_c_sum_128
-        - range_check_20_d_sum_129);
+        - (range_check_20_c_sum_128 * numerator_129)
+        - (range_check_20_d_sum_129 * numerator_128));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6435,8 +7685,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_sum_130
         * range_check_9_9_b_sum_131)
-        - range_check_9_9_sum_130
-        - range_check_9_9_b_sum_131);
+        - (range_check_9_9_sum_130 * numerator_131)
+        - (range_check_9_9_b_sum_131 * numerator_130));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6447,8 +7697,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_c_sum_132
         * range_check_9_9_d_sum_133)
-        - range_check_9_9_c_sum_132
-        - range_check_9_9_d_sum_133);
+        - (range_check_9_9_c_sum_132 * numerator_133)
+        - (range_check_9_9_d_sum_133 * numerator_132));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6459,8 +7709,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_e_sum_134
         * range_check_9_9_f_sum_135)
-        - range_check_9_9_e_sum_134
-        - range_check_9_9_f_sum_135);
+        - (range_check_9_9_e_sum_134 * numerator_135)
+        - (range_check_9_9_f_sum_135 * numerator_134));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6471,8 +7721,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_g_sum_136
         * range_check_9_9_h_sum_137)
-        - range_check_9_9_g_sum_136
-        - range_check_9_9_h_sum_137);
+        - (range_check_9_9_g_sum_136 * numerator_137)
+        - (range_check_9_9_h_sum_137 * numerator_136));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6483,8 +7733,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_sum_138
         * range_check_9_9_b_sum_139)
-        - range_check_9_9_sum_138
-        - range_check_9_9_b_sum_139);
+        - (range_check_9_9_sum_138 * numerator_139)
+        - (range_check_9_9_b_sum_139 * numerator_138));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6495,8 +7745,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_c_sum_140
         * range_check_9_9_d_sum_141)
-        - range_check_9_9_c_sum_140
-        - range_check_9_9_d_sum_141);
+        - (range_check_9_9_c_sum_140 * numerator_141)
+        - (range_check_9_9_d_sum_141 * numerator_140));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6507,8 +7757,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_e_sum_142
         * range_check_9_9_f_sum_143)
-        - range_check_9_9_e_sum_142
-        - range_check_9_9_f_sum_143);
+        - (range_check_9_9_e_sum_142 * numerator_143)
+        - (range_check_9_9_f_sum_143 * numerator_142));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6519,8 +7769,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_144
         * range_check_20_b_sum_145)
-        - range_check_20_sum_144
-        - range_check_20_b_sum_145);
+        - (range_check_20_sum_144 * numerator_145)
+        - (range_check_20_b_sum_145 * numerator_144));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6531,8 +7781,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_146
         * range_check_20_d_sum_147)
-        - range_check_20_c_sum_146
-        - range_check_20_d_sum_147);
+        - (range_check_20_c_sum_146 * numerator_147)
+        - (range_check_20_d_sum_147 * numerator_146));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6543,8 +7793,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_148
         * range_check_20_f_sum_149)
-        - range_check_20_e_sum_148
-        - range_check_20_f_sum_149);
+        - (range_check_20_e_sum_148 * numerator_149)
+        - (range_check_20_f_sum_149 * numerator_148));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6555,8 +7805,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_150
         * range_check_20_h_sum_151)
-        - range_check_20_g_sum_150
-        - range_check_20_h_sum_151);
+        - (range_check_20_g_sum_150 * numerator_151)
+        - (range_check_20_h_sum_151 * numerator_150));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6567,8 +7817,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_152
         * range_check_20_b_sum_153)
-        - range_check_20_sum_152
-        - range_check_20_b_sum_153);
+        - (range_check_20_sum_152 * numerator_153)
+        - (range_check_20_b_sum_153 * numerator_152));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6579,8 +7829,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_154
         * range_check_20_d_sum_155)
-        - range_check_20_c_sum_154
-        - range_check_20_d_sum_155);
+        - (range_check_20_c_sum_154 * numerator_155)
+        - (range_check_20_d_sum_155 * numerator_154));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6591,8 +7841,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_156
         * range_check_20_f_sum_157)
-        - range_check_20_e_sum_156
-        - range_check_20_f_sum_157);
+        - (range_check_20_e_sum_156 * numerator_157)
+        - (range_check_20_f_sum_157 * numerator_156));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6603,8 +7853,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_158
         * range_check_20_h_sum_159)
-        - range_check_20_g_sum_158
-        - range_check_20_h_sum_159);
+        - (range_check_20_g_sum_158 * numerator_159)
+        - (range_check_20_h_sum_159 * numerator_158));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6615,8 +7865,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_160
         * range_check_20_b_sum_161)
-        - range_check_20_sum_160
-        - range_check_20_b_sum_161);
+        - (range_check_20_sum_160 * numerator_161)
+        - (range_check_20_b_sum_161 * numerator_160));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6627,8 +7877,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_162
         * range_check_20_d_sum_163)
-        - range_check_20_c_sum_162
-        - range_check_20_d_sum_163);
+        - (range_check_20_c_sum_162 * numerator_163)
+        - (range_check_20_d_sum_163 * numerator_162));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6639,8 +7889,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_164
         * range_check_20_f_sum_165)
-        - range_check_20_e_sum_164
-        - range_check_20_f_sum_165);
+        - (range_check_20_e_sum_164 * numerator_165)
+        - (range_check_20_f_sum_165 * numerator_164));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6651,8 +7901,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_166
         * range_check_20_h_sum_167)
-        - range_check_20_g_sum_166
-        - range_check_20_h_sum_167);
+        - (range_check_20_g_sum_166 * numerator_167)
+        - (range_check_20_h_sum_167 * numerator_166));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6663,8 +7913,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_168
         * range_check_20_b_sum_169)
-        - range_check_20_sum_168
-        - range_check_20_b_sum_169);
+        - (range_check_20_sum_168 * numerator_169)
+        - (range_check_20_b_sum_169 * numerator_168));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6675,8 +7925,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_170
         * range_check_20_d_sum_171)
-        - range_check_20_c_sum_170
-        - range_check_20_d_sum_171);
+        - (range_check_20_c_sum_170 * numerator_171)
+        - (range_check_20_d_sum_171 * numerator_170));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6687,8 +7937,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_sum_172
         * range_check_9_9_b_sum_173)
-        - range_check_9_9_sum_172
-        - range_check_9_9_b_sum_173);
+        - (range_check_9_9_sum_172 * numerator_173)
+        - (range_check_9_9_b_sum_173 * numerator_172));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6699,8 +7949,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_c_sum_174
         * range_check_9_9_d_sum_175)
-        - range_check_9_9_c_sum_174
-        - range_check_9_9_d_sum_175);
+        - (range_check_9_9_c_sum_174 * numerator_175)
+        - (range_check_9_9_d_sum_175 * numerator_174));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6711,8 +7961,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_e_sum_176
         * range_check_9_9_f_sum_177)
-        - range_check_9_9_e_sum_176
-        - range_check_9_9_f_sum_177);
+        - (range_check_9_9_e_sum_176 * numerator_177)
+        - (range_check_9_9_f_sum_177 * numerator_176));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6723,8 +7973,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_g_sum_178
         * range_check_9_9_h_sum_179)
-        - range_check_9_9_g_sum_178
-        - range_check_9_9_h_sum_179);
+        - (range_check_9_9_g_sum_178 * numerator_179)
+        - (range_check_9_9_h_sum_179 * numerator_178));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6735,8 +7985,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_sum_180
         * range_check_9_9_b_sum_181)
-        - range_check_9_9_sum_180
-        - range_check_9_9_b_sum_181);
+        - (range_check_9_9_sum_180 * numerator_181)
+        - (range_check_9_9_b_sum_181 * numerator_180));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6747,8 +7997,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_c_sum_182
         * range_check_9_9_d_sum_183)
-        - range_check_9_9_c_sum_182
-        - range_check_9_9_d_sum_183);
+        - (range_check_9_9_c_sum_182 * numerator_183)
+        - (range_check_9_9_d_sum_183 * numerator_182));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6759,8 +8009,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_e_sum_184
         * range_check_9_9_f_sum_185)
-        - range_check_9_9_e_sum_184
-        - range_check_9_9_f_sum_185);
+        - (range_check_9_9_e_sum_184 * numerator_185)
+        - (range_check_9_9_f_sum_185 * numerator_184));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6771,8 +8021,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_sum_186
         * range_check_9_9_b_sum_187)
-        - range_check_9_9_sum_186
-        - range_check_9_9_b_sum_187);
+        - (range_check_9_9_sum_186 * numerator_187)
+        - (range_check_9_9_b_sum_187 * numerator_186));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6783,8 +8033,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_c_sum_188
         * range_check_9_9_d_sum_189)
-        - range_check_9_9_c_sum_188
-        - range_check_9_9_d_sum_189);
+        - (range_check_9_9_c_sum_188 * numerator_189)
+        - (range_check_9_9_d_sum_189 * numerator_188));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6795,8 +8045,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_e_sum_190
         * range_check_9_9_f_sum_191)
-        - range_check_9_9_e_sum_190
-        - range_check_9_9_f_sum_191);
+        - (range_check_9_9_e_sum_190 * numerator_191)
+        - (range_check_9_9_f_sum_191 * numerator_190));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6807,8 +8057,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_g_sum_192
         * range_check_9_9_h_sum_193)
-        - range_check_9_9_g_sum_192
-        - range_check_9_9_h_sum_193);
+        - (range_check_9_9_g_sum_192 * numerator_193)
+        - (range_check_9_9_h_sum_193 * numerator_192));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6819,8 +8069,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_sum_194
         * range_check_9_9_b_sum_195)
-        - range_check_9_9_sum_194
-        - range_check_9_9_b_sum_195);
+        - (range_check_9_9_sum_194 * numerator_195)
+        - (range_check_9_9_b_sum_195 * numerator_194));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6831,8 +8081,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_c_sum_196
         * range_check_9_9_d_sum_197)
-        - range_check_9_9_c_sum_196
-        - range_check_9_9_d_sum_197);
+        - (range_check_9_9_c_sum_196 * numerator_197)
+        - (range_check_9_9_d_sum_197 * numerator_196));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6843,8 +8093,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_e_sum_198
         * range_check_9_9_f_sum_199)
-        - range_check_9_9_e_sum_198
-        - range_check_9_9_f_sum_199);
+        - (range_check_9_9_e_sum_198 * numerator_199)
+        - (range_check_9_9_f_sum_199 * numerator_198));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6855,8 +8105,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_200
         * range_check_20_b_sum_201)
-        - range_check_20_sum_200
-        - range_check_20_b_sum_201);
+        - (range_check_20_sum_200 * numerator_201)
+        - (range_check_20_b_sum_201 * numerator_200));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6867,8 +8117,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_202
         * range_check_20_d_sum_203)
-        - range_check_20_c_sum_202
-        - range_check_20_d_sum_203);
+        - (range_check_20_c_sum_202 * numerator_203)
+        - (range_check_20_d_sum_203 * numerator_202));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6879,8 +8129,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_204
         * range_check_20_f_sum_205)
-        - range_check_20_e_sum_204
-        - range_check_20_f_sum_205);
+        - (range_check_20_e_sum_204 * numerator_205)
+        - (range_check_20_f_sum_205 * numerator_204));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6891,8 +8141,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_206
         * range_check_20_h_sum_207)
-        - range_check_20_g_sum_206
-        - range_check_20_h_sum_207);
+        - (range_check_20_g_sum_206 * numerator_207)
+        - (range_check_20_h_sum_207 * numerator_206));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6903,8 +8153,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_208
         * range_check_20_b_sum_209)
-        - range_check_20_sum_208
-        - range_check_20_b_sum_209);
+        - (range_check_20_sum_208 * numerator_209)
+        - (range_check_20_b_sum_209 * numerator_208));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6915,8 +8165,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_210
         * range_check_20_d_sum_211)
-        - range_check_20_c_sum_210
-        - range_check_20_d_sum_211);
+        - (range_check_20_c_sum_210 * numerator_211)
+        - (range_check_20_d_sum_211 * numerator_210));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6927,8 +8177,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_212
         * range_check_20_f_sum_213)
-        - range_check_20_e_sum_212
-        - range_check_20_f_sum_213);
+        - (range_check_20_e_sum_212 * numerator_213)
+        - (range_check_20_f_sum_213 * numerator_212));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6939,8 +8189,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_214
         * range_check_20_h_sum_215)
-        - range_check_20_g_sum_214
-        - range_check_20_h_sum_215);
+        - (range_check_20_g_sum_214 * numerator_215)
+        - (range_check_20_h_sum_215 * numerator_214));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6951,8 +8201,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_216
         * range_check_20_b_sum_217)
-        - range_check_20_sum_216
-        - range_check_20_b_sum_217);
+        - (range_check_20_sum_216 * numerator_217)
+        - (range_check_20_b_sum_217 * numerator_216));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6963,8 +8213,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_218
         * range_check_20_d_sum_219)
-        - range_check_20_c_sum_218
-        - range_check_20_d_sum_219);
+        - (range_check_20_c_sum_218 * numerator_219)
+        - (range_check_20_d_sum_219 * numerator_218));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6975,8 +8225,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_220
         * range_check_20_f_sum_221)
-        - range_check_20_e_sum_220
-        - range_check_20_f_sum_221);
+        - (range_check_20_e_sum_220 * numerator_221)
+        - (range_check_20_f_sum_221 * numerator_220));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6987,8 +8237,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_222
         * range_check_20_h_sum_223)
-        - range_check_20_g_sum_222
-        - range_check_20_h_sum_223);
+        - (range_check_20_g_sum_222 * numerator_223)
+        - (range_check_20_h_sum_223 * numerator_222));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -6999,8 +8249,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_224
         * range_check_20_b_sum_225)
-        - range_check_20_sum_224
-        - range_check_20_b_sum_225);
+        - (range_check_20_sum_224 * numerator_225)
+        - (range_check_20_b_sum_225 * numerator_224));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7011,8 +8261,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_226
         * range_check_20_d_sum_227)
-        - range_check_20_c_sum_226
-        - range_check_20_d_sum_227);
+        - (range_check_20_c_sum_226 * numerator_227)
+        - (range_check_20_d_sum_227 * numerator_226));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7023,8 +8273,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_sum_228
         * range_check_9_9_b_sum_229)
-        - range_check_9_9_sum_228
-        - range_check_9_9_b_sum_229);
+        - (range_check_9_9_sum_228 * numerator_229)
+        - (range_check_9_9_b_sum_229 * numerator_228));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7035,8 +8285,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_c_sum_230
         * range_check_9_9_d_sum_231)
-        - range_check_9_9_c_sum_230
-        - range_check_9_9_d_sum_231);
+        - (range_check_9_9_c_sum_230 * numerator_231)
+        - (range_check_9_9_d_sum_231 * numerator_230));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7047,8 +8297,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_e_sum_232
         * range_check_9_9_f_sum_233)
-        - range_check_9_9_e_sum_232
-        - range_check_9_9_f_sum_233);
+        - (range_check_9_9_e_sum_232 * numerator_233)
+        - (range_check_9_9_f_sum_233 * numerator_232));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7059,8 +8309,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_g_sum_234
         * range_check_9_9_h_sum_235)
-        - range_check_9_9_g_sum_234
-        - range_check_9_9_h_sum_235);
+        - (range_check_9_9_g_sum_234 * numerator_235)
+        - (range_check_9_9_h_sum_235 * numerator_234));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7071,8 +8321,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_sum_236
         * range_check_9_9_b_sum_237)
-        - range_check_9_9_sum_236
-        - range_check_9_9_b_sum_237);
+        - (range_check_9_9_sum_236 * numerator_237)
+        - (range_check_9_9_b_sum_237 * numerator_236));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7083,8 +8333,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_c_sum_238
         * range_check_9_9_d_sum_239)
-        - range_check_9_9_c_sum_238
-        - range_check_9_9_d_sum_239);
+        - (range_check_9_9_c_sum_238 * numerator_239)
+        - (range_check_9_9_d_sum_239 * numerator_238));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7095,8 +8345,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_e_sum_240
         * range_check_9_9_f_sum_241)
-        - range_check_9_9_e_sum_240
-        - range_check_9_9_f_sum_241);
+        - (range_check_9_9_e_sum_240 * numerator_241)
+        - (range_check_9_9_f_sum_241 * numerator_240));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7107,8 +8357,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_242
         * range_check_20_b_sum_243)
-        - range_check_20_sum_242
-        - range_check_20_b_sum_243);
+        - (range_check_20_sum_242 * numerator_243)
+        - (range_check_20_b_sum_243 * numerator_242));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7119,8 +8369,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_244
         * range_check_20_d_sum_245)
-        - range_check_20_c_sum_244
-        - range_check_20_d_sum_245);
+        - (range_check_20_c_sum_244 * numerator_245)
+        - (range_check_20_d_sum_245 * numerator_244));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7131,8 +8381,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_246
         * range_check_20_f_sum_247)
-        - range_check_20_e_sum_246
-        - range_check_20_f_sum_247);
+        - (range_check_20_e_sum_246 * numerator_247)
+        - (range_check_20_f_sum_247 * numerator_246));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7143,8 +8393,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_248
         * range_check_20_h_sum_249)
-        - range_check_20_g_sum_248
-        - range_check_20_h_sum_249);
+        - (range_check_20_g_sum_248 * numerator_249)
+        - (range_check_20_h_sum_249 * numerator_248));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7155,8 +8405,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_250
         * range_check_20_b_sum_251)
-        - range_check_20_sum_250
-        - range_check_20_b_sum_251);
+        - (range_check_20_sum_250 * numerator_251)
+        - (range_check_20_b_sum_251 * numerator_250));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7167,8 +8417,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_252
         * range_check_20_d_sum_253)
-        - range_check_20_c_sum_252
-        - range_check_20_d_sum_253);
+        - (range_check_20_c_sum_252 * numerator_253)
+        - (range_check_20_d_sum_253 * numerator_252));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7179,8 +8429,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_254
         * range_check_20_f_sum_255)
-        - range_check_20_e_sum_254
-        - range_check_20_f_sum_255);
+        - (range_check_20_e_sum_254 * numerator_255)
+        - (range_check_20_f_sum_255 * numerator_254));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7191,8 +8441,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_256
         * range_check_20_h_sum_257)
-        - range_check_20_g_sum_256
-        - range_check_20_h_sum_257);
+        - (range_check_20_g_sum_256 * numerator_257)
+        - (range_check_20_h_sum_257 * numerator_256));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7203,8 +8453,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_258
         * range_check_20_b_sum_259)
-        - range_check_20_sum_258
-        - range_check_20_b_sum_259);
+        - (range_check_20_sum_258 * numerator_259)
+        - (range_check_20_b_sum_259 * numerator_258));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7215,8 +8465,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_260
         * range_check_20_d_sum_261)
-        - range_check_20_c_sum_260
-        - range_check_20_d_sum_261);
+        - (range_check_20_c_sum_260 * numerator_261)
+        - (range_check_20_d_sum_261 * numerator_260));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7227,8 +8477,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_262
         * range_check_20_f_sum_263)
-        - range_check_20_e_sum_262
-        - range_check_20_f_sum_263);
+        - (range_check_20_e_sum_262 * numerator_263)
+        - (range_check_20_f_sum_263 * numerator_262));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7239,8 +8489,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_264
         * range_check_20_h_sum_265)
-        - range_check_20_g_sum_264
-        - range_check_20_h_sum_265);
+        - (range_check_20_g_sum_264 * numerator_265)
+        - (range_check_20_h_sum_265 * numerator_264));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7251,8 +8501,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_266
         * range_check_20_b_sum_267)
-        - range_check_20_sum_266
-        - range_check_20_b_sum_267);
+        - (range_check_20_sum_266 * numerator_267)
+        - (range_check_20_b_sum_267 * numerator_266));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7263,8 +8513,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_268
         * range_check_20_d_sum_269)
-        - range_check_20_c_sum_268
-        - range_check_20_d_sum_269);
+        - (range_check_20_c_sum_268 * numerator_269)
+        - (range_check_20_d_sum_269 * numerator_268));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7275,8 +8525,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_sum_270
         * range_check_9_9_b_sum_271)
-        - range_check_9_9_sum_270
-        - range_check_9_9_b_sum_271);
+        - (range_check_9_9_sum_270 * numerator_271)
+        - (range_check_9_9_b_sum_271 * numerator_270));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7287,8 +8537,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_c_sum_272
         * range_check_9_9_d_sum_273)
-        - range_check_9_9_c_sum_272
-        - range_check_9_9_d_sum_273);
+        - (range_check_9_9_c_sum_272 * numerator_273)
+        - (range_check_9_9_d_sum_273 * numerator_272));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7299,8 +8549,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_e_sum_274
         * range_check_9_9_f_sum_275)
-        - range_check_9_9_e_sum_274
-        - range_check_9_9_f_sum_275);
+        - (range_check_9_9_e_sum_274 * numerator_275)
+        - (range_check_9_9_f_sum_275 * numerator_274));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7311,8 +8561,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_g_sum_276
         * range_check_9_9_h_sum_277)
-        - range_check_9_9_g_sum_276
-        - range_check_9_9_h_sum_277);
+        - (range_check_9_9_g_sum_276 * numerator_277)
+        - (range_check_9_9_h_sum_277 * numerator_276));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7323,8 +8573,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_sum_278
         * range_check_9_9_b_sum_279)
-        - range_check_9_9_sum_278
-        - range_check_9_9_b_sum_279);
+        - (range_check_9_9_sum_278 * numerator_279)
+        - (range_check_9_9_b_sum_279 * numerator_278));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7335,8 +8585,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_c_sum_280
         * range_check_9_9_d_sum_281)
-        - range_check_9_9_c_sum_280
-        - range_check_9_9_d_sum_281);
+        - (range_check_9_9_c_sum_280 * numerator_281)
+        - (range_check_9_9_d_sum_281 * numerator_280));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7347,8 +8597,8 @@ fn lookup_constraints(
         ))
         * range_check_9_9_e_sum_282
         * range_check_9_9_f_sum_283)
-        - range_check_9_9_e_sum_282
-        - range_check_9_9_f_sum_283);
+        - (range_check_9_9_e_sum_282 * numerator_283)
+        - (range_check_9_9_f_sum_283 * numerator_282));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7359,8 +8609,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_284
         * range_check_20_b_sum_285)
-        - range_check_20_sum_284
-        - range_check_20_b_sum_285);
+        - (range_check_20_sum_284 * numerator_285)
+        - (range_check_20_b_sum_285 * numerator_284));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7371,8 +8621,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_286
         * range_check_20_d_sum_287)
-        - range_check_20_c_sum_286
-        - range_check_20_d_sum_287);
+        - (range_check_20_c_sum_286 * numerator_287)
+        - (range_check_20_d_sum_287 * numerator_286));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7383,8 +8633,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_288
         * range_check_20_f_sum_289)
-        - range_check_20_e_sum_288
-        - range_check_20_f_sum_289);
+        - (range_check_20_e_sum_288 * numerator_289)
+        - (range_check_20_f_sum_289 * numerator_288));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7395,8 +8645,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_290
         * range_check_20_h_sum_291)
-        - range_check_20_g_sum_290
-        - range_check_20_h_sum_291);
+        - (range_check_20_g_sum_290 * numerator_291)
+        - (range_check_20_h_sum_291 * numerator_290));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7407,8 +8657,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_292
         * range_check_20_b_sum_293)
-        - range_check_20_sum_292
-        - range_check_20_b_sum_293);
+        - (range_check_20_sum_292 * numerator_293)
+        - (range_check_20_b_sum_293 * numerator_292));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7419,8 +8669,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_294
         * range_check_20_d_sum_295)
-        - range_check_20_c_sum_294
-        - range_check_20_d_sum_295);
+        - (range_check_20_c_sum_294 * numerator_295)
+        - (range_check_20_d_sum_295 * numerator_294));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7431,8 +8681,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_296
         * range_check_20_f_sum_297)
-        - range_check_20_e_sum_296
-        - range_check_20_f_sum_297);
+        - (range_check_20_e_sum_296 * numerator_297)
+        - (range_check_20_f_sum_297 * numerator_296));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7443,8 +8693,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_298
         * range_check_20_h_sum_299)
-        - range_check_20_g_sum_298
-        - range_check_20_h_sum_299);
+        - (range_check_20_g_sum_298 * numerator_299)
+        - (range_check_20_h_sum_299 * numerator_298));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7455,8 +8705,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_300
         * range_check_20_b_sum_301)
-        - range_check_20_sum_300
-        - range_check_20_b_sum_301);
+        - (range_check_20_sum_300 * numerator_301)
+        - (range_check_20_b_sum_301 * numerator_300));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7467,8 +8717,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_302
         * range_check_20_d_sum_303)
-        - range_check_20_c_sum_302
-        - range_check_20_d_sum_303);
+        - (range_check_20_c_sum_302 * numerator_303)
+        - (range_check_20_d_sum_303 * numerator_302));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7479,8 +8729,8 @@ fn lookup_constraints(
         ))
         * range_check_20_e_sum_304
         * range_check_20_f_sum_305)
-        - range_check_20_e_sum_304
-        - range_check_20_f_sum_305);
+        - (range_check_20_e_sum_304 * numerator_305)
+        - (range_check_20_f_sum_305 * numerator_304));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7491,8 +8741,8 @@ fn lookup_constraints(
         ))
         * range_check_20_g_sum_306
         * range_check_20_h_sum_307)
-        - range_check_20_g_sum_306
-        - range_check_20_h_sum_307);
+        - (range_check_20_g_sum_306 * numerator_307)
+        - (range_check_20_h_sum_307 * numerator_306));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7503,8 +8753,8 @@ fn lookup_constraints(
         ))
         * range_check_20_sum_308
         * range_check_20_b_sum_309)
-        - range_check_20_sum_308
-        - range_check_20_b_sum_309);
+        - (range_check_20_sum_308 * numerator_309)
+        - (range_check_20_b_sum_309 * numerator_308));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7515,8 +8765,8 @@ fn lookup_constraints(
         ))
         * range_check_20_c_sum_310
         * range_check_20_d_sum_311)
-        - range_check_20_c_sum_310
-        - range_check_20_d_sum_311);
+        - (range_check_20_c_sum_310 * numerator_311)
+        - (range_check_20_d_sum_311 * numerator_310));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -7531,8 +8781,8 @@ fn lookup_constraints(
         + (claimed_sum * (column_size.inverse().into())))
         * partial_ec_mul_generic_sum_312
         * partial_ec_mul_generic_sum_313)
-        + (partial_ec_mul_generic_sum_312 * partial_ec_mul_generic_multiplicity)
-        - (partial_ec_mul_generic_sum_313 * partial_ec_mul_generic_multiplicity));
+        + (partial_ec_mul_generic_sum_312 * numerator_313)
+        - (partial_ec_mul_generic_sum_313 * numerator_312));
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]

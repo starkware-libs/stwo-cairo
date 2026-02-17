@@ -18,9 +18,13 @@ pub fn xor_rot_32_r_8_evaluate(
     xor_col7: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref verify_bitwise_xor_8_sum_0: QM31,
+    ref numerator_0: QM31,
     ref verify_bitwise_xor_8_sum_1: QM31,
+    ref numerator_1: QM31,
     ref verify_bitwise_xor_8_b_sum_2: QM31,
+    ref numerator_2: QM31,
     ref verify_bitwise_xor_8_b_sum_3: QM31,
+    ref numerator_3: QM31,
     ref sum: QM31,
     random_coeff: QM31,
 ) -> [QM31; 2] {
@@ -55,6 +59,7 @@ pub fn xor_rot_32_r_8_evaluate(
         xor_col4,
         common_lookup_elements,
         ref verify_bitwise_xor_8_sum_0,
+        ref numerator_0,
         ref sum,
         random_coeff,
     );
@@ -63,6 +68,7 @@ pub fn xor_rot_32_r_8_evaluate(
         xor_col5,
         common_lookup_elements,
         ref verify_bitwise_xor_8_sum_1,
+        ref numerator_1,
         ref sum,
         random_coeff,
     );
@@ -74,6 +80,7 @@ pub fn xor_rot_32_r_8_evaluate(
         xor_col6,
         common_lookup_elements,
         ref verify_bitwise_xor_8_b_sum_2,
+        ref numerator_2,
         ref sum,
         random_coeff,
     );
@@ -82,6 +89,7 @@ pub fn xor_rot_32_r_8_evaluate(
         xor_col7,
         common_lookup_elements,
         ref verify_bitwise_xor_8_b_sum_3,
+        ref numerator_3,
         ref sum,
         random_coeff,
     );

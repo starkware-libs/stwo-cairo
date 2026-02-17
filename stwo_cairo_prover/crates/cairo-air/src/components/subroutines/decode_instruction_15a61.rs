@@ -17,6 +17,7 @@ impl DecodeInstruction15A61 {
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
+        let M31_1 = E::F::from(M31::from(1));
         let M31_130 = E::F::from(M31::from(130));
         let M31_1719106205 = E::F::from(M31::from(1719106205));
         let M31_32766 = E::F::from(M31::from(32766));
@@ -25,7 +26,7 @@ impl DecodeInstruction15A61 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1719106205.clone(),
                 decode_instruction_15a61_input_pc.clone(),

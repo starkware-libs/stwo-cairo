@@ -336,7 +336,7 @@ impl FrameworkEval for Eval {
         let partial_ec_mul_window_bits_18_output_limb_67_col202 = eval.next_trace_mask();
         let partial_ec_mul_window_bits_18_output_limb_68_col203 = eval.next_trace_mask();
         let partial_ec_mul_window_bits_18_output_limb_69_col204 = eval.next_trace_mask();
-        let multiplicity_0 = eval.next_trace_mask();
+        let multiplicity_0_col205 = eval.next_trace_mask();
 
         ReadPositiveKnownIdNumBits252::evaluate(
             [input_limb_0_col0.clone()],
@@ -482,7 +482,7 @@ impl FrameworkEval for Eval {
             eval.add_intermediate((seq.clone() * M31_2.clone()));
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::one(),
+            -E::EF::from(M31_1.clone()),
             &[
                 M31_1621226978.clone(),
                 partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8.clone(),
@@ -562,7 +562,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1621226978.clone(),
                 partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8.clone(),
@@ -645,7 +645,7 @@ impl FrameworkEval for Eval {
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::one(),
+            -E::EF::from(M31_1.clone()),
             &[
                 M31_1621226978.clone(),
                 partial_ec_mul_window_bits_18_chain_id_tmp_94cb4_23.clone(),
@@ -725,7 +725,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1621226978.clone(),
                 partial_ec_mul_window_bits_18_chain_id_tmp_94cb4_23.clone(),
@@ -805,7 +805,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::one(),
+            E::EF::from(M31_1.clone()),
             &[
                 M31_1662111297.clone(),
                 input_limb_2_col2.clone(),
@@ -842,7 +842,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_0),
+            -E::EF::from(multiplicity_0_col205.clone()),
             &[
                 M31_520578465.clone(),
                 input_limb_0_col0.clone(),

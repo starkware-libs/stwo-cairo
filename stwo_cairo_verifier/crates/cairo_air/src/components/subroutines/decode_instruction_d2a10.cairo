@@ -10,6 +10,7 @@ pub fn decode_instruction_d2a10_evaluate(
     op1_base_fp_col2: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref verify_instruction_sum_0: QM31,
+    ref numerator_0: QM31,
     ref sum: QM31,
     random_coeff: QM31,
 ) -> [QM31; 2] {
@@ -43,6 +44,7 @@ pub fn decode_instruction_d2a10_evaluate(
             ]
                 .span(),
         );
+    numerator_0 = qm31_const::<1, 0, 0, 0>();
 
     [(offset2_col0 - qm31_const::<32768, 0, 0, 0>()), op1_base_ap_tmp_d2a10_5]
 }

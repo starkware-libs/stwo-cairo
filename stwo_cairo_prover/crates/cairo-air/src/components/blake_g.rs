@@ -135,10 +135,11 @@ impl FrameworkEval for Eval {
         let xor_col49 = eval.next_trace_mask();
         let xor_col50 = eval.next_trace_mask();
         let xor_col51 = eval.next_trace_mask();
-        let enabler = eval.next_trace_mask();
+        let enabler_col52 = eval.next_trace_mask();
 
-        eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
-
+        eval.add_constraint(
+            ((enabler_col52.clone() * enabler_col52.clone()) - enabler_col52.clone()),
+        );
         TripleSum32::evaluate(
             [
                 input_limb_0_col0.clone(),
@@ -281,7 +282,7 @@ impl FrameworkEval for Eval {
             );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler.clone()),
+            -E::EF::from(enabler_col52.clone()),
             &[
                 M31_1139985212.clone(),
                 input_limb_0_col0.clone(),

@@ -88,8 +88,11 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .unwrap())
             .into();
         let mut memory_address_to_id_sum_0: QM31 = Zero::zero();
+        let mut numerator_0: QM31 = Zero::zero();
         let mut range_check_6_sum_1: QM31 = Zero::zero();
+        let mut numerator_1: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_2: QM31 = Zero::zero();
+        let mut numerator_2: QM31 = Zero::zero();
         let seq = preprocessed_mask_values
             .get_and_mark_used(seq_column_idx(*(self.claim.log_size)));
 
@@ -142,8 +145,11 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             value_limb_10_col11,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_0,
+            ref numerator_0,
             ref range_check_6_sum_1,
+            ref numerator_1,
             ref memory_id_to_big_sum_2,
+            ref numerator_2,
             ref sum,
             random_coeff,
         );
@@ -152,6 +158,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref sum,
             random_coeff,
             claimed_sum,
+            numerator_0,
+            numerator_1,
+            numerator_2,
             column_size,
             ref interaction_trace_mask_values,
             memory_address_to_id_sum_0,
@@ -166,6 +175,9 @@ fn lookup_constraints(
     ref sum: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
+    numerator_0: QM31,
+    numerator_1: QM31,
+    numerator_2: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     memory_address_to_id_sum_0: QM31,
@@ -203,8 +215,8 @@ fn lookup_constraints(
     ))
         * memory_address_to_id_sum_0
         * range_check_6_sum_1)
-        - memory_address_to_id_sum_0
-        - range_check_6_sum_1);
+        - (memory_address_to_id_sum_0 * numerator_1)
+        - (range_check_6_sum_1 * numerator_0));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -216,7 +228,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * memory_id_to_big_sum_2)
-        - qm31_const::<1, 0, 0, 0>());
+        - numerator_2);
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]

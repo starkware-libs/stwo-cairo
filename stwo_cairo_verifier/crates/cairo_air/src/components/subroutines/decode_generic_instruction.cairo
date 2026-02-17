@@ -26,6 +26,7 @@ pub fn decode_generic_instruction_evaluate(
     opcode_assert_eq_col17: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref verify_instruction_sum_0: QM31,
+    ref numerator_0: QM31,
     ref sum: QM31,
     random_coeff: QM31,
 ) -> [QM31; 8] {
@@ -57,6 +58,7 @@ pub fn decode_generic_instruction_evaluate(
         opcode_assert_eq_col17,
         common_lookup_elements,
         ref verify_instruction_sum_0,
+        ref numerator_0,
         ref sum,
         random_coeff,
     );

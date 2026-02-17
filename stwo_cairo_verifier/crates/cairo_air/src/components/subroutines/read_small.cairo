@@ -18,7 +18,9 @@ pub fn read_small_evaluate(
     partial_limb_msb_col7: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref memory_address_to_id_sum_0: QM31,
+    ref numerator_0: QM31,
     ref memory_id_to_big_sum_1: QM31,
+    ref numerator_1: QM31,
     ref sum: QM31,
     random_coeff: QM31,
 ) -> QM31 {
@@ -28,6 +30,7 @@ pub fn read_small_evaluate(
         id_col0,
         common_lookup_elements,
         ref memory_address_to_id_sum_0,
+        ref numerator_0,
         ref sum,
         random_coeff,
     );
@@ -77,6 +80,7 @@ pub fn read_small_evaluate(
             ]
                 .span(),
         );
+    numerator_1 = qm31_const::<1, 0, 0, 0>();
 
     (((((value_limb_0_col3 + (value_limb_1_col4 * qm31_const::<512, 0, 0, 0>()))
         + (value_limb_2_col5 * qm31_const::<262144, 0, 0, 0>()))
