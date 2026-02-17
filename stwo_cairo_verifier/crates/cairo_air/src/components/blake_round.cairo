@@ -941,10 +941,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        // Constraint -
-        let constraint_quotient = (((enabler_col211 * enabler_col211) - enabler_col211));
-        sum = sum * random_coeff + constraint_quotient;
-
         blake_round_sigma_sum_0 = self
             .common_lookup_elements
             .combine_qm31(
@@ -1394,6 +1390,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     .span(),
             );
         numerator_56 = qm31_const::<1, 0, 0, 0>();
+
+        // Constraint - Enabler is a bit
+        let constraint_quotient = (((enabler_col211 * enabler_col211) - enabler_col211));
+        sum = sum * random_coeff + constraint_quotient;
 
         blake_round_sum_57 = self
             .common_lookup_elements
@@ -2550,7 +2550,7 @@ mod tests {
             [qm31_const::<955082178, 1744431827, 728949755, 502540188>()].span(),
             [qm31_const::<887972999, 1610214099, 661840891, 502540188>()].span(),
             [qm31_const::<15491601, 2012867234, 1936909257, 502540171>()].span(),
-            [qm31_const::<902525010, 1115155995, 130434373, 2116865290>()].span(),
+            [qm31_const::<82600780, 2147084962, 2004018121, 502540171>()].span(),
         ]
             .span();
         let interaction_values = array![

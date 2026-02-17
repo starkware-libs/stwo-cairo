@@ -191,9 +191,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        // Constraint -
-        let constraint_quotient = (((enabler_col38 * enabler_col38) - enabler_col38));
-        sum = sum * random_coeff + constraint_quotient;
         let [
             decode_instruction_bc3cd_output_tmp_756b7_11_offset0,
             decode_instruction_bc3cd_output_tmp_756b7_11_offset1,
@@ -297,6 +294,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         // Constraint - dst equals op0 + op1
         let constraint_quotient = ((read_small_output_tmp_756b7_21_limb_0
             - (read_small_output_tmp_756b7_31_limb_0 + read_small_output_tmp_756b7_41_limb_0)));
+        sum = sum * random_coeff + constraint_quotient;
+
+        // Constraint - Enabler is a bit
+        let constraint_quotient = (((enabler_col38 * enabler_col38) - enabler_col38));
         sum = sum * random_coeff + constraint_quotient;
 
         opcodes_sum_7 = self
@@ -551,7 +552,7 @@ mod tests {
             [qm31_const::<845902872, 779295962, 1052603342, 343880161>()].span(),
             [qm31_const::<644575335, 376642778, 851276750, 343880161>()].span(),
             [qm31_const::<711684514, 510860506, 918385614, 343880161>()].span(),
-            [qm31_const::<902525010, 1115155995, 130434373, 2116865290>()].span(),
+            [qm31_const::<1047230409, 1181949146, 1253929934, 343880161>()].span(),
         ]
             .span();
         let interaction_values = array![

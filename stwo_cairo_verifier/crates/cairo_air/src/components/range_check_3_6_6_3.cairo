@@ -201,7 +201,7 @@ mod tests {
         );
 
         let mut trace_columns = [
-            [qm31_const::<700269555, 307766862, 1685683780, 745982081>()].span(),
+            [qm31_const::<1659099300, 905558730, 651199673, 1375009625>()].span(),
         ]
             .span();
         let interaction_values = array![

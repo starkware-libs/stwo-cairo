@@ -112,9 +112,6 @@ impl FrameworkEval for Eval {
         let partial_limb_msb_col37 = eval.next_trace_mask();
         let enabler_col38 = eval.next_trace_mask();
 
-        eval.add_constraint(
-            ((enabler_col38.clone() * enabler_col38.clone()) - enabler_col38.clone()),
-        );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [decode_instruction_bc3cd_output_tmp_756b7_11_offset0, decode_instruction_bc3cd_output_tmp_756b7_11_offset1, decode_instruction_bc3cd_output_tmp_756b7_11_offset2, decode_instruction_bc3cd_output_tmp_756b7_11_op1_base_ap] =
@@ -209,6 +206,10 @@ impl FrameworkEval for Eval {
             (read_small_output_tmp_756b7_21_limb_0.clone()
                 - (read_small_output_tmp_756b7_31_limb_0.clone()
                     + read_small_output_tmp_756b7_41_limb_0.clone())),
+        );
+        // Enabler is a bit.
+        eval.add_constraint(
+            ((enabler_col38.clone() * enabler_col38.clone()) - enabler_col38.clone()),
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,

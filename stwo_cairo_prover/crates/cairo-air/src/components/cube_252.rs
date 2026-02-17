@@ -263,9 +263,6 @@ impl FrameworkEval for Eval {
         let carry_26_col139 = eval.next_trace_mask();
         let enabler_col140 = eval.next_trace_mask();
 
-        eval.add_constraint(
-            ((enabler_col140.clone() * enabler_col140.clone()) - enabler_col140.clone()),
-        );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_2, felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_5, felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_8, felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_11, felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_14, felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_17, felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_20, felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_23, felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_26, felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_27] =
@@ -538,6 +535,10 @@ impl FrameworkEval for Eval {
             carry_26_col139.clone(),
             &self.common_lookup_elements,
             &mut eval,
+        );
+        // Enabler is a bit.
+        eval.add_constraint(
+            ((enabler_col140.clone() * enabler_col140.clone()) - enabler_col140.clone()),
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,

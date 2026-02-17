@@ -1,34 +1,34 @@
 use expect_test::{expect, Expect};
 
 pub const ADD_AP_OPCODE: Expect = expect![[r#"
-    (589101622 + 1090351706i) + (104041107 + 1079270075i)u
+    (516897519 + 1850193407i) + (1806878744 + 187524219i)u
 "#]];
 pub const ADD_MOD_BUILTIN: Expect = expect![[r#"
     (962362941 + 2028338795i) + (1661967568 + 39048394i)u
 "#]];
 pub const ADD_OPCODE_SMALL: Expect = expect![[r#"
-    (1339251051 + 1030318460i) + (92043105 + 970547393i)u
+    (694474879 + 672709585i) + (499918043 + 1005895843i)u
 "#]];
 pub const ADD_OPCODE: Expect = expect![[r#"
-    (156686535 + 1417938864i) + (2044502242 + 110290025i)u
+    (1743563322 + 642474410i) + (1589520095 + 1661529002i)u
 "#]];
 pub const ASSERT_EQ_OPCODE_DOUBLE_DEREF: Expect = expect![[r#"
-    (1941588763 + 1305628079i) + (1576307763 + 1871835466i)u
+    (319295236 + 399115361i) + (449061143 + 958443158i)u
 "#]];
 pub const ASSERT_EQ_OPCODE_IMM: Expect = expect![[r#"
-    (1017210131 + 895264793i) + (941631259 + 1206146899i)u
+    (178653785 + 845156067i) + (155408132 + 1001002813i)u
 "#]];
 pub const ASSERT_EQ_OPCODE: Expect = expect![[r#"
-    (2022057017 + 1231501795i) + (1700777730 + 1155144815i)u
+    (49636834 + 1572439984i) + (878930484 + 2047808655i)u
 "#]];
 pub const BITWISE_BUILTIN: Expect = expect![[r#"
     (1824891900 + 955303235i) + (675524294 + 522539128i)u
 "#]];
 pub const BLAKE_COMPRESS_OPCODE: Expect = expect![[r#"
-    (1544164973 + 1397357342i) + (1051760993 + 1504581700i)u
+    (155666272 + 1449099244i) + (2129074048 + 98118208i)u
 "#]];
 pub const BLAKE_G: Expect = expect![[r#"
-    (1214761540 + 515860879i) + (1444582138 + 786211397i)u
+    (1764683956 + 1445328965i) + (1747106891 + 897069792i)u
 "#]];
 pub const BLAKE_ROUND_SIGMA: Expect = expect![[r#"
     (1097485784 + 777282969i) + (604469751 + 1994507613i)u
@@ -37,37 +37,37 @@ pub const BLAKE_ROUND: Expect = expect![[r#"
     (1154303975 + 1817245278i) + (625110977 + 1345116621i)u
 "#]];
 pub const CALL_OPCODE_REL_IMM: Expect = expect![[r#"
-    (839564697 + 1650560296i) + (829769883 + 949062908i)u
+    (760384448 + 1362812134i) + (115035496 + 485861047i)u
 "#]];
 pub const CALL_OPCODE_ABS: Expect = expect![[r#"
-    (1364047067 + 552701562i) + (828984219 + 1777527432i)u
+    (1421856702 + 2139630331i) + (803565856 + 823736821i)u
 "#]];
 pub const CUBE_252: Expect = expect![[r#"
-    (1037973223 + 1298605477i) + (275158739 + 558974209i)u
+    (593453477 + 1585603168i) + (1656051478 + 1832911948i)u
 "#]];
 pub const EC_OP_BUILTIN: Expect = expect![[r#"
     (791429500 + 1720267412i) + (1336427407 + 1936025114i)u
 "#]];
 pub const GENERIC_OPCODE: Expect = expect![[r#"
-    (940022209 + 222333129i) + (209213476 + 1471105611i)u
+    (1394044458 + 1523620864i) + (2097664597 + 1506659344i)u
 "#]];
 pub const JNZ_OPCODE_TAKEN: Expect = expect![[r#"
-    (462697114 + 630599933i) + (43540185 + 2057603235i)u
+    (234087556 + 763961986i) + (848830079 + 1170752701i)u
 "#]];
 pub const JNZ_OPCODE_NON_TAKEN: Expect = expect![[r#"
-    (291979958 + 1180644715i) + (519552268 + 152742368i)u
+    (1600907259 + 1130535989i) + (1880812788 + 2095081929i)u
 "#]];
 pub const JUMP_OPCODE_DOUBLE_DEREF: Expect = expect![[r#"
-    (380398535 + 510909784i) + (88322840 + 260410509i)u
+    (633864483 + 1418769799i) + (933019036 + 1980262481i)u
 "#]];
 pub const JUMP_OPCODE_REL_IMM: Expect = expect![[r#"
-    (1313896945 + 646454969i) + (727260 + 35977804i)u
+    (1808938333 + 549767725i) + (2064733711 + 1013978252i)u
 "#]];
 pub const JUMP_OPCODE_REL: Expect = expect![[r#"
-    (576156250 + 2035043254i) + (103722753 + 1464111220i)u
+    (1905318571 + 1328129507i) + (668609582 + 975107412i)u
 "#]];
 pub const JUMP_OPCODE_ABS: Expect = expect![[r#"
-    (2102094881 + 1050068779i) + (646125376 + 524572413i)u
+    (998345091 + 2028413139i) + (1860260793 + 1836467596i)u
 "#]];
 pub const MEMORY_ADDRESS_TO_ID: Expect = expect![[r#"
     (1614147890 + 1911636193i) + (1028002099 + 432864212i)u
@@ -82,19 +82,19 @@ pub const MUL_MOD_BUILTIN: Expect = expect![[r#"
     (992304303 + 1797117466i) + (786535578 + 877514361i)u
 "#]];
 pub const MUL_OPCODE_SMALL: Expect = expect![[r#"
-    (231132536 + 1913752884i) + (1557558360 + 1093847801i)u
+    (520318153 + 688909842i) + (1954113231 + 257430291i)u
 "#]];
 pub const MUL_OPCODE: Expect = expect![[r#"
-    (41815338 + 918136265i) + (630313769 + 273769618i)u
+    (1371509821 + 1944040430i) + (27801671 + 347173398i)u
 "#]];
 pub const PEDERSEN_AGGREGATOR_WINDOW_BITS_18: Expect = expect![[r#"
     (41079903 + 1702994602i) + (1706854790 + 402437045i)u
 "#]];
 pub const PARTIAL_EC_MUL_GENERIC: Expect = expect![[r#"
-    (948772201 + 745414702i) + (524026178 + 1356512515i)u
+    (1126605007 + 1721691547i) + (1169832585 + 1979217839i)u
 "#]];
 pub const PARTIAL_EC_MUL_WINDOW_BITS_18: Expect = expect![[r#"
-    (1954805293 + 896111510i) + (804571916 + 695208153i)u
+    (1108696589 + 251185570i) + (980553688 + 1810286524i)u
 "#]];
 pub const PEDERSEN_BUILTIN: Expect = expect![[r#"
     (969711901 + 1392199844i) + (1334358869 + 876891828i)u
@@ -106,7 +106,7 @@ pub const PEDERSEN_AGGREGATOR_WINDOW_BITS_9: Expect = expect![[r#"
     (714921143 + 1954040354i) + (1440862981 + 1560205159i)u
 "#]];
 pub const PARTIAL_EC_MUL_WINDOW_BITS_9: Expect = expect![[r#"
-    (1698697573 + 316964359i) + (103150294 + 2038558641i)u
+    (1716820607 + 1350896267i) + (307663276 + 666050347i)u
 "#]];
 pub const PEDERSEN_BUILTIN_NARROW_WINDOWS: Expect = expect![[r#"
     (376299506 + 1084003754i) + (1941085737 + 849715726i)u
@@ -115,7 +115,7 @@ pub const PEDERSEN_POINTS_TABLE_WINDOW_BITS_9: Expect = expect![[r#"
     (1826400922 + 886383461i) + (1136857239 + 182340749i)u
 "#]];
 pub const POSEIDON_3_PARTIAL_ROUNDS_CHAIN: Expect = expect![[r#"
-    (14043571 + 839875499i) + (1036178337 + 1236394025i)u
+    (1611922424 + 468575745i) + (2083468074 + 1292697274i)u
 "#]];
 pub const POSEIDON_BUILTIN: Expect = expect![[r#"
     (1759340471 + 1370483238i) + (545738155 + 358148773i)u
@@ -124,13 +124,13 @@ pub const POSEIDON_AGGREGATOR: Expect = expect![[r#"
     (1285570206 + 458099145i) + (801615907 + 439650025i)u
 "#]];
 pub const POSEIDON_FULL_ROUND_CHAIN: Expect = expect![[r#"
-    (2092145165 + 1503826994i) + (528511002 + 656705856i)u
+    (1757641738 + 1279855357i) + (696757604 + 372294085i)u
 "#]];
 pub const POSEIDON_ROUND_KEYS: Expect = expect![[r#"
     (425854113 + 1624523814i) + (451994973 + 1589445042i)u
 "#]];
 pub const QM_31_ADD_MUL_OPCODE: Expect = expect![[r#"
-    (717044148 + 283036480i) + (875932608 + 38741017i)u
+    (1873354922 + 678955234i) + (1108874319 + 994914790i)u
 "#]];
 pub const RANGE_CHECK_96_BUILTIN: Expect = expect![[r#"
     (1978135976 + 1651636415i) + (1817070127 + 298075321i)u
@@ -181,7 +181,7 @@ pub const RANGE_CHECK_3_3_3_3_3: Expect = expect![[r#"
     (55171861 + 1765766743i) + (1964482406 + 275096048i)u
 "#]];
 pub const RET_OPCODE: Expect = expect![[r#"
-    (6796407 + 249013208i) + (1955248469 + 1454505513i)u
+    (1403836458 + 2140993390i) + (549797753 + 526238080i)u
 "#]];
 pub const TRIPLE_XOR_32: Expect = expect![[r#"
     (1152376846 + 753053024i) + (1408555470 + 1523324023i)u

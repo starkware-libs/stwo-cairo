@@ -236,9 +236,6 @@ impl FrameworkEval for Eval {
         let carry_26_col128 = eval.next_trace_mask();
         let enabler_col129 = eval.next_trace_mask();
 
-        eval.add_constraint(
-            ((enabler_col129.clone() * enabler_col129.clone()) - enabler_col129.clone()),
-        );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [decode_instruction_4b8cf_output_tmp_42314_11_offset0, decode_instruction_4b8cf_output_tmp_42314_11_offset1, decode_instruction_4b8cf_output_tmp_42314_11_offset2, decode_instruction_4b8cf_output_tmp_42314_11_op1_base_ap] =
@@ -502,6 +499,10 @@ impl FrameworkEval for Eval {
             carry_26_col128.clone(),
             &self.common_lookup_elements,
             &mut eval,
+        );
+        // Enabler is a bit.
+        eval.add_constraint(
+            ((enabler_col129.clone() * enabler_col129.clone()) - enabler_col129.clone()),
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,

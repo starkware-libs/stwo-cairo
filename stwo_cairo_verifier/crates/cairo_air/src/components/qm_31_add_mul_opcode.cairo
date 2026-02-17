@@ -269,9 +269,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        // Constraint -
-        let constraint_quotient = (((enabler_col72 * enabler_col72) - enabler_col72));
-        sum = sum * random_coeff + constraint_quotient;
         let [
             decode_instruction_3802d_output_tmp_fa85a_12_offset0,
             decode_instruction_3802d_output_tmp_fa85a_12_offset1,
@@ -504,6 +501,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             - ((qm_31_read_reduced_output_tmp_fa85a_24_limb_3
                 + qm_31_read_reduced_output_tmp_fa85a_30_limb_3)
                 * res_add_col10)));
+        sum = sum * random_coeff + constraint_quotient;
+
+        // Constraint - Enabler is a bit
+        let constraint_quotient = (((enabler_col72 * enabler_col72) - enabler_col72));
         sum = sum * random_coeff + constraint_quotient;
 
         opcodes_sum_10 = self
@@ -826,7 +827,7 @@ mod tests {
             [qm31_const::<845595687, 779295782, 1052603162, 343880101>()].span(),
             [qm31_const::<1046820829, 1181948906, 1253929694, 343880081>()].span(),
             [qm31_const::<1113930008, 1316166634, 1321038558, 343880081>()].span(),
-            [qm31_const::<902525010, 1115155995, 130434373, 2116865290>()].span(),
+            [qm31_const::<912602471, 913513450, 1119711966, 343880081>()].span(),
         ]
             .span();
         let interaction_values = array![

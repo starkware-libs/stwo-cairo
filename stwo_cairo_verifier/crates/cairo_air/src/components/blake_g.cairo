@@ -259,9 +259,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        // Constraint -
-        let constraint_quotient = (((enabler_col52 * enabler_col52) - enabler_col52));
-        sum = sum * random_coeff + constraint_quotient;
         triple_sum_32_evaluate(
             [
                 input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, input_limb_3_col3,
@@ -421,6 +418,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref sum,
             random_coeff,
         );
+
+        // Constraint - Enabler is a bit
+        let constraint_quotient = (((enabler_col52 * enabler_col52) - enabler_col52));
+        sum = sum * random_coeff + constraint_quotient;
 
         blake_g_sum_16 = self
             .common_lookup_elements
@@ -797,7 +798,7 @@ mod tests {
             [qm31_const::<1113827613, 1316166574, 1321038498, 343880061>()].span(),
             [qm31_const::<241305891, 1718819697, 448623205, 343880041>()].span(),
             [qm31_const::<308415070, 1853037425, 515732069, 343880041>()].span(),
-            [qm31_const::<902525010, 1115155995, 130434373, 2116865290>()].span(),
+            [qm31_const::<375524249, 1987255153, 582840933, 343880041>()].span(),
         ]
             .span();
         let interaction_values = array![

@@ -93,9 +93,6 @@ impl FrameworkEval for Eval {
         let partial_limb_msb_col14 = eval.next_trace_mask();
         let enabler_col15 = eval.next_trace_mask();
 
-        eval.add_constraint(
-            ((enabler_col15.clone() * enabler_col15.clone()) - enabler_col15.clone()),
-        );
         DecodeInstruction15A61::evaluate(
             [input_pc_col0.clone()],
             &self.common_lookup_elements,
@@ -122,6 +119,10 @@ impl FrameworkEval for Eval {
             partial_limb_msb_col14.clone(),
             &self.common_lookup_elements,
             &mut eval,
+        );
+        // Enabler is a bit.
+        eval.add_constraint(
+            ((enabler_col15.clone() * enabler_col15.clone()) - enabler_col15.clone()),
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,

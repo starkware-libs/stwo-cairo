@@ -792,9 +792,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        // Constraint -
-        let constraint_quotient = (((enabler_col242 * enabler_col242) - enabler_col242));
-        sum = sum * random_coeff + constraint_quotient;
         let [
             decode_generic_instruction_output_tmp_57455_26_op1_base_op0,
             decode_generic_instruction_output_tmp_57455_26_res_op1,
@@ -1263,6 +1260,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref sum,
             random_coeff,
         );
+
+        // Constraint - Enabler is a bit
+        let constraint_quotient = (((enabler_col242 * enabler_col242) - enabler_col242));
+        sum = sum * random_coeff + constraint_quotient;
 
         opcodes_sum_65 = self
             .common_lookup_elements
@@ -2530,7 +2531,7 @@ mod tests {
             [qm31_const::<351201962, 536472335, 124970039, 502540208>()].span(),
             [qm31_const::<2028449705, 1744431597, 1802691349, 502540111>()].span(),
             [qm31_const::<1961340526, 1610213869, 1735582485, 502540111>()].span(),
-            [qm31_const::<902525010, 1115155995, 130434373, 2116865290>()].span(),
+            [qm31_const::<1894231347, 1475996141, 1668473621, 502540111>()].span(),
         ]
             .span();
         let interaction_values = array![

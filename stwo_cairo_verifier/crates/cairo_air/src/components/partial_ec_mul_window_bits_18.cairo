@@ -1227,10 +1227,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        // Constraint -
-        let constraint_quotient = (((enabler_col296 * enabler_col296) - enabler_col296));
-        sum = sum * random_coeff + constraint_quotient;
-
         pedersen_points_table_window_bits_18_sum_0 = self
             .common_lookup_elements
             .combine_qm31(
@@ -1794,6 +1790,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref sum,
             random_coeff,
         );
+
+        // Constraint - Enabler is a bit
+        let constraint_quotient = (((enabler_col296 * enabler_col296) - enabler_col296));
+        sum = sum * random_coeff + constraint_quotient;
 
         partial_ec_mul_window_bits_18_sum_127 = self
             .common_lookup_elements
@@ -4034,7 +4034,7 @@ mod tests {
             [qm31_const::<1289746842, 268036292, 1064493548, 502540012>()].span(),
             [qm31_const::<819982589, 1475995843, 594731499, 502540012>()].span(),
             [qm31_const::<887091768, 1610213571, 661840363, 502540012>()].span(),
-            [qm31_const::<902525010, 1115155995, 130434373, 2116865290>()].span(),
+            [qm31_const::<954200947, 1744431299, 728949227, 502540012>()].span(),
         ]
             .span();
         let interaction_values = array![

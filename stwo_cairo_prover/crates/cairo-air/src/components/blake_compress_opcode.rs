@@ -287,9 +287,6 @@ impl FrameworkEval for Eval {
         let new_state_7_id_col172 = eval.next_trace_mask();
         let enabler_col173 = eval.next_trace_mask();
 
-        eval.add_constraint(
-            ((enabler_col173.clone() * enabler_col173.clone()) - enabler_col173.clone()),
-        );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [decode_blake_opcode_output_tmp_53f39_42_limb_0, decode_blake_opcode_output_tmp_53f39_42_limb_1, decode_blake_opcode_output_tmp_53f39_42_limb_2, decode_blake_opcode_output_tmp_53f39_42_limb_6] =
@@ -663,6 +660,10 @@ impl FrameworkEval for Eval {
             new_state_7_id_col172.clone(),
             &self.common_lookup_elements,
             &mut eval,
+        );
+        // Enabler is a bit.
+        eval.add_constraint(
+            ((enabler_col173.clone() * enabler_col173.clone()) - enabler_col173.clone()),
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,

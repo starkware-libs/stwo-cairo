@@ -250,9 +250,6 @@ impl FrameworkEval for Eval {
         let p_coef_col167 = eval.next_trace_mask();
         let enabler_col168 = eval.next_trace_mask();
 
-        eval.add_constraint(
-            ((enabler_col168.clone() * enabler_col168.clone()) - enabler_col168.clone()),
-        );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
             E::EF::from(M31_1.clone()),
@@ -555,6 +552,10 @@ impl FrameworkEval for Eval {
             p_coef_col167.clone(),
             &self.common_lookup_elements,
             &mut eval,
+        );
+        // Enabler is a bit.
+        eval.add_constraint(
+            ((enabler_col168.clone() * enabler_col168.clone()) - enabler_col168.clone()),
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
