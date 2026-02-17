@@ -85,7 +85,7 @@ fn verify_claim(claim: &CairoClaim) {
         .memory_id_to_big
         .as_ref()
         .unwrap()
-        .big_log_sizes
+        .log_sizes
         .iter()
         .map(|log_size| 1 << log_size)
         .sum::<u32>()

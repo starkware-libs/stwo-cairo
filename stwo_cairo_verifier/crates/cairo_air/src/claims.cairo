@@ -32,6 +32,7 @@ use crate::components::jump_opcode_rel::InteractionClaimImpl as JumpOpcodeRelInt
 use crate::components::jump_opcode_rel_imm::InteractionClaimImpl as JumpOpcodeRelImmInteractionClaimImpl;
 use crate::components::memory_address_to_id::InteractionClaimImpl as MemoryAddressToIdInteractionClaimImpl;
 use crate::components::memory_id_to_big::InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl;
+use crate::components::memory_id_to_small::InteractionClaimImpl as MemoryIdToSmallInteractionClaimImpl;
 use crate::components::mul_mod_builtin::InteractionClaimImpl as MulModBuiltinInteractionClaimImpl;
 use crate::components::mul_opcode::InteractionClaimImpl as MulOpcodeInteractionClaimImpl;
 use crate::components::mul_opcode_small::InteractionClaimImpl as MulOpcodeSmallInteractionClaimImpl;
@@ -136,6 +137,7 @@ pub struct CairoClaim {
     pub range_check_252_width_27: Option<components::range_check_252_width_27::Claim>,
     pub memory_address_to_id: Option<components::memory_address_to_id::Claim>,
     pub memory_id_to_big: Option<components::memory_id_to_big::Claim>,
+    pub memory_id_to_small: Option<components::memory_id_to_small::Claim>,
     pub range_check_6: Option<components::range_check_6::Claim>,
     pub range_check_8: Option<components::range_check_8::Claim>,
     pub range_check_11: Option<components::range_check_11::Claim>,
@@ -300,6 +302,9 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             log_sizes_list.append(claim.log_sizes());
         }
         if let Some(claim) = self.memory_id_to_big {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.memory_id_to_small {
             log_sizes_list.append(claim.log_sizes());
         }
         if let Some(claim) = self.range_check_6 {
@@ -492,6 +497,9 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         if let Some(claim) = self.memory_id_to_big {
             claim.accumulate_relation_uses(ref relation_uses);
         }
+        if let Some(claim) = self.memory_id_to_small {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
     }
 }
 
@@ -563,6 +571,7 @@ pub struct CairoInteractionClaim {
     pub range_check_252_width_27: Option<components::range_check_252_width_27::InteractionClaim>,
     pub memory_address_to_id: Option<components::memory_address_to_id::InteractionClaim>,
     pub memory_id_to_big: Option<components::memory_id_to_big::InteractionClaim>,
+    pub memory_id_to_small: Option<components::memory_id_to_small::InteractionClaim>,
     pub range_check_6: Option<components::range_check_6::InteractionClaim>,
     pub range_check_8: Option<components::range_check_8::InteractionClaim>,
     pub range_check_11: Option<components::range_check_11::InteractionClaim>,
@@ -736,6 +745,9 @@ pub fn lookup_sum(
         sum += *interaction_claim.claimed_sum;
     }
     if let Some(interaction_claim) = interaction_claim.memory_id_to_big {
+        sum += *interaction_claim.claimed_sum;
+    }
+    if let Some(interaction_claim) = interaction_claim.memory_id_to_small {
         sum += *interaction_claim.claimed_sum;
     }
     if let Some(interaction_claim) = interaction_claim.range_check_6 {

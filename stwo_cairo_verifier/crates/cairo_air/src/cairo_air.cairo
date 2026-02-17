@@ -1,7 +1,5 @@
 use components::memory_address_to_id::InteractionClaimImpl as MemoryAddressToIdInteractionClaimImpl;
-use components::memory_id_to_big::{
-    InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl, LARGE_MEMORY_VALUE_ID_BASE,
-};
+use components::memory_id_to_big::InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl;
 use components::triple_xor_32::InteractionClaimImpl as TripleXor32InteractionClaimImpl;
 use components::verify_bitwise_xor_12::InteractionClaimImpl as VerifyBitwiseXor12InteractionClaimImpl;
 use components::verify_bitwise_xor_4::InteractionClaimImpl as VerifyBitwiseXor4InteractionClaimImpl;
@@ -18,7 +16,6 @@ use stwo_cairo_air::builtins::{BuiltinComponents, BuiltinComponentsImpl};
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::opcodes::{OpcodeComponents, OpcodeComponentsImpl};
 use stwo_verifier_core::fields::m31::M31;
-use crate::P_U32;
 
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub mod pedersen_context_imports {
@@ -41,7 +38,7 @@ use stwo_constraint_framework::{
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
-use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
+use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
 use stwo_verifier_core::verifier::Air;
 use stwo_verifier_core::{ColumnSpan, TreeArray, TreeSpan};
 use crate::claims::{CairoClaim, CairoInteractionClaim};
@@ -99,10 +96,8 @@ pub struct CairoAir {
     pedersen_context: PedersenContextComponents,
     poseidon_context: PoseidonContextComponents,
     memory_address_to_id: components::memory_address_to_id::Component,
-    memory_id_to_value: (
-        Array<components::memory_id_to_big::BigComponent>,
-        components::memory_id_to_big::SmallComponent,
-    ),
+    memory_id_to_big: components::memory_id_to_big::Component,
+    memory_id_to_small: components::memory_id_to_small::Component,
     range_checks: RangeChecksComponents,
     verify_bitwise_xor_4: components::verify_bitwise_xor_4::Component,
     verify_bitwise_xor_7: components::verify_bitwise_xor_7::Component,
@@ -151,38 +146,16 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             common_lookup_elements,
         );
 
-        let claim_memory_id_to_big = cairo_claim.memory_id_to_big.as_snap().unwrap();
-        let interaction_claim_memory_id_to_big = interaction_claim
-            .memory_id_to_big
-            .as_snap()
-            .unwrap();
-        assert!(
-            claim_memory_id_to_big
-                .big_log_sizes
-                .len() == interaction_claim_memory_id_to_big
-                .big_claimed_sums
-                .len(),
+        let memory_id_to_big_component = components::memory_id_to_big::NewComponentImpl::new(
+            cairo_claim.memory_id_to_big.as_snap().unwrap(),
+            interaction_claim.memory_id_to_big.as_snap().unwrap(),
+            common_lookup_elements,
         );
-        let mut memory_id_to_value_components = array![];
-        let mut offset: u32 = LARGE_MEMORY_VALUE_ID_BASE;
-        for i in 0..claim_memory_id_to_big.big_log_sizes.len() {
-            let log_size = claim_memory_id_to_big.big_log_sizes[i];
-            let claimed_sum = interaction_claim_memory_id_to_big.big_claimed_sums[i];
-            memory_id_to_value_components
-                .append(
-                    components::memory_id_to_big::NewBigComponentImpl::new(
-                        *log_size, offset, *claimed_sum, common_lookup_elements,
-                    ),
-                );
-            offset = offset + pow2(*log_size);
-        }
-        // Check that IDs in (ID -> Value) do not overflow P.
-        assert!(offset <= P_U32);
 
         let small_memory_id_to_value_component =
-            components::memory_id_to_big::NewSmallComponentImpl::new(
-            *claim_memory_id_to_big.small_log_size,
-            *interaction_claim_memory_id_to_big.small_claimed_sum,
+            components::memory_id_to_small::NewComponentImpl::new(
+            cairo_claim.memory_id_to_small.as_snap().unwrap(),
+            interaction_claim.memory_id_to_small.as_snap().unwrap(),
             common_lookup_elements,
         );
 
@@ -226,7 +199,8 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             pedersen_context: pedersen_context_components,
             poseidon_context: poseidon_context_components,
             memory_address_to_id: memory_address_to_id_component,
-            memory_id_to_value: (memory_id_to_value_components, small_memory_id_to_value_component),
+            memory_id_to_big: memory_id_to_big_component,
+            memory_id_to_small: small_memory_id_to_value_component,
             range_checks: range_checks_components,
             verify_bitwise_xor_4: verify_bitwise_xor_4_component,
             verify_bitwise_xor_7: verify_bitwise_xor_7_component,
@@ -268,7 +242,8 @@ pub impl CairoAirImpl of Air<CairoAir> {
             pedersen_context,
             poseidon_context,
             memory_address_to_id,
-            memory_id_to_value,
+            memory_id_to_big,
+            memory_id_to_small,
             range_checks,
             verify_bitwise_xor_4,
             verify_bitwise_xor_7,
@@ -332,18 +307,15 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref interaction_trace_mask_values,
                 random_coeff,
             );
-        let (memory_id_to_value_big, memory_id_to_value_small) = memory_id_to_value;
-        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
-            memory_id_to_value_big_component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                );
-        }
-        memory_id_to_value_small
+        memory_id_to_big
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+            );
+        memory_id_to_small
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -408,10 +380,8 @@ pub struct CairoAir {
     blake_context: BlakeContextComponents,
     builtins: BuiltinComponents,
     memory_address_to_id: components::memory_address_to_id::Component,
-    memory_id_to_value: (
-        Array<components::memory_id_to_big::BigComponent>,
-        components::memory_id_to_big::SmallComponent,
-    ),
+    memory_id_to_big: components::memory_id_to_big::Component,
+    memory_id_to_small: components::memory_id_to_small::Component,
     range_checks: RangeChecksComponents,
     verify_bitwise_xor_4: components::verify_bitwise_xor_4::Component,
     verify_bitwise_xor_7: components::verify_bitwise_xor_7::Component,
@@ -452,38 +422,16 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             common_lookup_elements,
         );
 
-        let claim_memory_id_to_big = cairo_claim.memory_id_to_big.as_snap().unwrap();
-        let interaction_claim_memory_id_to_big = interaction_claim
-            .memory_id_to_big
-            .as_snap()
-            .unwrap();
-        assert!(
-            claim_memory_id_to_big
-                .big_log_sizes
-                .len() == interaction_claim_memory_id_to_big
-                .big_claimed_sums
-                .len(),
+        let memory_id_to_big_component = components::memory_id_to_big::NewComponentImpl::new(
+            cairo_claim.memory_id_to_big.as_snap().unwrap(),
+            interaction_claim.memory_id_to_big.as_snap().unwrap(),
+            common_lookup_elements,
         );
-        let mut memory_id_to_value_components = array![];
-        let mut offset: u32 = LARGE_MEMORY_VALUE_ID_BASE;
-        for i in 0..claim_memory_id_to_big.big_log_sizes.len() {
-            let log_size = claim_memory_id_to_big.big_log_sizes[i];
-            let claimed_sum = interaction_claim_memory_id_to_big.big_claimed_sums[i];
-            memory_id_to_value_components
-                .append(
-                    components::memory_id_to_big::NewBigComponentImpl::new(
-                        *log_size, offset, *claimed_sum, common_lookup_elements,
-                    ),
-                );
-            offset = offset + pow2(*log_size);
-        }
-        // Check that IDs in (ID -> Value) do not overflow P.
-        assert!(offset <= P_U32);
 
         let small_memory_id_to_value_component =
-            components::memory_id_to_big::NewSmallComponentImpl::new(
-            *claim_memory_id_to_big.small_log_size,
-            *interaction_claim_memory_id_to_big.small_claimed_sum,
+            components::memory_id_to_small::NewComponentImpl::new(
+            cairo_claim.memory_id_to_small.as_snap().unwrap(),
+            interaction_claim.memory_id_to_small.as_snap().unwrap(),
             common_lookup_elements,
         );
 
@@ -525,7 +473,8 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             blake_context: blake_context_component,
             builtins: builtins_components,
             memory_address_to_id: memory_address_to_id_component,
-            memory_id_to_value: (memory_id_to_value_components, small_memory_id_to_value_component),
+            memory_id_to_big: memory_id_to_big_component,
+            memory_id_to_small: small_memory_id_to_value_component,
             range_checks: range_checks_components,
             verify_bitwise_xor_4: verify_bitwise_xor_4_component,
             verify_bitwise_xor_7: verify_bitwise_xor_7_component,
@@ -566,7 +515,8 @@ pub impl CairoAirImpl of Air<CairoAir> {
             blake_context,
             builtins,
             memory_address_to_id,
-            memory_id_to_value,
+            memory_id_to_big,
+            memory_id_to_small,
             range_checks,
             verify_bitwise_xor_4,
             verify_bitwise_xor_7,
@@ -614,18 +564,15 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref interaction_trace_mask_values,
                 random_coeff,
             );
-        let (memory_id_to_value_big, memory_id_to_value_small) = memory_id_to_value;
-        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
-            memory_id_to_value_big_component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                );
-        }
-        memory_id_to_value_small
+        memory_id_to_big
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+            );
+        memory_id_to_small
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -691,10 +638,8 @@ pub struct CairoAir {
     builtins: BuiltinComponents,
     poseidon_context: PoseidonContextComponents,
     memory_address_to_id: components::memory_address_to_id::Component,
-    memory_id_to_value: (
-        Array<components::memory_id_to_big::BigComponent>,
-        components::memory_id_to_big::SmallComponent,
-    ),
+    memory_id_to_big: components::memory_id_to_big::Component,
+    memory_id_to_small: components::memory_id_to_small::Component,
     range_checks: RangeChecksComponents,
     verify_bitwise_xor_4: components::verify_bitwise_xor_4::Component,
     verify_bitwise_xor_7: components::verify_bitwise_xor_7::Component,
@@ -739,38 +684,16 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             common_lookup_elements,
         );
 
-        let claim_memory_id_to_big = cairo_claim.memory_id_to_big.as_snap().unwrap();
-        let interaction_claim_memory_id_to_big = interaction_claim
-            .memory_id_to_big
-            .as_snap()
-            .unwrap();
-        assert!(
-            claim_memory_id_to_big
-                .big_log_sizes
-                .len() == interaction_claim_memory_id_to_big
-                .big_claimed_sums
-                .len(),
+        let memory_id_to_big_component = components::memory_id_to_big::NewComponentImpl::new(
+            cairo_claim.memory_id_to_big.as_snap().unwrap(),
+            interaction_claim.memory_id_to_big.as_snap().unwrap(),
+            common_lookup_elements,
         );
-        let mut memory_id_to_value_components = array![];
-        let mut offset: u32 = LARGE_MEMORY_VALUE_ID_BASE;
-        for i in 0..claim_memory_id_to_big.big_log_sizes.len() {
-            let log_size = claim_memory_id_to_big.big_log_sizes[i];
-            let claimed_sum = interaction_claim_memory_id_to_big.big_claimed_sums[i];
-            memory_id_to_value_components
-                .append(
-                    components::memory_id_to_big::NewBigComponentImpl::new(
-                        *log_size, offset, *claimed_sum, common_lookup_elements,
-                    ),
-                );
-            offset = offset + pow2(*log_size);
-        }
-        // Check that IDs in (ID -> Value) do not overflow P.
-        assert!(offset <= P_U32);
 
         let small_memory_id_to_value_component =
-            components::memory_id_to_big::NewSmallComponentImpl::new(
-            *claim_memory_id_to_big.small_log_size,
-            *interaction_claim_memory_id_to_big.small_claimed_sum,
+            components::memory_id_to_small::NewComponentImpl::new(
+            cairo_claim.memory_id_to_small.as_snap().unwrap(),
+            interaction_claim.memory_id_to_small.as_snap().unwrap(),
             common_lookup_elements,
         );
 
@@ -813,7 +736,8 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             builtins: builtins_components,
             poseidon_context: poseidon_context_components,
             memory_address_to_id: memory_address_to_id_component,
-            memory_id_to_value: (memory_id_to_value_components, small_memory_id_to_value_component),
+            memory_id_to_big: memory_id_to_big_component,
+            memory_id_to_small: small_memory_id_to_value_component,
             range_checks: range_checks_components,
             verify_bitwise_xor_4: verify_bitwise_xor_4_component,
             verify_bitwise_xor_7: verify_bitwise_xor_7_component,
@@ -855,7 +779,8 @@ pub impl CairoAirImpl of Air<CairoAir> {
             builtins,
             poseidon_context,
             memory_address_to_id,
-            memory_id_to_value,
+            memory_id_to_big,
+            memory_id_to_small,
             range_checks,
             verify_bitwise_xor_4,
             verify_bitwise_xor_7,
@@ -911,18 +836,15 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref interaction_trace_mask_values,
                 random_coeff,
             );
-        let (memory_id_to_value_big, memory_id_to_value_small) = memory_id_to_value;
-        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
-            memory_id_to_value_big_component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                );
-        }
-        memory_id_to_value_small
+        memory_id_to_big
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+            );
+        memory_id_to_small
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
