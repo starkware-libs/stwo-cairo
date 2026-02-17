@@ -51,7 +51,6 @@ starknet-types-core = { version = "=0.2.4", features = [
 stwo-cairo-prover = { path = "crates/prover", version = "~1.0.1" }
 stwo-cairo-utils = { path = "crates/utils", version = "~1.0.1" }
 stwo-cairo-adapter = { path = "crates/adapter", version = "~1.0.1" }
-stwo-cairo-dev-utils = { path = "crates/dev_utils", version = "~1.0.1" }
 stwo-cairo-common = { path = "crates/common", version = "~1.0.1" }
 cairo-air = { path = "crates/cairo-air", version = "~1.0.1" }
 stwo-cairo-serialize = { path = "crates/cairo-serialize", version = "~1.0.1" }

@@ -50,7 +50,7 @@ getrandom_v2 = { version = "0.2", package = "getrandom", features = ["js"] }
 getrandom_v3 = { version = "0.3", package = "getrandom", features = ["wasm_js"] }
 
 [dev-dependencies]
-stwo-cairo-dev-utils.workspace = true
+stwo-cairo-dev-utils = { path = "../dev_utils" }
 generic-tests = "0.1.3"
 tempfile = "3.19.1"
 test-log = { version = "0.2.17", features = ["trace"] }
