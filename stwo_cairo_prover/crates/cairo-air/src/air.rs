@@ -26,8 +26,8 @@ use super::poseidon::air::PoseidonContextComponents;
 use super::range_checks_air::RangeChecksComponents;
 use crate::claims::{CairoClaim, CairoInteractionClaim};
 use crate::components::{
-    memory_address_to_id, memory_id_to_big, verify_bitwise_xor_4, verify_bitwise_xor_7,
-    verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
+    memory_address_to_id, memory_id_to_big, memory_id_to_small, verify_bitwise_xor_4,
+    verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
 };
 use crate::relations::{
     self, CommonLookupElements, MEMORY_ADDRESS_TO_ID_RELATION_ID, MEMORY_ID_TO_BIG_RELATION_ID,
@@ -90,36 +90,16 @@ pub type RelationUsesDict = HashMap<&'static str, u64>;
 pub fn accumulate_relation_uses<const N: usize>(
     relation_uses: &mut RelationUsesDict,
     relation_uses_per_row: [RelationUse; N],
-    log_size: u32,
+    log_size: &[u32],
 ) {
-    let component_size = 1 << log_size;
-    for relation_use in relation_uses_per_row {
-        let relation_uses_in_component = relation_use.uses.checked_mul(component_size).unwrap();
-        let prev = relation_uses.entry(relation_use.relation_id).or_insert(0);
-        *prev = prev.checked_add(relation_uses_in_component).unwrap();
+    for log_size in log_size {
+        let component_size = 1 << log_size;
+        for relation_use in relation_uses_per_row.iter() {
+            let relation_uses_in_component = relation_use.uses.checked_mul(component_size).unwrap();
+            let prev = relation_uses.entry(relation_use.relation_id).or_insert(0);
+            *prev = prev.checked_add(relation_uses_in_component).unwrap();
+        }
     }
-}
-
-pub fn accumulate_relation_memory(
-    relation_uses: &mut RelationUsesDict,
-    claim: &Option<memory_id_to_big::Claim>,
-) {
-    let memory_id_to_value = claim.as_ref().expect("memory_id_to_value must be Some");
-
-    // TODO(ShaharS): Look into the file name of memory_id_to_big.
-    // memory_id_to_value has a big value component and a small value component.
-    for log_size in &memory_id_to_value.big_log_sizes {
-        accumulate_relation_uses(
-            relation_uses,
-            memory_id_to_big::RELATION_USES_PER_ROW_BIG,
-            *log_size,
-        );
-    }
-    accumulate_relation_uses(
-        relation_uses,
-        memory_id_to_big::RELATION_USES_PER_ROW_SMALL,
-        memory_id_to_value.small_log_size,
-    );
 }
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, Default, Clone)]
@@ -534,10 +514,8 @@ pub struct CairoComponents {
     pub pedersen_narrow_windows_context: PedersenNarrowWindowsContextComponents,
     pub poseidon_context: PoseidonContextComponents,
     pub memory_address_to_id: memory_address_to_id::Component,
-    pub memory_id_to_value: (
-        Vec<memory_id_to_big::BigComponent>,
-        memory_id_to_big::SmallComponent,
-    ),
+    pub memory_id_to_big: memory_id_to_big::Component,
+    pub memory_id_to_small: memory_id_to_small::Component,
     pub range_checks: RangeChecksComponents,
     pub verify_bitwise_xor_4: verify_bitwise_xor_4::Component,
     pub verify_bitwise_xor_7: verify_bitwise_xor_7::Component,
@@ -611,8 +589,8 @@ impl CairoComponents {
             interaction_claim.memory_address_to_id.unwrap().claimed_sum,
         );
 
-        let memory_id_to_value_components = memory_id_to_big::big_components_from_claim(
-            &cairo_claim.memory_id_to_big.as_ref().unwrap().big_log_sizes,
+        let memory_id_to_big_component = memory_id_to_big::Component::new(
+            &cairo_claim.memory_id_to_big.as_ref().unwrap().log_sizes,
             &interaction_claim
                 .memory_id_to_big
                 .as_ref()
@@ -621,17 +599,13 @@ impl CairoComponents {
             &common_lookup_elements.clone(),
             tree_span_provider,
         );
-        let small_memory_id_to_value_component = memory_id_to_big::SmallComponent::new(
+        let memory_id_to_small_component = memory_id_to_small::Component::new(
             tree_span_provider,
-            memory_id_to_big::SmallEval::new(
-                cairo_claim.memory_id_to_big.as_ref().unwrap(),
-                common_lookup_elements.clone(),
-            ),
-            interaction_claim
-                .memory_id_to_big
-                .as_ref()
-                .unwrap()
-                .small_claimed_sum,
+            memory_id_to_small::Eval {
+                claim: cairo_claim.memory_id_to_small.unwrap(),
+                common_lookup_elements: common_lookup_elements.clone(),
+            },
+            interaction_claim.memory_id_to_small.unwrap().claimed_sum,
         );
         let range_checks_component = RangeChecksComponents::new(
             tree_span_provider,
@@ -679,10 +653,8 @@ impl CairoComponents {
             pedersen_narrow_windows_context,
             poseidon_context,
             memory_address_to_id: memory_address_to_id_component,
-            memory_id_to_value: (
-                memory_id_to_value_components,
-                small_memory_id_to_value_component,
-            ),
+            memory_id_to_big: memory_id_to_big_component,
+            memory_id_to_small: memory_id_to_small_component,
             range_checks: range_checks_component,
             verify_bitwise_xor_4: verify_bitwise_xor_4_component,
             verify_bitwise_xor_7: verify_bitwise_xor_7_component,
@@ -701,11 +673,8 @@ impl CairoComponents {
             self.pedersen_narrow_windows_context.components(),
             self.poseidon_context.components(),
             [&self.memory_address_to_id as &dyn Component,],
-            self.memory_id_to_value
-                .0
-                .iter()
-                .map(|component| component as &dyn Component),
-            [&self.memory_id_to_value.1 as &dyn Component,],
+            self.memory_id_to_big.components(),
+            [&self.memory_id_to_small as &dyn Component,],
             self.range_checks.components(),
             [
                 &self.verify_bitwise_xor_4 as &dyn Component,
@@ -737,7 +706,7 @@ impl std::fmt::Display for CairoComponents {
             "MemoryAddressToId: {}",
             indented_component_display(&self.memory_address_to_id)
         )?;
-        for component in &self.memory_id_to_value.0 {
+        for component in &self.memory_id_to_big.components {
             writeln!(
                 f,
                 "MemoryIdToValue: {}",
@@ -747,7 +716,7 @@ impl std::fmt::Display for CairoComponents {
         writeln!(
             f,
             "SmallMemoryIdToValue: {}",
-            indented_component_display(&self.memory_id_to_value.1)
+            indented_component_display(&self.memory_id_to_small)
         )?;
         writeln!(f, "RangeChecks: {}", self.range_checks)?;
         writeln!(
@@ -829,7 +798,7 @@ mod tests {
             },
         ];
 
-        accumulate_relation_uses(&mut relation_uses, relation_uses_per_row, log_size);
+        accumulate_relation_uses(&mut relation_uses, relation_uses_per_row, &[log_size]);
 
         assert_eq!(relation_uses.len(), 2);
         assert_eq!(relation_uses.get("relation_1"), Some(&12));

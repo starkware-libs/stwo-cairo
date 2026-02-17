@@ -92,3 +92,4 @@ pub(crate) fn display_components<E: FrameworkEval>(components: &[FrameworkCompon
         .map(|component| indented_component_display(component))
         .join("\n")
 }
+pub mod memory_id_to_small;

@@ -1509,6 +1509,7 @@ impl CairoClaimGenerator {
             })
             .unzip();
 
+        let (memory_id_to_big_claim, memory_id_to_small_claim) = memory_id_to_big_claim.unzip();
         (
             CairoClaim {
                 public_data: self.public_data,
@@ -1560,6 +1561,7 @@ impl CairoClaimGenerator {
                 range_check_252_width_27: range_check_252_width_27_claim,
                 memory_address_to_id: memory_address_to_id_claim,
                 memory_id_to_big: memory_id_to_big_claim,
+                memory_id_to_small: memory_id_to_small_claim,
                 range_check_6: range_check_6_claim,
                 range_check_8: range_check_8_claim,
                 range_check_11: range_check_11_claim,
@@ -2419,14 +2421,18 @@ impl CairoInteractionClaimGenerator {
                 tree_builder.extend_evals(trace);
                 interaction_claim
             });
-        let memory_id_to_big_interaction_claim =
-            memory_id_to_big_result.map(|(big_traces, small_trace, interaction_claim)| {
-                for big_trace in big_traces {
-                    tree_builder.extend_evals(big_trace);
-                }
-                tree_builder.extend_evals(small_trace);
-                interaction_claim
-            });
+        let (memory_id_to_big_interaction_claim, memory_id_to_small_interaction_claim) =
+            memory_id_to_big_result
+                .map(
+                    |(big_traces, small_trace, big_interaction_claim, small_interaction_claim)| {
+                        for big_trace in big_traces {
+                            tree_builder.extend_evals(big_trace);
+                        }
+                        tree_builder.extend_evals(small_trace);
+                        (big_interaction_claim, small_interaction_claim)
+                    },
+                )
+                .unzip();
         let range_check_6_interaction_claim =
             range_check_6_result.map(|(trace, interaction_claim)| {
                 tree_builder.extend_evals(trace);
@@ -2565,6 +2571,7 @@ impl CairoInteractionClaimGenerator {
             range_check_252_width_27: range_check_252_width_27_interaction_claim,
             memory_address_to_id: memory_address_to_id_interaction_claim,
             memory_id_to_big: memory_id_to_big_interaction_claim,
+            memory_id_to_small: memory_id_to_small_interaction_claim,
             range_check_6: range_check_6_interaction_claim,
             range_check_8: range_check_8_interaction_claim,
             range_check_11: range_check_11_interaction_claim,

@@ -36,8 +36,9 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *self.log_size;
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size;
-            N_INTERACTION_TRACE_QM31_COLUMNS * QM31_EXTENSION_DEGREE]
+        let interaction_log_sizes = [
+            log_size
+        ; N_INTERACTION_TRACE_QM31_COLUMNS * QM31_EXTENSION_DEGREE]
             .span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }

@@ -359,21 +359,18 @@ fn flatten_claim(claim: &CairoClaim) -> (Vec<bool>, Vec<u32>) {
         &mut component_enable_bits,
     );
 
-    let memory_id_to_big::Claim {
-        big_log_sizes,
-        small_log_size,
-    } = claim.memory_id_to_big.as_ref().unwrap();
-    assert!(big_log_sizes.len() <= MEMORY_ADDRESS_TO_ID_SPLIT);
-    for log_size in big_log_sizes {
+    let memory_id_to_big::Claim { log_sizes } = claim.memory_id_to_big.as_ref().unwrap();
+    assert!(log_sizes.len() <= MEMORY_ADDRESS_TO_ID_SPLIT);
+    for log_size in log_sizes {
         component_log_sizes.push(*log_size);
         component_enable_bits.push(true);
     }
-    for _ in 0..(MEMORY_ADDRESS_TO_ID_SPLIT - big_log_sizes.len()) {
+    for _ in 0..(MEMORY_ADDRESS_TO_ID_SPLIT - log_sizes.len()) {
         component_log_sizes.push(0_u32);
         component_enable_bits.push(false);
     }
 
-    component_log_sizes.push(*small_log_size);
+    component_log_sizes.push(claim.memory_id_to_small.unwrap().log_size);
     component_enable_bits.push(true);
 
     // Range checks
@@ -719,7 +716,6 @@ pub fn flatten_interaction_claim(interaction_claim: &CairoInteractionClaim) -> V
     // Memory id to big
     let memory_id_to_big::InteractionClaim {
         big_claimed_sums,
-        small_claimed_sum,
         claimed_sum: _,
     } = interaction_claim.memory_id_to_big.as_ref().unwrap();
     assert!(big_claimed_sums.len() <= MEMORY_ADDRESS_TO_ID_SPLIT);
@@ -730,7 +726,7 @@ pub fn flatten_interaction_claim(interaction_claim: &CairoInteractionClaim) -> V
         claimed_sums.push(SecureField::zero());
     }
 
-    claimed_sums.push(*small_claimed_sum);
+    claimed_sums.push(interaction_claim.memory_id_to_small.unwrap().claimed_sum);
 
     // Range checks
     claimed_sums.push(option_claimed_sum(&interaction_claim.range_check_6, |c| {

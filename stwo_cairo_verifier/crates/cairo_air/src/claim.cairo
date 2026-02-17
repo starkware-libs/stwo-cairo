@@ -419,9 +419,7 @@ fn flatten_claim(claim: @CairoClaim) -> (Span<bool>, Span<u32>) {
     component_log_sizes.append(c.log_size);
     component_enable_bits.append(true);
 
-    let memory_id_to_big::Claim {
-        big_log_sizes, small_log_size,
-    } = claim.memory_id_to_big.as_snap().unwrap();
+    let memory_id_to_big::Claim { big_log_sizes } = claim.memory_id_to_big.as_snap().unwrap();
     assert!(big_log_sizes.len() <= MEMORY_ADDRESS_TO_ID_SPLIT);
     for log_size in big_log_sizes {
         component_log_sizes.append(*log_size);
@@ -431,7 +429,8 @@ fn flatten_claim(claim: @CairoClaim) -> (Span<bool>, Span<u32>) {
         component_log_sizes.append(0_u32);
         component_enable_bits.append(false);
     }
-    component_log_sizes.append(*small_log_size);
+    let c = claim.memory_id_to_small.unwrap();
+    component_log_sizes.append(c.log_size);
     component_enable_bits.append(true);
 
     // Range checks
@@ -747,7 +746,7 @@ pub fn flatten_interaction_claim(interaction_claim: @CairoInteractionClaim) -> S
 
     // Memory id to big
     let memory_id_to_big::InteractionClaim {
-        big_claimed_sums, small_claimed_sum, claimed_sum: _,
+        big_claimed_sums, claimed_sum: _,
     } = interaction_claim.memory_id_to_big.as_snap().unwrap();
     assert!(big_claimed_sums.len() <= MEMORY_ADDRESS_TO_ID_SPLIT);
     for claimed_sum in big_claimed_sums {
@@ -756,7 +755,8 @@ pub fn flatten_interaction_claim(interaction_claim: @CairoInteractionClaim) -> S
     for _ in 0..(MEMORY_ADDRESS_TO_ID_SPLIT - big_claimed_sums.len()) {
         claimed_sums.append(Zero::zero());
     }
-    claimed_sums.append(*small_claimed_sum);
+    let c = interaction_claim.memory_id_to_small.unwrap();
+    claimed_sums.append(c.claimed_sum);
 
     // Range checks
     let c = interaction_claim.range_check_6.unwrap();

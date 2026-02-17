@@ -1,7 +1,12 @@
 use std::simd::Simd;
 use std::sync::Arc;
 
-use cairo_air::components::memory_id_to_big::{Claim, InteractionClaim, MEMORY_ID_SIZE};
+use cairo_air::components::memory_id_to_big::{
+    Claim as BigClaim, InteractionClaim as BigInteractionClaim, MEMORY_ID_SIZE,
+};
+use cairo_air::components::memory_id_to_small::{
+    Claim as SmallClaim, InteractionClaim as SmallInteractionClaim,
+};
 use cairo_air::relations::{
     self, MEMORY_ID_TO_BIG_RELATION_ID, RANGE_CHECK_9_9_B_RELATION_ID,
     RANGE_CHECK_9_9_C_RELATION_ID, RANGE_CHECK_9_9_D_RELATION_ID, RANGE_CHECK_9_9_E_RELATION_ID,
@@ -120,7 +125,12 @@ impl ClaimGenerator {
         self,
         range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
         log_max_big_size: u32,
-    ) -> (BigTraces, SmallTrace, Claim, InteractionClaimGenerator) {
+    ) -> (
+        BigTraces,
+        SmallTrace,
+        (BigClaim, SmallClaim),
+        InteractionClaimGenerator,
+    ) {
         let big_table_traces = gen_big_memory_traces(
             self.big_values,
             self.big_mults.into_simd_vec(),
@@ -264,10 +274,14 @@ impl ClaimGenerator {
         (
             big_traces,
             small_trace,
-            Claim {
-                big_log_sizes,
-                small_log_size,
-            },
+            (
+                BigClaim {
+                    log_sizes: big_log_sizes,
+                },
+                SmallClaim {
+                    log_size: small_log_size,
+                },
+            ),
             InteractionClaimGenerator {
                 big_components_values,
                 big_multiplicities,
@@ -387,7 +401,12 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (BigTraces, SmallTrace, InteractionClaim) {
+    ) -> (
+        BigTraces,
+        SmallTrace,
+        BigInteractionClaim,
+        SmallInteractionClaim,
+    ) {
         let mut offset = 0;
         let (big_traces, big_claimed_sums): (Vec<_>, Vec<_>) = self
             .big_components_values
@@ -407,15 +426,17 @@ impl InteractionClaimGenerator {
 
         let (small_trace, small_claimed_sum) =
             self.gen_small_memory_interaction_trace(common_lookup_elements);
-        let claimed_sum = small_claimed_sum + big_claimed_sums.iter().sum::<SecureField>();
+        let claimed_sum = big_claimed_sums.iter().sum::<SecureField>();
 
         (
             big_traces,
             small_trace,
-            InteractionClaim {
-                small_claimed_sum,
+            BigInteractionClaim {
                 big_claimed_sums,
                 claimed_sum,
+            },
+            SmallInteractionClaim {
+                claimed_sum: small_claimed_sum,
             },
         )
     }
@@ -606,7 +627,7 @@ impl InteractionClaimGenerator {
 mod tests {
     use std::sync::Arc;
 
-    use cairo_air::components::memory_id_to_big::{self, SmallEval};
+    use cairo_air::components::{memory_id_to_big, memory_id_to_small};
     use cairo_air::relations::CommonLookupElements;
     use cairo_air::PreProcessedTraceVariant;
     use itertools::Itertools;
@@ -660,7 +681,7 @@ mod tests {
         let preprocessed_trace = Arc::new(PreProcessedTrace::canonical_without_pedersen());
         let id_to_big = super::ClaimGenerator::new(Arc::clone(&memory));
         let range_check_9_9 = range_check_9_9::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let (big_traces, small_trace, claim, interaction_generator) =
+        let (big_traces, small_trace, (big_claim, small_claim), interaction_generator) =
             id_to_big.write_trace(&range_check_9_9, log_max_seq_size);
         for big_trace in big_traces {
             tree_builder.extend_evals(big_trace);
@@ -672,7 +693,7 @@ mod tests {
         let mut dummy_channel = Blake2sChannel::default();
         let interaction_elements = CommonLookupElements::draw(&mut dummy_channel);
         let mut tree_builder = commitment_scheme.tree_builder();
-        let (big_traces, small_trace, interaction_claim) =
+        let (big_traces, small_trace, big_interaction_claim, small_interaction_claim) =
             interaction_generator.write_interaction_trace(&interaction_elements);
         for big_trace in big_traces {
             tree_builder.extend_evals(big_trace);
@@ -682,25 +703,25 @@ mod tests {
 
         let mut location_allocator =
             TraceLocationAllocator::new_with_preprocessed_columns(&preprocessed_trace.ids());
-        let big_components = memory_id_to_big::big_components_from_claim(
-            &claim.big_log_sizes,
-            &interaction_claim.big_claimed_sums,
+        let big_components = memory_id_to_big::Component::new(
+            &big_claim.log_sizes,
+            &big_interaction_claim.big_claimed_sums,
             &interaction_elements,
             &mut location_allocator,
         );
 
-        let small_component = memory_id_to_big::SmallComponent::new(
+        let small_component = memory_id_to_small::Component::new(
             &mut location_allocator,
-            SmallEval {
-                log_n_rows: claim.small_log_size,
+            memory_id_to_small::Eval {
+                claim: small_claim,
                 common_lookup_elements: interaction_elements.clone(),
             },
-            interaction_claim.small_claimed_sum,
+            small_interaction_claim.claimed_sum,
         );
 
         let trace_domain_evaluations = commitment_scheme.trace_domain_evaluations();
 
-        for component in big_components {
+        for component in big_components.components {
             assert_component(&component, &trace_domain_evaluations);
         }
         assert_component(&small_component, &trace_domain_evaluations);
@@ -736,10 +757,11 @@ mod tests {
         let expected_big_log_sizes =
             vec![expected_first_big_log_size, expected_second_big_log_size];
 
-        let (_, _, claim, _) = id_to_big.write_trace(&range_check_9_9, log_max_seq_size);
+        let (_, _, (big_claim, small_claim), _) =
+            id_to_big.write_trace(&range_check_9_9, log_max_seq_size);
 
-        assert_eq!(claim.small_log_size, expected_small_log_size);
-        assert_eq!(claim.big_log_sizes, expected_big_log_sizes);
+        assert_eq!(small_claim.log_size, expected_small_log_size);
+        assert_eq!(big_claim.log_sizes, expected_big_log_sizes);
     }
 
     #[test]

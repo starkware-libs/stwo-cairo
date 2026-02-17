@@ -8,9 +8,7 @@ use stwo::core::pcs::TreeVec;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 
 use super::flat_claims::{flatten_interaction_claim, FlatClaim};
-use crate::air::{
-    accumulate_relation_memory, accumulate_relation_uses, PublicData, RelationUsesDict,
-};
+use crate::air::{accumulate_relation_uses, PublicData, RelationUsesDict};
 use crate::components::*;
 use crate::relations::CommonLookupElements;
 
@@ -65,6 +63,7 @@ pub struct CairoClaim {
     pub range_check_252_width_27: Option<range_check_252_width_27::Claim>,
     pub memory_address_to_id: Option<memory_address_to_id::Claim>,
     pub memory_id_to_big: Option<memory_id_to_big::Claim>,
+    pub memory_id_to_small: Option<memory_id_to_small::Claim>,
     pub range_check_6: Option<range_check_6::Claim>,
     pub range_check_8: Option<range_check_8::Claim>,
     pub range_check_11: Option<range_check_11::Claim>,
@@ -92,211 +91,223 @@ impl CairoClaim {
 
     pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
         self.add_opcode.as_ref().inspect(|c| {
-            accumulate_relation_uses(relation_uses, add_opcode::RELATION_USES_PER_ROW, c.log_size)
+            accumulate_relation_uses(
+                relation_uses,
+                add_opcode::RELATION_USES_PER_ROW,
+                &[c.log_size],
+            )
         });
         self.add_opcode_small.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 add_opcode_small::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.add_ap_opcode.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 add_ap_opcode::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.assert_eq_opcode.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 assert_eq_opcode::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.assert_eq_opcode_imm.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 assert_eq_opcode_imm::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.assert_eq_opcode_double_deref.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 assert_eq_opcode_double_deref::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.blake_compress_opcode.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 blake_compress_opcode::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.call_opcode_abs.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 call_opcode_abs::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.call_opcode_rel_imm.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 call_opcode_rel_imm::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.generic_opcode.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 generic_opcode::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.jnz_opcode_non_taken.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 jnz_opcode_non_taken::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.jnz_opcode_taken.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 jnz_opcode_taken::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.jump_opcode_abs.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 jump_opcode_abs::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.jump_opcode_double_deref.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 jump_opcode_double_deref::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.jump_opcode_rel.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 jump_opcode_rel::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.jump_opcode_rel_imm.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 jump_opcode_rel_imm::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.mul_opcode.as_ref().inspect(|c| {
-            accumulate_relation_uses(relation_uses, mul_opcode::RELATION_USES_PER_ROW, c.log_size)
+            accumulate_relation_uses(
+                relation_uses,
+                mul_opcode::RELATION_USES_PER_ROW,
+                &[c.log_size],
+            )
         });
         self.mul_opcode_small.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 mul_opcode_small::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.qm_31_add_mul_opcode.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 qm_31_add_mul_opcode::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.ret_opcode.as_ref().inspect(|c| {
-            accumulate_relation_uses(relation_uses, ret_opcode::RELATION_USES_PER_ROW, c.log_size)
+            accumulate_relation_uses(
+                relation_uses,
+                ret_opcode::RELATION_USES_PER_ROW,
+                &[c.log_size],
+            )
         });
         self.verify_instruction.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 verify_instruction::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.blake_round.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 blake_round::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.blake_g.as_ref().inspect(|c| {
-            accumulate_relation_uses(relation_uses, blake_g::RELATION_USES_PER_ROW, c.log_size)
+            accumulate_relation_uses(relation_uses, blake_g::RELATION_USES_PER_ROW, &[c.log_size])
         });
         self.triple_xor_32.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 triple_xor_32::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.add_mod_builtin.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 add_mod_builtin::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.bitwise_builtin.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 bitwise_builtin::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.mul_mod_builtin.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 mul_mod_builtin::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.pedersen_builtin.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 pedersen_builtin::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.pedersen_builtin_narrow_windows.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 pedersen_builtin_narrow_windows::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.poseidon_builtin.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 poseidon_builtin::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.range_check96_builtin.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 range_check96_builtin::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.range_check_builtin.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 range_check_builtin::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.pedersen_aggregator_window_bits_18
@@ -305,14 +316,14 @@ impl CairoClaim {
                 accumulate_relation_uses(
                     relation_uses,
                     pedersen_aggregator_window_bits_18::RELATION_USES_PER_ROW,
-                    c.log_size,
+                    &[c.log_size],
                 )
             });
         self.partial_ec_mul_window_bits_18.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 partial_ec_mul_window_bits_18::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.pedersen_aggregator_window_bits_9
@@ -321,55 +332,72 @@ impl CairoClaim {
                 accumulate_relation_uses(
                     relation_uses,
                     pedersen_aggregator_window_bits_9::RELATION_USES_PER_ROW,
-                    c.log_size,
+                    &[c.log_size],
                 )
             });
         self.partial_ec_mul_window_bits_9.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 partial_ec_mul_window_bits_9::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.poseidon_aggregator.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 poseidon_aggregator::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.poseidon_3_partial_rounds_chain.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 poseidon_3_partial_rounds_chain::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.poseidon_full_round_chain.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 poseidon_full_round_chain::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.cube_252.as_ref().inspect(|c| {
-            accumulate_relation_uses(relation_uses, cube_252::RELATION_USES_PER_ROW, c.log_size)
+            accumulate_relation_uses(
+                relation_uses,
+                cube_252::RELATION_USES_PER_ROW,
+                &[c.log_size],
+            )
         });
         self.range_check_252_width_27.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 range_check_252_width_27::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
         self.memory_address_to_id.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
                 memory_address_to_id::RELATION_USES_PER_ROW,
-                c.log_size,
+                &[c.log_size],
             )
         });
-        accumulate_relation_memory(relation_uses, &self.memory_id_to_big);
+        self.memory_id_to_big.as_ref().inspect(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                memory_id_to_big::RELATION_USES_PER_ROW,
+                &c.log_sizes,
+            )
+        });
+        self.memory_id_to_small.as_ref().inspect(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                memory_id_to_small::RELATION_USES_PER_ROW,
+                &[c.log_size],
+            )
+        });
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
@@ -518,6 +546,9 @@ impl CairoClaim {
         self.memory_id_to_big
             .as_ref()
             .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.memory_id_to_small
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
         self.range_check_6
             .as_ref()
             .inspect(|c| log_sizes_list.push(c.log_sizes()));
@@ -627,6 +658,7 @@ pub struct CairoInteractionClaim {
     pub range_check_252_width_27: Option<range_check_252_width_27::InteractionClaim>,
     pub memory_address_to_id: Option<memory_address_to_id::InteractionClaim>,
     pub memory_id_to_big: Option<memory_id_to_big::InteractionClaim>,
+    pub memory_id_to_small: Option<memory_id_to_small::InteractionClaim>,
     pub range_check_6: Option<range_check_6::InteractionClaim>,
     pub range_check_8: Option<range_check_8::InteractionClaim>,
     pub range_check_11: Option<range_check_11::InteractionClaim>,
@@ -874,6 +906,9 @@ pub fn lookup_sum(
             sum += ic.claimed_sum;
         });
     interaction_claim.memory_id_to_big.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.memory_id_to_small.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
     interaction_claim.range_check_6.as_ref().inspect(|ic| {

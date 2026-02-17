@@ -1,4 +1,4 @@
-// AIR version c20c5d1
+// AIR version c5739e58
 use stwo_verifier_core::fields::m31::M31;
 pub const ADD_AP_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1763229546 }, M31 { inner: 1632198791 }, M31 { inner: 1137649783 },

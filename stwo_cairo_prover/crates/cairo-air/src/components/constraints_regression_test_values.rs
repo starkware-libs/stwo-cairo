@@ -204,3 +204,6 @@ pub const VERIFY_BITWISE_XOR_12: Expect = expect![[r#"
 pub const VERIFY_INSTRUCTION: Expect = expect![[r#"
     (1271062552 + 1607124749i) + (712067765 + 354590374i)u
 "#]];
+pub const MEMORY_ID_TO_SMALL: Expect = expect![[r#"
+    (1271062552 + 1607124749i) + (712067765 + 354590374i)u
+"#]];
