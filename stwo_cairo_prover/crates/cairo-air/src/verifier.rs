@@ -7,7 +7,7 @@ use stwo::core::channel::{Channel, MerkleChannel};
 use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::pcs::CommitmentSchemeVerifier;
-use stwo::core::verifier::{verify, VerificationError};
+use stwo::core::verifier::{verify_ex, VerificationError};
 use stwo_cairo_common::builtins::*;
 use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, LOG_MEMORY_ADDRESS_BOUND};
 use stwo_cairo_common::prover_types::cpu::{CasmState, PRIME};
@@ -313,6 +313,12 @@ fn check_builtin(
 pub const INTERACTION_POW_BITS: u32 = 24;
 
 pub fn verify_cairo<MC: MerkleChannel>(
+    proof: CairoProofForRustVerifier<MC::H>,
+) -> Result<(), CairoVerificationError> {
+    verify_cairo_ex::<MC>(proof, false)
+}
+
+pub fn verify_cairo_ex<MC: MerkleChannel>(
     CairoProofForRustVerifier {
         claim,
         interaction_pow,
@@ -321,6 +327,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
         channel_salt,
         preprocessed_trace_variant,
     }: CairoProofForRustVerifier<MC::H>,
+    include_all_preprocessed_columns: bool,
 ) -> Result<(), CairoVerificationError> {
     let _span = span!(Level::INFO, "verify_cairo").entered();
 
@@ -374,11 +381,12 @@ pub fn verify_cairo<MC: MerkleChannel>(
     let components = component_generator.components();
 
     // Verify stark.
-    verify(
+    verify_ex(
         &components,
         channel,
         commitment_scheme_verifier,
         stark_proof,
+        include_all_preprocessed_columns,
     )
     .map_err(CairoVerificationError::Stark)
 }
