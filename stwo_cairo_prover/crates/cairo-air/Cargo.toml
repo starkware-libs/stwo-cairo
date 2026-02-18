@@ -25,8 +25,8 @@ starknet-curve.workspace = true
 starknet-ff.workspace = true
 starknet-types-core.workspace = true
 stwo-cairo-serialize = { path = "../cairo-serialize", version = "~1.0.1" }
-stwo.workspace = true
-stwo-constraint-framework.workspace = true
+stwo = { workspace = true, features = ["parallel", "prover"] }
+stwo-constraint-framework = { workspace = true, features = ["prover"] }
 thiserror.workspace = true
 serde_json.workspace = true
 tracing.workspace = true
