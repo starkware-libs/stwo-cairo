@@ -65,7 +65,110 @@ impl CasmStatesByOpcode {
 
         if matches!(instruction.opcode_extension, OpcodeExtension::Stone) {
             if generic_opcode_reroute {
-                self.generic_opcode.push(state);
+                match instruction {
+                    // assert equal.
+                    Instruction {
+                        offset0: _,
+                        offset1,
+                        offset2,
+                        dst_base_fp: _,
+                        op0_base_fp,
+                        op_1_imm,
+                        op_1_base_fp,
+                        op_1_base_ap,
+                        res_add: false,
+                        res_mul: false,
+                        pc_update_jump: false,
+                        pc_update_jump_rel: false,
+                        pc_update_jnz: false,
+                        ap_update_add: false,
+                        ap_update_add_1: _,
+                        opcode_call: false,
+                        opcode_ret: false,
+                        opcode_assert_eq: true,
+                        opcode_extension: OpcodeExtension::Stone,
+                    } => {
+                        if op_1_imm {
+                            // [ap/fp + offset0] = imm.
+                            assert!(
+                                !op_1_base_fp
+                                    && !op_1_base_ap
+                                    && offset2 == 1
+                                    && op0_base_fp
+                                    && offset1 == -1
+                            );
+                            self.generic_opcode.push(state);
+                        } else if !op_1_base_fp && !op_1_base_ap {
+                            // [ap/fp + offset0] = [[ap/fp + offset1] + offset2].
+                            self.assert_eq_opcode_double_deref.push(state);
+                        } else {
+                            // [ap/fp + offset0] = [ap/fp + offset1].
+                            assert!((op_1_base_fp || op_1_base_ap) && offset1 == -1 && op0_base_fp);
+                            self.generic_opcode.push(state);
+                        }
+                    }
+
+                    // add.
+                    Instruction {
+                        offset0,
+                        offset1,
+                        offset2,
+                        dst_base_fp,
+                        op0_base_fp,
+                        op_1_imm,
+                        op_1_base_fp,
+                        op_1_base_ap,
+                        res_add: true,
+                        res_mul: false,
+                        pc_update_jump: false,
+                        pc_update_jump_rel: false,
+                        pc_update_jnz: false,
+                        ap_update_add: false,
+                        ap_update_add_1: _,
+                        opcode_call: false,
+                        opcode_ret: false,
+                        opcode_assert_eq: true,
+                        opcode_extension: OpcodeExtension::Stone,
+                    } => {
+                        let (dst_addr, op0_addr, op_1_addr) = (
+                            if dst_base_fp { fp } else { ap },
+                            if op0_base_fp { fp } else { ap },
+                            if op_1_imm {
+                                pc
+                            } else if op_1_base_fp {
+                                fp
+                            } else {
+                                ap
+                            },
+                        );
+                        let (dst, op0, op_1) = (
+                            memory.get(dst_addr.0.checked_add_signed(offset0 as i32).unwrap()),
+                            memory.get(op0_addr.0.checked_add_signed(offset1 as i32).unwrap()),
+                            memory.get(op_1_addr.0.checked_add_signed(offset2 as i32).unwrap()),
+                        );
+
+                        // [ap/fp + offset0] = [ap/fp + offset1] + imm.
+                        // [ap/fp + offset0] = [ap/fp + offset1] + [ap/fp + offset2].
+                        assert_eq!(
+                    (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
+                    1,
+                    "add opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
+                );
+                        assert!(
+                            (!op_1_imm) || offset2 == 1,
+                            "add opcode requires that if op_1_imm is true, offset2 must be 1"
+                        );
+                        if is_small_add(dst, op0, op_1) {
+                            self.add_opcode_small.push(state);
+                        } else {
+                            self.add_opcode.push(state);
+                        }
+                    }
+                    // generic opcode.
+                    _ => {
+                        self.generic_opcode.push(state);
+                    }
+                }
             } else {
                 match instruction {
                     // ret.
