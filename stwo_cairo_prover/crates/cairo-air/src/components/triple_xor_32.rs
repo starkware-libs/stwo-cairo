@@ -87,9 +87,6 @@ impl FrameworkEval for Eval {
         let xor_col19 = eval.next_trace_mask();
         let enabler_col20 = eval.next_trace_mask();
 
-        eval.add_constraint(
-            ((enabler_col20.clone() * enabler_col20.clone()) - enabler_col20.clone()),
-        );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [split_16_low_part_size_8_output_tmp_298db_1_limb_0] = Split16LowPartSize8::evaluate(
@@ -202,6 +199,10 @@ impl FrameworkEval for Eval {
             eval.add_intermediate((xor_col13.clone() + (xor_col15.clone() * M31_256.clone())));
         let triple_xor32_output_tmp_298db_28_limb_1 =
             eval.add_intermediate((xor_col17.clone() + (xor_col19.clone() * M31_256.clone())));
+        // Enabler is a bit.
+        eval.add_constraint(
+            ((enabler_col20.clone() * enabler_col20.clone()) - enabler_col20.clone()),
+        );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
             -E::EF::from(enabler_col20.clone()),

@@ -756,9 +756,6 @@ impl FrameworkEval for Eval {
         let carry_26_col622 = eval.next_trace_mask();
         let enabler_col623 = eval.next_trace_mask();
 
-        eval.add_constraint(
-            ((enabler_col623.clone() * enabler_col623.clone()) - enabler_col623.clone()),
-        );
         // to_add_bit is bool.
         eval.add_constraint(
             (to_add_bit_col125.clone() * (M31_1.clone() - to_add_bit_col125.clone())),
@@ -2099,6 +2096,10 @@ impl FrameworkEval for Eval {
             carry_26_col622.clone(),
             &self.common_lookup_elements,
             &mut eval,
+        );
+        // Enabler is a bit.
+        eval.add_constraint(
+            ((enabler_col623.clone() * enabler_col623.clone()) - enabler_col623.clone()),
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,

@@ -102,9 +102,6 @@ impl FrameworkEval for Eval {
         let partial_limb_msb_col23 = eval.next_trace_mask();
         let enabler_col24 = eval.next_trace_mask();
 
-        eval.add_constraint(
-            ((enabler_col24.clone() * enabler_col24.clone()) - enabler_col24.clone()),
-        );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [decode_instruction_f1edd_output_tmp_32b66_4_offset2, decode_instruction_f1edd_output_tmp_32b66_4_op1_base_ap] =
@@ -171,6 +168,10 @@ impl FrameworkEval for Eval {
             partial_limb_msb_col23.clone(),
             &self.common_lookup_elements,
             &mut eval,
+        );
+        // Enabler is a bit.
+        eval.add_constraint(
+            ((enabler_col24.clone() * enabler_col24.clone()) - enabler_col24.clone()),
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,

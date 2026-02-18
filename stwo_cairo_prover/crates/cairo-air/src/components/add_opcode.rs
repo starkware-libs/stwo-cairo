@@ -177,9 +177,6 @@ impl FrameworkEval for Eval {
         let sub_p_bit_col101 = eval.next_trace_mask();
         let enabler_col102 = eval.next_trace_mask();
 
-        eval.add_constraint(
-            ((enabler_col102.clone() * enabler_col102.clone()) - enabler_col102.clone()),
-        );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [decode_instruction_bc3cd_output_tmp_3fa46_11_offset0, decode_instruction_bc3cd_output_tmp_3fa46_11_offset1, decode_instruction_bc3cd_output_tmp_3fa46_11_offset2, decode_instruction_bc3cd_output_tmp_3fa46_11_op1_base_ap] =
@@ -416,6 +413,10 @@ impl FrameworkEval for Eval {
             sub_p_bit_col101.clone(),
             &self.common_lookup_elements,
             &mut eval,
+        );
+        // Enabler is a bit.
+        eval.add_constraint(
+            ((enabler_col102.clone() * enabler_col102.clone()) - enabler_col102.clone()),
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,

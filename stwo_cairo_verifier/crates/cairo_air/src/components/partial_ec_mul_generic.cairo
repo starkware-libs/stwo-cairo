@@ -2546,10 +2546,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        // Constraint -
-        let constraint_quotient = (((enabler_col623 * enabler_col623) - enabler_col623));
-        sum = sum * random_coeff + constraint_quotient;
-
         // Constraint - to_add_bit is bool
         let constraint_quotient = ((to_add_bit_col125
             * (qm31_const::<1, 0, 0, 0>() - to_add_bit_col125)));
@@ -4240,6 +4236,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref sum,
             random_coeff,
         );
+
+        // Constraint - Enabler is a bit
+        let constraint_quotient = (((enabler_col623 * enabler_col623) - enabler_col623));
+        sum = sum * random_coeff + constraint_quotient;
 
         partial_ec_mul_generic_sum_312 = self
             .common_lookup_elements
@@ -9443,7 +9443,7 @@ mod tests {
             [qm31_const::<1373465212, 670582280, 1265712944, 502504280>()].span(),
             [qm31_const::<1306356033, 536364552, 1198604080, 502504280>()].span(),
             [qm31_const::<1507683570, 939017736, 1399930672, 502504280>()].span(),
-            [qm31_const::<902525010, 1115155995, 130434373, 2116865290>()].span(),
+            [qm31_const::<1440574391, 804800008, 1332821808, 502504280>()].span(),
         ]
             .span();
         let interaction_values = array![

@@ -152,9 +152,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        // Constraint -
-        let constraint_quotient = (((enabler_col20 * enabler_col20) - enabler_col20));
-        sum = sum * random_coeff + constraint_quotient;
         let split_16_low_part_size_8_output_tmp_298db_1_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
             input_limb_0_col0, ms_8_bits_col6, self.common_lookup_elements, ref sum, random_coeff,
@@ -261,6 +258,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             + (xor_col15 * qm31_const::<256, 0, 0, 0>()));
         let triple_xor32_output_tmp_298db_28_limb_1: QM31 = (xor_col17
             + (xor_col19 * qm31_const::<256, 0, 0, 0>()));
+
+        // Constraint - Enabler is a bit
+        let constraint_quotient = (((enabler_col20 * enabler_col20) - enabler_col20));
+        sum = sum * random_coeff + constraint_quotient;
 
         triple_xor_32_sum_8 = self
             .common_lookup_elements
@@ -489,7 +490,7 @@ mod tests {
             [qm31_const::<1785226588, 510860387, 1992127319, 343880121>()].span(),
             [qm31_const::<1315462335, 1718819938, 1522365270, 343880121>()].span(),
             [qm31_const::<1382571514, 1853037666, 1589474134, 343880121>()].span(),
-            [qm31_const::<902525010, 1115155995, 130434373, 2116865290>()].span(),
+            [qm31_const::<1986820986, 913513739, 45970432, 343880178>()].span(),
         ]
             .span();
         let interaction_values = array![

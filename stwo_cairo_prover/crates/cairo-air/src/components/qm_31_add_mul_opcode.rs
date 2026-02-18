@@ -151,9 +151,6 @@ impl FrameworkEval for Eval {
         let op1_delta_cd_inv_col71 = eval.next_trace_mask();
         let enabler_col72 = eval.next_trace_mask();
 
-        eval.add_constraint(
-            ((enabler_col72.clone() * enabler_col72.clone()) - enabler_col72.clone()),
-        );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [decode_instruction_3802d_output_tmp_fa85a_12_offset0, decode_instruction_3802d_output_tmp_fa85a_12_offset1, decode_instruction_3802d_output_tmp_fa85a_12_offset2, decode_instruction_3802d_output_tmp_fa85a_12_op1_base_ap, decode_instruction_3802d_output_tmp_fa85a_12_res_mul] =
@@ -353,6 +350,10 @@ impl FrameworkEval for Eval {
                 - ((qm_31_read_reduced_output_tmp_fa85a_24_limb_3.clone()
                     + qm_31_read_reduced_output_tmp_fa85a_30_limb_3.clone())
                     * res_add_col10.clone())),
+        );
+        // Enabler is a bit.
+        eval.add_constraint(
+            ((enabler_col72.clone() * enabler_col72.clone()) - enabler_col72.clone()),
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,

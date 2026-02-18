@@ -99,9 +99,6 @@ impl FrameworkEval for Eval {
         let range_check_29_bot11bits_col15 = eval.next_trace_mask();
         let enabler_col16 = eval.next_trace_mask();
 
-        eval.add_constraint(
-            ((enabler_col16.clone() * enabler_col16.clone()) - enabler_col16.clone()),
-        );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [decode_instruction_d2a10_output_tmp_c921e_6_offset2, decode_instruction_d2a10_output_tmp_c921e_6_op1_base_ap] =
@@ -150,6 +147,10 @@ impl FrameworkEval for Eval {
             range_check_29_bot11bits_col15.clone(),
             &self.common_lookup_elements,
             &mut eval,
+        );
+        // Enabler is a bit.
+        eval.add_constraint(
+            ((enabler_col16.clone() * enabler_col16.clone()) - enabler_col16.clone()),
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
