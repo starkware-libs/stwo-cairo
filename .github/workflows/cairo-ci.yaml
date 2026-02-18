@@ -131,6 +131,20 @@ jobs:
       - name: Build cairo-air for wasm32
         run: cargo check --package cairo-air --no-default-features --target wasm32-unknown-unknown --release
 
+  cairo-air-stable:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./stwo_cairo_prover
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Check cairo-air compiles on stable
+        env:
+          RUSTUP_TOOLCHAIN: stable
+        run: cargo check --package cairo-air
+
   format:
     runs-on: ubuntu-latest
     defaults:
