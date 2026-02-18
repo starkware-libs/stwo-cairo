@@ -82,7 +82,14 @@ where
     } = prover_params;
 
     let cairo_air_log_degree_bound = 1;
-    let max_domain_size = LOG_MAX_ROWS
+
+    let log_max_rows = if let Some(lifting_log_size) = prover_params.pcs_config.lifting_log_size {
+        lifting_log_size
+    } else {
+        LOG_MAX_ROWS
+    };
+
+    let max_domain_size = log_max_rows
         + std::cmp::max(
             cairo_air_log_degree_bound,
             pcs_config.fri_config.log_blowup_factor,
