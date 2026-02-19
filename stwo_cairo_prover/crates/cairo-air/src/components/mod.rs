@@ -23,6 +23,7 @@ pub mod jump_opcode_rel;
 pub mod jump_opcode_rel_imm;
 pub mod memory_address_to_id;
 pub mod memory_id_to_big;
+pub mod memory_id_to_small;
 pub mod mul_mod_builtin;
 pub mod mul_opcode;
 pub mod mul_opcode_small;
