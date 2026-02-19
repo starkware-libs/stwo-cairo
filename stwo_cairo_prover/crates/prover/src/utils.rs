@@ -22,11 +22,10 @@ pub fn cairo_provers(components: &CairoComponents) -> Vec<&dyn ComponentProver<S
         poseidon_context_provers(&components.poseidon_context.components),
         [&components.memory_address_to_id as &dyn ComponentProver<SimdBackend>,],
         components
-            .memory_id_to_value
-            .0
+            .memory_id_to_big
             .iter()
             .map(|component| component as &dyn ComponentProver<SimdBackend>),
-        [&components.memory_id_to_value.1 as &dyn ComponentProver<SimdBackend>,],
+        [&components.memory_id_to_small as &dyn ComponentProver<SimdBackend>,],
         [
             &components.range_checks.rc_6 as &dyn ComponentProver<SimdBackend>,
             &components.range_checks.rc_8 as &dyn ComponentProver<SimdBackend>,
