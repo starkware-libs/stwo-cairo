@@ -262,6 +262,7 @@ pub fn create_and_serialize_proof(
                     // The more FRI queries, the larger the proof.
                     // Proving time is not affected much by increasing this value.
                     n_queries: 70,
+                    line_fold_step: 1,
                 },
                 lifting_log_size: None,
             },
@@ -367,7 +368,7 @@ pub mod tests {
                 channel_hash: ChannelHash::Poseidon252,
                 pcs_config: PcsConfig {
                     pow_bits: 20,
-                    fri_config: FriConfig::new(0, 1, 90),
+                    fri_config: FriConfig::new(0, 1, 90, 1),
                     lifting_log_size: None,
                 },
                 preprocessed_trace: PreProcessedTraceVariant::CanonicalWithoutPedersen,
@@ -491,7 +492,7 @@ pub mod tests {
                 channel_hash: ChannelHash::Blake2s,
                 pcs_config: PcsConfig {
                     pow_bits: 26,
-                    fri_config: FriConfig::new(0, 1, 70),
+                    fri_config: FriConfig::new(0, 1, 70, 1),
                     lifting_log_size: None,
                 },
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
@@ -554,7 +555,7 @@ pub mod tests {
                 channel_hash: ChannelHash::Blake2s,
                 pcs_config: PcsConfig {
                     pow_bits: 26,
-                    fri_config: FriConfig::new(0, 1, 70),
+                    fri_config: FriConfig::new(0, 1, 70, 1),
                     lifting_log_size: None,
                 },
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
