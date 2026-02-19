@@ -72,8 +72,8 @@ pub const JUMP_OPCODE_ABS: Expect = expect![[r#"
 pub const MEMORY_ADDRESS_TO_ID: Expect = expect![[r#"
     (1614147890 + 1911636193i) + (1028002099 + 432864212i)u
 "#]];
-pub const SMALL_MEMORY_ID_TO_BIG: Expect = expect![[r#"
-    (271372123 + 1779135872i) + (852016794 + 1799561719i)u
+pub const MEMORY_ID_TO_SMALL: Expect = expect![[r#"
+    (281962446 + 2066139697i) + (922252316 + 81791388i)u
 "#]];
 pub const BIG_MEMORY_ID_TO_BIG: Expect = expect![[r#"
     (1721360873 + 1066712461i) + (1992693108 + 727836717i)u

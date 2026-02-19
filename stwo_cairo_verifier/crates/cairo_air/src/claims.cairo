@@ -16,8 +16,8 @@ use crate::components::{
     blake_g, blake_round, blake_round_sigma, call_opcode_abs, call_opcode_rel_imm, cube_252,
     generic_opcode, jnz_opcode_non_taken, jnz_opcode_taken, jump_opcode_abs,
     jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, memory_address_to_id,
-    memory_id_to_big, mul_mod_builtin, mul_opcode, mul_opcode_small, partial_ec_mul_window_bits_18,
-    partial_ec_mul_window_bits_9, pedersen_aggregator_window_bits_18,
+    memory_id_to_big, memory_id_to_small, mul_mod_builtin, mul_opcode, mul_opcode_small,
+    partial_ec_mul_window_bits_18, partial_ec_mul_window_bits_9, pedersen_aggregator_window_bits_18,
     pedersen_aggregator_window_bits_9, pedersen_builtin, pedersen_builtin_narrow_windows,
     pedersen_points_table_window_bits_18, pedersen_points_table_window_bits_9,
     poseidon_3_partial_rounds_chain, poseidon_aggregator, poseidon_builtin,
@@ -91,6 +91,7 @@ pub struct CairoClaim {
     pub range_check_252_width_27: Option<components::range_check_252_width_27::Claim>,
     pub memory_address_to_id: Option<components::memory_address_to_id::Claim>,
     pub memory_id_to_big: Option<components::memory_id_to_big::Claim>,
+    pub memory_id_to_small: Option<components::memory_id_to_small::Claim>,
     pub range_check_6: Option<components::range_check_6::Claim>,
     pub range_check_8: Option<components::range_check_8::Claim>,
     pub range_check_11: Option<components::range_check_11::Claim>,
@@ -255,6 +256,9 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             log_sizes_list.append(claim.log_sizes());
         }
         if let Some(claim) = self.memory_id_to_big {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.memory_id_to_small {
             log_sizes_list.append(claim.log_sizes());
         }
         if let Some(claim) = self.range_check_6 {
@@ -445,6 +449,9 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             claim.accumulate_relation_uses(ref relation_uses);
         }
         if let Some(claim) = self.memory_id_to_big {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
+        if let Some(claim) = self.memory_id_to_small {
             claim.accumulate_relation_uses(ref relation_uses);
         }
     }
@@ -786,9 +793,7 @@ pub impl CairoClaimFlattenImpl of CairoClaimFlattenTrait {
             component_log_sizes.append(0_u32);
             component_enable_bits.append(false);
         }
-        let memory_id_to_big::Claim {
-            big_log_sizes, small_log_size,
-        } = self.memory_id_to_big.as_snap().unwrap();
+        let memory_id_to_big::Claim { big_log_sizes } = self.memory_id_to_big.as_snap().unwrap();
         assert!(big_log_sizes.len() <= MEMORY_ADDRESS_TO_ID_SPLIT);
         for log_size in big_log_sizes {
             component_log_sizes.append(*log_size);
@@ -798,8 +803,13 @@ pub impl CairoClaimFlattenImpl of CairoClaimFlattenTrait {
             component_log_sizes.append(0_u32);
             component_enable_bits.append(false);
         }
-        component_log_sizes.append(*small_log_size);
-        component_enable_bits.append(true);
+        if let Some(c) = self.memory_id_to_small {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
         if let Some(_c) = self.range_check_6 {
             component_log_sizes.append(range_check_6::LOG_SIZE);
             component_enable_bits.append(true);
@@ -996,6 +1006,7 @@ pub struct CairoInteractionClaim {
     pub range_check_252_width_27: Option<components::range_check_252_width_27::InteractionClaim>,
     pub memory_address_to_id: Option<components::memory_address_to_id::InteractionClaim>,
     pub memory_id_to_big: Option<components::memory_id_to_big::InteractionClaim>,
+    pub memory_id_to_small: Option<components::memory_id_to_small::InteractionClaim>,
     pub range_check_6: Option<components::range_check_6::InteractionClaim>,
     pub range_check_8: Option<components::range_check_8::InteractionClaim>,
     pub range_check_11: Option<components::range_check_11::InteractionClaim>,
@@ -1265,7 +1276,7 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
             claimed_sums.append(Zero::zero());
         }
         let memory_id_to_big::InteractionClaim {
-            big_claimed_sums, small_claimed_sum, claimed_sum: _,
+            big_claimed_sums, claimed_sum: _,
         } = self.memory_id_to_big.as_snap().unwrap();
         assert!(big_claimed_sums.len() <= MEMORY_ADDRESS_TO_ID_SPLIT);
         for claimed_sum in big_claimed_sums {
@@ -1274,7 +1285,11 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
         for _ in 0..(MEMORY_ADDRESS_TO_ID_SPLIT - big_claimed_sums.len()) {
             claimed_sums.append(Zero::zero());
         }
-        claimed_sums.append(*small_claimed_sum);
+        if let Some(c) = self.memory_id_to_small {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
         if let Some(c) = self.range_check_6 {
             claimed_sums.append(*c.claimed_sum);
         } else {
@@ -1511,6 +1526,9 @@ pub fn lookup_sum(
         sum += *interaction_claim.claimed_sum;
     }
     if let Some(interaction_claim) = interaction_claim.memory_id_to_big {
+        sum += *interaction_claim.claimed_sum;
+    }
+    if let Some(interaction_claim) = interaction_claim.memory_id_to_small {
         sum += *interaction_claim.claimed_sum;
     }
     if let Some(interaction_claim) = interaction_claim.range_check_6 {
