@@ -3382,8 +3382,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo"
 version = "2.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dff12e2aa998522ea2044e1fba1a223268aa96a12a7eb020e8d838dc0e5864dd"
+source = "git+https://github.com/starkware-libs/stwo?rev=b70dbd31#b70dbd31b68c0ef42ee1199b835a9f2fc9fd03ba"
 dependencies = [
  "blake2",
  "blake3",
@@ -3392,7 +3391,7 @@ dependencies = [
  "dashmap",
  "educe 0.5.11",
  "fnv",
- "hashbrown 0.16.1",
+ "hashbrown 0.15.5",
  "hex",
  "indexmap",
  "itertools 0.12.1",
@@ -3411,8 +3410,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils"
 version = "2.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a2e69845d83888da5d35a71161804e5da9a0dd294aee536aa984c89f77146a05"
+source = "git+https://github.com/starkware-libs/stwo?rev=b70dbd31#b70dbd31b68c0ef42ee1199b835a9f2fc9fd03ba"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -3424,8 +3422,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "2.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5d3911f8c95018d43d88826c294c4a2b71a15b70691154b834687a1a497568b8"
+source = "git+https://github.com/starkware-libs/stwo?rev=b70dbd31#b70dbd31b68c0ef42ee1199b835a9f2fc9fd03ba"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3577,10 +3574,9 @@ dependencies = [
 [[package]]
 name = "stwo-constraint-framework"
 version = "2.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f28d174020c3ecaf9933644d15864e6d16d83d7adf99df80e7c65256f50abbca"
+source = "git+https://github.com/starkware-libs/stwo?rev=b70dbd31#b70dbd31b68c0ef42ee1199b835a9f2fc9fd03ba"
 dependencies = [
- "hashbrown 0.16.1",
+ "hashbrown 0.15.5",
  "itertools 0.12.1",
  "num-traits",
  "rand 0.8.5",
