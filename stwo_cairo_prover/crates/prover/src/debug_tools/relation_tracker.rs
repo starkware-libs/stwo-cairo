@@ -1,8 +1,6 @@
-use cairo_air::air::{CairoComponents, PublicData};
-use cairo_air::builtins_air::BuiltinComponents;
-use cairo_air::opcodes_air::OpcodeComponents;
-use cairo_air::range_checks_air::RangeChecksComponents;
-use itertools::{chain, Itertools};
+use cairo_air::air::PublicData;
+use cairo_air::cairo_components::CairoComponents;
+use itertools::Itertools;
 use num_traits::{One, Zero};
 use stwo::core::channel::MerkleChannel;
 use stwo::core::fields::m31::{BaseField, M31};
@@ -16,7 +14,6 @@ use stwo_cairo_common::prover_types::felt::split_f252;
 use stwo_constraint_framework::relation_tracker::{
     add_to_relation_entries, RelationSummary, RelationTrackerEntry,
 };
-use stwo_constraint_framework::{FrameworkComponent, FrameworkEval};
 
 pub fn track_and_summarize_cairo_relations<MC: MerkleChannel>(
     commitment_scheme: &CommitmentSchemeProver<'_, SimdBackend, MC>,
@@ -99,216 +96,206 @@ fn cairo_relation_entries(
     cairo_components: &CairoComponents,
     trace: &TreeVec<Vec<&Vec<M31>>>,
 ) -> Vec<RelationTrackerEntry> {
-    let CairoComponents {
-        opcodes,
-        verify_instruction,
-        blake_context,
-        builtins,
-        memory_address_to_id,
-        memory_id_to_big,
-        memory_id_to_small,
-        range_checks,
-        verify_bitwise_xor_4,
-        verify_bitwise_xor_7,
-        verify_bitwise_xor_8,
-        verify_bitwise_xor_9,
-        pedersen_context,
-        pedersen_narrow_windows_context,
-        poseidon_context,
-    } = cairo_components;
-    let OpcodeComponents {
-        add,
-        add_small,
-        add_ap,
-        assert_eq,
-        assert_eq_imm,
-        assert_eq_double_deref,
-        blake,
-        call,
-        call_rel_imm,
-        generic,
-        jnz,
-        jnz_taken,
-        jump,
-        jump_double_deref,
-        jump_rel,
-        jump_rel_imm,
-        mul,
-        mul_small,
-        qm31,
-        ret,
-    } = opcodes;
-
-    let RangeChecksComponents {
-        rc_6,
-        rc_8,
-        rc_11,
-        rc_12,
-        rc_18,
-        rc_20,
-        rc_4_3,
-        rc_4_4,
-        rc_9_9,
-        rc_7_2_5,
-        rc_3_6_6_3,
-        rc_4_4_4_4,
-        rc_3_3_3_3_3,
-    } = range_checks;
-
-    let mut entries = chain!(
-        add_to_relation_entries_many(add, trace),
-        add_to_relation_entries_many(add_small, trace),
-        add_to_relation_entries_many(add_ap, trace),
-        add_to_relation_entries_many(assert_eq, trace),
-        add_to_relation_entries_many(assert_eq_imm, trace),
-        add_to_relation_entries_many(assert_eq_double_deref, trace),
-        add_to_relation_entries_many(blake, trace),
-        add_to_relation_entries_many(call, trace),
-        add_to_relation_entries_many(call_rel_imm, trace),
-        add_to_relation_entries_many(generic, trace),
-        add_to_relation_entries_many(jnz, trace),
-        add_to_relation_entries_many(jnz_taken, trace),
-        add_to_relation_entries_many(jump, trace),
-        add_to_relation_entries_many(jump_double_deref, trace),
-        add_to_relation_entries_many(jump_rel, trace),
-        add_to_relation_entries_many(jump_rel_imm, trace),
-        add_to_relation_entries_many(mul, trace),
-        add_to_relation_entries_many(mul_small, trace),
-        add_to_relation_entries_many(qm31, trace),
-        add_to_relation_entries_many(ret, trace),
-        add_to_relation_entries(verify_instruction, trace),
-        add_to_relation_entries(rc_6, trace),
-        add_to_relation_entries(rc_8, trace),
-        add_to_relation_entries(rc_11, trace),
-        add_to_relation_entries(rc_12, trace),
-        add_to_relation_entries(rc_18, trace),
-        add_to_relation_entries(rc_20, trace),
-        add_to_relation_entries(rc_4_3, trace),
-        add_to_relation_entries(rc_4_4, trace),
-        add_to_relation_entries(rc_9_9, trace),
-        add_to_relation_entries(rc_7_2_5, trace),
-        add_to_relation_entries(rc_3_6_6_3, trace),
-        add_to_relation_entries(rc_4_4_4_4, trace),
-        add_to_relation_entries(rc_3_3_3_3_3, trace),
-        add_to_relation_entries(verify_bitwise_xor_4, trace),
-        add_to_relation_entries(verify_bitwise_xor_7, trace),
-        add_to_relation_entries(verify_bitwise_xor_8, trace),
-        add_to_relation_entries(verify_bitwise_xor_9, trace),
-        add_to_relation_entries(memory_address_to_id, trace),
-        add_to_relation_entries_many(memory_id_to_big, trace),
-        add_to_relation_entries(memory_id_to_small, trace),
-    )
-    .collect_vec();
-
-    if let Some(cairo_air::blake::air::Components {
-        blake_round,
-        blake_g,
-        blake_sigma,
-        triple_xor_32,
-        verify_bitwise_xor_12,
-    }) = &blake_context.components
-    {
-        entries.extend(chain!(
-            add_to_relation_entries(blake_round, trace),
-            add_to_relation_entries(blake_g, trace),
-            add_to_relation_entries(blake_sigma, trace),
-            add_to_relation_entries(triple_xor_32, trace),
-            add_to_relation_entries(verify_bitwise_xor_12, trace),
-        ));
+    let mut entries: Vec<RelationTrackerEntry> = vec![];
+    if let Some(component) = &cairo_components.add_opcode {
+        entries.extend(add_to_relation_entries(component, trace));
     }
-
-    // Builtins
-    let BuiltinComponents {
-        add_mod_builtin,
-        bitwise_builtin,
-        pedersen_builtin,
-        pedersen_builtin_narrow_windows,
-        poseidon_builtin,
-        mul_mod_builtin,
-        range_check_96_builtin,
-        range_check_128_builtin,
-    } = builtins;
-    if let Some(add_mod) = add_mod_builtin {
-        entries.extend(add_to_relation_entries(add_mod, trace));
+    if let Some(component) = &cairo_components.add_opcode_small {
+        entries.extend(add_to_relation_entries(component, trace));
     }
-    if let Some(bitwise) = bitwise_builtin {
-        entries.extend(add_to_relation_entries(bitwise, trace));
+    if let Some(component) = &cairo_components.add_ap_opcode {
+        entries.extend(add_to_relation_entries(component, trace));
     }
-    if let Some(pedersen) = pedersen_builtin {
-        entries.extend(add_to_relation_entries(pedersen, trace));
+    if let Some(component) = &cairo_components.assert_eq_opcode {
+        entries.extend(add_to_relation_entries(component, trace));
     }
-    if let Some(pedersen_narrow_windows) = pedersen_builtin_narrow_windows {
-        entries.extend(add_to_relation_entries(pedersen_narrow_windows, trace));
+    if let Some(component) = &cairo_components.assert_eq_opcode_imm {
+        entries.extend(add_to_relation_entries(component, trace));
     }
-    if let Some(poseidon) = poseidon_builtin {
-        entries.extend(add_to_relation_entries(poseidon, trace));
+    if let Some(component) = &cairo_components.assert_eq_opcode_double_deref {
+        entries.extend(add_to_relation_entries(component, trace));
     }
-    if let Some(mul_mod) = mul_mod_builtin {
-        entries.extend(add_to_relation_entries(mul_mod, trace));
+    if let Some(component) = &cairo_components.blake_compress_opcode {
+        entries.extend(add_to_relation_entries(component, trace));
     }
-    if let Some(rc_96) = range_check_96_builtin {
-        entries.extend(add_to_relation_entries(rc_96, trace));
+    if let Some(component) = &cairo_components.call_opcode_abs {
+        entries.extend(add_to_relation_entries(component, trace));
     }
-    if let Some(rc_128) = range_check_128_builtin {
-        entries.extend(add_to_relation_entries(rc_128, trace));
+    if let Some(component) = &cairo_components.call_opcode_rel_imm {
+        entries.extend(add_to_relation_entries(component, trace));
     }
-
-    if let Some(cairo_air::poseidon::air::Components {
-        poseidon_aggregator,
-        poseidon_3_partial_rounds_chain,
-        poseidon_full_round_chain,
-        cube_252,
-        poseidon_round_keys,
-        range_check_252_width_27,
-    }) = &poseidon_context.components
-    {
-        entries.extend(chain!(
-            add_to_relation_entries(poseidon_aggregator, trace),
-            add_to_relation_entries(poseidon_3_partial_rounds_chain, trace),
-            add_to_relation_entries(poseidon_full_round_chain, trace),
-            add_to_relation_entries(cube_252, trace),
-            add_to_relation_entries(poseidon_round_keys, trace),
-            add_to_relation_entries(range_check_252_width_27, trace),
-        ));
+    if let Some(component) = &cairo_components.generic_opcode {
+        entries.extend(add_to_relation_entries(component, trace));
     }
-
-    if let Some(cairo_air::pedersen::air::Components {
-        pedersen_aggregator,
-        pedersen_points_table,
-        partial_ec_mul,
-    }) = &pedersen_context.components
-    {
-        entries.extend(chain!(
-            add_to_relation_entries(pedersen_aggregator, trace),
-            add_to_relation_entries(pedersen_points_table, trace),
-            add_to_relation_entries(partial_ec_mul, trace),
-        ));
+    if let Some(component) = &cairo_components.jnz_opcode_non_taken {
+        entries.extend(add_to_relation_entries(component, trace));
     }
-
-    if let Some(cairo_air::pedersen_narrow_windows::air::Components {
-        pedersen_aggregator,
-        pedersen_points_table,
-        partial_ec_mul,
-    }) = &pedersen_narrow_windows_context.components
-    {
-        entries.extend(chain!(
-            add_to_relation_entries(pedersen_aggregator, trace),
-            add_to_relation_entries(pedersen_points_table, trace),
-            add_to_relation_entries(partial_ec_mul, trace),
-        ));
+    if let Some(component) = &cairo_components.jnz_opcode_taken {
+        entries.extend(add_to_relation_entries(component, trace));
     }
-
+    if let Some(component) = &cairo_components.jump_opcode_abs {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.jump_opcode_double_deref {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.jump_opcode_rel {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.jump_opcode_rel_imm {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.mul_opcode {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.mul_opcode_small {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.qm_31_add_mul_opcode {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.ret_opcode {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.verify_instruction {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.blake_round {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.blake_g {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.blake_round_sigma {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.triple_xor_32 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.verify_bitwise_xor_12 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.add_mod_builtin {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.bitwise_builtin {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.mul_mod_builtin {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.pedersen_builtin {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.pedersen_builtin_narrow_windows {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.poseidon_builtin {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.range_check96_builtin {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.range_check_builtin {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.pedersen_aggregator_window_bits_18 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.partial_ec_mul_window_bits_18 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.pedersen_points_table_window_bits_18 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.pedersen_aggregator_window_bits_9 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.partial_ec_mul_window_bits_9 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.pedersen_points_table_window_bits_9 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.poseidon_aggregator {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.poseidon_3_partial_rounds_chain {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.poseidon_full_round_chain {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.cube_252 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.poseidon_round_keys {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.range_check_252_width_27 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.memory_address_to_id {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    for component in &cairo_components.memory_id_to_big {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.memory_id_to_small {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.range_check_6 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.range_check_8 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.range_check_11 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.range_check_12 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.range_check_18 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.range_check_20 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.range_check_4_3 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.range_check_4_4 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.range_check_9_9 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.range_check_7_2_5 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.range_check_3_6_6_3 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.range_check_4_4_4_4 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.range_check_3_3_3_3_3 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.verify_bitwise_xor_4 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.verify_bitwise_xor_7 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.verify_bitwise_xor_8 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.verify_bitwise_xor_9 {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
     entries
-}
-
-fn add_to_relation_entries_many<E: FrameworkEval>(
-    components: &[FrameworkComponent<E>],
-    trace: &TreeVec<Vec<&Vec<M31>>>,
-) -> Vec<RelationTrackerEntry> {
-    components
-        .iter()
-        .flat_map(|x| add_to_relation_entries(x, trace))
-        .collect()
 }
 
 /// Reduces the polynomial to a minimal degree polynomial that evaluates to the same values.
