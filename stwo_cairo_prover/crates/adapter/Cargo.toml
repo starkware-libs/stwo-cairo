@@ -35,4 +35,4 @@ anyhow.workspace = true
 cairo-lang-casm = "=2.15.0"
 rand.workspace = true
 test-case.workspace = true
-stwo-cairo-dev-utils.workspace = true
+stwo-cairo-dev-utils = { path = "../dev_utils" }
