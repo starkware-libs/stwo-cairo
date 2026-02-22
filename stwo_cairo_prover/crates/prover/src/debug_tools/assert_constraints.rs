@@ -1,10 +1,7 @@
 use std::ops::Deref;
 use std::sync::Arc;
 
-use cairo_air::air::CairoComponents;
-use cairo_air::builtins_air::BuiltinComponents;
-use cairo_air::opcodes_air::OpcodeComponents;
-use cairo_air::range_checks_air::RangeChecksComponents;
+use cairo_air::cairo_components::CairoComponents;
 use cairo_air::relations::CommonLookupElements;
 use itertools::Itertools;
 use stwo::core::channel::Blake2sChannel;
@@ -46,196 +43,210 @@ pub fn assert_component<E: FrameworkEval + Sync>(
     );
 }
 
-// Asserts that all Cairo AIR constraints are satisfied for the given trace and components.
-//
-// # Parameters
-//
-// * `trace` - The evaluated polynomials on the trace domain.
-// * `cairo_components` - The components constraints to check.
+/// Asserts that all Cairo AIR constraints are satisfied for the given trace and components.
+///
+/// # Parameters
+///
+/// * `trace` - The evaluated polynomials on the trace domain.
+/// * `cairo_components` - The components constraints to check.
 fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &CairoComponents) {
-    let CairoComponents {
-        opcodes,
-        verify_instruction,
-        blake_context,
-        builtins,
-        pedersen_context,
-        pedersen_narrow_windows_context,
-        poseidon_context,
-        memory_address_to_id,
-        memory_id_to_big,
-        memory_id_to_small,
-        range_checks,
-        verify_bitwise_xor_4,
-        verify_bitwise_xor_7,
-        verify_bitwise_xor_8,
-        verify_bitwise_xor_9,
-    } = cairo_components;
-    let OpcodeComponents {
-        add,
-        add_small,
-        add_ap,
-        assert_eq,
-        assert_eq_imm,
-        assert_eq_double_deref,
-        blake,
-        call,
-        call_rel_imm,
-        generic,
-        jnz,
-        jnz_taken,
-        jump,
-        jump_double_deref,
-        jump_rel,
-        jump_rel_imm,
-        mul,
-        mul_small,
-        qm31,
-        ret,
-    } = opcodes;
-    let RangeChecksComponents {
-        rc_6,
-        rc_8,
-        rc_11,
-        rc_12,
-        rc_18,
-        rc_20,
-        rc_4_3,
-        rc_4_4,
-        rc_9_9,
-        rc_7_2_5,
-        rc_3_6_6_3,
-        rc_4_4_4_4,
-        rc_3_3_3_3_3,
-    } = range_checks;
-    assert_many(add, &trace);
-    assert_many(add_small, &trace);
-    assert_many(add_ap, &trace);
-    assert_many(assert_eq, &trace);
-    assert_many(assert_eq_imm, &trace);
-    assert_many(assert_eq_double_deref, &trace);
-    assert_many(blake, &trace);
-    assert_many(call, &trace);
-    assert_many(call_rel_imm, &trace);
-    assert_many(generic, &trace);
-    assert_many(jnz, &trace);
-    assert_many(jnz_taken, &trace);
-    assert_many(jump, &trace);
-    assert_many(jump_double_deref, &trace);
-    assert_many(jump_rel, &trace);
-    assert_many(jump_rel_imm, &trace);
-    assert_many(mul, &trace);
-    assert_many(mul_small, &trace);
-    assert_many(qm31, &trace);
-    assert_many(ret, &trace);
-
-    assert_component(verify_instruction, &trace);
-    assert_component(rc_6, &trace);
-    assert_component(rc_8, &trace);
-    assert_component(rc_11, &trace);
-    assert_component(rc_12, &trace);
-    assert_component(rc_18, &trace);
-    assert_component(rc_20, &trace);
-    assert_component(rc_4_3, &trace);
-    assert_component(rc_4_4, &trace);
-    assert_component(rc_9_9, &trace);
-    assert_component(rc_7_2_5, &trace);
-    assert_component(rc_3_6_6_3, &trace);
-    assert_component(rc_4_4_4_4, &trace);
-    assert_component(rc_3_3_3_3_3, &trace);
-    assert_component(verify_bitwise_xor_4, &trace);
-    assert_component(verify_bitwise_xor_7, &trace);
-    assert_component(verify_bitwise_xor_8, &trace);
-    assert_component(verify_bitwise_xor_9, &trace);
-    assert_component(memory_address_to_id, &trace);
-    for component in memory_id_to_big {
+    if let Some(component) = &cairo_components.add_opcode {
         assert_component(component, &trace);
     }
-    assert_component(memory_id_to_small, &trace);
-
-    if let Some(cairo_air::blake::air::Components {
-        blake_round,
-        blake_g,
-        blake_sigma,
-        triple_xor_32,
-        verify_bitwise_xor_12,
-    }) = &blake_context.components
-    {
-        assert_component(blake_round, &trace);
-        assert_component(blake_g, &trace);
-        assert_component(blake_sigma, &trace);
-        assert_component(triple_xor_32, &trace);
-        assert_component(verify_bitwise_xor_12, &trace);
+    if let Some(component) = &cairo_components.add_opcode_small {
+        assert_component(component, &trace);
     }
-
-    let BuiltinComponents {
-        add_mod_builtin,
-        bitwise_builtin,
-        pedersen_builtin,
-        pedersen_builtin_narrow_windows,
-        poseidon_builtin,
-        mul_mod_builtin,
-        range_check_96_builtin,
-        range_check_128_builtin,
-    } = builtins;
-    if let Some(add_mod) = add_mod_builtin {
-        assert_component(add_mod, &trace);
+    if let Some(component) = &cairo_components.add_ap_opcode {
+        assert_component(component, &trace);
     }
-    if let Some(mul_mod) = mul_mod_builtin {
-        assert_component(mul_mod, &trace);
+    if let Some(component) = &cairo_components.assert_eq_opcode {
+        assert_component(component, &trace);
     }
-    if let Some(bitwise) = bitwise_builtin {
-        assert_component(bitwise, &trace);
+    if let Some(component) = &cairo_components.assert_eq_opcode_imm {
+        assert_component(component, &trace);
     }
-    if let Some(pedersen) = pedersen_builtin {
-        assert_component(pedersen, &trace);
+    if let Some(component) = &cairo_components.assert_eq_opcode_double_deref {
+        assert_component(component, &trace);
     }
-    if let Some(pedersen_narrow_windows) = pedersen_builtin_narrow_windows {
-        assert_component(pedersen_narrow_windows, &trace);
+    if let Some(component) = &cairo_components.blake_compress_opcode {
+        assert_component(component, &trace);
     }
-    if let Some(poseidon) = poseidon_builtin {
-        assert_component(poseidon, &trace);
+    if let Some(component) = &cairo_components.call_opcode_abs {
+        assert_component(component, &trace);
     }
-    if let Some(rc_96) = range_check_96_builtin {
-        assert_component(rc_96, &trace);
+    if let Some(component) = &cairo_components.call_opcode_rel_imm {
+        assert_component(component, &trace);
     }
-    if let Some(rc_128) = range_check_128_builtin {
-        assert_component(rc_128, &trace);
+    if let Some(component) = &cairo_components.generic_opcode {
+        assert_component(component, &trace);
     }
-    if let Some(cairo_air::pedersen::air::Components {
-        pedersen_aggregator,
-        partial_ec_mul,
-        pedersen_points_table,
-    }) = &pedersen_context.components
-    {
-        assert_component(pedersen_aggregator, &trace);
-        assert_component(partial_ec_mul, &trace);
-        assert_component(pedersen_points_table, &trace);
+    if let Some(component) = &cairo_components.jnz_opcode_non_taken {
+        assert_component(component, &trace);
     }
-    if let Some(cairo_air::pedersen_narrow_windows::air::Components {
-        pedersen_aggregator,
-        partial_ec_mul,
-        pedersen_points_table,
-    }) = &pedersen_narrow_windows_context.components
-    {
-        assert_component(pedersen_aggregator, &trace);
-        assert_component(partial_ec_mul, &trace);
-        assert_component(pedersen_points_table, &trace);
+    if let Some(component) = &cairo_components.jnz_opcode_taken {
+        assert_component(component, &trace);
     }
-    if let Some(cairo_air::poseidon::air::Components {
-        poseidon_3_partial_rounds_chain,
-        poseidon_full_round_chain,
-        cube_252,
-        poseidon_round_keys,
-        range_check_252_width_27,
-        poseidon_aggregator,
-    }) = &poseidon_context.components
-    {
-        assert_component(poseidon_3_partial_rounds_chain, &trace);
-        assert_component(poseidon_full_round_chain, &trace);
-        assert_component(cube_252, &trace);
-        assert_component(poseidon_round_keys, &trace);
-        assert_component(range_check_252_width_27, &trace);
-        assert_component(poseidon_aggregator, &trace);
+    if let Some(component) = &cairo_components.jump_opcode_abs {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.jump_opcode_double_deref {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.jump_opcode_rel {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.jump_opcode_rel_imm {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.mul_opcode {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.mul_opcode_small {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.qm_31_add_mul_opcode {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.ret_opcode {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.verify_instruction {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.blake_round {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.blake_g {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.blake_round_sigma {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.triple_xor_32 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.verify_bitwise_xor_12 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.add_mod_builtin {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.bitwise_builtin {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.mul_mod_builtin {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.pedersen_builtin {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.pedersen_builtin_narrow_windows {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.poseidon_builtin {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.range_check96_builtin {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.range_check_builtin {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.pedersen_aggregator_window_bits_18 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.partial_ec_mul_window_bits_18 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.pedersen_points_table_window_bits_18 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.pedersen_aggregator_window_bits_9 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.partial_ec_mul_window_bits_9 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.pedersen_points_table_window_bits_9 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.poseidon_aggregator {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.poseidon_3_partial_rounds_chain {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.poseidon_full_round_chain {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.cube_252 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.poseidon_round_keys {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.range_check_252_width_27 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.memory_address_to_id {
+        assert_component(component, &trace);
+    }
+    for component in &cairo_components.memory_id_to_big {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.memory_id_to_small {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.range_check_6 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.range_check_8 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.range_check_11 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.range_check_12 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.range_check_18 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.range_check_20 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.range_check_4_3 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.range_check_4_4 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.range_check_9_9 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.range_check_7_2_5 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.range_check_3_6_6_3 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.range_check_4_4_4_4 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.range_check_3_3_3_3_3 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.verify_bitwise_xor_4 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.verify_bitwise_xor_7 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.verify_bitwise_xor_8 {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.verify_bitwise_xor_9 {
+        assert_component(component, &trace);
     }
 }
 
@@ -269,11 +280,4 @@ pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: Arc<PreP
     );
 
     assert_cairo_components(commitment_scheme.trace_domain_evaluations(), &components);
-}
-
-fn assert_many<E: FrameworkEval + Sync>(
-    components: &[FrameworkComponent<E>],
-    trace: &TreeVec<Vec<&Vec<M31>>>,
-) {
-    components.iter().for_each(|x| assert_component(x, trace));
 }
