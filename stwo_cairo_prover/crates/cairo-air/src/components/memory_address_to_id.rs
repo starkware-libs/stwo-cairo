@@ -37,21 +37,13 @@ pub type Component = FrameworkComponent<Eval>;
 #[derive(Clone)]
 pub struct Eval {
     // The log size of the component after split.
-    pub log_size: u32,
+    pub claim: Claim,
     pub common_lookup_elements: relations::CommonLookupElements,
-}
-impl Eval {
-    pub fn new(claim: &Claim, common_lookup_elements: relations::CommonLookupElements) -> Self {
-        Self {
-            log_size: claim.log_size,
-            common_lookup_elements,
-        }
-    }
 }
 
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
-        self.log_size
+        self.claim.log_size
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
@@ -121,7 +113,7 @@ mod tests {
     fn memory_address_to_id_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
-            log_size: 4,
+            claim: Claim { log_size: 4 },
             common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
 
