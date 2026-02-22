@@ -16,7 +16,7 @@ ruint.workspace = true
 serde.workspace = true
 starknet-ff.workspace = true
 starknet-types-core.workspace = true
-stwo-cairo-serialize = { path = "../cairo-serialize", version = "~1.0.1" }
+stwo-cairo-serialize = { path = "../cairo-serialize", version = "~1.1.0" }
 stwo.workspace = true
 stwo-constraint-framework.workspace = true
 serde_arrays.workspace = true

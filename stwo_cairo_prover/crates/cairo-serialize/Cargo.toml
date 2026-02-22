@@ -8,5 +8,5 @@ description = "Serialization utilities for Stwo Cairo proofs"
 
 [dependencies]
 starknet-ff.workspace = true
-stwo-cairo-serialize-derive = { path = "../cairo-serialize-derive", version = "~1.0.1" }
+stwo-cairo-serialize-derive = { path = "../cairo-serialize-derive", version = "~1.1.0" }
 stwo.workspace = true
