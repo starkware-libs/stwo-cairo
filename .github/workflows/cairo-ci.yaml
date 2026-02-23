@@ -9,7 +9,7 @@ on:
       - checks_requested
 
 env:
-  NIGHTLY_VERSION: "nightly-2025-07-14"
+  NIGHTLY_VERSION: "nightly-2025-06-23"
   STABLE_VERSION: "1.89.0"
 
 jobs:
