@@ -1,0 +1,21 @@
+[package]
+name = "runner"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bytemuck.workspace = true
+cairo-lang-casm.workspace = true
+hex.workspace = true
+itertools.workspace = true
+num-traits.workspace = true
+serde.workspace = true
+sonic-rs.workspace = true
+stwo-prover.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+paste.workspace = true
+
+[dev-dependencies]
+cairo-lang-casm.workspace = true
+rand.workspace = true
