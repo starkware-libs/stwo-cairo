@@ -1,3 +1,4 @@
+use std::cmp::max;
 use std::sync::Arc;
 
 use cairo_air::PreProcessedTraceVariant;
@@ -13,11 +14,14 @@ use stwo::prover::CommitmentTreeProver;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 
 /// Generates the root of the preprocessed trace commitment tree for a given `log_blowup_factor`.
+/// If `lifting_log_size` is provided, the preprocessed trace will be lifted to the given log size
+/// before generating the root.
 // TODO(Shahars): remove allow.
 #[allow(unused)]
 pub fn generate_preprocessed_commitment_root<MC: MerkleChannel>(
     log_blowup_factor: u32,
     preprocessed_trace: PreProcessedTraceVariant,
+    lifting_log_size: Option<u32>,
 ) -> <<MC as MerkleChannel>::H as MerkleHasherLifted>::Hash
 where
     SimdBackend: BackendForChannel<MC>,
@@ -25,7 +29,10 @@ where
     let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace());
 
     // Precompute twiddles for the commitment scheme.
-    let max_log_size = preprocessed_trace.log_sizes().into_iter().max().unwrap();
+    let max_log_size = max(
+        lifting_log_size.unwrap_or(0),
+        preprocessed_trace.log_sizes().into_iter().max().unwrap(),
+    );
     let twiddles = SimdBackend::precompute_twiddles(
         CanonicCoset::new(max_log_size + log_blowup_factor)
             .circle_domain()
@@ -40,7 +47,7 @@ where
         &mut MC::C::default(),
         &twiddles,
         false,
-        None,
+        lifting_log_size,
     );
 
     commitment_scheme.commitment.root()
