@@ -12,6 +12,7 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
     let _span = span!(Level::INFO, "adapt").entered();
 
     // Extract the relevant information from the Runner.
+    let program_segment = runner.get_program_segment_data()?;
     let relocatable_trace = runner.get_relocatable_trace()?;
     info!("Num steps: {:?}", relocatable_trace.len());
     let mut relocatable_memory = runner.get_relocatable_memory();
@@ -45,6 +46,7 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
     let public_segment_context = PublicSegmentContext::bootloader_context();
 
     Ok(ProverInput {
+        program_segment,
         state_transitions,
         memory,
         pc_count: inst_cache.len(),
