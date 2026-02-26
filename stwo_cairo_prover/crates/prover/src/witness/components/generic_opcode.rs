@@ -41,7 +41,27 @@ range_check_11_state: &range_check_11::ClaimGenerator,
 
         let (trace, lookup_data, sub_component_inputs) =
             write_trace_simd(packed_inputs,n_rows,memory_address_to_id_state,memory_id_to_big_state,verify_instruction_state,range_check_9_9_state,range_check_20_state,range_check_18_state,range_check_11_state,);
-        for inputs in sub_component_inputs.verify_instruction {verify_instruction_state.add_packed_inputs(&inputs, 0);};for inputs in sub_component_inputs.memory_address_to_id {memory_address_to_id_state.add_packed_inputs(&inputs, 0);};for inputs in sub_component_inputs.memory_id_to_big {memory_id_to_big_state.add_packed_inputs(&inputs, 0);};for inputs in sub_component_inputs.range_check_9_9 {range_check_9_9_state.add_packed_inputs(&inputs, 0);};for inputs in sub_component_inputs.range_check_9_9_b {range_check_9_9_state.add_packed_inputs(&inputs, 1);};for inputs in sub_component_inputs.range_check_9_9_c {range_check_9_9_state.add_packed_inputs(&inputs, 2);};for inputs in sub_component_inputs.range_check_9_9_d {range_check_9_9_state.add_packed_inputs(&inputs, 3);};for inputs in sub_component_inputs.range_check_9_9_e {range_check_9_9_state.add_packed_inputs(&inputs, 4);};for inputs in sub_component_inputs.range_check_9_9_f {range_check_9_9_state.add_packed_inputs(&inputs, 5);};for inputs in sub_component_inputs.range_check_9_9_g {range_check_9_9_state.add_packed_inputs(&inputs, 6);};for inputs in sub_component_inputs.range_check_9_9_h {range_check_9_9_state.add_packed_inputs(&inputs, 7);};for inputs in sub_component_inputs.range_check_20 {range_check_20_state.add_packed_inputs(&inputs, 0);};for inputs in sub_component_inputs.range_check_20_b {range_check_20_state.add_packed_inputs(&inputs, 1);};for inputs in sub_component_inputs.range_check_20_c {range_check_20_state.add_packed_inputs(&inputs, 2);};for inputs in sub_component_inputs.range_check_20_d {range_check_20_state.add_packed_inputs(&inputs, 3);};for inputs in sub_component_inputs.range_check_20_e {range_check_20_state.add_packed_inputs(&inputs, 4);};for inputs in sub_component_inputs.range_check_20_f {range_check_20_state.add_packed_inputs(&inputs, 5);};for inputs in sub_component_inputs.range_check_20_g {range_check_20_state.add_packed_inputs(&inputs, 6);};for inputs in sub_component_inputs.range_check_20_h {range_check_20_state.add_packed_inputs(&inputs, 7);};for inputs in sub_component_inputs.range_check_18 {range_check_18_state.add_packed_inputs(&inputs, 0);};for inputs in sub_component_inputs.range_check_11 {range_check_11_state.add_packed_inputs(&inputs, 0);};
+        for inputs in sub_component_inputs.verify_instruction {verify_instruction_state.add_packed_inputs(&inputs, 0);};
+        for inputs in sub_component_inputs.memory_address_to_id {memory_address_to_id_state.add_packed_inputs(&inputs, 0);};
+        for inputs in sub_component_inputs.memory_id_to_big {memory_id_to_big_state.add_packed_inputs(&inputs, 0);};
+        for inputs in sub_component_inputs.range_check_9_9 {range_check_9_9_state.add_packed_inputs(&inputs, 0);};
+        for inputs in sub_component_inputs.range_check_9_9_b {range_check_9_9_state.add_packed_inputs(&inputs, 1);};
+        for inputs in sub_component_inputs.range_check_9_9_c {range_check_9_9_state.add_packed_inputs(&inputs, 2);};
+        for inputs in sub_component_inputs.range_check_9_9_d {range_check_9_9_state.add_packed_inputs(&inputs, 3);};
+        for inputs in sub_component_inputs.range_check_9_9_e {range_check_9_9_state.add_packed_inputs(&inputs, 4);};
+        for inputs in sub_component_inputs.range_check_9_9_f {range_check_9_9_state.add_packed_inputs(&inputs, 5);};
+        for inputs in sub_component_inputs.range_check_9_9_g {range_check_9_9_state.add_packed_inputs(&inputs, 6);};
+        for inputs in sub_component_inputs.range_check_9_9_h {range_check_9_9_state.add_packed_inputs(&inputs, 7);};
+        for inputs in sub_component_inputs.range_check_20 {range_check_20_state.add_packed_inputs(&inputs, 0);};
+        for inputs in sub_component_inputs.range_check_20_b {range_check_20_state.add_packed_inputs(&inputs, 1);};
+        for inputs in sub_component_inputs.range_check_20_c {range_check_20_state.add_packed_inputs(&inputs, 2);};
+        for inputs in sub_component_inputs.range_check_20_d {range_check_20_state.add_packed_inputs(&inputs, 3);};
+        for inputs in sub_component_inputs.range_check_20_e {range_check_20_state.add_packed_inputs(&inputs, 4);};
+        for inputs in sub_component_inputs.range_check_20_f {range_check_20_state.add_packed_inputs(&inputs, 5);};
+        for inputs in sub_component_inputs.range_check_20_g {range_check_20_state.add_packed_inputs(&inputs, 6);};
+        for inputs in sub_component_inputs.range_check_20_h {range_check_20_state.add_packed_inputs(&inputs, 7);};
+        for inputs in sub_component_inputs.range_check_18 {range_check_18_state.add_packed_inputs(&inputs, 0);};
+        for inputs in sub_component_inputs.range_check_11 {range_check_11_state.add_packed_inputs(&inputs, 0);};
 
         (trace,
         Claim {
