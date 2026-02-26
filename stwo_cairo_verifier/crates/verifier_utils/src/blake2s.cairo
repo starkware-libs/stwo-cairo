@@ -100,7 +100,7 @@ pub fn encode_felt_in_limbs_to_array(felt: [u32; 8], ref array: Array<u32>) {
     }
 }
 
-fn hash_u32s(mut values: Span<u32>) -> Box<[u32; 8]> {
+pub fn hash_u32s(mut values: Span<u32>) -> Box<[u32; 8]> {
     let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
     let mut byte_count = 0;
     if let Some(mut msg) = values.multi_pop_front::<16>() {
