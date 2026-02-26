@@ -21,6 +21,7 @@ use stwo::core::vcs_lifted::blake2_merkle::{Blake2sM31MerkleChannel, Blake2sMerk
 use stwo::core::vcs_lifted::merkle_hasher::MerkleHasherLifted;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
+use stwo::prover::mempool::BaseColumnPool;
 use stwo::prover::poly::circle::PolyOps;
 use stwo::prover::{prove_ex, CommitmentSchemeProver, ProvingError};
 use stwo_cairo_adapter::ProverInput;
@@ -71,6 +72,18 @@ pub fn prove_cairo<MC: MerkleChannel>(
 where
     SimdBackend: BackendForChannel<MC>,
 {
+    let mut base_column_pool = BaseColumnPool::new();
+    prove_cairo_with_memory_pool::<MC>(&mut base_column_pool, input, prover_params)
+}
+
+pub fn prove_cairo_with_memory_pool<MC: MerkleChannel>(
+    base_column_pool: &mut BaseColumnPool<SimdBackend>,
+    input: ProverInput,
+    prover_params: ProverParameters,
+) -> Result<CairoProof<MC::H>, ProvingError>
+where
+    SimdBackend: BackendForChannel<MC>,
+{
     let _span = span!(Level::INFO, "prove_cairo").entered();
     let ProverParameters {
         channel_hash: _,
@@ -104,8 +117,11 @@ where
     // Mix channel salt. Note that we first reduce it modulo `M31::P`, then cast it as QM31.
     channel.mix_felts(&[channel_salt.into()]);
     pcs_config.mix_into(channel);
-    let mut commitment_scheme =
-        CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
+    let mut commitment_scheme = CommitmentSchemeProver::<SimdBackend, MC>::with_memory_pool(
+        pcs_config,
+        &twiddles,
+        base_column_pool,
+    );
     if store_polynomials_coefficients {
         commitment_scheme.set_store_polynomials_coefficients();
     }

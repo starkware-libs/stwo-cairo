@@ -7,6 +7,7 @@ use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
+use stwo::prover::mempool::BaseColumnPool;
 use stwo::prover::poly::circle::{CircleEvaluation, PolyOps};
 use stwo::prover::poly::BitReversedOrder;
 use stwo::prover::CommitmentTreeProver;
@@ -32,6 +33,8 @@ where
             .half_coset,
     );
 
+    let mut base_column_pool = BaseColumnPool::new();
+
     // Generate the commitment tree.
     let polys = SimdBackend::interpolate_columns(gen_trace(preprocessed_trace), &twiddles);
     let commitment_scheme = CommitmentTreeProver::<SimdBackend, MC>::new(
@@ -41,6 +44,7 @@ where
         &twiddles,
         false,
         None,
+        &mut base_column_pool,
     );
 
     commitment_scheme.commitment.root()
