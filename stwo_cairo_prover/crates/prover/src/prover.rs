@@ -263,6 +263,7 @@ pub fn create_and_serialize_proof(
                     // Proving time is not affected much by increasing this value.
                     n_queries: 70,
                     line_fold_step: 1,
+                    pack_leaves: false,
                 },
                 lifting_log_size: None,
             },

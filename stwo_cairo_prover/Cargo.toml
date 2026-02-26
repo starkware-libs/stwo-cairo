@@ -56,10 +56,10 @@ stwo-cairo-common = { path = "crates/common", version = "~1.0.1" }
 cairo-air = { path = "crates/cairo-air", version = "~1.0.1" }
 stwo-cairo-serialize = { path = "crates/cairo-serialize", version = "~1.0.1" }
 stwo-cairo-serialize-derive = { path = "crates/cairo-serialize-derive", version = "~1.0.1" }
-stwo = { git = "https://github.com/starkware-libs/stwo", rev = "b70dbd31" }
-stwo-constraint-framework = { git = "https://github.com/starkware-libs/stwo", rev = "b70dbd31" }
-stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "b70dbd31" }
-stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "b70dbd31" }
+stwo = { git = "https://github.com/starkware-libs/stwo", rev = "3156b47ea0" }
+stwo-constraint-framework = { git = "https://github.com/starkware-libs/stwo", rev = "3156b47ea0" }
+stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "3156b47ea0" }
+stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "3156b47ea0" }
 test-case = "3.3.1"
 thiserror = { version = "2.0.12", default-features = false }
 tracing = "0.1.40"

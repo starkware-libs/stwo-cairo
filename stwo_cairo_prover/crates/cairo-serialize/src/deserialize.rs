@@ -134,11 +134,17 @@ impl CairoDeserialize for FriConfig {
         let log_blowup_factor = u32::deserialize(data);
         let log_last_layer_degree_bound = u32::deserialize(data);
         let n_queries = usize::deserialize(data);
+        let pack_leaves = match u32::deserialize(data) {
+            0 => false,
+            1 => true,
+            v => panic!("Invalid value for pack_leaves: {v}"),
+        };
         FriConfig {
             log_blowup_factor,
             log_last_layer_degree_bound,
             n_queries,
             line_fold_step: 1,
+            pack_leaves,
         }
     }
 }
