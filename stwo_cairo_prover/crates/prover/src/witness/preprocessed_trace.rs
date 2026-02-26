@@ -7,6 +7,7 @@ use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
+use stwo::prover::mempool::BaseColumnPool;
 use stwo::prover::poly::circle::{CircleEvaluation, PolyOps};
 use stwo::prover::poly::BitReversedOrder;
 use stwo::prover::CommitmentTreeProver;
@@ -48,6 +49,7 @@ where
         &twiddles,
         false,
         lifting_log_size,
+        &mut BaseColumnPool::new(),
     );
 
     commitment_scheme.commitment.root()
