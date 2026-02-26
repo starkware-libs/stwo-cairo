@@ -28,6 +28,7 @@ pub fn run_and_adapt(
     program_path: &PathBuf,
     program_type: ProgramType,
     args: Option<&PathBuf>,
+    generic_opcode_reroute: bool,
 ) -> Result<ProverInput> {
     let cairo_run_config = CairoRunConfig {
         trace_enabled: true,
@@ -76,12 +77,15 @@ pub fn run_and_adapt(
         }
     };
 
-    adapt(&cairo_run_program_with_initial_scope(
-        &program,
-        &cairo_run_config,
-        hints.as_mut(),
-        exec_scopes,
-    )?)
+    adapt(
+        &cairo_run_program_with_initial_scope(
+            &program,
+            &cairo_run_config,
+            hints.as_mut(),
+            exec_scopes,
+        )?,
+        generic_opcode_reroute,
+    )
 }
 
 fn get_program_and_hints_from_executable(

@@ -33,6 +33,9 @@ struct Args {
     /// Output file path for the execution resources.
     #[arg(long = "output")]
     output: Option<PathBuf>,
+    /// Indicates whether to reroute Stone opcodes to generic opcodes.
+    #[arg(long = "generic_opcode_reroute", default_value = "false")]
+    generic_opcode_reroute: bool,
 }
 
 fn main() -> Result<()> {
@@ -46,6 +49,7 @@ fn main() -> Result<()> {
         &args.program,
         args.program_type,
         args.program_arguments_file.as_ref(),
+        args.generic_opcode_reroute,
     )?;
 
     let execution_resources = ExecutionResources::from_prover_input(&prover_input);
