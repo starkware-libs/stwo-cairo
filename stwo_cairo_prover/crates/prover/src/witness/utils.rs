@@ -136,13 +136,19 @@ fn get_preprocessed_roots<MC: MerkleChannel>(
     max_log_blowup_factor: u32,
     preprocessed_trace: PreProcessedTraceVariant,
     lifting_log_size: Option<u32>,
+    program: &[(u32, [u32; 8])],
 ) -> Vec<<MC::H as MerkleHasherLifted>::Hash>
 where
     stwo::prover::backend::simd::SimdBackend: BackendForChannel<MC>,
 {
     (1..=max_log_blowup_factor)
         .map(|i| {
-            generate_preprocessed_commitment_root::<MC>(i, preprocessed_trace, lifting_log_size)
+            generate_preprocessed_commitment_root::<MC>(
+                i,
+                preprocessed_trace,
+                lifting_log_size,
+                program,
+            )
         })
         .collect_vec()
 }
@@ -158,6 +164,7 @@ pub fn export_preprocessed_roots() {
         max_log_blowup_factor,
         PreProcessedTraceVariant::Canonical,
         None,
+        &[],
     );
     blake_roots.iter().enumerate().for_each(|(i, root)| {
         let root_bytes = root.0;
@@ -179,6 +186,7 @@ pub fn export_preprocessed_roots() {
             max_log_blowup_factor,
             PreProcessedTraceVariant::CanonicalWithoutPedersen,
             None,
+            &[],
         )
         .into_iter()
         .enumerate()
@@ -203,6 +211,7 @@ pub fn export_circuit_cairo_verifier_preprocessed_roots() {
         max_log_blowup_factor,
         PreProcessedTraceVariant::CanonicalSmall,
         Some(lifting_log_size),
+        &[],
     );
     blake_m31_small_roots
         .iter()
