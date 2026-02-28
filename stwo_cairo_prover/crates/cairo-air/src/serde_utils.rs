@@ -20,6 +20,7 @@ where
             extended_stark_proof,
             channel_salt,
             preprocessed_trace_variant: _,
+            program: _,
         } = self;
         let CommitmentSchemeProof {
             config,

@@ -25,7 +25,7 @@ pub fn generate_preprocessed_commitment_root<MC: MerkleChannel>(
 where
     SimdBackend: BackendForChannel<MC>,
 {
-    let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace());
+    let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace(&[]));
 
     // Precompute twiddles for the commitment scheme.
     let mut max_log_size = preprocessed_trace.log_sizes().into_iter().max().unwrap();

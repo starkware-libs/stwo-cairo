@@ -326,6 +326,7 @@ pub fn verify_cairo_ex<MC: MerkleChannel>(
         stark_proof,
         channel_salt,
         preprocessed_trace_variant,
+        program,
     }: CairoProofForRustVerifier<MC::H>,
     include_all_preprocessed_columns: bool,
 ) -> Result<(), CairoVerificationError> {
@@ -347,10 +348,10 @@ pub fn verify_cairo_ex<MC: MerkleChannel>(
     pcs_config.mix_into(channel);
     let commitment_scheme_verifier = &mut CommitmentSchemeVerifier::<MC>::new(pcs_config);
 
+    let preprocessed_trace = preprocessed_trace_variant.to_preprocessed_trace(&program);
+
     let mut log_sizes = claim.log_sizes();
-    log_sizes[PREPROCESSED_TRACE_IDX] = preprocessed_trace_variant
-        .to_preprocessed_trace()
-        .log_sizes();
+    log_sizes[PREPROCESSED_TRACE_IDX] = preprocessed_trace.log_sizes();
 
     // Preproccessed trace.
     commitment_scheme_verifier.commit(stark_proof.commitments[0], &log_sizes[0], channel);
@@ -376,7 +377,7 @@ pub fn verify_cairo_ex<MC: MerkleChannel>(
         &claim,
         &interaction_elements,
         &interaction_claim,
-        &preprocessed_trace_variant.to_preprocessed_trace().ids(),
+        &preprocessed_trace.ids(),
     );
     let components = component_generator.components();
 
