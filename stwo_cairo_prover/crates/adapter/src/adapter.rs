@@ -1,5 +1,6 @@
 use anyhow::Result;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
+use itertools::Itertools;
 use tracing::{info, span, Level};
 
 use super::memory::{MemoryBuilder, MemoryConfig};
@@ -41,6 +42,17 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
     // TODO(spapini): Add output builtin to public memory.
     let (memory, inst_cache) = memory.build();
 
+    // Compute program segment.
+    let initial_pc = state_transitions.initial_state.pc.0;
+    let initial_ap = state_transitions.initial_state.ap.0;
+    let program_segment = (initial_pc..initial_ap - 2)
+        .map(|addr| {
+            let id = memory.get_raw_id(addr);
+            let value = memory.get(addr).as_u256();
+            (id, value)
+        })
+        .collect_vec();
+
     // TODO(Ohad): take this from the input.
     let public_segment_context = PublicSegmentContext::bootloader_context();
 
@@ -51,6 +63,7 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
         public_memory_addresses,
         builtin_segments,
         public_segment_context,
+        program_segment,
         #[cfg(feature = "extract-mem-trace")]
         relocated_mem: relocated_memory_clone,
         #[cfg(feature = "extract-mem-trace")]
