@@ -92,7 +92,11 @@ where
             .half_coset,
     );
 
-    let preprocessed_trace = Arc::new(prover_params.preprocessed_trace.to_preprocessed_trace());
+    let preprocessed_trace = Arc::new(
+        prover_params
+            .preprocessed_trace
+            .to_preprocessed_trace(&input.program),
+    );
     let preprocessed_trace_polys =
         SimdBackend::interpolate_columns(gen_trace(preprocessed_trace.clone()), &twiddles);
 
