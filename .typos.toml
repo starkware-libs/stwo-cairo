@@ -1,2 +1,5 @@
 [default]
 extend-ignore-re = ['0x[0-9a-fA-F]{4,}', 'ba', 'Ba', 'daa', 'Daa']
+
+[files]
+extend-exclude = ["stwo_cairo_prover/crates/common/programs/simple_bootloader_compiled.json"]

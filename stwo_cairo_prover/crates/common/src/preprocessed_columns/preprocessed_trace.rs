@@ -11,6 +11,7 @@ use super::pedersen::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
 use super::poseidon::{PoseidonRoundKeys, N_WORDS as POSEIDON_N_WORDS};
 #[cfg(feature = "prover")]
 use super::simd_prelude::*;
+use crate::preprocessed_columns::program;
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
@@ -151,6 +152,44 @@ impl PreProcessedTrace {
         Self::from_columns(columns)
     }
 
+    pub fn canonical_with_program(program: Option<&[(u32, [u32; 8])]>) -> Self {
+        let canonical_without_program = Self::canonical().columns;
+        let default_program;
+        let program = match program {
+            Some(program) => program,
+            None => {
+                default_program = Self::load_default_program();
+                &default_program
+            }
+        };
+        program::set_program_table(program);
+        let curr_program_columns = (0..program::PROGRAM_N_COLUMNS)
+            .map(|x| Box::new(program::ProgramColumn::new(x)) as Box<dyn PreProcessedColumn>);
+        let columns = chain!(canonical_without_program, curr_program_columns)
+            .sorted_by_key(|column| column.log_size())
+            .collect_vec();
+
+        assert!(
+            columns.iter().map(|col| 1 << col.log_size()).sum::<u32>() == CANONICAL_SIZE,
+            "Canonical preprocessed trace has unexpected size"
+        );
+
+        Self::from_columns(columns)
+    }
+
+    fn load_default_program() -> Vec<(u32, [u32; 8])> {
+        let program_json: serde_json::Value = serde_json::from_str(include_str!(
+            "../../programs/simple_bootloader_compiled.json"
+        ))
+        .unwrap();
+        program_json["data"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|v| (0u32, hex_to_u32_limbs(v.as_str().unwrap())))
+            .collect()
+    }
+
     pub fn log_sizes(&self) -> Vec<u32> {
         self.columns.iter().map(|c| c.log_size()).collect()
     }
@@ -170,6 +209,13 @@ impl PreProcessedTrace {
     pub fn ids(&self) -> Vec<PreProcessedColumnId> {
         self.columns.iter().map(|c| c.id()).collect()
     }
+}
+
+/// Parses a hex string (with optional "0x" prefix) into 8 little-endian u32 limbs.
+fn hex_to_u32_limbs(hex_str: &str) -> [u32; 8] {
+    let hex = hex_str.strip_prefix("0x").unwrap_or(hex_str);
+    let padded = format!("{hex:0>64}");
+    std::array::from_fn(|i| u32::from_str_radix(&padded[56 - i * 8..64 - i * 8], 16).unwrap())
 }
 
 fn gen_range_check_columns() -> Vec<Box<dyn PreProcessedColumn>> {

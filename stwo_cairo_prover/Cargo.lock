@@ -3458,6 +3458,7 @@ dependencies = [
  "ruint",
  "serde",
  "serde_arrays",
+ "serde_json",
  "starknet-curve 0.6.0",
  "starknet-ff",
  "starknet-types-core",

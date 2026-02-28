@@ -14,6 +14,7 @@ bytemuck.workspace = true
 itertools.workspace = true
 ruint.workspace = true
 serde.workspace = true
+serde_json.workspace = true
 starknet-ff.workspace = true
 starknet-types-core.workspace = true
 stwo-cairo-serialize = { path = "../cairo-serialize", version = "~1.1.0" }

@@ -346,12 +346,12 @@ pub fn verify_cairo_ex<MC: MerkleChannel>(
     pcs_config.mix_into(channel);
     let commitment_scheme_verifier = &mut CommitmentSchemeVerifier::<MC>::new(pcs_config);
 
-    let mut log_sizes = claim.log_sizes();
-    log_sizes[PREPROCESSED_TRACE_IDX] = preprocessed_trace_variant
-        .to_preprocessed_trace()
-        .log_sizes();
+    let preprocessed_trace = preprocessed_trace_variant.to_preprocessed_trace(None);
 
-    // Preproccessed trace.
+    let mut log_sizes = claim.log_sizes();
+    log_sizes[PREPROCESSED_TRACE_IDX] = preprocessed_trace.log_sizes();
+
+    // Preprocessed trace.
     commitment_scheme_verifier.commit(stark_proof.commitments[0], &log_sizes[0], channel);
 
     claim.mix_into::<MC>(channel);
@@ -375,7 +375,7 @@ pub fn verify_cairo_ex<MC: MerkleChannel>(
         &claim,
         &interaction_elements,
         &interaction_claim,
-        &preprocessed_trace_variant.to_preprocessed_trace().ids(),
+        &preprocessed_trace.ids(),
     );
     let components = component_generator.components();
 
