@@ -629,7 +629,6 @@ mod tests {
 
     use cairo_air::components::{memory_id_to_big, memory_id_to_small};
     use cairo_air::relations::CommonLookupElements;
-    use cairo_air::PreProcessedTraceVariant;
     use itertools::Itertools;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
@@ -639,7 +638,9 @@ mod tests {
     use stwo_cairo_adapter::memory::{
         value_from_felt252, MemoryBuilder, MemoryConfig, MemoryValue,
     };
-    use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
+    use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
+        PreProcessedTrace, PreProcessedTraceVariant,
+    };
     use stwo_cairo_common::prover_types::cpu::FELT252_N_WORDS;
     use stwo_cairo_common::prover_types::felt::split_f252;
     use stwo_constraint_framework::TraceLocationAllocator;
@@ -671,9 +672,9 @@ mod tests {
 
         // Preprocessed trace.
         let mut tree_builder = commitment_scheme.tree_builder();
-        tree_builder.extend_evals(gen_trace(Arc::new(
-            PreProcessedTraceVariant::CanonicalWithoutPedersen.to_preprocessed_trace(),
-        )));
+        tree_builder.extend_evals(gen_trace(Arc::new(PreProcessedTrace::new_without_program(
+            PreProcessedTraceVariant::CanonicalWithoutPedersen,
+        ))));
         tree_builder.finalize_interaction();
 
         // Base trace.

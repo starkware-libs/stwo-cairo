@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::iter::zip;
 
 use itertools::{chain, Itertools};
+use serde::{Deserialize, Serialize};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
 use super::bitwise_xor::BitwiseXor;
@@ -11,6 +12,7 @@ use super::pedersen::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
 use super::poseidon::{PoseidonRoundKeys, N_WORDS as POSEIDON_N_WORDS};
 #[cfg(feature = "prover")]
 use super::simd_prelude::*;
+use crate::preprocessed_columns::program;
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
@@ -34,6 +36,14 @@ pub trait PreProcessedColumn: Send + Sync {
     fn id(&self) -> PreProcessedColumnId;
     #[cfg(feature = "prover")]
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>;
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PreProcessedTraceVariant {
+    Canonical,
+    CanonicalWithoutPedersen,
+    CanonicalSmall,
 }
 
 /// A collection of preprocessed columns, whose values are publicly acknowledged, and independent of
@@ -149,6 +159,39 @@ impl PreProcessedTrace {
         );
 
         Self::from_columns(columns)
+    }
+
+    fn append_program_columns(self) -> Self {
+        let curr_program_columns = (0..program::PROGRAM_N_COLUMNS)
+            .map(|x| Box::new(program::ProgramColumn::new(x)) as Box<dyn PreProcessedColumn>);
+        let columns = chain!(self.columns.into_iter(), curr_program_columns)
+            .sorted_by_key(|column| column.log_size())
+            .collect_vec();
+        Self::from_columns(columns)
+    }
+
+    pub fn new_without_program(variant: PreProcessedTraceVariant) -> PreProcessedTrace {
+        match variant {
+            PreProcessedTraceVariant::Canonical => Self::canonical(),
+            PreProcessedTraceVariant::CanonicalWithoutPedersen => {
+                Self::canonical_without_pedersen()
+            }
+            PreProcessedTraceVariant::CanonicalSmall => Self::canonical_small(),
+        }
+    }
+
+    pub fn new_with_program(
+        variant: PreProcessedTraceVariant,
+        program: &[(u32, [u32; 8])],
+    ) -> PreProcessedTrace {
+        program::set_program_table(program);
+        let preprocessed_trace = Self::new_without_program(variant);
+        preprocessed_trace.append_program_columns()
+    }
+
+    pub fn new_with_program_for_verifier(variant: PreProcessedTraceVariant) -> PreProcessedTrace {
+        let preprocessed_trace = Self::new_without_program(variant);
+        preprocessed_trace.append_program_columns()
     }
 
     pub fn log_sizes(&self) -> Vec<u32> {

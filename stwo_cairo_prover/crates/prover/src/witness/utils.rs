@@ -3,7 +3,6 @@ use std::sync::atomic::{AtomicU32, Ordering};
 
 use bytemuck::Zeroable;
 use cairo_air::claims::CairoClaim;
-use cairo_air::PreProcessedTraceVariant;
 use itertools::Itertools;
 use num_traits::{One, Zero};
 use stwo::core::channel::MerkleChannel;
@@ -16,7 +15,9 @@ use stwo::prover::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, 
 use stwo::prover::backend::{Backend, BackendForChannel};
 use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
-use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
+    PreProcessedTrace, PreProcessedTraceVariant,
+};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
 
@@ -136,13 +137,19 @@ fn get_preprocessed_roots<MC: MerkleChannel>(
     max_log_blowup_factor: u32,
     preprocessed_trace: PreProcessedTraceVariant,
     lifting_log_size: Option<u32>,
+    program: Option<&[(u32, [u32; 8])]>,
 ) -> Vec<<MC::H as MerkleHasherLifted>::Hash>
 where
     stwo::prover::backend::simd::SimdBackend: BackendForChannel<MC>,
 {
     (1..=max_log_blowup_factor)
         .map(|i| {
-            generate_preprocessed_commitment_root::<MC>(i, preprocessed_trace, lifting_log_size)
+            generate_preprocessed_commitment_root::<MC>(
+                i,
+                preprocessed_trace,
+                lifting_log_size,
+                program,
+            )
         })
         .collect_vec()
 }
@@ -157,6 +164,7 @@ pub fn export_preprocessed_roots() {
     let blake_roots = get_preprocessed_roots::<Blake2sMerkleChannel>(
         max_log_blowup_factor,
         PreProcessedTraceVariant::Canonical,
+        None,
         None,
     );
     blake_roots.iter().enumerate().for_each(|(i, root)| {
@@ -178,6 +186,7 @@ pub fn export_preprocessed_roots() {
         get_preprocessed_roots::<Poseidon252MerkleChannel>(
             max_log_blowup_factor,
             PreProcessedTraceVariant::CanonicalWithoutPedersen,
+            None,
             None,
         )
         .into_iter()
@@ -203,6 +212,7 @@ pub fn export_circuit_cairo_verifier_preprocessed_roots() {
         max_log_blowup_factor,
         PreProcessedTraceVariant::CanonicalSmall,
         Some(lifting_log_size),
+        None,
     );
     blake_m31_small_roots
         .iter()

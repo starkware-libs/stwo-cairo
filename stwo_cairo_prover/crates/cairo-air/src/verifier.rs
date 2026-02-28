@@ -10,6 +10,7 @@ use stwo::core::pcs::CommitmentSchemeVerifier;
 use stwo::core::verifier::{verify_ex, VerificationError};
 use stwo_cairo_common::builtins::*;
 use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, LOG_MEMORY_ADDRESS_BOUND};
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 use stwo_cairo_common::prover_types::cpu::{CasmState, PRIME};
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
 use thiserror::Error;
@@ -325,6 +326,7 @@ pub fn verify_cairo_ex<MC: MerkleChannel>(
         stark_proof,
         channel_salt,
         preprocessed_trace_variant,
+        program_in_ppt,
     }: CairoProofForRustVerifier<MC::H>,
     include_all_preprocessed_columns: bool,
 ) -> Result<(), CairoVerificationError> {
@@ -346,12 +348,16 @@ pub fn verify_cairo_ex<MC: MerkleChannel>(
     pcs_config.mix_into(channel);
     let commitment_scheme_verifier = &mut CommitmentSchemeVerifier::<MC>::new(pcs_config);
 
-    let mut log_sizes = claim.log_sizes();
-    log_sizes[PREPROCESSED_TRACE_IDX] = preprocessed_trace_variant
-        .to_preprocessed_trace()
-        .log_sizes();
+    let preprocessed_trace = if program_in_ppt {
+        PreProcessedTrace::new_with_program_for_verifier(preprocessed_trace_variant)
+    } else {
+        PreProcessedTrace::new_without_program(preprocessed_trace_variant)
+    };
 
-    // Preproccessed trace.
+    let mut log_sizes = claim.log_sizes();
+    log_sizes[PREPROCESSED_TRACE_IDX] = preprocessed_trace.log_sizes();
+
+    // Preprocessed trace.
     commitment_scheme_verifier.commit(stark_proof.commitments[0], &log_sizes[0], channel);
 
     claim.mix_into::<MC>(channel);
@@ -375,7 +381,7 @@ pub fn verify_cairo_ex<MC: MerkleChannel>(
         &claim,
         &interaction_elements,
         &interaction_claim,
-        &preprocessed_trace_variant.to_preprocessed_trace().ids(),
+        &preprocessed_trace.ids(),
     );
     let components = component_generator.components();
 
