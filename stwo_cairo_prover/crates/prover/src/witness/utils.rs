@@ -141,6 +141,7 @@ pub fn export_preprocessed_roots() {
             log_blowup_factor,
             PreProcessedTraceVariant::Canonical,
             None,
+            None,
         );
         let root_bytes = root.0;
         let u32s_hex = root_bytes
@@ -162,6 +163,7 @@ pub fn export_preprocessed_roots() {
                 log_blowup_factor,
                 PreProcessedTraceVariant::CanonicalWithoutPedersen,
                 None,
+                None,
             );
             println!("log_blowup_factor: {log_blowup_factor}, poseidon root: [{root:#010x}]");
         }
@@ -179,6 +181,7 @@ pub fn export_circuit_cairo_verifier_preprocessed_roots() {
             log_blowup_factor,
             PreProcessedTraceVariant::CanonicalSmall,
             Some(20 + log_blowup_factor),
+            None,
         );
 
         let root_bytes = root.0;

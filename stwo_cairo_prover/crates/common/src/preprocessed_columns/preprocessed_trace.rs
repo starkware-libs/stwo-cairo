@@ -12,6 +12,7 @@ use super::pedersen::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
 use super::poseidon::{PoseidonRoundKeys, N_WORDS as POSEIDON_N_WORDS};
 #[cfg(feature = "prover")]
 use super::simd_prelude::*;
+use crate::preprocessed_columns::program;
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
@@ -204,6 +205,44 @@ impl PreProcessedTrace {
         );
 
         columns
+    }
+
+    fn append_program_columns(self) -> Self {
+        let curr_program_columns = (0..program::PROGRAM_N_COLUMNS)
+            .map(|x| Box::new(program::ProgramColumn::new(x)) as Box<dyn PreProcessedColumn>);
+        let columns = chain!(self.columns.into_iter(), curr_program_columns)
+            .sorted_by_key(|column| column.log_size())
+            .collect_vec();
+        let column_indices = Self::get_column_indices(&columns);
+        Self {
+            columns,
+            column_indices,
+            variant: self.variant,
+        }
+    }
+
+    pub fn new_without_program(variant: PreProcessedTraceVariant) -> PreProcessedTrace {
+        match variant {
+            PreProcessedTraceVariant::Canonical => Self::canonical(),
+            PreProcessedTraceVariant::CanonicalWithoutPedersen => {
+                Self::canonical_without_pedersen()
+            }
+            PreProcessedTraceVariant::CanonicalSmall => Self::canonical_small(),
+        }
+    }
+
+    pub fn new_with_program(
+        variant: PreProcessedTraceVariant,
+        program: &[(u32, [u32; 8])],
+    ) -> PreProcessedTrace {
+        program::set_program_table(program);
+        let preprocessed_trace = Self::new_without_program(variant);
+        preprocessed_trace.append_program_columns()
+    }
+
+    pub fn new_with_program_for_verifier(variant: PreProcessedTraceVariant) -> PreProcessedTrace {
+        let preprocessed_trace = Self::new_without_program(variant);
+        preprocessed_trace.append_program_columns()
     }
 
     pub fn log_sizes(&self) -> Vec<u32> {

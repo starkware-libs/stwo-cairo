@@ -672,9 +672,9 @@ mod tests {
 
         // Preprocessed trace.
         let mut tree_builder = commitment_scheme.tree_builder();
-        tree_builder.extend_evals(gen_trace(Arc::new(
-            PreProcessedTraceVariant::CanonicalWithoutPedersen.to_preprocessed_trace(),
-        )));
+        tree_builder.extend_evals(gen_trace(Arc::new(PreProcessedTrace::new_without_program(
+            PreProcessedTraceVariant::CanonicalWithoutPedersen,
+        ))));
         tree_builder.finalize_interaction();
 
         // Base trace.

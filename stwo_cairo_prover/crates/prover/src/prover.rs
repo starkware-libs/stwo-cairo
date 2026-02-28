@@ -94,7 +94,16 @@ where
             .half_coset,
     );
 
-    let preprocessed_trace = Arc::new(prover_params.preprocessed_trace.to_preprocessed_trace());
+    let preprocessed_trace = if prover_params.program_in_ppt {
+        Arc::new(PreProcessedTrace::new_with_program(
+            prover_params.preprocessed_trace,
+            &input.program,
+        ))
+    } else {
+        Arc::new(PreProcessedTrace::new_without_program(
+            prover_params.preprocessed_trace,
+        ))
+    };
     let preprocessed_trace_polys =
         SimdBackend::interpolate_columns(gen_trace(preprocessed_trace.clone()), &twiddles);
 
@@ -137,6 +146,7 @@ where
         preprocessed_trace: preprocessed_trace_variant,
         store_polynomials_coefficients,
         include_all_preprocessed_columns,
+        program_in_ppt,
     } = prover_params;
 
     // Setup protocol.
@@ -233,6 +243,7 @@ where
         extended_stark_proof: proof,
         channel_salt,
         preprocessed_trace_variant,
+        program_in_ppt,
     })
 }
 
@@ -257,6 +268,8 @@ pub struct ProverParameters {
     /// Whether to include samples for every preprocessed column in the proof. Default is `false`.
     /// If `false`, the proof only includes samples for columns used by at least one component.
     pub include_all_preprocessed_columns: bool,
+    /// Whether to include the 'program' preprocessed columns.
+    pub program_in_ppt: bool,
 }
 
 /// The hash function used for commitments, for the prover-verifier channel,
@@ -310,6 +323,7 @@ pub fn create_and_serialize_proof(
             preprocessed_trace: PreProcessedTraceVariant::Canonical,
             store_polynomials_coefficients: false,
             include_all_preprocessed_columns: false,
+            program_in_ppt: false,
         }
     };
 
@@ -435,6 +449,7 @@ pub mod tests {
                 channel_salt: 42,
                 store_polynomials_coefficients: false,
                 include_all_preprocessed_columns: false,
+                program_in_ppt: false,
             };
             let cairo_proof =
                 prove_cairo::<Poseidon252MerkleChannel>(input, prover_params).unwrap();
@@ -550,6 +565,7 @@ pub mod tests {
                 channel_salt: 0,
                 store_polynomials_coefficients: true,
                 include_all_preprocessed_columns: false,
+                program_in_ppt: false,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
@@ -577,6 +593,7 @@ pub mod tests {
                 channel_salt: 0,
                 store_polynomials_coefficients: false,
                 include_all_preprocessed_columns: false,
+                program_in_ppt: false,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
             let mut proof_file = NamedTempFile::new().unwrap();
@@ -646,6 +663,7 @@ pub mod tests {
                 channel_salt: 0,
                 store_polynomials_coefficients: false,
                 include_all_preprocessed_columns: false,
+                program_in_ppt: false,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
             let mut proof_file = NamedTempFile::new().unwrap();
@@ -692,6 +710,7 @@ pub mod tests {
                 channel_salt: 0,
                 store_polynomials_coefficients: false,
                 include_all_preprocessed_columns: false,
+                program_in_ppt: false,
             };
             let proofs = (0..n_proofs_to_compare)
                 .map(|_| {
@@ -761,6 +780,7 @@ pub mod tests {
                     channel_salt: 0,
                     store_polynomials_coefficients: false,
                     include_all_preprocessed_columns: false,
+                    program_in_ppt: false,
                 };
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
@@ -785,6 +805,7 @@ pub mod tests {
                     channel_salt: 0,
                     store_polynomials_coefficients: false,
                     include_all_preprocessed_columns: false,
+                    program_in_ppt: false,
                 };
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
@@ -917,6 +938,7 @@ pub mod tests {
                     channel_salt: 0,
                     store_polynomials_coefficients: false,
                     include_all_preprocessed_columns: false,
+                    program_in_ppt: false,
                 };
 
                 // Run poseidon builtin with 15 different instances.
@@ -987,6 +1009,7 @@ pub mod tests {
                     channel_salt: 0,
                     store_polynomials_coefficients: false,
                     include_all_preprocessed_columns: false,
+                    program_in_ppt: false,
                 };
 
                 // Run pedersen builtin with 15 different instances.
