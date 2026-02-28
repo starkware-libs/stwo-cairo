@@ -32,6 +32,7 @@ pub struct ProverInput {
     pub public_memory_addresses: Vec<u32>,
     pub builtin_segments: BuiltinSegments,
     pub public_segment_context: PublicSegmentContext,
+    pub program_segment: Vec<(u32, [u32; 8])>,
     #[cfg(feature = "extract-mem-trace")]
     pub relocated_mem: Vec<MemoryEntry>,
     #[cfg(feature = "extract-mem-trace")]

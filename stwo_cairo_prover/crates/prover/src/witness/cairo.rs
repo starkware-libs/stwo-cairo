@@ -64,23 +64,17 @@ fn extract_public_segments(
 
 fn extract_sections_from_memory(
     memory: &Memory,
-    initial_pc: u32,
     initial_ap: u32,
     final_ap: u32,
+    program: Vec<(u32, [u32; 8])>,
     public_segment_context: PublicSegmentContext,
 ) -> PublicMemory {
     let public_segments =
         extract_public_segments(memory, initial_ap, final_ap, public_segment_context);
-    let program_memory_addresses = initial_pc..initial_ap - 2;
     let safe_call_addresses = initial_ap - 2..initial_ap;
     let output_memory_addresses =
         public_segments.output.start_ptr.value..public_segments.output.stop_ptr.value;
-    let [program, safe_call, output] = [
-        program_memory_addresses,
-        safe_call_addresses,
-        output_memory_addresses,
-    ]
-    .map(|range| {
+    let [safe_call, output] = [safe_call_addresses, output_memory_addresses].map(|range| {
         range
             .map(|addr| {
                 let id = memory.get_raw_id(addr);
@@ -113,6 +107,7 @@ pub fn create_cairo_claim_generator(
         public_memory_addresses,
         builtin_segments,
         public_segment_context,
+        program_segment,
         ..
     }: ProverInput,
     preprocessed_trace: Arc<PreProcessedTrace>,
@@ -135,14 +130,13 @@ pub fn create_cairo_claim_generator(
     all_components.insert("verify_bitwise_xor_9");
 
     // Public data.
-    let initial_pc = initial_state.pc.0;
     let initial_ap = initial_state.ap.0;
     let final_ap = final_state.ap.0;
     let public_memory = extract_sections_from_memory(
         &memory,
-        initial_pc,
         initial_ap,
         final_ap,
+        program_segment,
         public_segment_context,
     );
 

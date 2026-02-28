@@ -65,6 +65,7 @@ pub struct CairoProof<H: MerkleHasherLifted> {
     /// Salt used in the channel initialization.
     pub channel_salt: u32,
     pub preprocessed_trace_variant: PreProcessedTraceVariant,
+    pub program: Vec<(u32, [u32; 8])>,
 }
 
 /// Proof format optimized for the Rust verifier.
@@ -82,6 +83,7 @@ pub struct CairoProofForRustVerifier<H: MerkleHasherLifted> {
     /// Salt used in the channel initialization.
     pub channel_salt: u32,
     pub preprocessed_trace_variant: PreProcessedTraceVariant,
+    pub program: Vec<(u32, [u32; 8])>,
 }
 
 pub type RelationUsesDict = HashMap<&'static str, u64>;
@@ -769,6 +771,7 @@ impl<H: MerkleHasherLifted> From<CairoProof<H>> for CairoProofForRustVerifier<H>
             extended_stark_proof,
             channel_salt,
             preprocessed_trace_variant,
+            program,
         } = extended_cairo_proof;
 
         let ExtendedStarkProof { proof, .. } = extended_stark_proof;
@@ -780,6 +783,7 @@ impl<H: MerkleHasherLifted> From<CairoProof<H>> for CairoProofForRustVerifier<H>
             stark_proof: proof,
             channel_salt,
             preprocessed_trace_variant,
+            program,
         }
     }
 }

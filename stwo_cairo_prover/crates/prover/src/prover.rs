@@ -110,7 +110,9 @@ where
         commitment_scheme.set_store_polynomials_coefficients();
     }
     // Preprocessed trace.
-    let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace());
+    let preprocessed_trace =
+        Arc::new(preprocessed_trace.to_preprocessed_trace(&input.program_segment));
+    let program = input.program_segment.clone();
     let mut tree_builder = commitment_scheme.tree_builder();
     tree_builder.extend_evals(gen_trace(preprocessed_trace.clone()));
     tree_builder.commit(channel);
@@ -192,6 +194,7 @@ where
         extended_stark_proof: proof,
         channel_salt,
         preprocessed_trace_variant: prover_params.preprocessed_trace,
+        program,
     })
 }
 
