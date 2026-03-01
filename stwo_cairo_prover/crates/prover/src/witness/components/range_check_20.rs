@@ -168,7 +168,7 @@ impl InteractionClaimGenerator {
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
         InteractionClaim,
     ) {
-        let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
+        let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(LOG_SIZE) };
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
