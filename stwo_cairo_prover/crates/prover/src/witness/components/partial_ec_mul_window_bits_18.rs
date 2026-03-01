@@ -5766,7 +5766,7 @@ impl InteractionClaimGenerator {
         InteractionClaim,
     ) {
         let enabler_col = Enabler::new(self.n_rows);
-        let mut logup_gen = LogupTraceGenerator::new(self.log_size);
+        let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();

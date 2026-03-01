@@ -452,7 +452,8 @@ impl InteractionClaimGenerator {
             .iter()
             .all(|v| v.len() == big_multiplicities.len()));
         let big_table_log_size = big_components_values[0].len().ilog2() + LOG_N_LANES;
-        let mut big_values_logup_gen = LogupTraceGenerator::new(big_table_log_size);
+        let mut big_values_logup_gen =
+            unsafe { LogupTraceGenerator::uninitialized(big_table_log_size) };
 
         // Every element is 9-bit.
         for (i, (limb0, limb1, limb2, limb3)) in big_components_values.iter().tuples().enumerate() {
@@ -553,7 +554,8 @@ impl InteractionClaimGenerator {
         QM31,
     ) {
         let small_table_log_size = self.small_values[0].len().ilog2() + LOG_N_LANES;
-        let mut small_values_logup_gen = LogupTraceGenerator::new(small_table_log_size);
+        let mut small_values_logup_gen =
+            unsafe { LogupTraceGenerator::uninitialized(small_table_log_size) };
 
         // Every element is 9-bit.
         for (i, (limb0, limb1, limb2, limb3)) in self.small_values.iter().tuples().enumerate() {

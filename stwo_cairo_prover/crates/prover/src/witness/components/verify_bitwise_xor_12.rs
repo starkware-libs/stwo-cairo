@@ -74,7 +74,7 @@ impl InteractionClaimGenerator {
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
         InteractionClaim,
     ) {
-        let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
+        let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(LOG_SIZE) };
 
         // [0, 1, 2, ..., N_LANES - 1].
         let zero_to_n_lanes = u32x16::from_array(std::array::from_fn(|i| i as u32));
