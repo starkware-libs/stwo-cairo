@@ -3362,6 +3362,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
+name = "std-shims"
+version = "1.0.0"
+source = "git+https://github.com/starkware-libs/stwo?rev=95932933425a5fb07fa0bcae55bc8d850abe5173#95932933425a5fb07fa0bcae55bc8d850abe5173"
+
+[[package]]
 name = "string_cache"
 version = "0.8.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3382,8 +3387,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo"
 version = "2.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "17c0c344963f57a53bb83a4f90bbc2f8968385b55f11efe1887f23ad803ee00e"
+source = "git+https://github.com/starkware-libs/stwo?rev=95932933425a5fb07fa0bcae55bc8d850abe5173#95932933425a5fb07fa0bcae55bc8d850abe5173"
 dependencies = [
  "blake2",
  "blake3",
@@ -3392,7 +3396,7 @@ dependencies = [
  "dashmap",
  "educe 0.5.11",
  "fnv",
- "hashbrown 0.16.1",
+ "hashbrown 0.15.5",
  "hex",
  "indexmap",
  "itertools 0.12.1",
@@ -3403,6 +3407,7 @@ dependencies = [
  "starknet-crypto 0.6.2",
  "starknet-ff",
  "stwo-std-shims",
+ "stwo-types",
  "thiserror",
  "tracing",
  "tracing-subscriber",
@@ -3411,8 +3416,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils"
 version = "2.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "69be8dd73bc16fdc13907b979ec865c9bab1ba92dd3c6e393f6720fffe819b74"
+source = "git+https://github.com/starkware-libs/stwo?rev=95932933425a5fb07fa0bcae55bc8d850abe5173#95932933425a5fb07fa0bcae55bc8d850abe5173"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -3424,8 +3428,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "2.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8e8e5897a5252a0b7ded8817b19d41f9693aa23e048349f627966698f03dc710"
+source = "git+https://github.com/starkware-libs/stwo?rev=95932933425a5fb07fa0bcae55bc8d850abe5173#95932933425a5fb07fa0bcae55bc8d850abe5173"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3453,9 +3456,9 @@ dependencies = [
  "rayon",
  "serde",
  "serde_json",
- "stwo",
  "stwo-cairo-common",
  "stwo-cairo-dev-utils",
+ "stwo-types",
  "test-case",
  "thiserror",
  "tracing",
@@ -3478,6 +3481,7 @@ dependencies = [
  "stwo",
  "stwo-cairo-serialize",
  "stwo-constraint-framework",
+ "stwo-types",
 ]
 
 [[package]]
@@ -3554,6 +3558,7 @@ dependencies = [
  "starknet-ff",
  "stwo",
  "stwo-cairo-serialize-derive",
+ "stwo-types",
 ]
 
 [[package]]
@@ -3577,10 +3582,9 @@ dependencies = [
 [[package]]
 name = "stwo-constraint-framework"
 version = "2.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac823b7e9eae7c5bbc7886eb9b7610c5b84e163b57fc5909bcdbe61d1e3d7b15"
+source = "git+https://github.com/starkware-libs/stwo?rev=95932933425a5fb07fa0bcae55bc8d850abe5173#95932933425a5fb07fa0bcae55bc8d850abe5173"
 dependencies = [
- "hashbrown 0.16.1",
+ "hashbrown 0.15.5",
  "itertools 0.12.1",
  "num-traits",
  "rand 0.8.5",
@@ -3595,6 +3599,19 @@ name = "stwo-std-shims"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5c21e2c707fb8926e6c4355a87494c29e8e46640ff4796aa8fbb74952327dfdc"
+
+[[package]]
+name = "stwo-types"
+version = "2.0.1"
+source = "git+https://github.com/starkware-libs/stwo?rev=95932933425a5fb07fa0bcae55bc8d850abe5173#95932933425a5fb07fa0bcae55bc8d850abe5173"
+dependencies = [
+ "bytemuck",
+ "num-traits",
+ "rand 0.8.5",
+ "rayon",
+ "serde",
+ "std-shims",
+]
 
 [[package]]
 name = "subtle"

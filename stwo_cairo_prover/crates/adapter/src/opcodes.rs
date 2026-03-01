@@ -5,9 +5,9 @@ use crypto_bigint::U256;
 use rayon::iter::ParallelIterator;
 use rayon::slice::ParallelSlice;
 use serde::{Deserialize, Serialize};
-use stwo::core::fields::m31::M31;
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use stwo_cairo_common::prover_types::cpu::CasmState;
+use stwo_types::m31::M31;
 use tracing::{span, Level};
 
 use super::decode::{Instruction, OpcodeExtension};
@@ -738,7 +738,6 @@ mod mappings_tests {
     use cairo_vm::types::relocatable::{MaybeRelocatable, Relocatable};
     use cairo_vm::vm::runners::cairo_runner::CairoRunner;
     use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
-    use stwo::core::fields::m31::M31;
     use stwo_cairo_common::prover_types::cpu::CasmState;
 
     use crate::adapter::adapt;
@@ -1254,6 +1253,7 @@ mod mappings_tests {
         assert_eq!(states.qm_31_add_mul_opcode.len(), 1);
     }
 
+    use stwo_types::m31::M31;
     #[test]
     fn test_casm_state_from_relocator() {
         let segment0 = vec![

@@ -1,6 +1,4 @@
 use starknet_ff::FieldElement;
-use stwo::core::fields::m31::BaseField;
-use stwo::core::fields::qm31::SecureField;
 use stwo::core::fri::{FriConfig, FriLayerProof, FriProof};
 use stwo::core::pcs::quotients::CommitmentSchemeProof;
 use stwo::core::pcs::PcsConfig;
@@ -11,6 +9,8 @@ use stwo::core::vcs_lifted::verifier::MerkleDecommitmentLifted;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
 // Make derive macro available.
 pub use stwo_cairo_serialize_derive::CairoSerialize;
+use stwo_types::fields::m31::BaseField;
+use stwo_types::fields::qm31::SecureField;
 
 /// Serializes types into a format for deserialization by corresponding types in a Cairo program.
 pub trait CairoSerialize {

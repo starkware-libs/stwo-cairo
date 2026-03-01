@@ -75,6 +75,7 @@ fi
 
 deps=(
   stwo
+  stwo-types
   stwo-constraint-framework
   stwo-air-utils-derive
   stwo-air-utils
