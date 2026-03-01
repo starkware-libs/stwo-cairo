@@ -209,17 +209,13 @@ pub fn export_circuit_cairo_verifier_preprocessed_roots() {
         .enumerate()
         .for_each(|(i, root)| {
             let root_bytes = root.0;
-            let u32s_hex = root_bytes
+            let u32s = root_bytes
                 .array_chunks::<4>()
-                .map(|&bytes| format!("{:#010x}", u32::from_le_bytes(bytes)))
+                .map(|&bytes| format!("{:}", u32::from_le_bytes(bytes)))
                 .collect_vec()
                 .join(", ");
 
-            println!(
-                "log_blowup_factor: {}, blakeM31 root: [{}]",
-                i + 1,
-                u32s_hex
-            );
+            println!("log_blowup_factor: {}, blakeM31 root: [{}]", i + 1, u32s);
         });
 }
 
