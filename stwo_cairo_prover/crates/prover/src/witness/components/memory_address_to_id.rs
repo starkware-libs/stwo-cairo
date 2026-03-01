@@ -197,7 +197,7 @@ impl InteractionClaimGenerator {
         let packed_size = self.ids[0].len();
         let log_size = packed_size.ilog2() + LOG_N_LANES;
         let n_rows = 1 << log_size;
-        let mut logup_gen = LogupTraceGenerator::new(log_size);
+        let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(log_size) };
 
         for (i, ((ids0, mults0), (ids1, mults1))) in
             izip!(&self.ids, &self.multiplicities).tuples().enumerate()
