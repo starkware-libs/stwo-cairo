@@ -7,7 +7,6 @@ repository.workspace = true
 description = "Common types and utilities shared across Stwo Cairo crates"
 
 [features]
-default = ["prover"]
 serialize = ["dep:stwo-cairo-serialize", "dep:stwo-constraint-framework"]
 prover = [
     "dep:stwo",
