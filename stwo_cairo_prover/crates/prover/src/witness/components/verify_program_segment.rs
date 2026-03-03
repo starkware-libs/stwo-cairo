@@ -92,7 +92,6 @@ fn write_trace_simd(
         )
     };
 
-    let M31_1 = PackedM31::broadcast(M31::from(1));
     let M31_1444891767 = PackedM31::broadcast(M31::from(1444891767));
     let M31_1662111297 = PackedM31::broadcast(M31::from(1662111297));
     let seq = Seq::new(log_size);
@@ -224,12 +223,11 @@ fn write_trace_simd(
             // Read Id.
 
             let memory_address_to_id_value_tmp_9b2ce_0 =
-                memory_address_to_id_state.deduce_output(((seq) + (M31_1)));
+                memory_address_to_id_state.deduce_output(seq);
             let address_id_col0 = memory_address_to_id_value_tmp_9b2ce_0;
             *row[0] = address_id_col0;
-            *sub_component_inputs.memory_address_to_id[0] = ((seq) + (M31_1));
-            *lookup_data.memory_address_to_id_0 =
-                [M31_1444891767, ((seq) + (M31_1)), address_id_col0];
+            *sub_component_inputs.memory_address_to_id[0] = (seq);
+            *lookup_data.memory_address_to_id_0 = [M31_1444891767, seq, address_id_col0];
 
             *sub_component_inputs.memory_id_to_big[0] = address_id_col0;
             *lookup_data.memory_id_to_big_0 = [

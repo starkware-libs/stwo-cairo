@@ -122,7 +122,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         mem_verify_evaluate(
             [
-                (seq_26 + qm31_const::<1, 0, 0, 0>()), curr_program_0, curr_program_1,
+                seq_26, curr_program_0, curr_program_1,
                 curr_program_2, curr_program_3, curr_program_4, curr_program_5, curr_program_6,
                 curr_program_7, curr_program_8, curr_program_9, curr_program_10, curr_program_11,
                 curr_program_12, curr_program_13, curr_program_14, curr_program_15, curr_program_16,
