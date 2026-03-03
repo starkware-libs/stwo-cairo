@@ -135,7 +135,7 @@ jobs:
       - name: Build cairo-air for wasm32
         run: cargo check --package cairo-air --no-default-features --target wasm32-unknown-unknown --release
 
-  cairo-air-stable:
+  crates-stable:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -146,12 +146,12 @@ jobs:
         with:
           toolchain: ${{ env.STABLE_VERSION }}
       - uses: Swatinem/rust-cache@v2
-      - name: Check cairo-air compiles on stable
+      - name: Check all crates (except prover) compile on stable
         env:
           RUSTUP_TOOLCHAIN: ${{ env.STABLE_VERSION }}
-        run: cargo check --package cairo-air
+        run: cargo check --workspace --exclude stwo-cairo-prover
 
-  format:
+  format:\
     runs-on: ubuntu-latest
     defaults:
       run:
