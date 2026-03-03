@@ -66,3 +66,4 @@ pub mod verify_bitwise_xor_7;
 pub mod verify_bitwise_xor_8;
 pub mod verify_bitwise_xor_9;
 pub mod verify_instruction;
+pub mod verify_program;
