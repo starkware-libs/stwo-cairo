@@ -10,3 +10,4 @@ pub const POSEIDON_BUILTIN_MEMORY_CELLS: usize = 6;
 pub const RANGE_CHECK_BUILTIN_MEMORY_CELLS: usize = 1;
 pub const RANGE_CHECK_96_BUILTIN_MEMORY_CELLS: usize = 1;
 pub const OUTPUT_MEMORY_CELLS: usize = 1;
+pub const VERIFY_PROGRAM_SEGMENT_MEMORY_CELLS: usize = 1;

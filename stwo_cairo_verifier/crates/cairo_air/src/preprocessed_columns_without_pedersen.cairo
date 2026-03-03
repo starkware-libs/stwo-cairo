@@ -336,6 +336,36 @@ pub const PEDERSEN_POINTS_SMALL_53_IDX: u32 = INVALID_COLUMN_IDX; // PedersenPoi
 pub const PEDERSEN_POINTS_SMALL_54_IDX: u32 = INVALID_COLUMN_IDX; // PedersenPoints(54)
 pub const PEDERSEN_POINTS_SMALL_55_IDX: u32 = INVALID_COLUMN_IDX; // PedersenPoints(55)
 
+pub const SEQ_26_IDX: u32 = INVALID_COLUMN_IDX; // Seq(26)
+pub const CURR_PROGRAM_0_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(0)
+pub const CURR_PROGRAM_1_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(1)
+pub const CURR_PROGRAM_2_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(2)
+pub const CURR_PROGRAM_3_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(3)
+pub const CURR_PROGRAM_4_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(4)
+pub const CURR_PROGRAM_5_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(5)
+pub const CURR_PROGRAM_6_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(6)
+pub const CURR_PROGRAM_7_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(7)
+pub const CURR_PROGRAM_8_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(8)
+pub const CURR_PROGRAM_9_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(9)
+pub const CURR_PROGRAM_10_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(10)
+pub const CURR_PROGRAM_11_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(11)
+pub const CURR_PROGRAM_12_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(12)
+pub const CURR_PROGRAM_13_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(13)
+pub const CURR_PROGRAM_14_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(14)
+pub const CURR_PROGRAM_15_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(15)
+pub const CURR_PROGRAM_16_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(16)
+pub const CURR_PROGRAM_17_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(17)
+pub const CURR_PROGRAM_18_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(18)
+pub const CURR_PROGRAM_19_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(19)
+pub const CURR_PROGRAM_20_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(20)
+pub const CURR_PROGRAM_21_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(21)
+pub const CURR_PROGRAM_22_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(22)
+pub const CURR_PROGRAM_23_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(23)
+pub const CURR_PROGRAM_24_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(24)
+pub const CURR_PROGRAM_25_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(25)
+pub const CURR_PROGRAM_26_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(26)
+pub const CURR_PROGRAM_27_IDX: u32 = INVALID_COLUMN_IDX; // ProgramSegment(27)
+
 pub fn seq_column_idx(log_size: u32) -> PreprocessedColumnIdx {
     match log_size {
         0 | 1 | 2 | 3 => panic!(),
@@ -361,6 +391,7 @@ pub fn seq_column_idx(log_size: u32) -> PreprocessedColumnIdx {
         23 => SEQ_23_IDX,
         24 => SEQ_24_IDX,
         25 => SEQ_25_IDX,
+        26 => SEQ_26_IDX,
         _ => panic!(),
     }
 }
