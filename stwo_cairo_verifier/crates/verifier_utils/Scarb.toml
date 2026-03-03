@@ -7,6 +7,7 @@ edition = "2024_07"
 casm = true
 
 [features]
+program_segment = []
 poseidon252_verifier = []
 qm31_opcode = []
 blake_outputs_packing = []
