@@ -12,6 +12,7 @@ sort-module-level-items = true
 cairo-lint.workspace = true
 
 [features]
+program_segment = ["stwo_cairo_air/program_segment"]
 poseidon252_verifier = ["stwo_cairo_air/poseidon252_verifier"]
 qm31_opcode = ["stwo_cairo_air/qm31_opcode"]
 blake_outputs_packing = ["stwo_cairo_air/blake_outputs_packing"]

@@ -7,6 +7,7 @@ edition = "2024_07"
 casm = true
 
 [features]
+program_segment = ["stwo_verifier_core/program_segment"]
 poseidon252_verifier = ["stwo_verifier_core/poseidon252_verifier"]
 qm31_opcode = ["stwo_verifier_core/qm31_opcode"]
 blake_outputs_packing = ["stwo_verifier_core/blake_outputs_packing"]
