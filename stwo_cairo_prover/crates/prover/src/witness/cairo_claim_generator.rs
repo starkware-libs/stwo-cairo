@@ -8,6 +8,7 @@ use cairo_air::relations::CommonLookupElements;
 use indexmap::IndexSet;
 use rayon::scope;
 pub use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::mempool::BaseColumnPool;
 use stwo_cairo_adapter::builtins::BuiltinSegments;
 use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_adapter::opcodes::CasmStatesByOpcode;
@@ -1738,6 +1739,7 @@ impl CairoInteractionClaimGenerator {
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
+        pool: &BaseColumnPool<SimdBackend>,
     ) -> CairoInteractionClaim {
         let mut add_opcode_result = None;
         let mut add_opcode_small_result = None;
@@ -1808,386 +1810,392 @@ impl CairoInteractionClaimGenerator {
         scope(|s| {
             if let Some(gen) = self.add_opcode {
                 s.spawn(|_| {
-                    add_opcode_result = Some(gen.write_interaction_trace(common_lookup_elements));
+                    add_opcode_result =
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.add_opcode_small {
                 s.spawn(|_| {
                     add_opcode_small_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.add_ap_opcode {
                 s.spawn(|_| {
                     add_ap_opcode_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.assert_eq_opcode {
                 s.spawn(|_| {
                     assert_eq_opcode_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.assert_eq_opcode_imm {
                 s.spawn(|_| {
                     assert_eq_opcode_imm_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.assert_eq_opcode_double_deref {
                 s.spawn(|_| {
                     assert_eq_opcode_double_deref_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.blake_compress_opcode {
                 s.spawn(|_| {
                     blake_compress_opcode_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.call_opcode_abs {
                 s.spawn(|_| {
                     call_opcode_abs_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.call_opcode_rel_imm {
                 s.spawn(|_| {
                     call_opcode_rel_imm_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.generic_opcode {
                 s.spawn(|_| {
                     generic_opcode_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.jnz_opcode_non_taken {
                 s.spawn(|_| {
                     jnz_opcode_non_taken_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.jnz_opcode_taken {
                 s.spawn(|_| {
                     jnz_opcode_taken_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.jump_opcode_abs {
                 s.spawn(|_| {
                     jump_opcode_abs_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.jump_opcode_double_deref {
                 s.spawn(|_| {
                     jump_opcode_double_deref_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.jump_opcode_rel {
                 s.spawn(|_| {
                     jump_opcode_rel_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.jump_opcode_rel_imm {
                 s.spawn(|_| {
                     jump_opcode_rel_imm_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.mul_opcode {
                 s.spawn(|_| {
-                    mul_opcode_result = Some(gen.write_interaction_trace(common_lookup_elements));
+                    mul_opcode_result =
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.mul_opcode_small {
                 s.spawn(|_| {
                     mul_opcode_small_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.qm_31_add_mul_opcode {
                 s.spawn(|_| {
                     qm_31_add_mul_opcode_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.ret_opcode {
                 s.spawn(|_| {
-                    ret_opcode_result = Some(gen.write_interaction_trace(common_lookup_elements));
+                    ret_opcode_result =
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.verify_instruction {
                 s.spawn(|_| {
                     verify_instruction_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.blake_round {
                 s.spawn(|_| {
-                    blake_round_result = Some(gen.write_interaction_trace(common_lookup_elements));
+                    blake_round_result =
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.blake_g {
                 s.spawn(|_| {
-                    blake_g_result = Some(gen.write_interaction_trace(common_lookup_elements));
+                    blake_g_result =
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.blake_round_sigma {
                 s.spawn(|_| {
                     blake_round_sigma_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.triple_xor_32 {
                 s.spawn(|_| {
                     triple_xor_32_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.verify_bitwise_xor_12 {
                 s.spawn(|_| {
                     verify_bitwise_xor_12_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.add_mod_builtin {
                 s.spawn(|_| {
                     add_mod_builtin_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.bitwise_builtin {
                 s.spawn(|_| {
                     bitwise_builtin_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.mul_mod_builtin {
                 s.spawn(|_| {
                     mul_mod_builtin_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.pedersen_builtin {
                 s.spawn(|_| {
                     pedersen_builtin_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.pedersen_builtin_narrow_windows {
                 s.spawn(|_| {
                     pedersen_builtin_narrow_windows_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.poseidon_builtin {
                 s.spawn(|_| {
                     poseidon_builtin_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.range_check96_builtin {
                 s.spawn(|_| {
                     range_check96_builtin_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.range_check_builtin {
                 s.spawn(|_| {
                     range_check_builtin_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.pedersen_aggregator_window_bits_18 {
                 s.spawn(|_| {
                     pedersen_aggregator_window_bits_18_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.partial_ec_mul_window_bits_18 {
                 s.spawn(|_| {
                     partial_ec_mul_window_bits_18_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.pedersen_points_table_window_bits_18 {
                 s.spawn(|_| {
                     pedersen_points_table_window_bits_18_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.pedersen_aggregator_window_bits_9 {
                 s.spawn(|_| {
                     pedersen_aggregator_window_bits_9_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.partial_ec_mul_window_bits_9 {
                 s.spawn(|_| {
                     partial_ec_mul_window_bits_9_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.pedersen_points_table_window_bits_9 {
                 s.spawn(|_| {
                     pedersen_points_table_window_bits_9_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.poseidon_aggregator {
                 s.spawn(|_| {
                     poseidon_aggregator_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.poseidon_3_partial_rounds_chain {
                 s.spawn(|_| {
                     poseidon_3_partial_rounds_chain_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.poseidon_full_round_chain {
                 s.spawn(|_| {
                     poseidon_full_round_chain_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.cube_252 {
                 s.spawn(|_| {
-                    cube_252_result = Some(gen.write_interaction_trace(common_lookup_elements));
+                    cube_252_result =
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.poseidon_round_keys {
                 s.spawn(|_| {
                     poseidon_round_keys_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.range_check_252_width_27 {
                 s.spawn(|_| {
                     range_check_252_width_27_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.memory_address_to_id {
                 s.spawn(|_| {
                     memory_address_to_id_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.memory_id_to_big {
                 s.spawn(|_| {
                     memory_id_to_big_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.range_check_6 {
                 s.spawn(|_| {
                     range_check_6_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.range_check_8 {
                 s.spawn(|_| {
                     range_check_8_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.range_check_11 {
                 s.spawn(|_| {
                     range_check_11_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.range_check_12 {
                 s.spawn(|_| {
                     range_check_12_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.range_check_18 {
                 s.spawn(|_| {
                     range_check_18_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.range_check_20 {
                 s.spawn(|_| {
                     range_check_20_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.range_check_4_3 {
                 s.spawn(|_| {
                     range_check_4_3_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.range_check_4_4 {
                 s.spawn(|_| {
                     range_check_4_4_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.range_check_9_9 {
                 s.spawn(|_| {
                     range_check_9_9_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.range_check_7_2_5 {
                 s.spawn(|_| {
                     range_check_7_2_5_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.range_check_3_6_6_3 {
                 s.spawn(|_| {
                     range_check_3_6_6_3_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.range_check_4_4_4_4 {
                 s.spawn(|_| {
                     range_check_4_4_4_4_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.range_check_3_3_3_3_3 {
                 s.spawn(|_| {
                     range_check_3_3_3_3_3_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.verify_bitwise_xor_4 {
                 s.spawn(|_| {
                     verify_bitwise_xor_4_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.verify_bitwise_xor_7 {
                 s.spawn(|_| {
                     verify_bitwise_xor_7_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.verify_bitwise_xor_8 {
                 s.spawn(|_| {
                     verify_bitwise_xor_8_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
             if let Some(gen) = self.verify_bitwise_xor_9 {
                 s.spawn(|_| {
                     verify_bitwise_xor_9_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(gen.write_interaction_trace(common_lookup_elements, pool));
                 });
             }
         });

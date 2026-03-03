@@ -49,7 +49,7 @@ where
         &twiddles,
         false,
         lifting_log_size,
-        &mut BaseColumnPool::new(),
+        &BaseColumnPool::new(),
     );
 
     commitment_scheme.commitment.root()

@@ -80,6 +80,7 @@ mod tests {
     use cairo_air::relations;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
+    use stwo::prover::mempool::BaseColumnPool;
     use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
     use stwo_cairo_common::prover_types::simd::PackedUInt32;
 
@@ -113,7 +114,8 @@ mod tests {
         let mut mock_tree_builder = mock_commitment_scheme.tree_builder();
 
         // Interaction trace.
-        let (trace, _) = interaction_gen.write_interaction_trace(&common_lookup_elements);
+        let (trace, _) = interaction_gen
+            .write_interaction_trace(&common_lookup_elements, &BaseColumnPool::default());
         mock_tree_builder.extend_evals(trace);
         mock_tree_builder.finalize_interaction();
         let trace = mock_commitment_scheme.trace_domain_evaluations();

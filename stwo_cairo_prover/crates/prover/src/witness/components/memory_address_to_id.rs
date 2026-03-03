@@ -16,6 +16,7 @@ use stwo::prover::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, 
 use stwo::prover::backend::simd::qm31::PackedQM31;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::{Col, Column};
+use stwo::prover::mempool::BaseColumnPool;
 use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
 use stwo_cairo_adapter::memory::Memory;
@@ -190,6 +191,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
+        _pool: &BaseColumnPool<SimdBackend>,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
         InteractionClaim,

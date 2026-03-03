@@ -399,6 +399,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
+        _pool: &BaseColumnPool<SimdBackend>,
     ) -> (
         BigTraces,
         SmallTrace,
@@ -636,6 +637,7 @@ mod tests {
     use stwo::core::channel::Blake2sChannel;
     use stwo::core::fields::m31::M31;
     use stwo::prover::backend::simd::m31::PackedM31;
+    use stwo::prover::mempool::BaseColumnPool;
     use stwo_cairo_adapter::memory::{
         value_from_felt252, MemoryBuilder, MemoryConfig, MemoryValue,
     };
@@ -694,7 +696,8 @@ mod tests {
         let interaction_elements = CommonLookupElements::draw(&mut dummy_channel);
         let mut tree_builder = commitment_scheme.tree_builder();
         let (big_traces, small_trace, big_interaction_claim, small_interaction_claim) =
-            interaction_generator.write_interaction_trace(&interaction_elements);
+            interaction_generator
+                .write_interaction_trace(&interaction_elements, &BaseColumnPool::default());
         for big_trace in big_traces {
             tree_builder.extend_evals(big_trace);
         }

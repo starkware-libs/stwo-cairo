@@ -72,12 +72,12 @@ pub fn prove_cairo<MC: MerkleChannel>(
 where
     SimdBackend: BackendForChannel<MC>,
 {
-    let mut base_column_pool = BaseColumnPool::new();
-    prove_cairo_with_memory_pool::<MC>(&mut base_column_pool, input, prover_params)
+    let base_column_pool = BaseColumnPool::new();
+    prove_cairo_with_memory_pool::<MC>(&base_column_pool, input, prover_params)
 }
 
 pub fn prove_cairo_with_memory_pool<MC: MerkleChannel>(
-    base_column_pool: &mut BaseColumnPool<SimdBackend>,
+    base_column_pool: &BaseColumnPool<SimdBackend>,
     input: ProverInput,
     prover_params: ProverParameters,
 ) -> Result<CairoProof<MC::H>, ProvingError>
@@ -117,11 +117,8 @@ where
     // Mix channel salt. Note that we first reduce it modulo `M31::P`, then cast it as QM31.
     channel.mix_felts(&[channel_salt.into()]);
     pcs_config.mix_into(channel);
-    let mut commitment_scheme = CommitmentSchemeProver::<SimdBackend, MC>::with_memory_pool(
-        pcs_config,
-        &twiddles,
-        base_column_pool,
-    );
+    let mut commitment_scheme =
+        CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
     if store_polynomials_coefficients {
         commitment_scheme.set_store_polynomials_coefficients();
     }
@@ -150,8 +147,11 @@ where
     // Interaction trace.
     let span = span!(Level::INFO, "Interaction trace").entered();
     let mut tree_builder = commitment_scheme.tree_builder();
-    let interaction_claim =
-        interaction_generator.write_interaction_trace(&mut tree_builder, &interaction_elements);
+    let interaction_claim = interaction_generator.write_interaction_trace(
+        &mut tree_builder,
+        &interaction_elements,
+        base_column_pool,
+    );
     span.exit();
 
     tracing::info!(

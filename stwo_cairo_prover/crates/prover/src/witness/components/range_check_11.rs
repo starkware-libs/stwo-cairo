@@ -108,11 +108,12 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
+        pool: &BaseColumnPool<SimdBackend>,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
         InteractionClaim,
     ) {
-        let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(LOG_SIZE) };
+        let mut logup_gen = PooledLogupTraceGenerator::new(LOG_SIZE, pool);
 
         // Sum last logup term.
         let mut col_gen = logup_gen.new_col();

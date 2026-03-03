@@ -10,6 +10,7 @@ use itertools::Itertools;
 use stwo::core::channel::Blake2sChannel;
 use stwo::core::fields::m31::M31;
 use stwo::core::pcs::TreeVec;
+use stwo::prover::mempool::BaseColumnPool;
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 use stwo_constraint_framework::{
@@ -257,8 +258,11 @@ pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: Arc<PreP
     let mut dummy_channel = Blake2sChannel::default();
     let interaction_elements = CommonLookupElements::draw(&mut dummy_channel);
     let mut tree_builder = commitment_scheme.tree_builder();
-    let interaction_claim =
-        interaction_generator.write_interaction_trace(&mut tree_builder, &interaction_elements);
+    let interaction_claim = interaction_generator.write_interaction_trace(
+        &mut tree_builder,
+        &interaction_elements,
+        &BaseColumnPool::default(),
+    );
     tree_builder.finalize_interaction();
 
     let components = CairoComponents::new(

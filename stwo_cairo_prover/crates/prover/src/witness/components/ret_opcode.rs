@@ -412,12 +412,13 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
+        pool: &BaseColumnPool<SimdBackend>,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
         InteractionClaim,
     ) {
         let enabler_col = Enabler::new(self.n_rows);
-        let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
+        let mut logup_gen = PooledLogupTraceGenerator::new(self.log_size, pool);
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
