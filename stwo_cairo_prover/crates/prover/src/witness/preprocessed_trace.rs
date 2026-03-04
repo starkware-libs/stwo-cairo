@@ -21,11 +21,12 @@ pub fn generate_preprocessed_commitment_root<MC: MerkleChannel>(
     log_blowup_factor: u32,
     preprocessed_trace: PreProcessedTraceVariant,
     lifting_log_size: Option<u32>,
+    program: &[(u32, [u32; 8])],
 ) -> <<MC as MerkleChannel>::H as MerkleHasherLifted>::Hash
 where
     SimdBackend: BackendForChannel<MC>,
 {
-    let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace());
+    let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace(program));
 
     // Precompute twiddles for the commitment scheme.
     let mut max_log_size = preprocessed_trace.log_sizes().into_iter().max().unwrap();
@@ -79,6 +80,7 @@ fn test_canonical_preprocessed_root_regression() {
         log_blowup_factor,
         PreProcessedTraceVariant::Canonical,
         None,
+        &[],
     );
 
     assert_eq!(root, expected);
@@ -100,6 +102,7 @@ fn test_small_canonical_preprocessed_root_regression() {
         log_blowup_factor,
         PreProcessedTraceVariant::CanonicalSmall,
         None,
+        &[],
     );
 
     assert_eq!(root, expected);

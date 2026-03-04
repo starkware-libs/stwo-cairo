@@ -29,15 +29,19 @@ pub enum PreProcessedTraceVariant {
     Canonical,
     CanonicalWithoutPedersen,
     CanonicalSmall,
+    CanonicalWithProgram,
 }
 impl PreProcessedTraceVariant {
-    pub fn to_preprocessed_trace(&self) -> PreProcessedTrace {
+    pub fn to_preprocessed_trace(&self, program: &[(u32, [u32; 8])]) -> PreProcessedTrace {
         match self {
             PreProcessedTraceVariant::Canonical => PreProcessedTrace::canonical(),
             PreProcessedTraceVariant::CanonicalWithoutPedersen => {
                 PreProcessedTrace::canonical_without_pedersen()
             }
             PreProcessedTraceVariant::CanonicalSmall => PreProcessedTrace::canonical_small(),
+            PreProcessedTraceVariant::CanonicalWithProgram => {
+                PreProcessedTrace::canonical_with_program(program)
+            }
         }
     }
 }
