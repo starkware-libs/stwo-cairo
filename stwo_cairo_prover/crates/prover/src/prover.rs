@@ -23,6 +23,7 @@ use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
 use stwo::prover::mempool::BaseColumnPool;
 use stwo::prover::poly::circle::PolyOps;
+use stwo::prover::poly::twiddles::TwiddleTree;
 use stwo::prover::{prove_ex, CommitmentSchemeProver, ProvingError};
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_serialize::CairoSerialize;
@@ -72,12 +73,31 @@ pub fn prove_cairo<MC: MerkleChannel>(
 where
     SimdBackend: BackendForChannel<MC>,
 {
+    let max_domain_size = if let Some(lifting_log_size) = prover_params.pcs_config.lifting_log_size
+    {
+        lifting_log_size
+    } else {
+        let cairo_air_log_degree_bound = 1;
+        LOG_MAX_ROWS
+            + std::cmp::max(
+                cairo_air_log_degree_bound,
+                prover_params.pcs_config.fri_config.log_blowup_factor,
+            )
+    };
+    let twiddles = SimdBackend::precompute_twiddles(
+        CanonicCoset::new(max_domain_size)
+            .circle_domain()
+            .half_coset,
+    );
+
     let base_column_pool = BaseColumnPool::new();
-    prove_cairo_with_memory_pool::<MC>(&base_column_pool, input, prover_params)
+
+    prove_cairo_with_precompute::<MC>(&base_column_pool, &twiddles, input, prover_params)
 }
 
-pub fn prove_cairo_with_memory_pool<MC: MerkleChannel>(
+pub fn prove_cairo_with_precompute<MC: MerkleChannel>(
     base_column_pool: &BaseColumnPool<SimdBackend>,
+    twiddles: &TwiddleTree<SimdBackend>,
     input: ProverInput,
     prover_params: ProverParameters,
 ) -> Result<CairoProof<MC::H>, ProvingError>
@@ -94,23 +114,6 @@ where
         include_all_preprocessed_columns,
     } = prover_params;
 
-    let max_domain_size = if let Some(lifting_log_size) = prover_params.pcs_config.lifting_log_size
-    {
-        lifting_log_size
-    } else {
-        let cairo_air_log_degree_bound = 1;
-        LOG_MAX_ROWS
-            + std::cmp::max(
-                cairo_air_log_degree_bound,
-                pcs_config.fri_config.log_blowup_factor,
-            )
-    };
-    let twiddles = SimdBackend::precompute_twiddles(
-        CanonicCoset::new(max_domain_size)
-            .circle_domain()
-            .half_coset,
-    );
-
     // Setup protocol.
     let channel = &mut MC::C::default();
 
@@ -119,7 +122,7 @@ where
     pcs_config.mix_into(channel);
     let mut commitment_scheme = CommitmentSchemeProver::<SimdBackend, MC>::with_memory_pool(
         pcs_config,
-        &twiddles,
+        twiddles,
         base_column_pool,
     );
     if store_polynomials_coefficients {
