@@ -17,15 +17,15 @@ use stwo::core::fri::FriConfig;
 use stwo::core::pcs::PcsConfig;
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::proof_of_work::GrindOps;
+use stwo::core::utils::MaybeOwned;
 use stwo::core::vcs_lifted::blake2_merkle::{Blake2sM31MerkleChannel, Blake2sMerkleChannel};
 use stwo::core::vcs_lifted::merkle_hasher::MerkleHasherLifted;
-use stwo::core::ColumnVec;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
 use stwo::prover::mempool::BaseColumnPool;
-use stwo::prover::poly::circle::{CircleCoefficients, PolyOps};
+use stwo::prover::poly::circle::PolyOps;
 use stwo::prover::poly::twiddles::TwiddleTree;
-use stwo::prover::{prove_ex, CommitmentSchemeProver, ProvingError};
+use stwo::prover::{CommitmentSchemeProver, CommitmentTreeProver, ProvingError, prove_ex};
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_serialize::CairoSerialize;
 use tracing::{event, span, Level};
@@ -91,26 +91,36 @@ where
             .half_coset,
     );
 
-    let preprocessed_trace = Arc::new(prover_params.preprocessed_trace.to_preprocessed_trace());
-    let preprocessed_trace_polys =
-        SimdBackend::interpolate_columns(gen_trace(preprocessed_trace.clone()), &twiddles);
-    // TODO(ilya): compute the commitment tree for the preprocessed trace.
+    let preprocessed_trace_polys = {
+        let preprocessed_trace =
+            Arc::new(prover_params.preprocessed_trace.to_preprocessed_trace());
+        SimdBackend::interpolate_columns(gen_trace(preprocessed_trace), &twiddles)
+    };
 
     let base_column_pool = BaseColumnPool::new();
+
+    let preprocessed_tree = CommitmentTreeProver::<SimdBackend, MC>::new(
+        preprocessed_trace_polys,
+        prover_params.pcs_config.fri_config.log_blowup_factor,
+        &twiddles,
+        prover_params.store_polynomials_coefficients,
+        prover_params.pcs_config.lifting_log_size,
+        &base_column_pool,
+    );
 
     prove_cairo_precompute::<MC>(
         &base_column_pool,
         &twiddles,
-        preprocessed_trace_polys,
+        MaybeOwned::Owned(preprocessed_tree),
         input,
         prover_params,
     )
 }
 
-pub fn prove_cairo_precompute<MC: MerkleChannel>(
+pub fn prove_cairo_precompute<'a, MC: MerkleChannel>(
     base_column_pool: &BaseColumnPool<SimdBackend>,
     twiddles: &TwiddleTree<SimdBackend>,
-    preprocessed_trace_polys: ColumnVec<CircleCoefficients<SimdBackend>>,
+    preprocessed_tree: MaybeOwned<'a, CommitmentTreeProver<SimdBackend, MC>>,
     input: ProverInput,
     prover_params: ProverParameters,
 ) -> Result<CairoProof<MC::H>, ProvingError>
@@ -142,10 +152,9 @@ where
         commitment_scheme.set_store_polynomials_coefficients();
     }
     // Preprocessed trace.
-    let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace());
-    let mut tree_builder = commitment_scheme.tree_builder();
-    tree_builder.extend_polys(preprocessed_trace_polys);
-    tree_builder.commit(channel);
+    let preprocessed_trace_variant = preprocessed_trace;
+    let preprocessed_trace = Arc::new(preprocessed_trace_variant.to_preprocessed_trace());
+    commitment_scheme.commit_tree(preprocessed_tree, channel);
 
     // Run Cairo.
     let cairo_claim_generator = create_cairo_claim_generator(input, preprocessed_trace.clone());
@@ -223,7 +232,7 @@ where
         interaction_claim,
         extended_stark_proof: proof,
         channel_salt,
-        preprocessed_trace_variant: prover_params.preprocessed_trace,
+        preprocessed_trace_variant,
     })
 }
 
