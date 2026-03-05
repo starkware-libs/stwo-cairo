@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use anyhow::Result;
-use cairo_air::air::CairoComponents;
+use cairo_air::cairo_components::CairoComponents;
 use cairo_air::claims::lookup_sum;
 use cairo_air::relations::CommonLookupElements;
 use cairo_air::utils::{serialize_proof_to_file, ProofFormat};

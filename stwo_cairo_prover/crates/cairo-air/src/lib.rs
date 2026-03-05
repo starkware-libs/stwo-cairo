@@ -1,16 +1,10 @@
 use serde::{Deserialize, Serialize};
 
 pub mod air;
-pub mod blake;
-pub mod builtins_air;
+pub mod cairo_components;
 pub mod claims;
 pub mod components;
 pub mod flat_claims;
-pub mod opcodes_air;
-pub mod pedersen;
-pub mod pedersen_narrow_windows;
-pub mod poseidon;
-pub mod range_checks_air;
 pub mod relations;
 pub mod serde_utils;
 pub mod utils;
