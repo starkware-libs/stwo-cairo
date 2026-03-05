@@ -19,10 +19,11 @@ use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::proof_of_work::GrindOps;
 use stwo::core::vcs_lifted::blake2_merkle::{Blake2sM31MerkleChannel, Blake2sMerkleChannel};
 use stwo::core::vcs_lifted::merkle_hasher::MerkleHasherLifted;
+use stwo::core::ColumnVec;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
 use stwo::prover::mempool::BaseColumnPool;
-use stwo::prover::poly::circle::PolyOps;
+use stwo::prover::poly::circle::{CircleCoefficients, PolyOps};
 use stwo::prover::poly::twiddles::TwiddleTree;
 use stwo::prover::{prove_ex, CommitmentSchemeProver, ProvingError};
 use stwo_cairo_adapter::ProverInput;
@@ -90,14 +91,26 @@ where
             .half_coset,
     );
 
+    let preprocessed_trace = Arc::new(prover_params.preprocessed_trace.to_preprocessed_trace());
+    let preprocessed_trace_polys =
+        SimdBackend::interpolate_columns(gen_trace(preprocessed_trace.clone()), &twiddles);
+    // TODO(ilya): compute the commitment tree for the preprocessed trace.
+
     let base_column_pool = BaseColumnPool::new();
 
-    prove_cairo_precompute::<MC>(&base_column_pool, &twiddles, input, prover_params)
+    prove_cairo_precompute::<MC>(
+        &base_column_pool,
+        &twiddles,
+        preprocessed_trace_polys,
+        input,
+        prover_params,
+    )
 }
 
 pub fn prove_cairo_precompute<MC: MerkleChannel>(
     base_column_pool: &BaseColumnPool<SimdBackend>,
     twiddles: &TwiddleTree<SimdBackend>,
+    preprocessed_trace_polys: ColumnVec<CircleCoefficients<SimdBackend>>,
     input: ProverInput,
     prover_params: ProverParameters,
 ) -> Result<CairoProof<MC::H>, ProvingError>
@@ -131,7 +144,7 @@ where
     // Preprocessed trace.
     let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace());
     let mut tree_builder = commitment_scheme.tree_builder();
-    tree_builder.extend_evals(gen_trace(preprocessed_trace.clone()));
+    tree_builder.extend_polys(preprocessed_trace_polys);
     tree_builder.commit(channel);
 
     // Run Cairo.
