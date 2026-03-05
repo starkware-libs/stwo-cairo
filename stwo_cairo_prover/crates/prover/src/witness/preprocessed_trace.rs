@@ -45,7 +45,6 @@ where
     let commitment_scheme = CommitmentTreeProver::<SimdBackend, MC>::new(
         polys,
         log_blowup_factor,
-        &mut MC::C::default(),
         &twiddles,
         false,
         lifting_log_size,
