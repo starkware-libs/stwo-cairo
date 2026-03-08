@@ -64,23 +64,17 @@ fn extract_public_segments(
 
 fn extract_sections_from_memory(
     memory: &Memory,
-    initial_pc: u32,
+    program_segment: Vec<[u32; 8]>,
     initial_ap: u32,
     final_ap: u32,
     public_segment_context: PublicSegmentContext,
 ) -> PublicMemory {
     let public_segments =
         extract_public_segments(memory, initial_ap, final_ap, public_segment_context);
-    let program_memory_addresses = initial_pc..initial_ap - 2;
     let safe_call_addresses = initial_ap - 2..initial_ap;
     let output_memory_addresses =
         public_segments.output.start_ptr.value..public_segments.output.stop_ptr.value;
-    let [program, safe_call, output] = [
-        program_memory_addresses,
-        safe_call_addresses,
-        output_memory_addresses,
-    ]
-    .map(|range| {
+    let [safe_call, output] = [safe_call_addresses, output_memory_addresses].map(|range| {
         range
             .map(|addr| {
                 let id = memory.get_raw_id(addr);
@@ -89,6 +83,16 @@ fn extract_sections_from_memory(
             })
             .collect_vec()
     });
+
+    let program = program_segment
+        .into_iter()
+        .enumerate()
+        .map(|(i, data)| {
+            let addr = i as u32;
+            let id = memory.get_raw_id(addr);
+            (id, data)
+        })
+        .collect_vec();
 
     assert!(safe_call.len() == 2);
 
@@ -108,6 +112,7 @@ fn extract_sections_from_memory(
 /// [`CairoInteractionClaim`], [`CairoComponents`].
 pub fn create_cairo_claim_generator(
     ProverInput {
+        program_segment,
         state_transitions,
         memory,
         public_memory_addresses,
@@ -135,12 +140,11 @@ pub fn create_cairo_claim_generator(
     all_components.insert("verify_bitwise_xor_9");
 
     // Public data.
-    let initial_pc = initial_state.pc.0;
     let initial_ap = initial_state.ap.0;
     let final_ap = final_state.ap.0;
     let public_memory = extract_sections_from_memory(
         &memory,
-        initial_pc,
+        program_segment,
         initial_ap,
         final_ap,
         public_segment_context,
