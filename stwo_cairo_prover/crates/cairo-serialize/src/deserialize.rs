@@ -139,6 +139,7 @@ impl CairoDeserialize for FriConfig {
             log_last_layer_degree_bound,
             n_queries,
             line_fold_step: 1,
+            pack_leaves: false,
         }
     }
 }
