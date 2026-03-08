@@ -1,6 +1,6 @@
+use std::collections::HashMap;
 use std::path::PathBuf;
 
-use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::program::Program;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use itertools::Itertools;
