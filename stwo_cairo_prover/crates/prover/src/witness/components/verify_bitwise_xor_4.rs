@@ -12,28 +12,14 @@ pub type PackedInputType = [PackedM31; 3];
 
 pub struct ClaimGenerator {
     pub mults: [AtomicMultiplicityColumn; 1],
-    input_to_row: HashMap<[M31; 3], usize>,
     preprocessed_trace: Arc<PreProcessedTrace>,
 }
 
 impl ClaimGenerator {
     pub fn new(preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
         let mults = from_fn(|_| AtomicMultiplicityColumn::new(1 << LOG_SIZE));
-        let column_ids = [
-            PreProcessedColumnId {
-                id: "bitwise_xor_4_0".to_owned(),
-            },
-            PreProcessedColumnId {
-                id: "bitwise_xor_4_1".to_owned(),
-            },
-            PreProcessedColumnId {
-                id: "bitwise_xor_4_2".to_owned(),
-            },
-        ];
-
         Self {
             mults,
-            input_to_row: make_input_to_row(&preprocessed_trace, column_ids),
             preprocessed_trace,
         }
     }
@@ -58,12 +44,9 @@ impl ClaimGenerator {
 
     pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], relation_index: usize) {
         packed_inputs.into_par_iter().for_each(|packed_input| {
-            for input in packed_input.unpack() {
-                self.mults[relation_index].increase_at(
-                    (*self.input_to_row.get(&input).unwrap())
-                        .try_into()
-                        .unwrap(),
-                );
+            for [M31(in0), M31(in1), M31(_)] in packed_input.unpack() {
+                let idx = (in0 << (LOG_SIZE >> 1)) | in1;
+                self.mults[relation_index].increase_at(idx);
             }
         });
     }
