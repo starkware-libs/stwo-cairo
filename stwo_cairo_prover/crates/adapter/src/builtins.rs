@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
 use cairo_vm::air_public_input::MemorySegmentAddresses as VMMemorySegmentAddresses;
-use cairo_vm::stdlib::collections::HashMap;
+use std::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use serde::{Deserialize, Serialize};
