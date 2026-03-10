@@ -24,7 +24,7 @@ use crate::components::{
     range_check_4_4, range_check_4_4_4_4, range_check_6, range_check_7_2_5, range_check_8,
     range_check_9_9, range_check_builtin, ret_opcode, triple_xor_32, verify_bitwise_xor_12,
     verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9,
-    verify_instruction,
+    verify_instruction, verify_program,
 };
 use crate::relations::CommonLookupElements;
 
@@ -63,6 +63,7 @@ pub struct CairoComponents {
     pub poseidon_builtin: Option<poseidon_builtin::Component>,
     pub range_check96_builtin: Option<range_check96_builtin::Component>,
     pub range_check_builtin: Option<range_check_builtin::Component>,
+    pub verify_program: Option<verify_program::Component>,
     pub pedersen_aggregator_window_bits_18: Option<pedersen_aggregator_window_bits_18::Component>,
     pub partial_ec_mul_window_bits_18: Option<partial_ec_mul_window_bits_18::Component>,
     pub pedersen_points_table_window_bits_18:
@@ -487,6 +488,16 @@ impl CairoComponents {
                     interaction_claim.range_check_builtin.unwrap().claimed_sum,
                 )
             });
+        let verify_program_component = cairo_claim.verify_program.map(|verify_program| {
+            verify_program::Component::new(
+                tree_span_provider,
+                verify_program::Eval {
+                    claim: verify_program,
+                    common_lookup_elements: common_lookup_elements.clone(),
+                },
+                interaction_claim.verify_program.unwrap().claimed_sum,
+            )
+        });
         let pedersen_aggregator_window_bits_18_component = cairo_claim
             .pedersen_aggregator_window_bits_18
             .map(|pedersen_aggregator_window_bits_18| {
@@ -914,6 +925,7 @@ impl CairoComponents {
             poseidon_builtin: poseidon_builtin_component,
             range_check96_builtin: range_check96_builtin_component,
             range_check_builtin: range_check_builtin_component,
+            verify_program: verify_program_component,
             pedersen_aggregator_window_bits_18: pedersen_aggregator_window_bits_18_component,
             partial_ec_mul_window_bits_18: partial_ec_mul_window_bits_18_component,
             pedersen_points_table_window_bits_18: pedersen_points_table_window_bits_18_component,
@@ -1051,6 +1063,9 @@ impl CairoComponents {
             vec.push(component as &dyn Component);
         }
         if let Some(component) = &self.range_check_builtin {
+            vec.push(component as &dyn Component);
+        }
+        if let Some(component) = &self.verify_program {
             vec.push(component as &dyn Component);
         }
         if let Some(component) = &self.pedersen_aggregator_window_bits_18 {
@@ -1363,6 +1378,13 @@ impl Display for CairoComponents {
             writeln!(
                 f,
                 "RangeCheckBuiltin: {}",
+                indented_component_display(component)
+            )?;
+        }
+        if let Some(ref component) = self.verify_program {
+            writeln!(
+                f,
+                "VerifyProgram: {}",
                 indented_component_display(component)
             )?;
         }
