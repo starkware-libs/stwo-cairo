@@ -756,7 +756,7 @@ mod mappings_tests {
         let (program, program_len) = program_from_casm(casm);
 
         let mut runner =
-            CairoRunner::new(&program, LayoutName::all_cairo_stwo, None, true, true, true)
+            CairoRunner::new(&program, LayoutName::stwo_no_ecop, None, true, true, true)
                 .expect("Runner creation failed");
         runner.initialize(true).expect("Initialization failed");
         runner
