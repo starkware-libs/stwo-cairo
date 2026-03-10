@@ -301,7 +301,7 @@ pub fn create_and_serialize_proof(
                     // The more FRI queries, the larger the proof.
                     // Proving time is not affected much by increasing this value.
                     n_queries: 70,
-                    line_fold_step: 1,
+                    fold_step: 1,
                 },
                 lifting_log_size: None,
             },
