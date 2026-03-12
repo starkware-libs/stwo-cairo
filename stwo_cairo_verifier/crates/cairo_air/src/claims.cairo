@@ -21,12 +21,13 @@ use crate::components::{
     pedersen_aggregator_window_bits_9, pedersen_builtin, pedersen_builtin_narrow_windows,
     pedersen_points_table_window_bits_18, pedersen_points_table_window_bits_9,
     poseidon_3_partial_rounds_chain, poseidon_aggregator, poseidon_builtin,
-    poseidon_full_round_chain, poseidon_round_keys, qm_31_add_mul_opcode, range_check96_builtin,
-    range_check_11, range_check_12, range_check_18, range_check_20, range_check_252_width_27,
-    range_check_3_3_3_3_3, range_check_3_6_6_3, range_check_4_3, range_check_4_4,
-    range_check_4_4_4_4, range_check_6, range_check_7_2_5, range_check_8, range_check_9_9,
-    range_check_builtin, ret_opcode, triple_xor_32, verify_bitwise_xor_12, verify_bitwise_xor_4,
-    verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
+    poseidon_full_round_chain, poseidon_round_keys, program_component, qm_31_add_mul_opcode,
+    range_check96_builtin, range_check_11, range_check_12, range_check_18, range_check_20,
+    range_check_252_width_27, range_check_3_3_3_3_3, range_check_3_6_6_3, range_check_4_3,
+    range_check_4_4, range_check_4_4_4_4, range_check_6, range_check_7_2_5, range_check_8,
+    range_check_9_9, range_check_builtin, ret_opcode, triple_xor_32, verify_bitwise_xor_12,
+    verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9,
+    verify_instruction, verify_program,
 };
 use crate::utils::tree_array_concat_cols;
 use crate::{ChannelTrait, PublicDataTrait, components};
@@ -69,6 +70,8 @@ pub struct CairoClaim {
     pub poseidon_builtin: Option<components::poseidon_builtin::Claim>,
     pub range_check96_builtin: Option<components::range_check96_builtin::Claim>,
     pub range_check_builtin: Option<components::range_check_builtin::Claim>,
+    pub verify_program: Option<components::verify_program::Claim>,
+    pub program_component: Option<components::program_component::Claim>,
     pub pedersen_aggregator_window_bits_18: Option<
         components::pedersen_aggregator_window_bits_18::Claim,
     >,
@@ -214,6 +217,12 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             log_sizes_list.append(claim.log_sizes());
         }
         if let Some(claim) = self.range_check_builtin {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.verify_program {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.program_component {
             log_sizes_list.append(claim.log_sizes());
         }
         if let Some(claim) = self.pedersen_aggregator_window_bits_18 {
@@ -416,6 +425,9 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             claim.accumulate_relation_uses(ref relation_uses);
         }
         if let Some(claim) = self.range_check_builtin {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
+        if let Some(claim) = self.verify_program {
             claim.accumulate_relation_uses(ref relation_uses);
         }
         if let Some(claim) = self.pedersen_aggregator_window_bits_18 {
@@ -702,6 +714,20 @@ pub impl CairoClaimFlattenImpl of CairoClaimFlattenTrait {
             component_log_sizes.append(0_u32);
             component_enable_bits.append(false);
         }
+        if let Some(c) = self.verify_program {
+            component_log_sizes.append(*c.log_size);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
+        if let Some(_c) = self.program_component {
+            component_log_sizes.append(program_component::LOG_SIZE);
+            component_enable_bits.append(true);
+        } else {
+            component_log_sizes.append(0_u32);
+            component_enable_bits.append(false);
+        }
         if let Some(c) = self.pedersen_aggregator_window_bits_18 {
             component_log_sizes.append(*c.log_size);
             component_enable_bits.append(true);
@@ -978,6 +1004,8 @@ pub struct CairoInteractionClaim {
     pub poseidon_builtin: Option<components::poseidon_builtin::InteractionClaim>,
     pub range_check96_builtin: Option<components::range_check96_builtin::InteractionClaim>,
     pub range_check_builtin: Option<components::range_check_builtin::InteractionClaim>,
+    pub verify_program: Option<components::verify_program::InteractionClaim>,
+    pub program_component: Option<components::program_component::InteractionClaim>,
     pub pedersen_aggregator_window_bits_18: Option<
         components::pedersen_aggregator_window_bits_18::InteractionClaim,
     >,
@@ -1206,6 +1234,16 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
             claimed_sums.append(Zero::zero());
         }
         if let Some(c) = self.range_check_builtin {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.verify_program {
+            claimed_sums.append(*c.claimed_sum);
+        } else {
+            claimed_sums.append(Zero::zero());
+        }
+        if let Some(c) = self.program_component {
             claimed_sums.append(*c.claimed_sum);
         } else {
             claimed_sums.append(Zero::zero());
@@ -1484,6 +1522,12 @@ pub fn lookup_sum(
         sum += *interaction_claim.claimed_sum;
     }
     if let Some(interaction_claim) = interaction_claim.range_check_builtin {
+        sum += *interaction_claim.claimed_sum;
+    }
+    if let Some(interaction_claim) = interaction_claim.verify_program {
+        sum += *interaction_claim.claimed_sum;
+    }
+    if let Some(interaction_claim) = interaction_claim.program_component {
         sum += *interaction_claim.claimed_sum;
     }
     if let Some(interaction_claim) = interaction_claim.pedersen_aggregator_window_bits_18 {

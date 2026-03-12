@@ -30,6 +30,17 @@ pub fn set_program_table(program: &[(u32, [u32; 8])]) {
     *PROGRAM_TABLE.write().unwrap() = Some(values);
 }
 
+/// Returns the pre-computed 9-bit limbs at the given index, or zeros if out of bounds.
+pub fn get_program_limbs(index: usize) -> [M31; FELT252_N_WORDS] {
+    let data = PROGRAM_TABLE.read().unwrap();
+    let program = data.as_ref().expect("Program data not initialized");
+    if index < program.len() {
+        program[index]
+    } else {
+        [M31(0); FELT252_N_WORDS]
+    }
+}
+
 #[derive(Debug)]
 pub struct ProgramColumn {
     col_index: usize,
@@ -55,7 +66,7 @@ impl ProgramColumn {
         }
     }
 
-    pub fn get_data(&self) -> &Vec<M31> {
+    pub fn get_data(&self) -> &[M31] {
         &self.column_data
     }
 }
