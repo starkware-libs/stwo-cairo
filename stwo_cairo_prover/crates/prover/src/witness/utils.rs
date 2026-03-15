@@ -153,13 +153,13 @@ where
 pub fn export_preprocessed_roots() {
     let max_log_blowup_factor = 2;
 
-    // Blake2s roots.
-    let blake_roots = get_preprocessed_roots::<Blake2sMerkleChannel>(
-        max_log_blowup_factor,
-        PreProcessedTraceVariant::Canonical,
-        None,
-    );
-    blake_roots.iter().enumerate().for_each(|(i, root)| {
+    // Blake2s roots
+    for log_blowup_factor in 1..=max_log_blowup_factor {
+        let root = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(
+            log_blowup_factor,
+            PreProcessedTraceVariant::Canonical,
+            None,
+        );
         let root_bytes = root.0;
         let u32s_hex = root_bytes
             .array_chunks::<4>()
@@ -167,8 +167,8 @@ pub fn export_preprocessed_roots() {
             .collect_vec()
             .join(", ");
 
-        println!("log_blowup_factor: {}, blake root: [{}]", i + 1, u32s_hex);
-    });
+        println!("log_blowup_factor: {log_blowup_factor}, blake root: [{u32s_hex}]");
+    }
 
     // Poseidon252 roots.
     #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
@@ -196,27 +196,24 @@ pub fn export_preprocessed_roots() {
 /// Note: This function is very slow and is intended for generating the preprocessed roots when
 /// needed.
 pub fn export_circuit_cairo_verifier_preprocessed_roots() {
-    let max_log_blowup_factor = 2;
-    let lifting_log_size = 20 + max_log_blowup_factor;
+    let max_log_blowup_factor = 3;
 
-    let blake_m31_small_roots = get_preprocessed_roots::<Blake2sM31MerkleChannel>(
-        max_log_blowup_factor,
-        PreProcessedTraceVariant::CanonicalSmall,
-        Some(lifting_log_size),
-    );
-    blake_m31_small_roots
-        .iter()
-        .enumerate()
-        .for_each(|(i, root)| {
-            let root_bytes = root.0;
-            let u32s = root_bytes
-                .array_chunks::<4>()
-                .map(|&bytes| format!("{:}", u32::from_le_bytes(bytes)))
-                .collect_vec()
-                .join(", ");
+    for log_blowup_factor in 1..=max_log_blowup_factor {
+        let root = generate_preprocessed_commitment_root::<Blake2sM31MerkleChannel>(
+            log_blowup_factor,
+            PreProcessedTraceVariant::CanonicalSmall,
+            Some(20 + log_blowup_factor),
+        );
 
-            println!("log_blowup_factor: {}, blakeM31 root: [{}]", i + 1, u32s);
-        });
+        let root_bytes = root.0;
+        let u32s = root_bytes
+            .array_chunks::<4>()
+            .map(|&bytes| format!("{:}", u32::from_le_bytes(bytes)))
+            .collect_vec()
+            .join(", ");
+
+        println!("log_blowup_factor: {log_blowup_factor}, blake root: [{u32s}]");
+    }
 }
 
 /// Create the input_to_row map used in const-size components.
