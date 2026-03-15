@@ -10,7 +10,6 @@ use stwo::core::channel::MerkleChannel;
 use stwo::core::fields::m31::M31;
 use stwo::core::pcs::{TreeSubspan, TreeVec};
 use stwo::core::vcs_lifted::blake2_merkle::{Blake2sM31MerkleChannel, Blake2sMerkleChannel};
-use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo::prover::backend::simd::conversion::Pack;
 use stwo::prover::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
 use stwo::prover::backend::{Backend, BackendForChannel};
@@ -129,37 +128,19 @@ pub fn witness_trace_cells(claim: &CairoClaim, pp_trace: &PreProcessedTrace) -> 
     tree_trace_cells(log_sizes)
 }
 
-// Generate the preprocessed roots of the selected preprocessed trace for all log_blowup_factors in
-// the range [max_log_blowup_factor]. If `lifting_log_size` is provided, the preprocessed trace will
-// be lifted to the given log size before generating the roots.
-fn get_preprocessed_roots<MC: MerkleChannel>(
-    max_log_blowup_factor: u32,
-    preprocessed_trace: PreProcessedTraceVariant,
-    lifting_log_size: Option<u32>,
-) -> Vec<<MC::H as MerkleHasherLifted>::Hash>
-where
-    stwo::prover::backend::simd::SimdBackend: BackendForChannel<MC>,
-{
-    (1..=max_log_blowup_factor)
-        .map(|i| {
-            generate_preprocessed_commitment_root::<MC>(i, preprocessed_trace, lifting_log_size)
-        })
-        .collect_vec()
-}
-
 /// Exports the preprocessed roots for both Blake2s and Poseidon252 channels.
 /// Note: This function is very slow and is intended for generating the preprocessed roots when
 /// needed.
 pub fn export_preprocessed_roots() {
     let max_log_blowup_factor = 2;
 
-    // Blake2s roots.
-    let blake_roots = get_preprocessed_roots::<Blake2sMerkleChannel>(
-        max_log_blowup_factor,
-        PreProcessedTraceVariant::Canonical,
-        None,
-    );
-    blake_roots.iter().enumerate().for_each(|(i, root)| {
+    // Blake2s roots
+    for log_blowup_factor in 1..=max_log_blowup_factor {
+        let root = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(
+            log_blowup_factor,
+            PreProcessedTraceVariant::Canonical,
+            None,
+        );
         let root_bytes = root.0;
         let u32s_hex = root_bytes
             .array_chunks::<4>()
@@ -167,28 +148,22 @@ pub fn export_preprocessed_roots() {
             .collect_vec()
             .join(", ");
 
-        println!("log_blowup_factor: {}, blake root: [{}]", i + 1, u32s_hex);
-    });
+        println!("log_blowup_factor: {log_blowup_factor}, blake root: [{u32s_hex}]");
+    }
 
     // Poseidon252 roots.
     #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
     {
         use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
         // Poseidon252 roots.
-        get_preprocessed_roots::<Poseidon252MerkleChannel>(
-            max_log_blowup_factor,
-            PreProcessedTraceVariant::CanonicalWithoutPedersen,
-            None,
-        )
-        .into_iter()
-        .enumerate()
-        .for_each(|(i, root)| {
-            println!(
-                "log_blowup_factor: {}, poseidon root: [{:#010x}]",
-                i + 1,
-                root
+        for log_blowup_factor in 1..=max_log_blowup_factor {
+            let root = generate_preprocessed_commitment_root::<Poseidon252MerkleChannel>(
+                log_blowup_factor,
+                PreProcessedTraceVariant::CanonicalWithoutPedersen,
+                None,
             );
-        });
+            println!("log_blowup_factor: {log_blowup_factor}, poseidon root: [{root:#010x}]");
+        }
     }
 }
 
@@ -196,27 +171,24 @@ pub fn export_preprocessed_roots() {
 /// Note: This function is very slow and is intended for generating the preprocessed roots when
 /// needed.
 pub fn export_circuit_cairo_verifier_preprocessed_roots() {
-    let max_log_blowup_factor = 2;
-    let lifting_log_size = 20 + max_log_blowup_factor;
+    let max_log_blowup_factor = 3;
 
-    let blake_m31_small_roots = get_preprocessed_roots::<Blake2sM31MerkleChannel>(
-        max_log_blowup_factor,
-        PreProcessedTraceVariant::CanonicalSmall,
-        Some(lifting_log_size),
-    );
-    blake_m31_small_roots
-        .iter()
-        .enumerate()
-        .for_each(|(i, root)| {
-            let root_bytes = root.0;
-            let u32s = root_bytes
-                .array_chunks::<4>()
-                .map(|&bytes| format!("{:}", u32::from_le_bytes(bytes)))
-                .collect_vec()
-                .join(", ");
+    for log_blowup_factor in 1..=max_log_blowup_factor {
+        let root = generate_preprocessed_commitment_root::<Blake2sM31MerkleChannel>(
+            log_blowup_factor,
+            PreProcessedTraceVariant::CanonicalSmall,
+            Some(20 + log_blowup_factor),
+        );
 
-            println!("log_blowup_factor: {}, blakeM31 root: [{}]", i + 1, u32s);
-        });
+        let root_bytes = root.0;
+        let u32s = root_bytes
+            .array_chunks::<4>()
+            .map(|&bytes| format!("{:}", u32::from_le_bytes(bytes)))
+            .collect_vec()
+            .join(", ");
+
+        println!("log_blowup_factor: {log_blowup_factor}, blake root: [{u32s}]");
+    }
 }
 
 /// Create the input_to_row map used in const-size components.
