@@ -98,11 +98,7 @@ impl PublicData {
         let mut values_to_inverse = vec![];
         // Use public memory in the memory relations.
         self.public_memory
-            .get_entries(
-                self.initial_state.pc.0,
-                self.initial_state.ap.0,
-                self.final_state.ap.0,
-            )
+            .get_entries(self.initial_state.ap.0, self.final_state.ap.0)
             .for_each(|(addr, id, val)| {
                 values_to_inverse.push(
                     <relations::CommonLookupElements as Relation<M31, QM31>>::combine(
@@ -151,7 +147,7 @@ impl PublicData {
     }
 
     pub fn mix_into<MC: MerkleChannel>(&self, channel: &mut MC::C) {
-        let (public_claim, output_claim, program_claim) = self.pack_into_u32s();
+        let (public_claim, output_claim) = self.pack_into_u32s();
         channel.mix_felts(&pack_into_secure_felts(public_claim.into_iter()));
         let mut hasher = MC::H::default();
         hasher.update_leaf(
@@ -162,21 +158,11 @@ impl PublicData {
                 .as_slice(),
         );
         MC::mix_root(channel, hasher.finalize());
-
-        let mut hasher = MC::H::default();
-        hasher.update_leaf(
-            program_claim
-                .iter()
-                .map(|x| M31::from_u32_unchecked(*x))
-                .collect::<Vec<_>>()
-                .as_slice(),
-        );
-        MC::mix_root(channel, hasher.finalize());
     }
 
     /// Converts public data to [u32], where each u32 is at most 2^31 - 1.
-    /// Returns the output and program values separately.
-    pub fn pack_into_u32s(&self) -> (Vec<u32>, Vec<u32>, Vec<u32>) {
+    // /// Returns the output and program values separately.
+    pub fn pack_into_u32s(&self) -> (Vec<u32>, Vec<u32>) {
         let PublicData {
             initial_state:
                 CasmState {
@@ -195,7 +181,6 @@ impl PublicData {
                     public_segments,
                     output,
                     safe_call_ids,
-                    program,
                 },
         } = self;
 
@@ -235,9 +220,6 @@ impl PublicData {
         for (id, _) in output {
             public_claim.push(*id);
         }
-        for (id, _) in program {
-            public_claim.push(*id);
-        }
 
         // Collect output values.
         let mut output_claim = vec![];
@@ -246,14 +228,7 @@ impl PublicData {
                 .extend::<[u32; FELT252_N_WORDS]>(split(*value, (1 << FELT252_BITS_PER_WORD) - 1));
         }
 
-        // Collect program values.
-        let mut program_claim = vec![];
-        for (_, value) in program {
-            program_claim
-                .extend::<[u32; FELT252_N_WORDS]>(split(*value, (1 << FELT252_BITS_PER_WORD) - 1));
-        }
-
-        (public_claim, output_claim, program_claim)
+        (public_claim, output_claim)
     }
 
     fn single_segment_range(segment: Option<SegmentRange>, public_claim: &mut Vec<u32>) {
@@ -467,7 +442,6 @@ pub type MemorySection = Vec<PubMemoryValue>;
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, Default, Clone)]
 pub struct PublicMemory {
-    pub program: MemorySection,
     pub public_segments: PublicSegmentRanges,
     pub output: MemorySection,
     pub safe_call_ids: [u32; 2],
@@ -477,13 +451,10 @@ impl PublicMemory {
     /// Returns [`PubMemoryEntry`] for all public memory.
     pub fn get_entries(
         &self,
-        initial_pc: u32,
         initial_ap: u32,
         final_ap: u32,
     ) -> impl Iterator<Item = PubMemoryEntry> {
-        let [program, output] =
-            [&self.program, &self.output].map(|section| section.clone().into_iter().enumerate());
-        let program_iter = program.map(move |(i, (id, value))| (initial_pc + i as u32, id, value));
+        let output = self.output.clone().into_iter().enumerate();
         let output_iter = output.map(move |(i, (id, value))| (final_ap + i as u32, id, value));
 
         let [safe_call_id0, safe_call_id1] = self.safe_call_ids;
@@ -499,8 +470,8 @@ impl PublicMemory {
         ];
         let segment_ranges_iter = self.public_segments.memory_entries(initial_ap, final_ap);
 
-        program_iter
-            .chain(safe_call_iter)
+        safe_call_iter
+            .into_iter()
             .chain(segment_ranges_iter)
             .chain(output_iter)
     }
@@ -594,7 +565,6 @@ mod tests {
         let dummy_lookup_elements = CommonLookupElements::dummy();
         let public_data = PublicData {
             public_memory: PublicMemory {
-                program,
                 public_segments: PublicSegmentRanges {
                     output: SegmentRange {
                         start_ptr: MemorySmallValue {
@@ -710,12 +680,12 @@ mod tests {
 
         let expected = QM31(
             CM31(
-                M31::from_u32_unchecked(908842852),
-                M31::from_u32_unchecked(42171643),
+                M31::from_u32_unchecked(1384902209),
+                M31::from_u32_unchecked(411034250),
             ),
             CM31(
-                M31::from_u32_unchecked(313383432),
-                M31::from_u32_unchecked(1019452808),
+                M31::from_u32_unchecked(1211063532),
+                M31::from_u32_unchecked(1949409994),
             ),
         );
         assert_eq!(

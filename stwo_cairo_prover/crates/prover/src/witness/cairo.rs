@@ -66,7 +66,6 @@ fn extract_sections_from_memory(
     memory: &Memory,
     initial_ap: u32,
     final_ap: u32,
-    program: Vec<(u32, [u32; 8])>,
     public_segment_context: PublicSegmentContext,
 ) -> PublicMemory {
     let public_segments =
@@ -90,7 +89,6 @@ fn extract_sections_from_memory(
     assert_eq!(safe_call[1].1, [0, 0, 0, 0, 0, 0, 0, 0]);
 
     PublicMemory {
-        program,
         safe_call_ids: array::from_fn(|i| safe_call[i].0),
         public_segments,
         output,
@@ -107,7 +105,6 @@ pub fn create_cairo_claim_generator(
         public_memory_addresses,
         builtin_segments,
         public_segment_context,
-        program,
         ..
     }: ProverInput,
     preprocessed_trace: Arc<PreProcessedTrace>,
@@ -132,13 +129,8 @@ pub fn create_cairo_claim_generator(
     // Public data.
     let initial_ap = initial_state.ap.0;
     let final_ap = final_state.ap.0;
-    let public_memory = extract_sections_from_memory(
-        &memory,
-        initial_ap,
-        final_ap,
-        program,
-        public_segment_context,
-    );
+    let public_memory =
+        extract_sections_from_memory(&memory, initial_ap, final_ap, public_segment_context);
 
     let public_data = PublicData {
         public_memory,

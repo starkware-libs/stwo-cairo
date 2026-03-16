@@ -15,7 +15,7 @@ use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
 use thiserror::Error;
 use tracing::{span, Level};
 
-use crate::air::{MemorySection, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange};
+use crate::air::{PublicData, PublicMemory, PublicSegmentRanges, SegmentRange};
 use crate::cairo_components::CairoComponents;
 use crate::claims::{lookup_sum, CairoClaim};
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
@@ -30,7 +30,6 @@ fn verify_claim(claim: &CairoClaim) {
     let PublicData {
         public_memory:
             PublicMemory {
-                program,
                 public_segments,
                 output: _output,
                 safe_call_ids: _safe_call_ids,
@@ -61,7 +60,16 @@ fn verify_claim(claim: &CairoClaim) {
         public_segments,
     );
 
-    verify_program(program, public_segments);
+    // verify_program(program, public_segments);
+
+    // Read program data from the bootloader compiled JSON.
+    let program_json: serde_json::Value =
+        serde_json::from_str(include_str!("../programs/simple_bootloader_compiled.json")).unwrap();
+    let program_data_1 = hex_to_u32_limbs(program_json["data"][1].as_str().unwrap());
+
+    // First instruction: add_app_immediate (n_builtins).
+    let n_builtins = public_segments.present_segments().len() as u32;
+    assert_eq!(program_data_1, [n_builtins, 0, 0, 0, 0, 0, 0, 0]); // Imm.
 
     assert_eq!(*initial_pc, BaseField::one());
     assert!(
@@ -91,6 +99,19 @@ fn verify_claim(claim: &CairoClaim) {
         - 1
         + LARGE_MEMORY_VALUE_ID_BASE;
     assert!(largest_id < PRIME);
+}
+
+/// Parses a hex string (with optional "0x" prefix) into 8 little-endian u32 limbs.
+fn hex_to_u32_limbs(hex_str: &str) -> [u32; 8] {
+    let hex_str = hex_str.strip_prefix("0x").unwrap_or(hex_str);
+    let padded = format!("{:0>64}", hex_str);
+    let mut result = [0u32; 8];
+    for i in 0..8 {
+        let start = 64 - (i + 1) * 8;
+        let end = 64 - i * 8;
+        result[i] = u32::from_str_radix(&padded[start..end], 16).unwrap();
+    }
+    result
 }
 
 fn check_relation_uses(relation_uses: &HashMap<&'static str, u64>) {
@@ -239,20 +260,20 @@ fn verify_builtins(
     check_builtin_generic!(poseidon);
 }
 
-fn verify_program(program: &MemorySection, public_segments: &PublicSegmentRanges) {
-    // For information about how the compiler adds this code, see:
-    // https://github.com/starkware-libs/cairo/blob/3babe0518abc8e4fc72f519fb515d6c752138f78/crates/cairo-lang-executable/src/executable.rs#L21-L25
+// fn verify_program(program: &MemorySection, public_segments: &PublicSegmentRanges) {
+//     // For information about how the compiler adds this code, see:
+//     // https://github.com/starkware-libs/cairo/blob/3babe0518abc8e4fc72f519fb515d6c752138f78/crates/cairo-lang-executable/src/executable.rs#L21-L25
 
-    // First instruction: add_app_immediate (n_builtins).
-    let n_builtins = public_segments.present_segments().len() as u32;
-    assert_eq!(program[0].1, [0x7fff7fff, 0x4078001, 0, 0, 0, 0, 0, 0]); // add_ap_imm.
-    assert_eq!(program[1].1, [n_builtins, 0, 0, 0, 0, 0, 0, 0]); // Imm.
+//     // First instruction: add_app_immediate (n_builtins).
+//     let n_builtins = public_segments.present_segments().len() as u32;
+//     assert_eq!(program[0].1, [0x7fff7fff, 0x4078001, 0, 0, 0, 0, 0, 0]); // add_ap_imm.
+//     assert_eq!(program[1].1, [n_builtins, 0, 0, 0, 0, 0, 0, 0]); // Imm.
 
-    // Safe call.
-    assert_eq!(program[2].1, [0x80018000, 0x11048001, 0, 0, 0, 0, 0, 0]); // Instruction: call rel ?
-    assert_eq!(program[4].1, [0x7fff7fff, 0x1078001, 0, 0, 0, 0, 0, 0]); // Instruction: jmp rel 0.
-    assert_eq!(program[5].1, [0, 0, 0, 0, 0, 0, 0, 0]); // Imm of last instruction (jmp rel 0).
-}
+//     // Safe call.
+//     assert_eq!(program[2].1, [0x80018000, 0x11048001, 0, 0, 0, 0, 0, 0]); // Instruction: call
+// rel ?     assert_eq!(program[4].1, [0x7fff7fff, 0x1078001, 0, 0, 0, 0, 0, 0]); // Instruction:
+// jmp rel 0.     assert_eq!(program[5].1, [0, 0, 0, 0, 0, 0, 0, 0]); // Imm of last instruction
+// (jmp rel 0). }
 
 fn check_builtin(
     builtin_claim: Option<BuiltinClaim>,

@@ -10,7 +10,7 @@ use clap::ValueEnum;
 use itertools::Itertools;
 use num_traits::Zero;
 use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
 use stwo::core::pcs::TreeVec;
@@ -155,27 +155,15 @@ where
     }
 }
 
-/// The data associated with the Cairo proof.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct VerificationOutput {
-    /// Program hash.
-    pub program_hash: starknet_ff::FieldElement,
-    /// Public output.
-    pub output: Vec<starknet_ff::FieldElement>,
-}
-
-/// Extract program hash (blake2s) and public output from the public memory.
-pub fn get_verification_output(public_memory: &PublicMemory) -> VerificationOutput {
-    let program_hash = construct_f252(&encode_and_hash_memory_section(&public_memory.program));
+// /// Extract program hash (blake2s) and public output from the public memory.
+/// Extract public output from the public memory.
+pub fn get_verification_output(public_memory: &PublicMemory) -> Vec<starknet_ff::FieldElement> {
     let output = public_memory
         .output
         .iter()
         .map(|(_, entry)| construct_f252(entry))
         .collect();
-    VerificationOutput {
-        program_hash,
-        output,
-    }
+    output
 }
 
 /// Encodes a memory section and hashes it using Cairo blake.
