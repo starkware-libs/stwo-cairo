@@ -63,8 +63,10 @@ fn verify_claim(claim: &CairoClaim) {
     // verify_program(program, public_segments);
 
     // Read program data from the bootloader compiled JSON.
-    let program_json: serde_json::Value =
-        serde_json::from_str(include_str!("../programs/simple_bootloader_compiled.json")).unwrap();
+    let program_json: serde_json::Value = serde_json::from_str(include_str!(
+        "../programs/test_prove_verify_all_opcode_components.json"
+    ))
+    .unwrap();
     let program_data_1 = hex_to_u32_limbs(program_json["data"][1].as_str().unwrap());
 
     // First instruction: add_app_immediate (n_builtins).

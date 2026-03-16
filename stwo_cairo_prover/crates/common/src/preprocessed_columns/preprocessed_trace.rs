@@ -179,7 +179,7 @@ impl PreProcessedTrace {
 
     fn load_default_program() -> Vec<(u32, [u32; 8])> {
         let program_json: serde_json::Value = serde_json::from_str(include_str!(
-            "../../programs/simple_bootloader_compiled.json"
+            "../../programs/test_prove_verify_all_opcode_components.json"
         ))
         .unwrap();
         program_json["data"]
