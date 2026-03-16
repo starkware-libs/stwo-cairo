@@ -108,7 +108,7 @@ impl CairoSerialize for FriConfig {
             log_blowup_factor,
             log_last_layer_degree_bound,
             n_queries,
-            line_fold_step: _,
+            fold_step: _,
         } = self;
         log_blowup_factor.serialize(output);
         log_last_layer_degree_bound.serialize(output);
