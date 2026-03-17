@@ -484,7 +484,7 @@ impl CairoClaimGenerator {
             if components.contains(&"verify_program") {
                 s.spawn(|_| {
                     let segment = builtin_segments
-                        .get_segment_by_name("verify_program")
+                        .get_segment_by_name("verify_program_builtin")
                         .unwrap();
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(

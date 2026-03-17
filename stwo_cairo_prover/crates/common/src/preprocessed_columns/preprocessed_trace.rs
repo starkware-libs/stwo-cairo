@@ -170,7 +170,12 @@ impl PreProcessedTrace {
             .collect_vec();
 
         assert!(
-            columns.iter().map(|col| 1 << col.log_size()).sum::<u32>() == CANONICAL_SIZE,
+            columns
+                .iter()
+                .filter(|col| !col.id().id.starts_with("curr_program_"))
+                .map(|col| 1 << col.log_size())
+                .sum::<u32>()
+                == CANONICAL_SIZE,
             "Canonical preprocessed trace has unexpected size"
         );
 
@@ -212,7 +217,7 @@ impl PreProcessedTrace {
 }
 
 /// Parses a hex string (with optional "0x" prefix) into 8 little-endian u32 limbs.
-fn hex_to_u32_limbs(hex_str: &str) -> [u32; 8] {
+pub fn hex_to_u32_limbs(hex_str: &str) -> [u32; 8] {
     let hex = hex_str.strip_prefix("0x").unwrap_or(hex_str);
     let padded = format!("{hex:0>64}");
     std::array::from_fn(|i| u32::from_str_radix(&padded[56 - i * 8..64 - i * 8], 16).unwrap())
