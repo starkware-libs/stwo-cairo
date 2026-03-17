@@ -484,7 +484,7 @@ impl CairoClaimGenerator {
             if components.contains(&"verify_program") {
                 s.spawn(|_| {
                     let segment = builtin_segments
-                        .get_segment_by_name("verify_program")
+                        .get_segment_by_name("verify_program_builtin")
                         .unwrap();
                     let segment_length = segment.stop_ptr - segment.begin_addr;
                     assert!(
@@ -3006,7 +3006,7 @@ pub fn get_sub_components(component_name: &str) -> Vec<&'static str> {
                 "pedersen_builtin_narrow_windows",
             ]
         }
-        "verify_program" => {
+        "verify_program_builtin" => {
             vec![
                 "program_component",
                 "memory_address_to_id",

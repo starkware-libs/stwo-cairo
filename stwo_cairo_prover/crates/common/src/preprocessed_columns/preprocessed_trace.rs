@@ -152,6 +152,36 @@ impl PreProcessedTrace {
         Self::from_columns(columns)
     }
 
+    pub fn canonical_small_with_program(program: Option<&[(u32, [u32; 8])]>) -> Self {
+        let canonical_small_without_program = Self::canonical_small().columns;
+        let default_program;
+        let program = match program {
+            Some(program) => program,
+            None => {
+                default_program = Self::load_default_program();
+                &default_program
+            }
+        };
+        program::set_program_table(program);
+        let curr_program_columns = (0..program::PROGRAM_N_COLUMNS)
+            .map(|x| Box::new(program::ProgramColumn::new(x)) as Box<dyn PreProcessedColumn>);
+        let columns = chain!(canonical_small_without_program, curr_program_columns)
+            .sorted_by_key(|column| column.log_size())
+            .collect_vec();
+
+        assert!(
+            columns
+                .iter()
+                .filter(|col| !col.id().id.starts_with("curr_program_"))
+                .map(|col| 1 << col.log_size())
+                .sum::<u32>()
+                == CANONICAL_SMALL,
+            "Canonical small preprocessed trace has unexpected size"
+        );
+
+        Self::from_columns(columns)
+    }
+
     pub fn canonical_with_program(program: Option<&[(u32, [u32; 8])]>) -> Self {
         let canonical_without_program = Self::canonical().columns;
         let default_program;
@@ -170,7 +200,12 @@ impl PreProcessedTrace {
             .collect_vec();
 
         assert!(
-            columns.iter().map(|col| 1 << col.log_size()).sum::<u32>() == CANONICAL_SIZE,
+            columns
+                .iter()
+                .filter(|col| !col.id().id.starts_with("curr_program_"))
+                .map(|col| 1 << col.log_size())
+                .sum::<u32>()
+                == CANONICAL_SIZE,
             "Canonical preprocessed trace has unexpected size"
         );
 
@@ -212,7 +247,7 @@ impl PreProcessedTrace {
 }
 
 /// Parses a hex string (with optional "0x" prefix) into 8 little-endian u32 limbs.
-fn hex_to_u32_limbs(hex_str: &str) -> [u32; 8] {
+pub fn hex_to_u32_limbs(hex_str: &str) -> [u32; 8] {
     let hex = hex_str.strip_prefix("0x").unwrap_or(hex_str);
     let padded = format!("{hex:0>64}");
     std::array::from_fn(|i| u32::from_str_radix(&padded[56 - i * 8..64 - i * 8], 16).unwrap())

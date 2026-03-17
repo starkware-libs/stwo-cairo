@@ -73,6 +73,7 @@ fn main() -> Result<()> {
         &args.program,
         args.program_type,
         args.program_arguments_file.as_ref(),
+        false,
     )?;
 
     let result = create_and_serialize_proof(

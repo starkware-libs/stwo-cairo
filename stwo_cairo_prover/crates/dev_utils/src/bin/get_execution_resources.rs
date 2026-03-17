@@ -46,6 +46,7 @@ fn main() -> Result<()> {
         &args.program,
         args.program_type,
         args.program_arguments_file.as_ref(),
+        false,
     )?;
 
     let execution_resources = ExecutionResources::from_prover_input(&prover_input);
