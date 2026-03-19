@@ -8,7 +8,7 @@ use cairo_air::claims::lookup_sum;
 use cairo_air::relations::CommonLookupElements;
 use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
 use cairo_air::verifier::{verify_cairo_ex, INTERACTION_POW_BITS};
-use cairo_air::{CairoProof, PreProcessedTraceVariant};
+use cairo_air::CairoProof;
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::{Channel, MerkleChannel};
@@ -27,7 +27,9 @@ use stwo::prover::poly::circle::PolyOps;
 use stwo::prover::poly::twiddles::TwiddleTree;
 use stwo::prover::{prove_ex, CommitmentSchemeProver, CommitmentTreeProver, ProvingError};
 use stwo_cairo_adapter::ProverInput;
-use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
+    PreProcessedTrace, PreProcessedTraceVariant,
+};
 use stwo_cairo_serialize::CairoSerialize;
 use tracing::{event, span, Level};
 
@@ -92,11 +94,10 @@ where
             .half_coset,
     );
 
-    let preprocessed_trace = Arc::new(
-        prover_params
-            .preprocessed_trace
-            .to_preprocessed_trace(Some(&input.program)),
-    );
+    let preprocessed_trace = Arc::new(PreProcessedTrace::new_with_program(
+        prover_params.preprocessed_trace,
+        &input.program,
+    ));
     let preprocessed_trace_polys =
         SimdBackend::interpolate_columns(gen_trace(preprocessed_trace.clone()), &twiddles);
 
@@ -390,10 +391,10 @@ pub mod tests {
         use std::io::Write;
         use std::process::Command;
 
-        use cairo_air::PreProcessedTraceVariant;
         use stwo::core::fri::FriConfig;
         use stwo::core::pcs::PcsConfig;
         use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
+        use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTraceVariant;
         use stwo_cairo_dev_utils::utils::get_proof_file_path;
         use stwo_cairo_dev_utils::vm_utils::{run_and_adapt, ProgramType};
         use stwo_cairo_serialize::CairoSerialize;

@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use cairo_air::PreProcessedTraceVariant;
 use stwo::core::channel::MerkleChannel;
 use stwo::core::fields::m31::BaseField;
 use stwo::core::poly::circle::CanonicCoset;
@@ -11,7 +10,9 @@ use stwo::prover::mempool::BaseColumnPool;
 use stwo::prover::poly::circle::{CircleEvaluation, PolyOps};
 use stwo::prover::poly::BitReversedOrder;
 use stwo::prover::CommitmentTreeProver;
-use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
+    PreProcessedTrace, PreProcessedTraceVariant,
+};
 
 /// Generates the root of the preprocessed trace commitment tree for a given `log_blowup_factor`.
 /// If `lifting_log_size` is provided, the preprocessed trace will be lifted to the given log size
@@ -22,12 +23,19 @@ pub fn generate_preprocessed_commitment_root<MC: MerkleChannel>(
     log_blowup_factor: u32,
     preprocessed_trace: PreProcessedTraceVariant,
     lifting_log_size: Option<u32>,
-    program: &[(u32, [u32; 8])],
+    program: Option<&[(u32, [u32; 8])]>,
 ) -> <<MC as MerkleChannel>::H as MerkleHasherLifted>::Hash
 where
     SimdBackend: BackendForChannel<MC>,
 {
-    let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace(Some(program)));
+    let preprocessed_trace = if let Some(program) = program {
+        Arc::new(PreProcessedTrace::new_with_program(
+            preprocessed_trace,
+            program,
+        ))
+    } else {
+        Arc::new(PreProcessedTrace::new_without_program(preprocessed_trace))
+    };
 
     // Precompute twiddles for the commitment scheme.
     let mut max_log_size = preprocessed_trace.log_sizes().into_iter().max().unwrap();
@@ -81,7 +89,7 @@ fn test_canonical_preprocessed_root_regression() {
         log_blowup_factor,
         PreProcessedTraceVariant::Canonical,
         None,
-        &[],
+        None,
     );
 
     assert_eq!(root, expected);
@@ -103,7 +111,7 @@ fn test_small_canonical_preprocessed_root_regression() {
         log_blowup_factor,
         PreProcessedTraceVariant::CanonicalSmall,
         None,
-        &[],
+        None,
     );
 
     assert_eq!(root, expected);

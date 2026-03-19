@@ -10,6 +10,7 @@ use stwo::core::pcs::CommitmentSchemeVerifier;
 use stwo::core::verifier::{verify_ex, VerificationError};
 use stwo_cairo_common::builtins::*;
 use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, LOG_MEMORY_ADDRESS_BOUND};
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 use stwo_cairo_common::prover_types::cpu::{CasmState, PRIME};
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
 use thiserror::Error;
@@ -346,7 +347,8 @@ pub fn verify_cairo_ex<MC: MerkleChannel>(
     pcs_config.mix_into(channel);
     let commitment_scheme_verifier = &mut CommitmentSchemeVerifier::<MC>::new(pcs_config);
 
-    let preprocessed_trace = preprocessed_trace_variant.to_preprocessed_trace(None);
+    let preprocessed_trace =
+        PreProcessedTrace::new_with_program_for_verifier(preprocessed_trace_variant);
 
     let mut log_sizes = claim.log_sizes();
     log_sizes[PREPROCESSED_TRACE_IDX] = preprocessed_trace.log_sizes();

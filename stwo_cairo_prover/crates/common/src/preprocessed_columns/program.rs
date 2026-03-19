@@ -1,4 +1,4 @@
-use std::sync::RwLock;
+use std::sync::{LazyLock, RwLock};
 
 use stwo::core::fields::m31::M31;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
@@ -10,7 +10,14 @@ use crate::prover_types::cpu::{Felt252, FELT252_N_WORDS};
 
 pub const PROGRAM_N_COLUMNS: usize = FELT252_N_WORDS;
 
-static PROGRAM_TABLE: RwLock<Option<Vec<[M31; FELT252_N_WORDS]>>> = RwLock::new(None);
+const DEFAULT_PROGRAM_LOG_LEN: usize = 8;
+
+static PROGRAM_TABLE: LazyLock<RwLock<Vec<[M31; FELT252_N_WORDS]>>> = LazyLock::new(|| {
+    RwLock::new(vec![
+        [M31(0); FELT252_N_WORDS];
+        1 << DEFAULT_PROGRAM_LOG_LEN
+    ])
+});
 
 /// Sets the global PROGRAM_TABLE. Pre-computes 9-bit limbs from the raw `[u32; 8]` values.
 /// Called automatically when creating a preprocessed trace with program data.
@@ -27,15 +34,14 @@ pub fn set_program_table(program: &[(u32, [u32; 8])]) {
             Felt252::from(limbs).get_limbs()
         })
         .collect();
-    *PROGRAM_TABLE.write().unwrap() = Some(values);
+    *PROGRAM_TABLE.write().unwrap() = values;
 }
 
 /// Returns the pre-computed 9-bit limbs at the given index, or zeros if out of bounds.
 pub fn get_program_limbs(index: usize) -> [M31; FELT252_N_WORDS] {
     let data = PROGRAM_TABLE.read().unwrap();
-    let program = data.as_ref().expect("Program data not initialized");
-    if index < program.len() {
-        program[index]
+    if index < data.len() {
+        data[index]
     } else {
         [M31(0); FELT252_N_WORDS]
     }
@@ -49,12 +55,11 @@ pub struct ProgramColumn {
 impl ProgramColumn {
     pub fn new(col_index: usize) -> Self {
         let data = PROGRAM_TABLE.read().unwrap();
-        let program = data.as_ref().expect("Program data not initialized");
-        let padded_len = program.len().next_power_of_two();
+        let padded_len = data.len().next_power_of_two();
         let column_data = (0..padded_len)
             .map(|i| {
-                if i < program.len() {
-                    program[i][col_index]
+                if i < data.len() {
+                    data[i][col_index]
                 } else {
                     M31(0)
                 }

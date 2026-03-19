@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::iter::zip;
 
 use itertools::{chain, Itertools};
+use serde::{Deserialize, Serialize};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
 use super::bitwise_xor::BitwiseXor;
@@ -35,6 +36,14 @@ pub trait PreProcessedColumn: Send + Sync {
     fn id(&self) -> PreProcessedColumnId;
     #[cfg(feature = "prover")]
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>;
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PreProcessedTraceVariant {
+    Canonical,
+    CanonicalWithoutPedersen,
+    CanonicalSmall,
 }
 
 /// A collection of preprocessed columns, whose values are publicly acknowledged, and independent of
@@ -152,42 +161,37 @@ impl PreProcessedTrace {
         Self::from_columns(columns)
     }
 
-    pub fn canonical_with_program(program: Option<&[(u32, [u32; 8])]>) -> Self {
-        let canonical_without_program = Self::canonical().columns;
-        let default_program;
-        let program = match program {
-            Some(program) => program,
-            None => {
-                default_program = Self::load_default_program();
-                &default_program
-            }
-        };
-        program::set_program_table(program);
+    fn append_program_columns(self) -> Self {
         let curr_program_columns = (0..program::PROGRAM_N_COLUMNS)
             .map(|x| Box::new(program::ProgramColumn::new(x)) as Box<dyn PreProcessedColumn>);
-        let columns = chain!(canonical_without_program, curr_program_columns)
+        let columns = chain!(self.columns.into_iter(), curr_program_columns)
             .sorted_by_key(|column| column.log_size())
             .collect_vec();
-
-        assert!(
-            columns.iter().map(|col| 1 << col.log_size()).sum::<u32>() == CANONICAL_SIZE,
-            "Canonical preprocessed trace has unexpected size"
-        );
-
         Self::from_columns(columns)
     }
 
-    fn load_default_program() -> Vec<(u32, [u32; 8])> {
-        let program_json: serde_json::Value = serde_json::from_str(include_str!(
-            "../../programs/simple_bootloader_compiled.json"
-        ))
-        .unwrap();
-        program_json["data"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .map(|v| (0u32, hex_to_u32_limbs(v.as_str().unwrap())))
-            .collect()
+    pub fn new_without_program(variant: PreProcessedTraceVariant) -> PreProcessedTrace {
+        match variant {
+            PreProcessedTraceVariant::Canonical => Self::canonical(),
+            PreProcessedTraceVariant::CanonicalWithoutPedersen => {
+                Self::canonical_without_pedersen()
+            }
+            PreProcessedTraceVariant::CanonicalSmall => Self::canonical_small(),
+        }
+    }
+
+    pub fn new_with_program(
+        variant: PreProcessedTraceVariant,
+        program: &[(u32, [u32; 8])],
+    ) -> PreProcessedTrace {
+        program::set_program_table(program);
+        let preprocessed_trace = Self::new_without_program(variant);
+        preprocessed_trace.append_program_columns()
+    }
+
+    pub fn new_with_program_for_verifier(variant: PreProcessedTraceVariant) -> PreProcessedTrace {
+        let preprocessed_trace = Self::new_without_program(variant);
+        preprocessed_trace.append_program_columns()
     }
 
     pub fn log_sizes(&self) -> Vec<u32> {
@@ -209,13 +213,6 @@ impl PreProcessedTrace {
     pub fn ids(&self) -> Vec<PreProcessedColumnId> {
         self.columns.iter().map(|c| c.id()).collect()
     }
-}
-
-/// Parses a hex string (with optional "0x" prefix) into 8 little-endian u32 limbs.
-fn hex_to_u32_limbs(hex_str: &str) -> [u32; 8] {
-    let hex = hex_str.strip_prefix("0x").unwrap_or(hex_str);
-    let padded = format!("{hex:0>64}");
-    std::array::from_fn(|i| u32::from_str_radix(&padded[56 - i * 8..64 - i * 8], 16).unwrap())
 }
 
 fn gen_range_check_columns() -> Vec<Box<dyn PreProcessedColumn>> {
