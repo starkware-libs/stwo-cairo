@@ -39,14 +39,14 @@ jobs:
       - run: scarb lint --features=qm31_opcode --deny-warnings
 
   scarb-test:
-    runs-on: stwo-cairo-avx-l
+    runs-on: ${{ matrix.runner }}
     defaults:
       run:
         working-directory: ./stwo_cairo_verifier
     strategy:
       matrix:
         feature: [poseidon252_verifier, "poseidon252_verifier,poseidon_outputs_packing", qm31_opcode, "qm31_opcode,blake_outputs_packing", "qm31_opcode,poseidon_outputs_packing"]
-        package: 
+        package:
           - stwo_verifier_core
           - stwo_cairo_air
           - stwo_cairo_verifier
@@ -62,6 +62,14 @@ jobs:
             proof_file: ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
           - feature: "qm31_opcode,poseidon_outputs_packing"
             proof_file: ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
+          - package: stwo_verifier_utils
+            runner: namespace-profile-starkware-libs-stwo-cairo-small-ubuntu-24-04-amd64
+          - package: stwo_verifier_core
+            runner: namespace-profile-starkware-libs-stwo-cairo-medium-ubuntu-24-04-amd64
+          - package: stwo_cairo_air
+            runner: namespace-profile-starkware-libs-stwo-cairo-large-ubuntu-24-04-amd64
+          - package: stwo_cairo_verifier
+            runner: namespace-profile-starkware-libs-stwo-cairo-xlarge-ubuntu-24-04-amd64
 
     steps:
       - uses: actions/checkout@v3
@@ -73,7 +81,7 @@ jobs:
         run: scarb --profile proving execute --package stwo_cairo_verifier --features ${{ matrix.feature }} --print-resource-usage --output none --arguments-file ${{ matrix.proof_file }}
 
   run-tests:
-    runs-on: stwo-cairo-avx-l
+    runs-on: namespace-profile-starkware-libs-stwo-cairo-large-ubuntu-24-04-amd64
     defaults:
       run:
         working-directory: ./stwo_cairo_prover
