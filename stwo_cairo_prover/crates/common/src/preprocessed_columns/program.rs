@@ -10,17 +10,10 @@ use crate::prover_types::cpu::{Felt252, FELT252_N_WORDS};
 
 pub const PROGRAM_N_COLUMNS: usize = FELT252_N_WORDS;
 
-// should match the log len of
-// stwo_cairo_prover/test_data/test_verify_program_builtin/all_opcode_components_padded.cairo
-// and the seq used in stwo_cairo_prover/crates/cairo-air/src/components/program_component.rs
-const DEFAULT_PROGRAM_LOG_LEN: usize = 12;
+pub const MAX_PROGRAM_LOG_LEN: usize = 12;
 
-static PROGRAM_TABLE: LazyLock<RwLock<Vec<[M31; FELT252_N_WORDS]>>> = LazyLock::new(|| {
-    RwLock::new(vec![
-        [M31(0); FELT252_N_WORDS];
-        1 << DEFAULT_PROGRAM_LOG_LEN
-    ])
-});
+static PROGRAM_TABLE: LazyLock<RwLock<Vec<[M31; FELT252_N_WORDS]>>> =
+    LazyLock::new(|| RwLock::new(vec![[M31(0); FELT252_N_WORDS]; 1 << MAX_PROGRAM_LOG_LEN]));
 
 /// Sets the global PROGRAM_TABLE. Pre-computes 9-bit limbs from the raw `[u32; 8]` values.
 /// Called automatically when creating a preprocessed trace with program data.
@@ -38,6 +31,16 @@ pub fn set_program_table(program: &[(u32, [u32; 8])]) {
         })
         .collect();
     *PROGRAM_TABLE.write().unwrap() = values;
+}
+
+/// Returns the pre-computed 9-bit limbs at the given index, or zeros if out of bounds.
+pub fn get_program_limbs(index: usize) -> [M31; FELT252_N_WORDS] {
+    let data = PROGRAM_TABLE.read().unwrap();
+    if index < data.len() {
+        data[index]
+    } else {
+        [M31(0); FELT252_N_WORDS]
+    }
 }
 
 #[derive(Debug)]

@@ -44,6 +44,7 @@ pub struct BuiltinSegments {
     pub range_check96_builtin: Option<MemorySegmentAddresses>,
     pub range_check_builtin: Option<MemorySegmentAddresses>,
     pub ec_op_builtin: Option<MemorySegmentAddresses>,
+    pub verify_program: Option<MemorySegmentAddresses>,
 }
 
 impl BuiltinSegments {
@@ -117,6 +118,7 @@ impl BuiltinSegments {
             "range_check96_builtin" => self.range_check96_builtin,
             "range_check_builtin" => self.range_check_builtin,
             "ec_op_builtin" => self.ec_op_builtin,
+            "verify_program" => self.verify_program,
             _ => panic!("Invalid builtin name: {name}"),
         }
     }

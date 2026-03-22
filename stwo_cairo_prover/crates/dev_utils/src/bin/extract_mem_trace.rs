@@ -65,6 +65,7 @@ fn main() -> Result<()> {
         args.program_type,
         LayoutName::all_cairo_stwo,
         args.program_arguments_file.as_ref(),
+        false,
     )?;
 
     if let Some(mem_file) = args.mem.as_ref() {
@@ -115,6 +116,7 @@ mod tests {
             ProgramType::Json,
             LayoutName::all_cairo_stwo,
             None,
+            false,
         )
         .unwrap();
 
