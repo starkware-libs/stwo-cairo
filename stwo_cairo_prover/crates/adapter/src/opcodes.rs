@@ -766,7 +766,7 @@ mod mappings_tests {
             )
             .expect("Run failed");
 
-        adapt(&runner).expect("Adapter failed")
+        adapt(&runner, false).expect("Adapter failed")
     }
 
     #[test]
