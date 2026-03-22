@@ -22,10 +22,6 @@ impl ClaimGenerator {
         Self::default()
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.packed_inputs.is_empty()
-    }
-
     pub fn write_trace(
         mut self,
         poseidon_round_keys_state: &poseidon_round_keys::ClaimGenerator,

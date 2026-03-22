@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use cairo_air::PreProcessedTraceVariant;
 use stwo::core::channel::MerkleChannel;
 use stwo::core::fields::m31::BaseField;
 use stwo::core::poly::circle::CanonicCoset;
@@ -11,7 +10,9 @@ use stwo::prover::mempool::BaseColumnPool;
 use stwo::prover::poly::circle::{CircleEvaluation, PolyOps};
 use stwo::prover::poly::BitReversedOrder;
 use stwo::prover::CommitmentTreeProver;
-use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
+    PreProcessedTrace, PreProcessedTraceVariant,
+};
 
 /// Generates the root of the preprocessed trace commitment tree for a given `log_blowup_factor`.
 /// If `lifting_log_size` is provided, the preprocessed trace will be lifted to the given log size
