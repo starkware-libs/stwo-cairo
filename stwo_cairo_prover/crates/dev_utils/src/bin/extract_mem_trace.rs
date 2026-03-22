@@ -12,6 +12,7 @@ use std::fs::write;
 use std::path::PathBuf;
 
 use anyhow::Result;
+use cairo_vm::types::layout_name::LayoutName;
 use clap::{Parser, ValueEnum};
 use serde::Serialize;
 use sonic_rs::to_string_pretty;
@@ -62,6 +63,7 @@ fn main() -> Result<()> {
     let prover_input = run_and_adapt(
         &args.program,
         args.program_type,
+        LayoutName::all_cairo_stwo,
         args.program_arguments_file.as_ref(),
     )?;
 
@@ -95,6 +97,7 @@ mod tests {
     use std::process::Command;
 
     use bincode::deserialize;
+    use cairo_vm::types::layout_name::LayoutName;
     use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
     use stwo_cairo_adapter::memory::MemoryEntry;
     use stwo_cairo_dev_utils::utils::get_compiled_cairo_program_path;
@@ -107,7 +110,13 @@ mod tests {
         let compiled_program_path =
             get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
 
-        let prover_input = run_and_adapt(&compiled_program_path, ProgramType::Json, None).unwrap();
+        let prover_input = run_and_adapt(
+            &compiled_program_path,
+            ProgramType::Json,
+            LayoutName::all_cairo_stwo,
+            None,
+        )
+        .unwrap();
 
         // Test JSON format first
         let temp_mem_file = NamedTempFile::new().expect("Failed to create temp file");

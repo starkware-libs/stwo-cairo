@@ -96,6 +96,7 @@ pub struct CairoAir {
     verify_instruction: components::verify_instruction::Component,
     blake_context: BlakeContextComponents,
     builtins: BuiltinComponents,
+    partial_ec_mul_generic: Option<components::partial_ec_mul_generic::Component>,
     pedersen_context: PedersenContextComponents,
     poseidon_context: PoseidonContextComponents,
     memory_address_to_id: components::memory_address_to_id::Component,
@@ -126,6 +127,13 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
 
         let builtins_components = BuiltinComponentsImpl::new(
             cairo_claim, common_lookup_elements, interaction_claim,
+        );
+
+        let partial_ec_mul_generic_component =
+            components::partial_ec_mul_generic::NewComponentImpl::try_new(
+            cairo_claim.partial_ec_mul_generic,
+            interaction_claim.partial_ec_mul_generic,
+            common_lookup_elements,
         );
 
         let pedersen_context_components = PedersenContextComponentsImpl::new(
@@ -221,6 +229,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             verify_instruction: verifyinstruction_component,
             blake_context: blake_context_component,
             builtins: builtins_components,
+            partial_ec_mul_generic: partial_ec_mul_generic_component,
             pedersen_context: pedersen_context_components,
             poseidon_context: poseidon_context_components,
             memory_address_to_id: memory_address_to_id_component,
@@ -264,6 +273,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_instruction,
             blake_context,
             builtins,
+            partial_ec_mul_generic,
             pedersen_context,
             poseidon_context,
             memory_address_to_id,
@@ -308,6 +318,16 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref interaction_trace_mask_values,
                 random_coeff,
             );
+        if let Option::Some(component) = partial_ec_mul_generic.as_snap() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                );
+        }
         pedersen_context
             .evaluate_constraints_at_point(
                 ref sum,
@@ -425,6 +445,15 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
         common_lookup_elements: @crate::CommonLookupElements,
         interaction_claim: @CairoInteractionClaim,
     ) -> CairoAir {
+        assert!(
+            cairo_claim.partial_ec_mul_generic.is_none(),
+            "Partial EC Mul Generic is not supported.",
+        );
+        assert!(
+            interaction_claim.partial_ec_mul_generic.is_none(),
+            "Partial EC Mul Generic is not supported.",
+        );
+
         let opcode_components = OpcodeComponentsImpl::new(
             cairo_claim, common_lookup_elements, interaction_claim,
         );
@@ -707,6 +736,15 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
         common_lookup_elements: @crate::CommonLookupElements,
         interaction_claim: @CairoInteractionClaim,
     ) -> CairoAir {
+        assert!(
+            cairo_claim.partial_ec_mul_generic.is_none(),
+            "Partial EC Mul Generic is not supported.",
+        );
+        assert!(
+            interaction_claim.partial_ec_mul_generic.is_none(),
+            "Partial EC Mul Generic is not supported.",
+        );
+
         let opcode_components = OpcodeComponentsImpl::new(
             cairo_claim, common_lookup_elements, interaction_claim,
         );

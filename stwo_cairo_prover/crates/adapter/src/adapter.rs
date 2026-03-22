@@ -64,6 +64,7 @@ mod tests {
     use std::fs::{read_to_string, File};
     use std::io::Write;
 
+    use cairo_vm::types::layout_name::LayoutName;
     use serde_json::{to_string_pretty, to_value};
     use stwo_cairo_dev_utils::utils::get_compiled_cairo_program_path;
     use stwo_cairo_dev_utils::vm_utils::{run_and_adapt, ProgramType};
@@ -74,7 +75,13 @@ mod tests {
         let is_fix_mode = std::env::var("FIX") == Ok("1".to_string());
 
         let compiled_program = get_compiled_cairo_program_path(test_name);
-        let mut prover_input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
+        let mut prover_input = run_and_adapt(
+            &compiled_program,
+            ProgramType::Json,
+            LayoutName::all_cairo_stwo,
+            None,
+        )
+        .unwrap();
         // Public memory addresses are not deterministic, sort them.
         prover_input.public_memory_addresses.sort();
 

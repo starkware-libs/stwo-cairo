@@ -22,10 +22,6 @@ impl ClaimGenerator {
         Self::default()
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.mults.is_empty()
-    }
-
     pub fn write_trace(
         self,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,

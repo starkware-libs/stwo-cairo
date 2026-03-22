@@ -108,6 +108,12 @@ pub fn cairo_provers(components: &CairoComponents) -> Vec<&dyn ComponentProver<S
     if let Some(component) = &components.range_check_builtin {
         vec.push(component as &dyn ComponentProver<SimdBackend>);
     }
+    if let Some(component) = &components.ec_op_builtin {
+        vec.push(component as &dyn ComponentProver<SimdBackend>);
+    }
+    if let Some(component) = &components.partial_ec_mul_generic {
+        vec.push(component as &dyn ComponentProver<SimdBackend>);
+    }
     if let Some(component) = &components.pedersen_aggregator_window_bits_18 {
         vec.push(component as &dyn ComponentProver<SimdBackend>);
     }

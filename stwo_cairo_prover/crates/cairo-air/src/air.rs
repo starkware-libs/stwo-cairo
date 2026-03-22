@@ -9,6 +9,7 @@ use stwo::core::fields::qm31::QM31;
 use stwo::core::fields::FieldExpOps;
 use stwo::core::proof::{ExtendedStarkProof, StarkProof};
 use stwo::core::vcs_lifted::MerkleHasherLifted;
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTraceVariant;
 use stwo_cairo_common::prover_types::cpu::{CasmState, FELT252_BITS_PER_WORD, FELT252_N_WORDS};
 use stwo_cairo_common::prover_types::felt::{split, split_f252};
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
@@ -21,7 +22,6 @@ use crate::relations::{
 };
 use crate::utils::pack_into_secure_felts;
 use crate::verifier::RelationUse;
-use crate::PreProcessedTraceVariant;
 
 /// The canonical proof format emitted by the Cairo prover.
 ///
