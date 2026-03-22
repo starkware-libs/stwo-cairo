@@ -62,6 +62,7 @@ fn main() -> Result<()> {
     let prover_input = run_and_adapt(
         &args.program,
         args.program_type,
+        false,
         args.program_arguments_file.as_ref(),
     )?;
 
@@ -107,7 +108,8 @@ mod tests {
         let compiled_program_path =
             get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
 
-        let prover_input = run_and_adapt(&compiled_program_path, ProgramType::Json, None).unwrap();
+        let prover_input =
+            run_and_adapt(&compiled_program_path, ProgramType::Json, false, None).unwrap();
 
         // Test JSON format first
         let temp_mem_file = NamedTempFile::new().expect("Failed to create temp file");
