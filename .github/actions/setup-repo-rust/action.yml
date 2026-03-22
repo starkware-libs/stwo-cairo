@@ -1,0 +1,49 @@
+name: Setup Rust toolchain (repo defaults)
+description: Wraps actions-rust-lang/setup-rust-toolchain with rust-toolchain.toml at repo root and CI parity defaults.
+
+inputs:
+  toolchain:
+    description: Optional rustup toolchain; omit to use rust-toolchain.toml at repo root.
+    required: false
+  target:
+    description: Comma-separated target triples to install.
+    required: false
+  components:
+    description: Comma-separated extra components (e.g. rustfmt, clippy, rust-src).
+    required: false
+  cache:
+    description: Enable built-in Swatinem/rust-cache in the upstream action.
+    required: false
+    default: "false"
+  cache-workspaces:
+    description: Workspaces path for rust-cache when cache is true.
+    required: false
+  cache-key:
+    description: Extra cache key segment for rust-cache.
+    required: false
+  rust-src-dir:
+    description: Directory to cd into before resolving toolchain file (repo-relative).
+    required: false
+  matcher:
+    description: Enable Rust problem matcher.
+    required: false
+    default: "true"
+  rustflags:
+    description: RUSTFLAGS; empty avoids upstream default -D warnings.
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: ${{ inputs.toolchain }}
+        target: ${{ inputs.target }}
+        components: ${{ inputs.components }}
+        cache: ${{ inputs.cache }}
+        cache-workspaces: ${{ inputs.cache-workspaces }}
+        cache-key: ${{ inputs.cache-key }}
+        rust-src-dir: ${{ inputs.rust-src-dir }}
+        matcher: ${{ inputs.matcher }}
+        rustflags: ${{ inputs.rustflags }}
