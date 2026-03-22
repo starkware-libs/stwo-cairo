@@ -14,43 +14,46 @@ env:
 
 jobs:
   scarb-fmt:
-    runs-on: stwo-cairo-avx-l
+    runs-on: namespace-profile-starkware-libs-stwo-cairo-medium-ubuntu-24-04-amd64
     defaults:
       run:
         working-directory: ./stwo_cairo_verifier
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: software-mansion/setup-scarb@v1
         with:
           scarb-version: "2.15.0"
       - run: scarb fmt --check
 
   scarb-lint:
-    runs-on: stwo-cairo-avx-l
+    runs-on: namespace-profile-starkware-libs-stwo-cairo-medium-ubuntu-24-04-amd64
     defaults:
       run:
         working-directory: ./stwo_cairo_verifier
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: software-mansion/setup-scarb@v1
         with:
           scarb-version: "2.15.0"
       - run: scarb lint --features=qm31_opcode --deny-warnings
 
   scarb-test:
-    runs-on: stwo-cairo-avx-l
+    runs-on: ${{ matrix.runner }}
     defaults:
       run:
         working-directory: ./stwo_cairo_verifier
     strategy:
       matrix:
         feature: [poseidon252_verifier, "poseidon252_verifier,poseidon_outputs_packing", qm31_opcode, "qm31_opcode,blake_outputs_packing", "qm31_opcode,poseidon_outputs_packing"]
-        package: 
+        package:
           - stwo_verifier_core
           - stwo_cairo_air
           - stwo_cairo_verifier
           - stwo_verifier_utils
         include:
+          # ==========================================
+          # Proof Files Mapping
+          # ==========================================
           - feature: poseidon252_verifier
             proof_file: ../stwo_cairo_prover/test_data/test_prove_verify_ret_opcode/proof.json
           - feature: "poseidon252_verifier,poseidon_outputs_packing"
@@ -61,9 +64,76 @@ jobs:
             proof_file: ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
           - feature: "qm31_opcode,poseidon_outputs_packing"
             proof_file: ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
+          # ==========================================
+          # Explicit Runner Size Mapping (20 combinations)
+          # ==========================================
+          # 1. stwo_verifier_utils (All small)
+          - feature: poseidon252_verifier
+            package: stwo_verifier_utils
+            runner: namespace-profile-starkware-libs-stwo-cairo-small-ubuntu-24-04-amd64
+          - feature: "poseidon252_verifier,poseidon_outputs_packing"
+            package: stwo_verifier_utils
+            runner: namespace-profile-starkware-libs-stwo-cairo-small-ubuntu-24-04-amd64
+          - feature: qm31_opcode
+            package: stwo_verifier_utils
+            runner: namespace-profile-starkware-libs-stwo-cairo-small-ubuntu-24-04-amd64
+          - feature: "qm31_opcode,blake_outputs_packing"
+            package: stwo_verifier_utils
+            runner: namespace-profile-starkware-libs-stwo-cairo-small-ubuntu-24-04-amd64
+          - feature: "qm31_opcode,poseidon_outputs_packing"
+            package: stwo_verifier_utils
+            runner: namespace-profile-starkware-libs-stwo-cairo-small-ubuntu-24-04-amd64
+          # 2. stwo_verifier_core (All small)
+          - feature: poseidon252_verifier
+            package: stwo_verifier_core
+            runner: namespace-profile-starkware-libs-stwo-cairo-small-ubuntu-24-04-amd64
+          - feature: "poseidon252_verifier,poseidon_outputs_packing"
+            package: stwo_verifier_core
+            runner: namespace-profile-starkware-libs-stwo-cairo-small-ubuntu-24-04-amd64
+          - feature: qm31_opcode
+            package: stwo_verifier_core
+            runner: namespace-profile-starkware-libs-stwo-cairo-small-ubuntu-24-04-amd64
+          - feature: "qm31_opcode,blake_outputs_packing"
+            package: stwo_verifier_core
+            runner: namespace-profile-starkware-libs-stwo-cairo-small-ubuntu-24-04-amd64
+          - feature: "qm31_opcode,poseidon_outputs_packing"
+            package: stwo_verifier_core
+            runner: namespace-profile-starkware-libs-stwo-cairo-small-ubuntu-24-04-amd64
+          # 3. stwo_cairo_air (poseidon = small, qm31 = xlarge)
+          - feature: poseidon252_verifier
+            package: stwo_cairo_air
+            runner: namespace-profile-starkware-libs-stwo-cairo-small-ubuntu-24-04-amd64
+          - feature: "poseidon252_verifier,poseidon_outputs_packing"
+            package: stwo_cairo_air
+            runner: namespace-profile-starkware-libs-stwo-cairo-small-ubuntu-24-04-amd64
+          - feature: qm31_opcode
+            package: stwo_cairo_air
+            runner: namespace-profile-starkware-libs-stwo-cairo-xlarge-ubuntu-24-04-amd64
+          - feature: "qm31_opcode,blake_outputs_packing"
+            package: stwo_cairo_air
+            runner: namespace-profile-starkware-libs-stwo-cairo-xlarge-ubuntu-24-04-amd64
+          - feature: "qm31_opcode,poseidon_outputs_packing"
+            package: stwo_cairo_air
+            runner: namespace-profile-starkware-libs-stwo-cairo-xlarge-ubuntu-24-04-amd64
+          # 4. stwo_cairo_verifier (poseidon252 = medium, poseidon_packing = large, qm31 = xlarge)
+          - feature: poseidon252_verifier
+            package: stwo_cairo_verifier
+            runner: namespace-profile-starkware-libs-stwo-cairo-medium-ubuntu-24-04-amd64
+          - feature: "poseidon252_verifier,poseidon_outputs_packing"
+            package: stwo_cairo_verifier
+            runner: namespace-profile-starkware-libs-stwo-cairo-large-ubuntu-24-04-amd64
+          - feature: qm31_opcode
+            package: stwo_cairo_verifier
+            runner: namespace-profile-starkware-libs-stwo-cairo-xlarge-ubuntu-24-04-amd64
+          - feature: "qm31_opcode,blake_outputs_packing"
+            package: stwo_cairo_verifier
+            runner: namespace-profile-starkware-libs-stwo-cairo-xlarge-ubuntu-24-04-amd64
+          - feature: "qm31_opcode,poseidon_outputs_packing"
+            package: stwo_cairo_verifier
+            runner: namespace-profile-starkware-libs-stwo-cairo-xlarge-ubuntu-24-04-amd64
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: software-mansion/setup-scarb@v1
         with:
           scarb-version: "2.15.0"
@@ -72,12 +142,19 @@ jobs:
         run: scarb --profile proving execute --package stwo_cairo_verifier --features ${{ matrix.feature }} --print-resource-usage --output none --arguments-file ${{ matrix.proof_file }}
 
   run-tests:
-    runs-on: stwo-cairo-avx-l
+    runs-on: namespace-profile-starkware-libs-stwo-cairo-xlarge-ubuntu-24-04-amd64
+    env:
+      NEXTTEST_THREADS: "1"
+      RUST_MIN_STACK: 4194304
+      RUSTFLAGS: -C target-cpu=native
+      RUST_LOG_SPAN_EVENTS: enter,close
+      RUST_LOG: info
+      RUST_BACKTRACE: full
     defaults:
       run:
         working-directory: ./stwo_cairo_prover
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential
       - name: Install Rust toolchain
@@ -91,18 +168,13 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: stwo_cairo_prover
-      - run: cargo nextest run --cargo-profile witness-opt-1 --features=slow-tests -j 1 -P ci
-        env:
-          RUST_MIN_STACK: 4194304
-          RUSTFLAGS: -C target-cpu=native
-          RUST_LOG_SPAN_EVENTS: enter,close
-          RUST_LOG: info
-      - run: cargo nextest run --cargo-profile witness-opt-1 --features=extract-mem-trace test_serialize_deserialize_mem_trace -j 1 -P ci
-        env:
-          RUST_MIN_STACK: 4194304
-          RUSTFLAGS: -C target-cpu=native
-          RUST_LOG_SPAN_EVENTS: enter,close
-          RUST_LOG: info
+      - name: Pre-build Scarb artifacts to prevent data races during parallel tests
+        run: |
+          cd ../stwo_cairo_verifier
+          scarb build --features poseidon252_verifier
+          scarb build --features qm31_opcode
+      - run: cargo nextest run --cargo-profile witness-opt-1 --features=slow-tests -j ${{ env.NEXTTEST_THREADS }} -P ci
+      - run: cargo nextest run --cargo-profile witness-opt-1 --features=extract-mem-trace test_serialize_deserialize_mem_trace -j ${{ env.NEXTTEST_THREADS }} -P ci
 
   cairo-prover-wasm:
     runs-on: ubuntu-latest
@@ -110,7 +182,7 @@ jobs:
       run:
         working-directory: ./stwo_cairo_prover
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.NIGHTLY_VERSION }}
@@ -126,7 +198,7 @@ jobs:
       run:
         working-directory: ./stwo_cairo_prover
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.NIGHTLY_VERSION }}
@@ -141,7 +213,7 @@ jobs:
       run:
         working-directory: ./stwo_cairo_prover
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.STABLE_VERSION }}
@@ -157,7 +229,7 @@ jobs:
       run:
         working-directory: ./stwo_cairo_prover
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@master
         with:
           components: rustfmt
@@ -171,7 +243,7 @@ jobs:
       run:
         working-directory: ./stwo_cairo_prover
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@master
         with:
           components: clippy
@@ -182,7 +254,7 @@ jobs:
   typos:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: crate-ci/typos@v1.30.1
 
   merge-gatekeeper:
