@@ -199,6 +199,12 @@ fn cairo_relation_entries(
     if let Some(component) = &cairo_components.range_check_builtin {
         entries.extend(add_to_relation_entries(component, trace));
     }
+    if let Some(component) = &cairo_components.ec_op_builtin {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
+    if let Some(component) = &cairo_components.partial_ec_mul_generic {
+        entries.extend(add_to_relation_entries(component, trace));
+    }
     if let Some(component) = &cairo_components.pedersen_aggregator_window_bits_18 {
         entries.extend(add_to_relation_entries(component, trace));
     }

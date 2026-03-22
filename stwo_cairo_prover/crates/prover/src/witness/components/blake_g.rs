@@ -21,10 +21,6 @@ impl ClaimGenerator {
         Self::default()
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.packed_inputs.is_empty()
-    }
-
     pub fn write_trace(
         mut self,
         verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,

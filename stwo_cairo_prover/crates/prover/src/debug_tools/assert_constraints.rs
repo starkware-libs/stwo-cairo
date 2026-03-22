@@ -152,6 +152,12 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     if let Some(component) = &cairo_components.range_check_builtin {
         assert_component(component, &trace);
     }
+    if let Some(component) = &cairo_components.ec_op_builtin {
+        assert_component(component, &trace);
+    }
+    if let Some(component) = &cairo_components.partial_ec_mul_generic {
+        assert_component(component, &trace);
+    }
     if let Some(component) = &cairo_components.pedersen_aggregator_window_bits_18 {
         assert_component(component, &trace);
     }

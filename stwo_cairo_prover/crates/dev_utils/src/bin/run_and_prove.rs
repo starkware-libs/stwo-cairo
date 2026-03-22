@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use anyhow::Result;
 use cairo_air::utils::ProofFormat;
+use cairo_vm::types::layout_name::LayoutName;
 use clap::Parser;
 use stwo_cairo_dev_utils::vm_utils::{run_and_adapt, ProgramType};
 use stwo_cairo_prover::prover::create_and_serialize_proof;
@@ -72,6 +73,7 @@ fn main() -> Result<()> {
     let prover_input = run_and_adapt(
         &args.program,
         args.program_type,
+        LayoutName::all_cairo_stwo,
         args.program_arguments_file.as_ref(),
     )?;
 

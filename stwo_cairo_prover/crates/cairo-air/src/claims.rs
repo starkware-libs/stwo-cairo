@@ -51,6 +51,8 @@ pub struct CairoClaim {
     pub poseidon_builtin: Option<poseidon_builtin::Claim>,
     pub range_check96_builtin: Option<range_check96_builtin::Claim>,
     pub range_check_builtin: Option<range_check_builtin::Claim>,
+    pub ec_op_builtin: Option<ec_op_builtin::Claim>,
+    pub partial_ec_mul_generic: Option<partial_ec_mul_generic::Claim>,
     pub pedersen_aggregator_window_bits_18: Option<pedersen_aggregator_window_bits_18::Claim>,
     pub partial_ec_mul_window_bits_18: Option<partial_ec_mul_window_bits_18::Claim>,
     pub pedersen_points_table_window_bits_18: Option<pedersen_points_table_window_bits_18::Claim>,
@@ -300,6 +302,20 @@ impl CairoClaim {
                 c.log_size,
             )
         });
+        self.ec_op_builtin.as_ref().inspect(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                ec_op_builtin::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        self.partial_ec_mul_generic.as_ref().inspect(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                partial_ec_mul_generic::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
         self.pedersen_aggregator_window_bits_18
             .as_ref()
             .inspect(|c| {
@@ -482,6 +498,12 @@ impl CairoClaim {
             .as_ref()
             .inspect(|c| log_sizes_list.push(c.log_sizes()));
         self.range_check_builtin
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.ec_op_builtin
+            .as_ref()
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.partial_ec_mul_generic
             .as_ref()
             .inspect(|c| log_sizes_list.push(c.log_sizes()));
         self.pedersen_aggregator_window_bits_18
@@ -825,6 +847,20 @@ impl CairoClaim {
             component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
+        if let Some(c) = self.ec_op_builtin {
+            component_log_sizes.push(c.log_size);
+            component_enable_bits.push(true);
+        } else {
+            component_log_sizes.push(0_u32);
+            component_enable_bits.push(false);
+        }
+        if let Some(c) = self.partial_ec_mul_generic {
+            component_log_sizes.push(c.log_size);
+            component_enable_bits.push(true);
+        } else {
+            component_log_sizes.push(0_u32);
+            component_enable_bits.push(false);
+        }
         if let Some(c) = self.pedersen_aggregator_window_bits_18 {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
@@ -1097,6 +1133,8 @@ pub struct CairoInteractionClaim {
     pub poseidon_builtin: Option<poseidon_builtin::InteractionClaim>,
     pub range_check96_builtin: Option<range_check96_builtin::InteractionClaim>,
     pub range_check_builtin: Option<range_check_builtin::InteractionClaim>,
+    pub ec_op_builtin: Option<ec_op_builtin::InteractionClaim>,
+    pub partial_ec_mul_generic: Option<partial_ec_mul_generic::InteractionClaim>,
     pub pedersen_aggregator_window_bits_18:
         Option<pedersen_aggregator_window_bits_18::InteractionClaim>,
     pub partial_ec_mul_window_bits_18: Option<partial_ec_mul_window_bits_18::InteractionClaim>,
@@ -1314,6 +1352,16 @@ impl CairoInteractionClaim {
             claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.range_check_builtin {
+            claimed_sums.push(c.claimed_sum);
+        } else {
+            claimed_sums.push(SecureField::zero());
+        }
+        if let Some(c) = self.ec_op_builtin {
+            claimed_sums.push(c.claimed_sum);
+        } else {
+            claimed_sums.push(SecureField::zero());
+        }
+        if let Some(c) = self.partial_ec_mul_generic {
             claimed_sums.push(c.claimed_sum);
         } else {
             claimed_sums.push(SecureField::zero());
@@ -1630,6 +1678,15 @@ pub fn lookup_sum(
         });
     interaction_claim
         .range_check_builtin
+        .as_ref()
+        .inspect(|ic| {
+            sum += ic.claimed_sum;
+        });
+    interaction_claim.ec_op_builtin.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim
+        .partial_ec_mul_generic
         .as_ref()
         .inspect(|ic| {
             sum += ic.claimed_sum;

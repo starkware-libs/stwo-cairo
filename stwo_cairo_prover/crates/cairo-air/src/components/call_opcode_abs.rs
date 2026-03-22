@@ -39,20 +39,11 @@ impl Claim {
         let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 5];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
-
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_u64(self.log_size as u64);
-    }
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct InteractionClaim {
     pub claimed_sum: SecureField,
-}
-impl InteractionClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_felts(&[self.claimed_sum]);
-    }
 }
 
 pub type Component = FrameworkComponent<Eval>;
