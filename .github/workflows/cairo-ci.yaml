@@ -91,6 +91,12 @@ jobs:
 
   run-tests:
     runs-on: namespace-profile-starkware-libs-stwo-cairo-2xlarge-ubuntu-24-04-amd64
+    env:
+      RUST_MIN_STACK: 4194304
+      RUSTFLAGS: -C target-cpu=native
+      RUST_LOG_SPAN_EVENTS: enter,close
+      RUST_LOG: info
+      RUST_BACKTRACE: full
     defaults:
       run:
         working-directory: ./stwo_cairo_prover
@@ -109,18 +115,8 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: stwo_cairo_prover
-      - run: cargo nextest run --cargo-profile witness-opt-1 --features=slow-tests -j 2 -P ci
-        env:
-          RUST_MIN_STACK: 4194304
-          RUSTFLAGS: -C target-cpu=native
-          RUST_LOG_SPAN_EVENTS: enter,close
-          RUST_LOG: info
-      - run: cargo nextest run --cargo-profile witness-opt-1 --features=extract-mem-trace test_serialize_deserialize_mem_trace -j 2 -P ci
-        env:
-          RUST_MIN_STACK: 4194304
-          RUSTFLAGS: -C target-cpu=native
-          RUST_LOG_SPAN_EVENTS: enter,close
-          RUST_LOG: info
+      - run: cargo nextest run --cargo-profile witness-opt-1 --features=slow-tests -j 3 -P ci
+      - run: cargo nextest run --cargo-profile witness-opt-1 --features=extract-mem-trace test_serialize_deserialize_mem_trace -j 3 -P ci
 
   cairo-prover-wasm:
     runs-on: ubuntu-latest
