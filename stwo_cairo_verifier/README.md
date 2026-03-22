@@ -120,7 +120,7 @@ cairo-execute \
     --args-file target/bench/proof.serde.json \
     --output-path target/stwo_cairo_verifier.pie.zip \
     --executable stwo_cairo_verifier::main \
-    --layout stwo_no_ecop \
+    --layout all_cairo_stwo \
     --ignore-warnings \
     crates/cairo_verifier/blake_cairo_project > target/stwo_cairo_verifier.profile.txt
 ```

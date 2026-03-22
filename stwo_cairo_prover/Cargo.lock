@@ -3503,6 +3503,7 @@ dependencies = [
  "anyhow",
  "bytemuck",
  "cairo-air",
+ "cairo-vm",
  "dashmap",
  "generic-tests",
  "getrandom 0.2.17",

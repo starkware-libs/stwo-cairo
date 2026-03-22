@@ -19,10 +19,6 @@ impl ClaimGenerator {
         Self::default()
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.packed_inputs.is_empty()
-    }
-
     pub fn write_trace(
         mut self,
         range_check_8_state: &range_check_8::ClaimGenerator,

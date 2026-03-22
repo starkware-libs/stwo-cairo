@@ -629,7 +629,6 @@ mod tests {
 
     use cairo_air::components::{memory_id_to_big, memory_id_to_small};
     use cairo_air::relations::CommonLookupElements;
-    use cairo_air::PreProcessedTraceVariant;
     use itertools::Itertools;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
@@ -639,7 +638,9 @@ mod tests {
     use stwo_cairo_adapter::memory::{
         value_from_felt252, MemoryBuilder, MemoryConfig, MemoryValue,
     };
-    use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
+    use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
+        PreProcessedTrace, PreProcessedTraceVariant,
+    };
     use stwo_cairo_common::prover_types::cpu::FELT252_N_WORDS;
     use stwo_cairo_common::prover_types::felt::split_f252;
     use stwo_constraint_framework::TraceLocationAllocator;

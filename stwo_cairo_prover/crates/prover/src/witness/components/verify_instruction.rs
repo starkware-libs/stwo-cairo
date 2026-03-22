@@ -21,10 +21,6 @@ impl ClaimGenerator {
         Self::default()
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.mults.is_empty()
-    }
-
     pub fn write_trace(
         self,
         range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
