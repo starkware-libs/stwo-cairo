@@ -20,7 +20,7 @@ impl FlatClaim {
             self.component_log_sizes.iter().cloned(),
         ));
         channel.mix_felts(&pack_into_secure_felts(
-            [self.public_data.public_memory.program.len() as u32].into_iter(),
+            [self.public_data.public_memory.program.as_ref().map_or(0, |p| p.len()) as u32].into_iter(),
         ));
         self.public_data.mix_into::<MC>(channel);
     }

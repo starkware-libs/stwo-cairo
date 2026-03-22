@@ -31,7 +31,7 @@ pub fn mock_public_memory_with_outputs(output_len: u32) -> PublicMemory {
     };
 
     PublicMemory {
-        program: [].span(),
+        program: Option::Some([].span()),
         public_segments: PublicSegmentRanges {
             output: empty_segment,
             pedersen: empty_segment,

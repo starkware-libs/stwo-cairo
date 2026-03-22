@@ -90,7 +90,11 @@ fn extract_sections_from_memory(
     assert_eq!(safe_call[1].1, [0, 0, 0, 0, 0, 0, 0, 0]);
 
     PublicMemory {
-        program,
+        program: if program.is_empty() {
+            None
+        } else {
+            Some(program)
+        },
         safe_call_ids: array::from_fn(|i| safe_call[i].0),
         public_segments,
         output,

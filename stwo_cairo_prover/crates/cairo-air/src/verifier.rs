@@ -62,7 +62,9 @@ fn verify_claim(claim: &CairoClaim) {
         public_segments,
     );
 
-    verify_program(program, public_segments);
+    if let Some(program) = program {
+        verify_program(program, public_segments);
+    }
 
     assert_eq!(*initial_pc, BaseField::one());
     assert!(

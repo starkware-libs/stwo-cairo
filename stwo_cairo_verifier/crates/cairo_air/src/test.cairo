@@ -35,7 +35,7 @@ fn test_public_data_logup_sum() {
 
     let public_data = PublicData {
         public_memory: PublicMemory {
-            program: program.span(),
+            program: Option::Some(program.span()),
             public_segments: PublicSegmentRanges {
                 output: SegmentRange {
                     start_ptr: MemorySmallValue { id: 228, value: 2520 },

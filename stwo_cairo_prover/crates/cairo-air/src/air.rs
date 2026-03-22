@@ -237,8 +237,10 @@ impl PublicData {
         for (id, _) in output {
             public_claim.push(*id);
         }
-        for (id, _) in program {
-            public_claim.push(*id);
+        if let Some(program) = program {
+            for (id, _) in program {
+                public_claim.push(*id);
+            }
         }
 
         // Collect output values.
@@ -250,9 +252,13 @@ impl PublicData {
 
         // Collect program values.
         let mut program_claim = vec![];
-        for (_, value) in program {
-            program_claim
-                .extend::<[u32; FELT252_N_WORDS]>(split(*value, (1 << FELT252_BITS_PER_WORD) - 1));
+        if let Some(program) = program {
+            for (_, value) in program {
+                program_claim.extend::<[u32; FELT252_N_WORDS]>(split(
+                    *value,
+                    (1 << FELT252_BITS_PER_WORD) - 1,
+                ));
+            }
         }
 
         (public_claim, output_claim, program_claim)
@@ -469,7 +475,7 @@ pub type MemorySection = Vec<PubMemoryValue>;
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, Default, Clone)]
 pub struct PublicMemory {
-    pub program: MemorySection,
+    pub program: Option<MemorySection>,
     pub public_segments: PublicSegmentRanges,
     pub output: MemorySection,
     pub safe_call_ids: [u32; 2],
@@ -483,10 +489,16 @@ impl PublicMemory {
         initial_ap: u32,
         final_ap: u32,
     ) -> impl Iterator<Item = PubMemoryEntry> {
-        let [program, output] =
-            [&self.program, &self.output].map(|section| section.clone().into_iter().enumerate());
-        let program_iter = program.map(move |(i, (id, value))| (initial_pc + i as u32, id, value));
-        let output_iter = output.map(move |(i, (id, value))| (final_ap + i as u32, id, value));
+        let output = self.output.clone().into_iter().enumerate();
+        let program_iter = self
+            .program
+            .clone()
+            .unwrap_or_default()
+            .into_iter()
+            .enumerate()
+            .map(move |(i, (id, value))| (initial_pc + i as u32, id, value));
+        let output_iter =
+            output.map(move |(i, (id, value))| (final_ap + i as u32, id, value));
 
         let [safe_call_id0, safe_call_id1] = self.safe_call_ids;
         // The safe call area should be [initial_fp, 0] and initial_fp should be the same as
@@ -598,7 +610,7 @@ mod tests {
         let dummy_lookup_elements = CommonLookupElements::dummy();
         let public_data = PublicData {
             public_memory: PublicMemory {
-                program,
+                program: Some(program),
                 public_segments: PublicSegmentRanges {
                     output: SegmentRange {
                         start_ptr: MemorySmallValue {
