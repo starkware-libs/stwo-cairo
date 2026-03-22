@@ -20,7 +20,7 @@ jobs:
       run:
         working-directory: ./stwo_cairo_verifier
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: software-mansion/setup-scarb@v1
         with:
           scarb-version: "2.15.0"
@@ -32,7 +32,7 @@ jobs:
       run:
         working-directory: ./stwo_cairo_verifier
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: software-mansion/setup-scarb@v1
         with:
           scarb-version: "2.15.0"
@@ -70,9 +70,18 @@ jobs:
             runner: namespace-profile-starkware-libs-stwo-cairo-large-ubuntu-24-04-amd64
           - package: stwo_cairo_verifier
             runner: namespace-profile-starkware-libs-stwo-cairo-xlarge-ubuntu-24-04-amd64
+          - feature: qm31_opcode
+            package: stwo_cairo_air
+            runner: namespace-profile-starkware-libs-stwo-cairo-xlarge-ubuntu-24-04-amd64
+          - feature: "qm31_opcode,blake_outputs_packing"
+            package: stwo_cairo_air
+            runner: namespace-profile-starkware-libs-stwo-cairo-xlarge-ubuntu-24-04-amd64
+          - feature: "qm31_opcode,poseidon_outputs_packing"
+            package: stwo_cairo_air
+            runner: namespace-profile-starkware-libs-stwo-cairo-xlarge-ubuntu-24-04-amd64
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: software-mansion/setup-scarb@v1
         with:
           scarb-version: "2.15.0"
@@ -81,12 +90,12 @@ jobs:
         run: scarb --profile proving execute --package stwo_cairo_verifier --features ${{ matrix.feature }} --print-resource-usage --output none --arguments-file ${{ matrix.proof_file }}
 
   run-tests:
-    runs-on: namespace-profile-starkware-libs-stwo-cairo-large-ubuntu-24-04-amd64
+    runs-on: namespace-profile-starkware-libs-stwo-cairo-2xlarge-ubuntu-24-04-amd64
     defaults:
       run:
         working-directory: ./stwo_cairo_prover
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential
       - name: Install Rust toolchain
@@ -119,7 +128,7 @@ jobs:
       run:
         working-directory: ./stwo_cairo_prover
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.NIGHTLY_VERSION }}
@@ -135,7 +144,7 @@ jobs:
       run:
         working-directory: ./stwo_cairo_prover
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.NIGHTLY_VERSION }}
@@ -150,7 +159,7 @@ jobs:
       run:
         working-directory: ./stwo_cairo_prover
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.STABLE_VERSION }}
@@ -166,7 +175,7 @@ jobs:
       run:
         working-directory: ./stwo_cairo_prover
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@master
         with:
           components: rustfmt
@@ -180,7 +189,7 @@ jobs:
       run:
         working-directory: ./stwo_cairo_prover
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@master
         with:
           components: clippy
@@ -191,7 +200,7 @@ jobs:
   typos:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: crate-ci/typos@v1.30.1
 
   merge-gatekeeper:
