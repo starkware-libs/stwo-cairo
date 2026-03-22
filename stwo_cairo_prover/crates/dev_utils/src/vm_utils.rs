@@ -29,6 +29,7 @@ pub fn run_and_adapt(
     program_type: ProgramType,
     layout: LayoutName,
     args: Option<&PathBuf>,
+    pad_program_segment: bool,
 ) -> Result<ProverInput> {
     let cairo_run_config = CairoRunConfig {
         trace_enabled: true,
@@ -77,12 +78,15 @@ pub fn run_and_adapt(
         }
     };
 
-    adapt(&cairo_run_program_with_initial_scope(
-        &program,
-        &cairo_run_config,
-        hints.as_mut(),
-        exec_scopes,
-    )?)
+    adapt(
+        &cairo_run_program_with_initial_scope(
+            &program,
+            &cairo_run_config,
+            hints.as_mut(),
+            exec_scopes,
+        )?,
+        pad_program_segment,
+    )
 }
 
 fn get_program_and_hints_from_executable(
