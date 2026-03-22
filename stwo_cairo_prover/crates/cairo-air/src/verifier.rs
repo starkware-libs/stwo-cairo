@@ -20,7 +20,7 @@ use crate::cairo_components::CairoComponents;
 use crate::claims::{lookup_sum, CairoClaim};
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
 use crate::components::{
-    add_mod_builtin, bitwise_builtin, mul_mod_builtin, pedersen_builtin,
+    add_mod_builtin, bitwise_builtin, ec_op_builtin, mul_mod_builtin, pedersen_builtin,
     pedersen_builtin_narrow_windows, poseidon_builtin, range_check96_builtin, range_check_builtin,
 };
 use crate::relations::CommonLookupElements;
@@ -58,6 +58,7 @@ fn verify_claim(claim: &CairoClaim) {
         &claim.poseidon_builtin,
         &claim.range_check96_builtin,
         &claim.range_check_builtin,
+        &claim.ec_op_builtin,
         public_segments,
     );
 
@@ -133,6 +134,7 @@ fn verify_builtins(
     poseidon_builtin_claim: &Option<poseidon_builtin::Claim>,
     range_check_96_builtin_claim: &Option<range_check96_builtin::Claim>,
     range_check_128_builtin_claim: &Option<range_check_builtin::Claim>,
+    ec_op_builtin_claim: &Option<ec_op_builtin::Claim>,
     segment_ranges: &PublicSegmentRanges,
 ) {
     let PublicSegmentRanges {
@@ -159,12 +161,6 @@ fn verify_builtins(
         assert_eq!(
             keccak.start_ptr.value, keccak.stop_ptr.value,
             "Keccak segment is not empty"
-        );
-    }
-    if let Some(ec_op) = ec_op {
-        assert_eq!(
-            ec_op.start_ptr.value, ec_op.stop_ptr.value,
-            "EC_OP segment is not empty"
         );
     }
 
@@ -237,6 +233,7 @@ fn verify_builtins(
     check_builtin_generic!(add_mod);
     check_builtin_generic!(mul_mod);
     check_builtin_generic!(poseidon);
+    check_builtin_generic!(ec_op);
 }
 
 fn verify_program(program: &MemorySection, public_segments: &PublicSegmentRanges) {
