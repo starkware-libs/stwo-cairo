@@ -5,7 +5,7 @@ use tracing::{info, span, Level};
 
 use super::memory::{MemoryBuilder, MemoryConfig};
 use super::ProverInput;
-use crate::builtins::BuiltinSegments;
+use crate::builtins::{BuiltinSegments, MemorySegmentAddresses};
 use crate::relocator::Relocator;
 use crate::{PublicSegmentContext, StateTransitions};
 
@@ -28,7 +28,7 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
     let relocated_memory_clone = relocated_memory.clone();
 
     let relocated_trace = relocator.relocate_trace(relocatable_trace);
-    let builtin_segments = relocator.relocate_builtin_segments(&builtin_segments);
+    let mut builtin_segments = relocator.relocate_builtin_segments(&builtin_segments);
     info!("Builtin segments: {:?}", builtin_segments);
     let public_memory_addresses = relocator.relocate_public_addresses(public_memory_offsets);
 
@@ -45,6 +45,14 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
     // Compute program segment.
     let initial_pc = state_transitions.initial_state.pc.0;
     let initial_ap = state_transitions.initial_state.ap.0;
+    // The verify_program builtin covers the program segment (initial_pc to initial_ap - 2).
+    // It is not a standard cairo_vm builtin, so we set it manually.
+    let program_length = (initial_ap - 2 - initial_pc) as usize;
+    builtin_segments.verify_program = Some(MemorySegmentAddresses {
+        begin_addr: initial_pc as usize,
+        stop_ptr: initial_pc as usize + program_length,
+    });
+
     let program = (initial_pc..initial_ap - 2)
         .map(|addr| {
             let id = memory.get_raw_id(addr);

@@ -1,4 +1,4 @@
-// AIR version 187dbca0
+// AIR version 08debfde-dirty
 use stwo_verifier_core::fields::m31::M31;
 pub const ADD_AP_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1435814162 }, M31 { inner: 1618992457 }, M31 { inner: 840348268 },
@@ -172,6 +172,10 @@ pub const POSEIDON_ROUND_KEYS_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1144238612 }, M31 { inner: 1473001273 }, M31 { inner: 1284604800 },
     M31 { inner: 1049928592 },
 ];
+pub const PROGRAM_COMPONENT_SAMPLE_EVAL_RESULT: [M31; 4] = [
+    M31 { inner: 1831889950 }, M31 { inner: 1158688806 }, M31 { inner: 167508377 },
+    M31 { inner: 1244309204 },
+];
 pub const QM_31_ADD_MUL_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1161283513 }, M31 { inner: 1571148078 }, M31 { inner: 95782107 },
     M31 { inner: 852512197 },
@@ -271,4 +275,8 @@ pub const VERIFY_BITWISE_XOR_9_SAMPLE_EVAL_RESULT: [M31; 4] = [
 pub const VERIFY_INSTRUCTION_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1561524188 }, M31 { inner: 1017857600 }, M31 { inner: 1548246458 },
     M31 { inner: 1058351204 },
+];
+pub const VERIFY_PROGRAM_SAMPLE_EVAL_RESULT: [M31; 4] = [
+    M31 { inner: 1500873141 }, M31 { inner: 1343289352 }, M31 { inner: 344861752 },
+    M31 { inner: 388001067 },
 ];

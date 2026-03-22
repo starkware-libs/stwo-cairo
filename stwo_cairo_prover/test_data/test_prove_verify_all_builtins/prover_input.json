@@ -52234,6 +52234,10 @@
     "range_check_builtin": {
       "begin_addr": 5881,
       "stop_ptr": 5945
+    },
+    "verify_program": {
+      "begin_addr": 1,
+      "stop_ptr": 483
     }
   },
   "public_segment_context": {
