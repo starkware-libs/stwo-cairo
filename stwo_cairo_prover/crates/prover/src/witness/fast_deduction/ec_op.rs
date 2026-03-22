@@ -82,13 +82,11 @@ pub struct PackedPartialEcMulGeneric {}
 impl PackedPartialEcMulGeneric {
     pub fn deduce_output(
         input: (PackedM31, PackedM31, PackedPartialEcMulGenericState),
-    ) -> (PackedM31, PackedM31, PackedPartialEcMulGenericState) {
+    ) -> Box<(PackedM31, PackedM31, PackedPartialEcMulGenericState)> {
         let unpacked_inputs = input.unpack();
-        <_ as Pack>::pack(
-            unpacked_inputs.map(|(chain, round, state)| {
-                PartialEcMulGeneric::deduce_output(chain, round, state)
-            }),
-        )
+        Box::new(<_ as Pack>::pack(unpacked_inputs.map(
+            |(chain, round, state)| PartialEcMulGeneric::deduce_output(chain, round, state),
+        )))
     }
 }
 

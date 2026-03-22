@@ -11,10 +11,11 @@ use crate::components::{
     add_ap_opcode, add_mod_builtin, add_opcode, add_opcode_small, assert_eq_opcode,
     assert_eq_opcode_double_deref, assert_eq_opcode_imm, bitwise_builtin, blake_compress_opcode,
     blake_g, blake_round, blake_round_sigma, call_opcode_abs, call_opcode_rel_imm, cube_252,
-    generic_opcode, indented_component_display, jnz_opcode_non_taken, jnz_opcode_taken,
-    jump_opcode_abs, jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm,
-    memory_address_to_id, memory_id_to_big, memory_id_to_small, mul_mod_builtin, mul_opcode,
-    mul_opcode_small, partial_ec_mul_window_bits_18, partial_ec_mul_window_bits_9,
+    ec_op_builtin, generic_opcode, indented_component_display, jnz_opcode_non_taken,
+    jnz_opcode_taken, jump_opcode_abs, jump_opcode_double_deref, jump_opcode_rel,
+    jump_opcode_rel_imm, memory_address_to_id, memory_id_to_big, memory_id_to_small,
+    mul_mod_builtin, mul_opcode, mul_opcode_small, partial_ec_mul_generic,
+    partial_ec_mul_window_bits_18, partial_ec_mul_window_bits_9,
     pedersen_aggregator_window_bits_18, pedersen_aggregator_window_bits_9, pedersen_builtin,
     pedersen_builtin_narrow_windows, pedersen_points_table_window_bits_18,
     pedersen_points_table_window_bits_9, poseidon_3_partial_rounds_chain, poseidon_aggregator,
@@ -63,6 +64,8 @@ pub struct CairoComponents {
     pub poseidon_builtin: Option<poseidon_builtin::Component>,
     pub range_check96_builtin: Option<range_check96_builtin::Component>,
     pub range_check_builtin: Option<range_check_builtin::Component>,
+    pub ec_op_builtin: Option<ec_op_builtin::Component>,
+    pub partial_ec_mul_generic: Option<partial_ec_mul_generic::Component>,
     pub pedersen_aggregator_window_bits_18: Option<pedersen_aggregator_window_bits_18::Component>,
     pub partial_ec_mul_window_bits_18: Option<partial_ec_mul_window_bits_18::Component>,
     pub pedersen_points_table_window_bits_18:
@@ -487,6 +490,32 @@ impl CairoComponents {
                     interaction_claim.range_check_builtin.unwrap().claimed_sum,
                 )
             });
+        let ec_op_builtin_component = cairo_claim.ec_op_builtin.map(|ec_op_builtin| {
+            ec_op_builtin::Component::new(
+                tree_span_provider,
+                ec_op_builtin::Eval {
+                    claim: ec_op_builtin,
+                    common_lookup_elements: common_lookup_elements.clone(),
+                },
+                interaction_claim.ec_op_builtin.unwrap().claimed_sum,
+            )
+        });
+        let partial_ec_mul_generic_component =
+            cairo_claim
+                .partial_ec_mul_generic
+                .map(|partial_ec_mul_generic| {
+                    partial_ec_mul_generic::Component::new(
+                        tree_span_provider,
+                        partial_ec_mul_generic::Eval {
+                            claim: partial_ec_mul_generic,
+                            common_lookup_elements: common_lookup_elements.clone(),
+                        },
+                        interaction_claim
+                            .partial_ec_mul_generic
+                            .unwrap()
+                            .claimed_sum,
+                    )
+                });
         let pedersen_aggregator_window_bits_18_component = cairo_claim
             .pedersen_aggregator_window_bits_18
             .map(|pedersen_aggregator_window_bits_18| {
@@ -914,6 +943,8 @@ impl CairoComponents {
             poseidon_builtin: poseidon_builtin_component,
             range_check96_builtin: range_check96_builtin_component,
             range_check_builtin: range_check_builtin_component,
+            ec_op_builtin: ec_op_builtin_component,
+            partial_ec_mul_generic: partial_ec_mul_generic_component,
             pedersen_aggregator_window_bits_18: pedersen_aggregator_window_bits_18_component,
             partial_ec_mul_window_bits_18: partial_ec_mul_window_bits_18_component,
             pedersen_points_table_window_bits_18: pedersen_points_table_window_bits_18_component,
@@ -1051,6 +1082,12 @@ impl CairoComponents {
             vec.push(component as &dyn Component);
         }
         if let Some(component) = &self.range_check_builtin {
+            vec.push(component as &dyn Component);
+        }
+        if let Some(component) = &self.ec_op_builtin {
+            vec.push(component as &dyn Component);
+        }
+        if let Some(component) = &self.partial_ec_mul_generic {
             vec.push(component as &dyn Component);
         }
         if let Some(component) = &self.pedersen_aggregator_window_bits_18 {
@@ -1363,6 +1400,16 @@ impl Display for CairoComponents {
             writeln!(
                 f,
                 "RangeCheckBuiltin: {}",
+                indented_component_display(component)
+            )?;
+        }
+        if let Some(ref component) = self.ec_op_builtin {
+            writeln!(f, "EcOpBuiltin: {}", indented_component_display(component))?;
+        }
+        if let Some(ref component) = self.partial_ec_mul_generic {
+            writeln!(
+                f,
+                "PartialEcMulGeneric: {}",
                 indented_component_display(component)
             )?;
         }

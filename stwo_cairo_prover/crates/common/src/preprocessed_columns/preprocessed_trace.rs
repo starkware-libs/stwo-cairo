@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::iter::zip;
 
 use itertools::{chain, Itertools};
+use serde::{Deserialize, Serialize};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
 use super::bitwise_xor::BitwiseXor;
@@ -27,6 +28,27 @@ pub const CANONICAL_WITHOUT_PEDERSEN_SIZE: u32 = 73338480;
 // The total number of trace cells in the small canonical preprocessed trace.
 pub const CANONICAL_SMALL: u32 = 10161776;
 
+/// The preprocessed trace used for the prover.
+// TODO(Ohad): move somewhere else.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+pub enum PreProcessedTraceVariant {
+    Canonical,
+    CanonicalWithoutPedersen,
+    CanonicalSmall,
+}
+impl PreProcessedTraceVariant {
+    pub fn to_preprocessed_trace(&self) -> PreProcessedTrace {
+        match self {
+            PreProcessedTraceVariant::Canonical => PreProcessedTrace::canonical(),
+            PreProcessedTraceVariant::CanonicalWithoutPedersen => {
+                PreProcessedTrace::canonical_without_pedersen()
+            }
+            PreProcessedTraceVariant::CanonicalSmall => PreProcessedTrace::canonical_small(),
+        }
+    }
+}
+
 pub trait PreProcessedColumn: Send + Sync {
     #[cfg(feature = "prover")]
     fn packed_at(&self, vec_row: usize) -> PackedM31;
@@ -42,25 +64,36 @@ pub trait PreProcessedColumn: Send + Sync {
 pub struct PreProcessedTrace {
     pub columns: Vec<Box<dyn PreProcessedColumn>>,
     pub column_indices: HashMap<PreProcessedColumnId, usize>,
+    pub variant: PreProcessedTraceVariant,
 }
 impl PreProcessedTrace {
-    fn from_columns(columns: Vec<Box<dyn PreProcessedColumn>>) -> Self {
+    fn get_column_indices(
+        columns: &[Box<dyn PreProcessedColumn>],
+    ) -> HashMap<PreProcessedColumnId, usize> {
         let mut column_indices = HashMap::new();
 
         for (i, column) in columns.iter().enumerate() {
             column_indices.insert(column.id(), i);
         }
 
-        Self {
-            columns,
-            column_indices,
-        }
+        column_indices
     }
 
     /// Generates a canonical preprocessed trace. Used in proving Generic Cairo code & Starknet
     /// blocks.
     pub fn canonical() -> Self {
-        let canonical_without_pedersen = Self::canonical_without_pedersen().columns;
+        let columns = Self::canonical_columns();
+        let column_indices = Self::get_column_indices(&columns);
+
+        Self {
+            columns,
+            column_indices,
+            variant: PreProcessedTraceVariant::Canonical,
+        }
+    }
+
+    fn canonical_columns() -> Vec<Box<dyn PreProcessedColumn>> {
+        let canonical_without_pedersen = Self::canonical_without_pedersen_columns();
         let pedersen_points = (0..PEDERSEN_TABLE_N_COLUMNS)
             .map(|x| Box::new(PedersenPoints::<18>::new(x)) as Box<dyn PreProcessedColumn>);
 
@@ -74,12 +107,23 @@ impl PreProcessedTrace {
             "Canonical preprocessed trace has unexpected size"
         );
 
-        Self::from_columns(columns)
+        columns
     }
 
     /// Generates a canonical preprocessed trace without the `Pedersen` points. Used in proving
     /// programs that do not use `Pedersen` hash, e.g. the recursive verifier.
     pub fn canonical_without_pedersen() -> Self {
+        let columns = Self::canonical_without_pedersen_columns();
+        let column_indices = Self::get_column_indices(&columns);
+
+        Self {
+            columns,
+            column_indices,
+            variant: PreProcessedTraceVariant::CanonicalWithoutPedersen,
+        }
+    }
+
+    fn canonical_without_pedersen_columns() -> Vec<Box<dyn PreProcessedColumn>> {
         let seq = (MIN_SEQUENCE_LOG_SIZE..=MAX_SEQUENCE_LOG_SIZE)
             .map(|x| Box::new(Seq::new(x)) as Box<dyn PreProcessedColumn>);
         let bitwise_xor = XOR_N_BITS
@@ -106,12 +150,23 @@ impl PreProcessedTrace {
             "Canonical without pedersen preprocessed trace has unexpected size"
         );
 
-        Self::from_columns(columns)
+        columns
     }
 
     /// Generates a small canonical preprocessed trace with smaller `Pedersen` points and expanded
     /// verify_bitwise_xor_12.
     pub fn canonical_small() -> Self {
+        let columns = Self::canonical_small_columns();
+        let column_indices = Self::get_column_indices(&columns);
+
+        Self {
+            columns,
+            column_indices,
+            variant: PreProcessedTraceVariant::CanonicalSmall,
+        }
+    }
+
+    fn canonical_small_columns() -> Vec<Box<dyn PreProcessedColumn>> {
         let seq = (MIN_SEQUENCE_LOG_SIZE..=SMALL_MAX_SEQUENCE_LOG_SIZE)
             .map(|x| Box::new(Seq::new(x)) as Box<dyn PreProcessedColumn>);
         let bitwise_xor = XOR_N_BITS
@@ -148,7 +203,7 @@ impl PreProcessedTrace {
             "Canonical small preprocessed trace has unexpected size"
         );
 
-        Self::from_columns(columns)
+        columns
     }
 
     pub fn log_sizes(&self) -> Vec<u32> {
@@ -347,13 +402,18 @@ impl<const N: usize> PreProcessedColumn for RangeCheck<N> {
 /// Generates a dummy preprocessed trace with columns up to `max_log_size`.
 /// As such, tests that use columns larger than `max_log_size` will fail.
 pub fn testing_preprocessed_tree(max_log_size: u32) -> PreProcessedTrace {
-    let canonical = PreProcessedTrace::canonical();
-    let columns = canonical
-        .columns
+    let canonical = PreProcessedTrace::canonical_columns();
+    let columns: Vec<Box<dyn PreProcessedColumn>> = canonical
         .into_iter()
         .filter(|c| c.log_size() <= max_log_size)
         .collect();
-    PreProcessedTrace::from_columns(columns)
+    let column_indices = PreProcessedTrace::get_column_indices(&columns);
+
+    PreProcessedTrace {
+        columns,
+        column_indices,
+        variant: PreProcessedTraceVariant::Canonical,
+    }
 }
 
 #[cfg(test)]

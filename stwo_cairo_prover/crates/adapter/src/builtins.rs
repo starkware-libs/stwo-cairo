@@ -6,8 +6,8 @@ use cairo_vm::types::relocatable::MaybeRelocatable;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::builtins::{
     ADD_MOD_BUILTIN_MEMORY_CELLS, BITWISE_BUILTIN_MEMORY_CELLS, ECDSA_MEMORY_CELLS,
-    EC_OP_MEMORY_CELLS, KECCAK_MEMORY_CELLS, MUL_MOD_BUILTIN_MEMORY_CELLS, OUTPUT_MEMORY_CELLS,
-    PEDERSEN_BUILTIN_MEMORY_CELLS, POSEIDON_BUILTIN_MEMORY_CELLS,
+    EC_OP_BUILTIN_MEMORY_CELLS, KECCAK_MEMORY_CELLS, MUL_MOD_BUILTIN_MEMORY_CELLS,
+    OUTPUT_MEMORY_CELLS, PEDERSEN_BUILTIN_MEMORY_CELLS, POSEIDON_BUILTIN_MEMORY_CELLS,
     RANGE_CHECK_96_BUILTIN_MEMORY_CELLS, RANGE_CHECK_BUILTIN_MEMORY_CELLS,
 };
 use tracing::{info, span, Level};
@@ -43,6 +43,7 @@ pub struct BuiltinSegments {
     pub poseidon_builtin: Option<MemorySegmentAddresses>,
     pub range_check96_builtin: Option<MemorySegmentAddresses>,
     pub range_check_builtin: Option<MemorySegmentAddresses>,
+    pub ec_op_builtin: Option<MemorySegmentAddresses>,
 }
 
 impl BuiltinSegments {
@@ -91,6 +92,11 @@ impl BuiltinSegments {
             &self.range_check96_builtin,
             RANGE_CHECK_96_BUILTIN_MEMORY_CELLS,
         );
+        insert_builtin(
+            BuiltinName::ec_op,
+            &self.ec_op_builtin,
+            EC_OP_BUILTIN_MEMORY_CELLS,
+        );
         insert_builtin(BuiltinName::output, &self.output, OUTPUT_MEMORY_CELLS);
         counts
     }
@@ -110,6 +116,7 @@ impl BuiltinSegments {
             "poseidon_builtin" => self.poseidon_builtin,
             "range_check96_builtin" => self.range_check96_builtin,
             "range_check_builtin" => self.range_check_builtin,
+            "ec_op_builtin" => self.ec_op_builtin,
             _ => panic!("Invalid builtin name: {name}"),
         }
     }
@@ -138,7 +145,7 @@ impl BuiltinSegments {
             let cells_per_instance = match builtin_name {
                 BuiltinName::add_mod => ADD_MOD_BUILTIN_MEMORY_CELLS,
                 BuiltinName::bitwise => BITWISE_BUILTIN_MEMORY_CELLS,
-                BuiltinName::ec_op => EC_OP_MEMORY_CELLS,
+                BuiltinName::ec_op => EC_OP_BUILTIN_MEMORY_CELLS,
                 BuiltinName::ecdsa => ECDSA_MEMORY_CELLS,
                 BuiltinName::keccak => KECCAK_MEMORY_CELLS,
                 BuiltinName::mul_mod => MUL_MOD_BUILTIN_MEMORY_CELLS,
@@ -233,7 +240,7 @@ mod test_builtin_segments {
         );
 
         assert!(relocatable_memory[0].len() == 32 * BITWISE_BUILTIN_MEMORY_CELLS);
-        assert!(relocatable_memory[1].len() == 16 * EC_OP_MEMORY_CELLS);
+        assert!(relocatable_memory[1].len() == 16 * EC_OP_BUILTIN_MEMORY_CELLS);
         assert!(relocatable_memory[2].len() == 10);
 
         // Check that the values in the extended segment are identical to the original segment.

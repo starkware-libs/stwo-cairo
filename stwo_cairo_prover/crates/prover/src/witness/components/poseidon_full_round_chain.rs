@@ -18,10 +18,6 @@ impl ClaimGenerator {
         Self::default()
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.packed_inputs.is_empty()
-    }
-
     pub fn write_trace(
         mut self,
         cube_252_state: &mut cube_252::ClaimGenerator,

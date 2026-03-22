@@ -297,6 +297,7 @@ fn verify_claim(claim: @CairoClaim) {
         claim.pedersen_builtin,
         claim.pedersen_builtin_narrow_windows,
         claim.poseidon_builtin,
+        claim.ec_op_builtin,
         public_segments,
     );
     verify_program(*program, public_segments);
@@ -370,6 +371,7 @@ fn verify_builtins(
         crate::components::pedersen_builtin_narrow_windows::Claim,
     >,
     poseidon_builtin: @Option<crate::components::poseidon_builtin::Claim>,
+    ec_op_builtin: @Option<crate::components::ec_op_builtin::Claim>,
     segment_ranges: @PublicSegmentRanges,
 ) {
     assert!(pedersen_builtin_narrow_windows.is_none());
@@ -389,7 +391,6 @@ fn verify_builtins(
     } = segment_ranges;
 
     // Check that non-supported builtins aren't used.
-    assert!(ec_op_segment_range.start_ptr.value == ec_op_segment_range.stop_ptr.value);
     assert!(ecdsa_segment_range.start_ptr.value == ecdsa_segment_range.stop_ptr.value);
     assert!(keccak_segment_range.start_ptr.value == keccak_segment_range.stop_ptr.value);
 
@@ -483,6 +484,18 @@ fn verify_builtins(
             ),
         *poseidon_segment_range,
         POSEIDON_MEMORY_CELLS,
+    );
+    check_builtin(
+        ec_op_builtin
+            .map(
+                |
+                    claim,
+                | BuiltinClaim {
+                    segment_start: claim.ec_op_builtin_segment_start, log_size: claim.log_size,
+                },
+            ),
+        *ec_op_segment_range,
+        EC_OP_MEMORY_CELLS,
     );
 }
 

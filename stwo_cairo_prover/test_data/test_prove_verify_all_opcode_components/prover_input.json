@@ -8870,7 +8870,7 @@
       228,
       5,
       228,
-      5,
+      228,
       5,
       228,
       228,
@@ -10043,7 +10043,7 @@
       228,
       5,
       228,
-      5,
+      228,
       5,
       228,
       228,
@@ -12289,7 +12289,8 @@
     "pedersen_builtin": null,
     "poseidon_builtin": null,
     "range_check96_builtin": null,
-    "range_check_builtin": null
+    "range_check_builtin": null,
+    "ec_op_builtin": null
   },
   "public_segment_context": {
     "present": [
