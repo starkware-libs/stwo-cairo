@@ -694,6 +694,29 @@ pub mod tests {
             assert!(status.success());
         }
 
+        #[test]
+        fn test_prove_verify_all_opcode_components_padded_verify_program_builtin() {
+            let compiled_program = get_compiled_cairo_program_path("test_verify_program_builtin");
+            let input = run_and_adapt(
+                &compiled_program,
+                ProgramType::Json,
+                LayoutName::all_cairo_stwo,
+                None,
+            )
+            .unwrap();
+            let prover_params = ProverParameters {
+                channel_hash: ChannelHash::Blake2s,
+                pcs_config: PcsConfig::default(),
+                preprocessed_trace: PreProcessedTraceVariant::CanonicalWithoutPedersen,
+                channel_salt: 0,
+                store_polynomials_coefficients: true,
+                include_all_preprocessed_columns: false,
+                program_in_ppt: true,
+            };
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+            verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
+        }
+
         fn test_proof_stability(path: &str, n_proofs_to_compare: usize) {
             let compiled_program = get_compiled_cairo_program_path(path);
             let input = run_and_adapt(
