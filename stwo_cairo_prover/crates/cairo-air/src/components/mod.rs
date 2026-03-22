@@ -86,3 +86,5 @@ pub(crate) fn indented_component_display<E: FrameworkEval>(
         .map(|line| format!("\t{line}"))
         .join("\n")
 }
+pub mod program_component;
+pub mod verify_program;
