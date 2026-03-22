@@ -81,9 +81,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+      - name: Setup Namespace cache
+        uses: ./.github/actions/setup-namespace-cache
+        with:
+          profile: scarb-test
       - uses: software-mansion/setup-scarb@v1
         with:
           scarb-version: "2.15.0"
+          scarb-lock: stwo_cairo_verifier/Scarb.lock
       - run: scarb test --features=${{ matrix.feature }} --package ${{ matrix.package }}
       - if: matrix.package == 'stwo_cairo_verifier'
         run: scarb --profile proving execute --package stwo_cairo_verifier --features ${{ matrix.feature }} --print-resource-usage --output none --arguments-file ${{ matrix.proof_file }}
@@ -102,6 +107,10 @@ jobs:
         working-directory: ./stwo_cairo_prover
     steps:
       - uses: actions/checkout@v6
+      - name: Setup Namespace cache
+        uses: ./.github/actions/setup-namespace-cache
+        with:
+          profile: run-tests
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential
       - name: Install Rust toolchain
@@ -109,6 +118,7 @@ jobs:
       - uses: software-mansion/setup-scarb@v1
         with:
           scarb-version: "2.15.0"
+          cache: false
       - name: Install latest nextest release
         uses: taiki-e/install-action@nextest
       - name: Fetch cache
