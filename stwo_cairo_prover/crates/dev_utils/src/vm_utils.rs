@@ -27,12 +27,18 @@ pub enum ProgramType {
 pub fn run_and_adapt(
     program_path: &PathBuf,
     program_type: ProgramType,
+    no_ecop: bool,
     args: Option<&PathBuf>,
 ) -> Result<ProverInput> {
+    let layout = if no_ecop {
+        LayoutName::stwo_no_ecop
+    } else {
+        LayoutName::all_cairo_stwo
+    };
     let cairo_run_config = CairoRunConfig {
         trace_enabled: true,
         relocate_trace: false,
-        layout: LayoutName::stwo_no_ecop,
+        layout,
         fill_holes: true,
         proof_mode: true,
         disable_trace_padding: true,

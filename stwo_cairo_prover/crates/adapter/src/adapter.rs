@@ -74,7 +74,8 @@ mod tests {
         let is_fix_mode = std::env::var("FIX") == Ok("1".to_string());
 
         let compiled_program = get_compiled_cairo_program_path(test_name);
-        let mut prover_input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
+        let mut prover_input =
+            run_and_adapt(&compiled_program, ProgramType::Json, false, None).unwrap();
         // Public memory addresses are not deterministic, sort them.
         prover_input.public_memory_addresses.sort();
 

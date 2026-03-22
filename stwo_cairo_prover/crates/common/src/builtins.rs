@@ -1,6 +1,6 @@
 pub const ADD_MOD_BUILTIN_MEMORY_CELLS: usize = 7;
 pub const BITWISE_BUILTIN_MEMORY_CELLS: usize = 5;
-pub const EC_OP_MEMORY_CELLS: usize = 7;
+pub const EC_OP_BUILTIN_MEMORY_CELLS: usize = 7;
 pub const ECDSA_MEMORY_CELLS: usize = 2;
 pub const KECCAK_MEMORY_CELLS: usize = 16;
 pub const MUL_MOD_BUILTIN_MEMORY_CELLS: usize = 7;

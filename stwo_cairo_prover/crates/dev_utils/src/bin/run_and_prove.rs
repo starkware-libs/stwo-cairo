@@ -72,6 +72,7 @@ fn main() -> Result<()> {
     let prover_input = run_and_adapt(
         &args.program,
         args.program_type,
+        false,
         args.program_arguments_file.as_ref(),
     )?;
 

@@ -27,6 +27,7 @@ pub struct BuiltinComponents {
     pub poseidon_builtin: Option<components::poseidon_builtin::Component>,
     pub range_check_96_builtin: Option<components::range_check96_builtin::Component>,
     pub range_check_128_builtin: Option<components::range_check_builtin::Component>,
+    pub ec_op_builtin: Option<components::ec_op_builtin::Component>,
 }
 
 #[derive(Drop)]
@@ -96,6 +97,10 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             common_lookup_elements,
         );
 
+        let ec_op_builtin_component = components::ec_op_builtin::NewComponentImpl::try_new(
+            cairo_claim.ec_op_builtin, interaction_claim.ec_op_builtin, common_lookup_elements,
+        );
+
         BuiltinComponents {
             add_mod_builtin: add_mod_builtin_component,
             bitwise_builtin: bitwise_builtin_component,
@@ -104,6 +109,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             poseidon_builtin: poseidon_builtin_component,
             range_check_96_builtin: range_check_96_builtin_component,
             range_check_128_builtin: range_check_128_builtin_component,
+            ec_op_builtin: ec_op_builtin_component,
         }
     }
 
@@ -123,6 +129,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             poseidon_builtin,
             range_check_96_builtin,
             range_check_128_builtin,
+            ec_op_builtin,
         } = self;
 
         if let Option::Some(component) = add_mod_builtin.as_snap() {
@@ -201,6 +208,17 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     random_coeff,
                 );
         }
+
+        if let Option::Some(component) = ec_op_builtin.as_snap() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                );
+        }
     }
 }
 
@@ -232,6 +250,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         assert!(
             cairo_claim.poseidon_builtin.is_none() && interaction_claim.poseidon_builtin.is_none(),
         );
+        assert!(cairo_claim.ec_op_builtin.is_none() && interaction_claim.ec_op_builtin.is_none());
 
         let bitwise_builtin_component = components::bitwise_builtin::NewComponentImpl::try_new(
             cairo_claim.bitwise_builtin, interaction_claim.bitwise_builtin, common_lookup_elements,
@@ -309,6 +328,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             cairo_claim.pedersen_builtin_narrow_windows.is_none()
                 && interaction_claim.pedersen_builtin_narrow_windows.is_none(),
         );
+        assert!(cairo_claim.ec_op_builtin.is_none() && interaction_claim.ec_op_builtin.is_none());
 
         let bitwise_builtin_component = components::bitwise_builtin::NewComponentImpl::try_new(
             cairo_claim.bitwise_builtin, interaction_claim.bitwise_builtin, common_lookup_elements,
