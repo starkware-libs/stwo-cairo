@@ -66,7 +66,7 @@ fn extract_sections_from_memory(
     memory: &Memory,
     initial_ap: u32,
     final_ap: u32,
-    program: Vec<(u32, [u32; 8])>,
+    program: Option<Vec<(u32, [u32; 8])>>,
     public_segment_context: PublicSegmentContext,
 ) -> PublicMemory {
     let public_segments =
@@ -90,11 +90,7 @@ fn extract_sections_from_memory(
     assert_eq!(safe_call[1].1, [0, 0, 0, 0, 0, 0, 0, 0]);
 
     PublicMemory {
-        program: if program.is_empty() {
-            None
-        } else {
-            Some(program)
-        },
+        program,
         safe_call_ids: array::from_fn(|i| safe_call[i].0),
         public_segments,
         output,
@@ -115,6 +111,7 @@ pub fn create_cairo_claim_generator(
         ..
     }: ProverInput,
     preprocessed_trace: Arc<PreProcessedTrace>,
+    program_in_ppt: bool,
 ) -> CairoClaimGenerator {
     let initial_state = state_transitions.initial_state;
     let final_state = state_transitions.final_state;
@@ -136,11 +133,17 @@ pub fn create_cairo_claim_generator(
     // Public data.
     let initial_ap = initial_state.ap.0;
     let final_ap = final_state.ap.0;
+    // When program is in the preprocessed trace, it should not be included in public memory.
+    let program_for_public_memory = if program_in_ppt {
+        None
+    } else {
+        Some(program)
+    };
     let public_memory = extract_sections_from_memory(
         &memory,
         initial_ap,
         final_ap,
-        program,
+        program_for_public_memory,
         public_segment_context,
     );
 
