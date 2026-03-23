@@ -159,9 +159,10 @@ pub struct VerificationOutput {
 pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
     // Note: the blake hash yields a 256-bit integer, the given program hash is taken modulo the
     // f252 prime to yield a felt.
-    let program_hash = construct_f252(
-        encode_and_hash_program_memory_section(*proof.claim.public_data.public_memory.program),
-    );
+    let program_hash = match proof.claim.public_data.public_memory.program {
+        Option::Some(program) => construct_f252(encode_and_hash_program_memory_section(*program)),
+        Option::None => 0,
+    };
 
     let mut output = array![];
     for entry in proof.claim.public_data.public_memory.output {
@@ -176,9 +177,10 @@ pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
 pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
     // Note: the blake hash yields a 256-bit integer, the given program hash is taken modulo the
     // f252 prime to yield a felt.
-    let program_hash = construct_f252(
-        encode_and_hash_program_memory_section(*proof.claim.public_data.public_memory.program),
-    );
+    let program_hash = match proof.claim.public_data.public_memory.program {
+        Option::Some(program) => construct_f252(encode_and_hash_program_memory_section(*program)),
+        Option::None => 0,
+    };
 
     let output_hash = construct_f252(
         encode_and_hash_outputs_memory_section(*proof.claim.public_data.public_memory.output),
@@ -299,7 +301,9 @@ fn verify_claim(claim: @CairoClaim) {
         claim.poseidon_builtin,
         public_segments,
     );
-    verify_program(*program, public_segments);
+    if let Option::Some(program) = program {
+        verify_program(*program, public_segments);
+    }
 
     let initial_pc: u32 = (*initial_pc).into();
     let initial_ap: u32 = (*initial_ap).into();
@@ -638,7 +642,7 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
 
 #[derive(Copy, Serde, Drop)]
 pub struct PublicMemory {
-    pub program: MemorySection,
+    pub program: Option<MemorySection>,
     pub public_segments: PublicSegmentRanges,
     pub output: MemorySection,
     pub safe_call_ids: [u32; 2],
@@ -653,7 +657,9 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
         let mut pub_memory_entries = PublicMemoryEntriesTrait::empty();
 
         // The program is loaded to `initial_pc`.
-        pub_memory_entries.add_memory_section(self.program, initial_pc);
+        if let Option::Some(program) = self.program {
+            pub_memory_entries.add_memory_section(program, initial_pc);
+        }
         // Output was written to `final_ap`.
         pub_memory_entries.add_memory_section(self.output, final_ap);
 
@@ -708,7 +714,9 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
         let PublicMemory { program, public_segments, output, safe_call_ids } = self;
 
         // Mix program memory section.
-        channel.mix_memory_section(*program);
+        if let Option::Some(program) = program {
+            channel.mix_memory_section(*program);
+        }
 
         // Mix public segments.
         public_segments.mix_into(ref channel);
@@ -883,8 +891,10 @@ impl PublicDataImpl of PublicDataTrait {
         for (id, _) in output {
             public_claim.append(*id);
         }
-        for (id, _) in program {
-            public_claim.append(*id);
+        if let Option::Some(program) = program {
+            for (id, _) in *program {
+                public_claim.append(*id);
+            }
         }
 
         // Collect output values.
@@ -898,11 +908,13 @@ impl PublicDataImpl of PublicDataTrait {
 
         // Collect program values.
         let mut program_claim = array![];
-        for (_, value) in program {
-            let fixed_arr: [u32; 8] = *value;
-            let new_value: [u32; N_M31_IN_FELT252] = split(fixed_arr);
-            let arr: Array<u32> = new_value.span().into_iter().map(|x| *x).collect();
-            program_claim.extend(arr);
+        if let Option::Some(program) = program {
+            for (_, value) in *program {
+                let fixed_arr: [u32; 8] = *value;
+                let new_value: [u32; N_M31_IN_FELT252] = split(fixed_arr);
+                let arr: Array<u32> = new_value.span().into_iter().map(|x| *x).collect();
+                program_claim.extend(arr);
+            }
         }
 
         (public_claim.span(), output_claim.span(), program_claim.span())

@@ -66,7 +66,7 @@ fn extract_sections_from_memory(
     memory: &Memory,
     initial_ap: u32,
     final_ap: u32,
-    program: Vec<(u32, [u32; 8])>,
+    program: Option<Vec<(u32, [u32; 8])>>,
     public_segment_context: PublicSegmentContext,
 ) -> PublicMemory {
     let public_segments =
@@ -111,6 +111,7 @@ pub fn create_cairo_claim_generator(
         ..
     }: ProverInput,
     preprocessed_trace: Arc<PreProcessedTrace>,
+    program_in_ppt: bool,
 ) -> CairoClaimGenerator {
     let initial_state = state_transitions.initial_state;
     let final_state = state_transitions.final_state;
@@ -130,13 +131,16 @@ pub fn create_cairo_claim_generator(
     all_components.insert("verify_bitwise_xor_9");
 
     // Public data.
+    let initial_pc = initial_state.pc.0;
     let initial_ap = initial_state.ap.0;
     let final_ap = final_state.ap.0;
+    // When program is in the preprocessed trace, it should not be included in public memory.
+    let program_for_public_memory = if program_in_ppt { None } else { Some(program) };
     let public_memory = extract_sections_from_memory(
         &memory,
         initial_ap,
         final_ap,
-        program,
+        program_for_public_memory,
         public_segment_context,
     );
 
@@ -162,10 +166,13 @@ pub fn create_cairo_claim_generator(
         cairo_claim_generator.memory_address_to_id.as_ref().unwrap();
     let memory_id_to_value_trace_generator =
         cairo_claim_generator.memory_id_to_big.as_ref().unwrap();
+    // When program is in the preprocessed trace, exclude program addresses from public memory.
+    let program_address_range = initial_pc..initial_ap - 2;
     // Yield public memory.
     for addr in public_memory_addresses
         .iter()
         .copied()
+        .filter(|addr| !program_in_ppt || !program_address_range.contains(addr))
         .map(M31::from_u32_unchecked)
     {
         let id = memory_address_to_id_trace_generator.get_id(addr);
