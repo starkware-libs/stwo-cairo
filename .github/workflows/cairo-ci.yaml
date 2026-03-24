@@ -91,7 +91,7 @@ jobs:
   run-tests:
     runs-on: namespace-profile-starkware-libs-stwo-cairo-2xlarge-ubuntu-24-04-amd64
     env:
-      NEXT_TEST_THREADS: "2"
+      NEXT_TEST_THREADS: "4"
       RUST_MIN_STACK: 4194304
       RUSTFLAGS: -C target-cpu=native
       RUST_LOG_SPAN_EVENTS: enter,close
@@ -115,6 +115,11 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: stwo_cairo_prover
+      - name: Pre-build Scarb artifacts to prevent data races during parallel tests
+        run: |
+          cd ../stwo_cairo_verifier
+          scarb build --features poseidon252_verifier
+          scarb build --features qm31_opcode
       - run: cargo nextest run --cargo-profile witness-opt-1 --features=slow-tests -j ${{ env.NEXT_TEST_THREADS }} -P ci
       - run: cargo nextest run --cargo-profile witness-opt-1 --features=extract-mem-trace test_serialize_deserialize_mem_trace -j ${{ env.NEXT_TEST_THREADS }} -P ci
 
