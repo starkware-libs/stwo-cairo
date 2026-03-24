@@ -8,19 +8,14 @@ use super::preprocessed_trace::PreProcessedColumn;
 use super::simd_prelude::*;
 use crate::prover_types::cpu::{Felt252, FELT252_N_WORDS};
 
-pub const PROGRAM_N_COLUMNS: usize = FELT252_N_WORDS;
+pub const PROGRAM_N_COLUMNS: usize = FELT252_N_WORDS + 1;
 
-// should match the log len of
-// stwo_cairo_prover/test_data/test_verify_program_builtin/all_opcode_components_padded.cairo
-// and the seq used in stwo_cairo_prover/crates/cairo-air/src/components/program_component.rs
-const DEFAULT_PROGRAM_LOG_LEN: usize = 12;
+// should match the seq used in
+// stwo_cairo_prover/crates/cairo-air/src/components/program_component.rs
+const PROGRAM_LOG_LEN_BOUND: usize = 12;
 
-static PROGRAM_TABLE: LazyLock<RwLock<Vec<[M31; FELT252_N_WORDS]>>> = LazyLock::new(|| {
-    RwLock::new(vec![
-        [M31(0); FELT252_N_WORDS];
-        1 << DEFAULT_PROGRAM_LOG_LEN
-    ])
-});
+static PROGRAM_TABLE: LazyLock<RwLock<Vec<[M31; FELT252_N_WORDS]>>> =
+    LazyLock::new(|| RwLock::new(vec![[M31(0); FELT252_N_WORDS]; 1 << PROGRAM_LOG_LEN_BOUND]));
 
 /// Sets the global PROGRAM_TABLE. Pre-computes 9-bit limbs from the raw `[u32; 8]` values.
 /// Called automatically when creating a preprocessed trace with program data.
@@ -50,6 +45,11 @@ pub fn get_program_limbs(index: usize) -> [M31; FELT252_N_WORDS] {
     }
 }
 
+/// Returns the number of entries in the program table.
+pub fn get_program_len() -> usize {
+    PROGRAM_TABLE.read().unwrap().len()
+}
+
 #[derive(Debug)]
 pub struct ProgramColumn {
     col_index: usize,
@@ -62,7 +62,11 @@ impl ProgramColumn {
         let column_data = (0..padded_len)
             .map(|i| {
                 if i < data.len() {
-                    data[i][col_index]
+                    if col_index == FELT252_N_WORDS {
+                        M31(1)
+                    } else {
+                        data[i][col_index]
+                    }
                 } else {
                     M31(0)
                 }

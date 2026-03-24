@@ -1,5 +1,5 @@
 {
-  "air_version": "08debfde-dirty",
+  "air_version": "2b92c639",
   "canonical_ppt_n_trace_cells": 543100528,
   "canonical_without_pedersen_ppt_n_trace_cells": 73338480,
   "air_fns": {
@@ -1181,7 +1181,7 @@
     "verify_program": {
       "trace_type": "Builtin",
       "log_height": null,
-      "num_state_cols": 29,
+      "num_state_cols": 30,
       "use_lookup_cols": {
         "ProgramComponent": 1,
         "MemoryAddressToId": 1,
@@ -1194,8 +1194,8 @@
         "MemoryIdToBig": 1
       },
       "padding_type": "None",
-      "total_num_trace_cols": 37,
-      "trace_cells_upper_bound": 37,
+      "total_num_trace_cols": 38,
+      "trace_cells_upper_bound": 38,
       "uses_upper_bound": {
         "program_component": 1,
         "memory_address_to_id": 1,
