@@ -39,6 +39,14 @@ impl PreProcessedTraceVariant {
         }
     }
 
+    pub fn n_columns(&self) -> usize {
+        match self {
+            PreProcessedTraceVariant::Canonical => 161,
+            PreProcessedTraceVariant::CanonicalWithoutPedersen => 105,
+            PreProcessedTraceVariant::CanonicalSmall => 156,
+        }
+    }
+
     pub fn to_preprocessed_trace(&self) -> PreProcessedTrace {
         match self {
             PreProcessedTraceVariant::Canonical => PreProcessedTrace::canonical(),
@@ -423,6 +431,18 @@ pub mod tests {
         let id = range_check.id();
 
         assert_eq!(id.id, "range_check_1_2_3_4_column_2");
+    }
+
+    #[test]
+    fn test_n_columns() {
+        for variant in [
+            PreProcessedTraceVariant::Canonical,
+            PreProcessedTraceVariant::CanonicalWithoutPedersen,
+            PreProcessedTraceVariant::CanonicalSmall,
+        ] {
+            let trace = variant.to_preprocessed_trace();
+            assert_eq!(trace.columns.len(), variant.n_columns());
+        }
     }
 
     #[test]
