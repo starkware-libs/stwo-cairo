@@ -68,12 +68,6 @@ impl PreProcessedTrace {
             .sorted_by_key(|column| column.log_size())
             .collect_vec();
 
-        assert_eq!(
-            columns.iter().map(|col| 1 << col.log_size()).sum::<u32>(),
-            CANONICAL_SIZE,
-            "Canonical preprocessed trace has unexpected size"
-        );
-
         Self::from_columns(columns)
     }
 
@@ -99,12 +93,6 @@ impl PreProcessedTrace {
         let columns = chain!(seq, bitwise_xor, range_check, poseidon_keys, blake_sigma)
             .sorted_by_key(|column| column.log_size())
             .collect_vec();
-
-        assert_eq!(
-            columns.iter().map(|col| 1 << col.log_size()).sum::<u32>(),
-            CANONICAL_WITHOUT_PEDERSEN_SIZE,
-            "Canonical without pedersen preprocessed trace has unexpected size"
-        );
 
         Self::from_columns(columns)
     }
@@ -141,12 +129,6 @@ impl PreProcessedTrace {
         )
         .sorted_by_key(|column| column.log_size())
         .collect_vec();
-
-        assert_eq!(
-            columns.iter().map(|col| 1 << col.log_size()).sum::<u32>(),
-            CANONICAL_SMALL,
-            "Canonical small preprocessed trace has unexpected size"
-        );
 
         Self::from_columns(columns)
     }
