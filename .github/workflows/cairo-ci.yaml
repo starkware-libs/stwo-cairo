@@ -72,7 +72,7 @@ jobs:
         run: scarb --profile proving execute --package stwo_cairo_verifier --features ${{ matrix.feature }} --print-resource-usage --output none --arguments-file ${{ matrix.proof_file }}
 
   run-tests:
-    runs-on: stwo-cairo-avx-l
+    runs-on: namespace-profile-starkware-libs-stwo-circuts-xlarge-ubuntu-24-04-amd64
     defaults:
       run:
         working-directory: ./stwo_cairo_prover
