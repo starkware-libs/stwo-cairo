@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::iter::zip;
 
 use itertools::{chain, Itertools};
+use serde::{Deserialize, Serialize};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
 use super::bitwise_xor::BitwiseXor;
@@ -20,12 +21,34 @@ pub const MAX_SEQUENCE_LOG_SIZE: u32 = 25;
 pub const MIN_SEQUENCE_LOG_SIZE: u32 = 4;
 pub const SMALL_MAX_SEQUENCE_LOG_SIZE: u32 = 20;
 
-// The total number of trace cells in the canonical preprocessed trace.
-pub const CANONICAL_SIZE: u32 = 543100528;
-// The total number of trace cells in the canonical without pedersen preprocessed trace.
-pub const CANONICAL_WITHOUT_PEDERSEN_SIZE: u32 = 73338480;
-// The total number of trace cells in the small canonical preprocessed trace.
-pub const CANONICAL_SMALL: u32 = 10161776;
+/// The preprocessed trace used for the prover.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PreProcessedTraceVariant {
+    Canonical,
+    CanonicalWithoutPedersen,
+    CanonicalSmall,
+}
+impl PreProcessedTraceVariant {
+    /// Returns the total number of trace cells in the preprocessed trace for this variant.
+    pub fn n_trace_cells(&self) -> u32 {
+        match self {
+            PreProcessedTraceVariant::Canonical => 543100528,
+            PreProcessedTraceVariant::CanonicalWithoutPedersen => 73338480,
+            PreProcessedTraceVariant::CanonicalSmall => 10161776,
+        }
+    }
+
+    pub fn to_preprocessed_trace(&self) -> PreProcessedTrace {
+        match self {
+            PreProcessedTraceVariant::Canonical => PreProcessedTrace::canonical(),
+            PreProcessedTraceVariant::CanonicalWithoutPedersen => {
+                PreProcessedTrace::canonical_without_pedersen()
+            }
+            PreProcessedTraceVariant::CanonicalSmall => PreProcessedTrace::canonical_small(),
+        }
+    }
+}
 
 pub trait PreProcessedColumn: Send + Sync {
     #[cfg(feature = "prover")]
@@ -68,12 +91,6 @@ impl PreProcessedTrace {
             .sorted_by_key(|column| column.log_size())
             .collect_vec();
 
-        assert_eq!(
-            columns.iter().map(|col| 1 << col.log_size()).sum::<u32>(),
-            CANONICAL_SIZE,
-            "Canonical preprocessed trace has unexpected size"
-        );
-
         Self::from_columns(columns)
     }
 
@@ -99,12 +116,6 @@ impl PreProcessedTrace {
         let columns = chain!(seq, bitwise_xor, range_check, poseidon_keys, blake_sigma)
             .sorted_by_key(|column| column.log_size())
             .collect_vec();
-
-        assert_eq!(
-            columns.iter().map(|col| 1 << col.log_size()).sum::<u32>(),
-            CANONICAL_WITHOUT_PEDERSEN_SIZE,
-            "Canonical without pedersen preprocessed trace has unexpected size"
-        );
 
         Self::from_columns(columns)
     }
@@ -141,12 +152,6 @@ impl PreProcessedTrace {
         )
         .sorted_by_key(|column| column.log_size())
         .collect_vec();
-
-        assert_eq!(
-            columns.iter().map(|col| 1 << col.log_size()).sum::<u32>(),
-            CANONICAL_SMALL,
-            "Canonical small preprocessed trace has unexpected size"
-        );
 
         Self::from_columns(columns)
     }
@@ -418,5 +423,18 @@ pub mod tests {
         let id = range_check.id();
 
         assert_eq!(id.id, "range_check_1_2_3_4_column_2");
+    }
+
+    #[test]
+    fn test_n_trace_cells() {
+        for variant in [
+            PreProcessedTraceVariant::Canonical,
+            PreProcessedTraceVariant::CanonicalWithoutPedersen,
+            PreProcessedTraceVariant::CanonicalSmall,
+        ] {
+            let trace = variant.to_preprocessed_trace();
+            let actual_size: u32 = trace.columns.iter().map(|col| 1 << col.log_size()).sum();
+            assert_eq!(actual_size, variant.n_trace_cells());
+        }
     }
 }
