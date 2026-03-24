@@ -165,6 +165,9 @@ fn write_trace_simd(
     let curr_program_27 = preprocessed_trace.get_column(&PreProcessedColumnId {
         id: "curr_program_27".to_owned(),
     });
+    let curr_program_28 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "curr_program_28".to_owned(),
+    });
 
     (trace.par_iter_mut(), lookup_data.par_iter_mut())
         .into_par_iter()
@@ -199,6 +202,7 @@ fn write_trace_simd(
             let curr_program_25 = curr_program_25.packed_at(row_index);
             let curr_program_26 = curr_program_26.packed_at(row_index);
             let curr_program_27 = curr_program_27.packed_at(row_index);
+            let curr_program_28 = curr_program_28.packed_at(row_index);
             *lookup_data.program_component_0 = [
                 M31_1942035206,
                 seq_12,
@@ -230,6 +234,7 @@ fn write_trace_simd(
                 curr_program_25,
                 curr_program_26,
                 curr_program_27,
+                curr_program_28,
             ];
             let mult = &mults[0];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
@@ -242,7 +247,7 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    program_component_0: Vec<[PackedM31; 30]>,
+    program_component_0: Vec<[PackedM31; 31]>,
     mults_0: Vec<PackedM31>,
 }
 

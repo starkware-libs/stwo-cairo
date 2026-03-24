@@ -1,9 +1,9 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::mem_verify::MemVerify;
+use crate::components::subroutines::mem_verify_cond::MemVerifyCond;
 
-pub const N_TRACE_COLUMNS: usize = 29;
+pub const N_TRACE_COLUMNS: usize = 30;
 pub const RELATION_USES_PER_ROW: [RelationUse; 3] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
@@ -98,7 +98,8 @@ impl FrameworkEval for Eval {
         let program_component_output_limb_25_col25 = eval.next_trace_mask();
         let program_component_output_limb_26_col26 = eval.next_trace_mask();
         let program_component_output_limb_27_col27 = eval.next_trace_mask();
-        let address_id_col28 = eval.next_trace_mask();
+        let program_component_output_limb_28_col28 = eval.next_trace_mask();
+        let address_id_col29 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
@@ -134,10 +135,11 @@ impl FrameworkEval for Eval {
                 program_component_output_limb_25_col25.clone(),
                 program_component_output_limb_26_col26.clone(),
                 program_component_output_limb_27_col27.clone(),
+                program_component_output_limb_28_col28.clone(),
             ],
         ));
 
-        MemVerify::evaluate(
+        MemVerifyCond::evaluate(
             [
                 (E::F::from(M31::from(self.claim.verify_program_segment_start)) + seq.clone()),
                 program_component_output_limb_0_col0.clone(),
@@ -168,8 +170,9 @@ impl FrameworkEval for Eval {
                 program_component_output_limb_25_col25.clone(),
                 program_component_output_limb_26_col26.clone(),
                 program_component_output_limb_27_col27.clone(),
+                program_component_output_limb_28_col28.clone(),
             ],
-            address_id_col28.clone(),
+            address_id_col29.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );

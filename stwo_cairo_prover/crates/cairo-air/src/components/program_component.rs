@@ -136,6 +136,9 @@ impl FrameworkEval for Eval {
         let curr_program_27 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "curr_program_27".to_owned(),
         });
+        let curr_program_28 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "curr_program_28".to_owned(),
+        });
         let multiplicity_0_col0 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
@@ -172,6 +175,7 @@ impl FrameworkEval for Eval {
                 curr_program_25.clone(),
                 curr_program_26.clone(),
                 curr_program_27.clone(),
+                curr_program_28.clone(),
             ],
         ));
 

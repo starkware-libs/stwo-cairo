@@ -72,6 +72,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut program_component_sum_0: QM31 = Zero::zero();
+        let mut numerator_0: QM31 = Zero::zero();
         let seq_12 = preprocessed_mask_values.get_and_mark_used(SEQ_12_IDX);
         let curr_program_0 = preprocessed_mask_values.get_and_mark_used(CURR_PROGRAM_0_IDX);
         let curr_program_1 = preprocessed_mask_values.get_and_mark_used(CURR_PROGRAM_1_IDX);
@@ -101,15 +102,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let curr_program_25 = preprocessed_mask_values.get_and_mark_used(CURR_PROGRAM_25_IDX);
         let curr_program_26 = preprocessed_mask_values.get_and_mark_used(CURR_PROGRAM_26_IDX);
         let curr_program_27 = preprocessed_mask_values.get_and_mark_used(CURR_PROGRAM_27_IDX);
+        let curr_program_28 = preprocessed_mask_values.get_and_mark_used(CURR_PROGRAM_28_IDX);
 
-        let [program_segment_multiplicity]: [Span<QM31>; 1] = (*trace_mask_values
-            .multi_pop_front()
-            .unwrap())
+        let [multiplicity_0_col0]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap())
             .unbox();
-        let [program_segment_multiplicity]: [QM31; 1] = (*program_segment_multiplicity
-            .try_into()
-            .unwrap())
-            .unbox();
+        let [multiplicity_0_col0]: [QM31; 1] = (*multiplicity_0_col0.try_into().unwrap()).unbox();
+
         core::internal::revoke_ap_tracking();
 
         program_component_sum_0 = self
@@ -123,16 +121,17 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     curr_program_15, curr_program_16, curr_program_17, curr_program_18,
                     curr_program_19, curr_program_20, curr_program_21, curr_program_22,
                     curr_program_23, curr_program_24, curr_program_25, curr_program_26,
-                    curr_program_27,
+                    curr_program_27, curr_program_28,
                 ]
                     .span(),
             );
+        numerator_0 = multiplicity_0_col0;
 
         lookup_constraints(
             ref sum,
             random_coeff,
             claimed_sum,
-            program_segment_multiplicity,
+            numerator_0,
             column_size,
             ref interaction_trace_mask_values,
             program_component_sum_0,
@@ -145,7 +144,7 @@ fn lookup_constraints(
     ref sum: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    program_segment_multiplicity: QM31,
+    numerator_0: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     program_component_sum_0: QM31,
@@ -171,6 +170,6 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * program_component_sum_0)
-        + program_segment_multiplicity);
+        + numerator_0);
     sum = sum * random_coeff + constraint_quotient;
 }

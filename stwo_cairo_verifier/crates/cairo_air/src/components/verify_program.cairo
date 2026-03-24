@@ -1,9 +1,9 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::mem_verify::mem_verify_evaluate;
+use crate::components::subroutines::mem_verify_cond::mem_verify_cond_evaluate;
 use crate::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 29;
+pub const N_TRACE_COLUMNS: usize = 30;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 3] = [
     ('ProgramComponent', 1), ('MemoryAddressToId', 1), ('MemoryIdToBig', 1),
 ];
@@ -125,8 +125,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             program_component_output_limb_25_col25,
             program_component_output_limb_26_col26,
             program_component_output_limb_27_col27,
-            address_id_col28,
-        ]: [Span<QM31>; 29] =
+            program_component_output_limb_28_col28,
+            address_id_col29,
+        ]: [Span<QM31>; 30] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
@@ -271,7 +272,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .try_into()
             .unwrap())
             .unbox();
-        let [address_id_col28]: [QM31; 1] = (*address_id_col28.try_into().unwrap()).unbox();
+        let [program_component_output_limb_28_col28]: [QM31; 1] =
+            (*program_component_output_limb_28_col28
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [address_id_col29]: [QM31; 1] = (*address_id_col29.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
@@ -293,12 +299,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     program_component_output_limb_21_col21, program_component_output_limb_22_col22,
                     program_component_output_limb_23_col23, program_component_output_limb_24_col24,
                     program_component_output_limb_25_col25, program_component_output_limb_26_col26,
-                    program_component_output_limb_27_col27,
+                    program_component_output_limb_27_col27, program_component_output_limb_28_col28,
                 ]
                     .span(),
             );
         numerator_0 = qm31_const::<1, 0, 0, 0>();
-        mem_verify_evaluate(
+        mem_verify_cond_evaluate(
             [
                 (verify_program_segment_start + seq), program_component_output_limb_0_col0,
                 program_component_output_limb_1_col1, program_component_output_limb_2_col2,
@@ -314,9 +320,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 program_component_output_limb_21_col21, program_component_output_limb_22_col22,
                 program_component_output_limb_23_col23, program_component_output_limb_24_col24,
                 program_component_output_limb_25_col25, program_component_output_limb_26_col26,
-                program_component_output_limb_27_col27,
+                program_component_output_limb_27_col27, program_component_output_limb_28_col28,
             ],
-            address_id_col28,
+            address_id_col29,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_1,
             ref numerator_1,
@@ -472,6 +478,7 @@ mod tests {
             [qm31_const::<1852602628, 645078283, 2059236351, 343880177>()].span(),
             [qm31_const::<1785493449, 510860555, 1992127487, 343880177>()].span(),
             [qm31_const::<1449947554, 1987255562, 1656583166, 343880177>()].span(),
+            [qm31_const::<1382838375, 1853037834, 1589474302, 343880177>()].span(),
         ]
             .span();
         let interaction_values = array![

@@ -654,8 +654,9 @@ pub mod tests {
         }
 
         #[test]
-        fn test_prove_verify_all_opcode_components_padded_verify_program_builtin() {
-            let compiled_program = get_compiled_cairo_program_path("test_verify_program_builtin");
+        fn test_prove_verify_all_opcode_components_verify_program_builtin() {
+            let compiled_program =
+                get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
             let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
             let prover_params = ProverParameters {
                 channel_hash: ChannelHash::Blake2s,
