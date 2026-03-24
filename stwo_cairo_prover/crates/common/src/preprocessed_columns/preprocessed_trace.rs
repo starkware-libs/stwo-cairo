@@ -47,6 +47,14 @@ impl PreProcessedTraceVariant {
         }
     }
 
+    pub fn max_log_trace_size(&self) -> u32 {
+        match self {
+            PreProcessedTraceVariant::Canonical => 25,
+            PreProcessedTraceVariant::CanonicalWithoutPedersen => 25,
+            PreProcessedTraceVariant::CanonicalSmall => 20,
+        }
+    }
+
     pub fn to_preprocessed_trace(&self) -> PreProcessedTrace {
         match self {
             PreProcessedTraceVariant::Canonical => PreProcessedTrace::canonical(),
@@ -442,6 +450,19 @@ pub mod tests {
         ] {
             let trace = variant.to_preprocessed_trace();
             assert_eq!(trace.columns.len(), variant.n_columns());
+        }
+    }
+
+    #[test]
+    fn test_max_log_trace_size() {
+        for variant in [
+            PreProcessedTraceVariant::Canonical,
+            PreProcessedTraceVariant::CanonicalWithoutPedersen,
+            PreProcessedTraceVariant::CanonicalSmall,
+        ] {
+            let trace = variant.to_preprocessed_trace();
+            let actual_max = trace.columns.iter().map(|col| col.log_size()).max().unwrap();
+            assert_eq!(actual_max, variant.max_log_trace_size());
         }
     }
 
