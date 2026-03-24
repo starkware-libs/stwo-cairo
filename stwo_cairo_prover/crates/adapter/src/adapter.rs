@@ -1,6 +1,7 @@
 use anyhow::Result;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use itertools::Itertools;
+use stwo_cairo_common::preprocessed_columns::program::PROGRAM_LOG_LEN_BOUND;
 use tracing::{info, span, Level};
 
 use super::memory::{MemoryBuilder, MemoryConfig};
@@ -45,12 +46,10 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
     // Compute program segment.
     let initial_pc = state_transitions.initial_state.pc.0;
     let initial_ap = state_transitions.initial_state.ap.0;
-    // The verify_program builtin covers the program segment (initial_pc to initial_ap - 2).
-    // It is not a standard cairo_vm builtin, so we set it manually.
-    let program_length = (initial_ap - 2 - initial_pc) as usize;
+
     builtin_segments.verify_program = Some(MemorySegmentAddresses {
         begin_addr: initial_pc as usize,
-        stop_ptr: initial_pc as usize + program_length,
+        stop_ptr: initial_pc as usize + (1 << PROGRAM_LOG_LEN_BOUND),
     });
 
     let program = (initial_pc..initial_ap - 2)
