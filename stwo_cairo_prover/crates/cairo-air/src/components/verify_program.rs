@@ -1,9 +1,9 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::mem_verify::MemVerify;
+use crate::components::subroutines::mem_verify_cond::MemVerifyCond;
 
-pub const N_TRACE_COLUMNS: usize = 29;
+pub const N_TRACE_COLUMNS: usize = 59;
 pub const RELATION_USES_PER_ROW: [RelationUse; 3] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
@@ -98,7 +98,37 @@ impl FrameworkEval for Eval {
         let program_component_output_limb_25_col25 = eval.next_trace_mask();
         let program_component_output_limb_26_col26 = eval.next_trace_mask();
         let program_component_output_limb_27_col27 = eval.next_trace_mask();
-        let address_id_col28 = eval.next_trace_mask();
+        let program_component_output_limb_28_col28 = eval.next_trace_mask();
+        let cond_address_col29 = eval.next_trace_mask();
+        let cond_address_id_col30 = eval.next_trace_mask();
+        let cond_address_limb_0_col31 = eval.next_trace_mask();
+        let cond_address_limb_1_col32 = eval.next_trace_mask();
+        let cond_address_limb_2_col33 = eval.next_trace_mask();
+        let cond_address_limb_3_col34 = eval.next_trace_mask();
+        let cond_address_limb_4_col35 = eval.next_trace_mask();
+        let cond_address_limb_5_col36 = eval.next_trace_mask();
+        let cond_address_limb_6_col37 = eval.next_trace_mask();
+        let cond_address_limb_7_col38 = eval.next_trace_mask();
+        let cond_address_limb_8_col39 = eval.next_trace_mask();
+        let cond_address_limb_9_col40 = eval.next_trace_mask();
+        let cond_address_limb_10_col41 = eval.next_trace_mask();
+        let cond_address_limb_11_col42 = eval.next_trace_mask();
+        let cond_address_limb_12_col43 = eval.next_trace_mask();
+        let cond_address_limb_13_col44 = eval.next_trace_mask();
+        let cond_address_limb_14_col45 = eval.next_trace_mask();
+        let cond_address_limb_15_col46 = eval.next_trace_mask();
+        let cond_address_limb_16_col47 = eval.next_trace_mask();
+        let cond_address_limb_17_col48 = eval.next_trace_mask();
+        let cond_address_limb_18_col49 = eval.next_trace_mask();
+        let cond_address_limb_19_col50 = eval.next_trace_mask();
+        let cond_address_limb_20_col51 = eval.next_trace_mask();
+        let cond_address_limb_21_col52 = eval.next_trace_mask();
+        let cond_address_limb_22_col53 = eval.next_trace_mask();
+        let cond_address_limb_23_col54 = eval.next_trace_mask();
+        let cond_address_limb_24_col55 = eval.next_trace_mask();
+        let cond_address_limb_25_col56 = eval.next_trace_mask();
+        let cond_address_limb_26_col57 = eval.next_trace_mask();
+        let cond_address_limb_27_col58 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
@@ -134,10 +164,11 @@ impl FrameworkEval for Eval {
                 program_component_output_limb_25_col25.clone(),
                 program_component_output_limb_26_col26.clone(),
                 program_component_output_limb_27_col27.clone(),
+                program_component_output_limb_28_col28.clone(),
             ],
         ));
 
-        MemVerify::evaluate(
+        MemVerifyCond::evaluate(
             [
                 (E::F::from(M31::from(self.claim.verify_program_segment_start)) + seq.clone()),
                 program_component_output_limb_0_col0.clone(),
@@ -168,8 +199,38 @@ impl FrameworkEval for Eval {
                 program_component_output_limb_25_col25.clone(),
                 program_component_output_limb_26_col26.clone(),
                 program_component_output_limb_27_col27.clone(),
+                program_component_output_limb_28_col28.clone(),
             ],
-            address_id_col28.clone(),
+            cond_address_col29.clone(),
+            cond_address_id_col30.clone(),
+            cond_address_limb_0_col31.clone(),
+            cond_address_limb_1_col32.clone(),
+            cond_address_limb_2_col33.clone(),
+            cond_address_limb_3_col34.clone(),
+            cond_address_limb_4_col35.clone(),
+            cond_address_limb_5_col36.clone(),
+            cond_address_limb_6_col37.clone(),
+            cond_address_limb_7_col38.clone(),
+            cond_address_limb_8_col39.clone(),
+            cond_address_limb_9_col40.clone(),
+            cond_address_limb_10_col41.clone(),
+            cond_address_limb_11_col42.clone(),
+            cond_address_limb_12_col43.clone(),
+            cond_address_limb_13_col44.clone(),
+            cond_address_limb_14_col45.clone(),
+            cond_address_limb_15_col46.clone(),
+            cond_address_limb_16_col47.clone(),
+            cond_address_limb_17_col48.clone(),
+            cond_address_limb_18_col49.clone(),
+            cond_address_limb_19_col50.clone(),
+            cond_address_limb_20_col51.clone(),
+            cond_address_limb_21_col52.clone(),
+            cond_address_limb_22_col53.clone(),
+            cond_address_limb_23_col54.clone(),
+            cond_address_limb_24_col55.clone(),
+            cond_address_limb_25_col56.clone(),
+            cond_address_limb_26_col57.clone(),
+            cond_address_limb_27_col58.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );

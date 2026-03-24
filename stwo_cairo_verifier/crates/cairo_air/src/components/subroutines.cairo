@@ -49,6 +49,7 @@ pub mod linear_combination_n_4_coefs_4_2_m2_1;
 pub mod linear_combination_n_6_coefs_4_2_3_1_m1_1;
 pub mod mem_cond_verify_equal_known_id;
 pub mod mem_verify;
+pub mod mem_verify_cond;
 pub mod mem_verify_equal;
 pub mod mod_utils;
 pub mod mod_words_to_12_bit_array;
