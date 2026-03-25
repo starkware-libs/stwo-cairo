@@ -290,7 +290,7 @@ func main{
     local n_range_check = 50;
     local n_ecdsa = 0;
     local n_bitwise = 50;
-    local n_ec_op = 0;
+    local n_ec_op = 50;
     local n_keccak = 0;
     local n_poseidon = 50;
     local n_range_check96 = 50;
