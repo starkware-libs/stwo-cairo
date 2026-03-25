@@ -52237,7 +52237,7 @@
     },
     "verify_program": {
       "begin_addr": 1,
-      "stop_ptr": 483
+      "stop_ptr": 4097
     }
   },
   "public_segment_context": {

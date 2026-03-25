@@ -199,10 +199,10 @@ pub const VERIFY_BITWISE_XOR_9: Expect = expect![[r#"
     (841088250 + 1499053200i) + (1122584495 + 937798316i)u
 "#]];
 pub const PROGRAM_COMPONENT: Expect = expect![[r#"
-    (896679863 + 19294025i) + (835905729 + 389684619i)u
+    (1724947392 + 615920367i) + (1992951212 + 1996681554i)u
 "#]];
 pub const VERIFY_PROGRAM: Expect = expect![[r#"
-    (315471585 + 1243757974i) + (863245459 + 54340856i)u
+    (226393755 + 1957635745i) + (1061834550 + 276585741i)u
 "#]];
 pub const VERIFY_BITWISE_XOR_12: Expect = expect![[r#"
     (1665543176 + 800367929i) + (1406064337 + 277486427i)u
