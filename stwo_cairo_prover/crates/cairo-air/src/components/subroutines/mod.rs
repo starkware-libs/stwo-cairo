@@ -91,6 +91,7 @@ pub mod verify_add_252;
 pub mod verify_mul_252;
 pub mod verify_mul_small;
 pub mod verify_reduced_252;
+pub mod verify_triple_sum_32;
 pub mod verify_u_32;
 pub mod xor_rot_32_r_12;
 pub mod xor_rot_32_r_16;
