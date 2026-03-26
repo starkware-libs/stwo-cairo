@@ -1,9 +1,11 @@
 name: Cairo Prover Tests
 on:
-  workflow_dispatch:
-  push:
-    branches: [main]
   pull_request:
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
   merge_group:
     types:
       - checks_requested

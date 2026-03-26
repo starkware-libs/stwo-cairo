@@ -1,6 +1,11 @@
 name: Merge gatekeeper
 on:
   pull_request:
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
   push:
     branches: [main]
   merge_group:
