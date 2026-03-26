@@ -1,0 +1,30 @@
+name: Setup Namespace cache
+description: Mount Namespace cache volumes for heavy jobs (see nscloud-cache-action docs).
+
+inputs:
+  profile:
+    description: run-tests (Cargo prover) or scarb-test (Cairo verifier workspace)
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Namespace cache (Rust — registry + build)
+      if: ${{ inputs.profile == 'run-tests' }}
+      uses: namespacelabs/nscloud-cache-action@v1
+      with:
+        cache: rust
+
+    - name: Namespace cache — prover target/
+      if: ${{ inputs.profile == 'run-tests' }}
+      uses: namespacelabs/nscloud-cache-action@v1
+      with:
+        path: ${{ github.workspace }}/stwo_cairo_prover/target
+
+    - name: Namespace cache — Scarb + verifier target/
+      if: ${{ inputs.profile == 'scarb-test' }}
+      uses: namespacelabs/nscloud-cache-action@v1
+      with:
+        path: |
+          /home/runner/.cache/scarb
+          ${{ github.workspace }}/stwo_cairo_verifier/target
