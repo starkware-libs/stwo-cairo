@@ -601,7 +601,7 @@ dependencies = [
 
 [[package]]
 name = "cairo-air"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "bincode 1.3.3",
  "bzip2",
@@ -1849,7 +1849,6 @@ dependencies = [
  "allocator-api2",
  "equivalent",
  "foldhash 0.1.5",
- "serde",
 ]
 
 [[package]]
@@ -3371,8 +3370,9 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 
 [[package]]
 name = "stwo"
-version = "2.1.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=aeceb74c#aeceb74c58184d7886ebd7f34a7453fee714ca40"
+version = "2.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d400ae91acbeafa6f80070a03e1117a794a95f295050f44538a4c7dd55abd491"
 dependencies = [
  "blake2",
  "blake3",
@@ -3381,7 +3381,7 @@ dependencies = [
  "dashmap",
  "educe 0.5.11",
  "fnv",
- "hashbrown 0.15.5",
+ "hashbrown 0.16.1",
  "hex",
  "indexmap",
  "itertools 0.12.1",
@@ -3399,8 +3399,9 @@ dependencies = [
 
 [[package]]
 name = "stwo-air-utils"
-version = "2.1.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=aeceb74c#aeceb74c58184d7886ebd7f34a7453fee714ca40"
+version = "2.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2c5024a5129f74a675865e6b8d72ebddfc63cb384f9f69405440b66cad5f99b2"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -3411,8 +3412,9 @@ dependencies = [
 
 [[package]]
 name = "stwo-air-utils-derive"
-version = "2.1.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=aeceb74c#aeceb74c58184d7886ebd7f34a7453fee714ca40"
+version = "2.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "39432b7b0d1b9e5ed34ca174164dd2d640ec32c475b263da0b9630ba746f8753"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3422,7 +3424,7 @@ dependencies = [
 
 [[package]]
 name = "stwo-cairo-adapter"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "anyhow",
  "bincode 2.0.1",
@@ -3450,7 +3452,7 @@ dependencies = [
 
 [[package]]
 name = "stwo-cairo-common"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -3469,7 +3471,7 @@ dependencies = [
 
 [[package]]
 name = "stwo-cairo-dev-utils"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "anyhow",
  "bincode 1.3.3",
@@ -3498,7 +3500,7 @@ dependencies = [
 
 [[package]]
 name = "stwo-cairo-prover"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "anyhow",
  "bytemuck",
@@ -3537,7 +3539,7 @@ dependencies = [
 
 [[package]]
 name = "stwo-cairo-serialize"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "starknet-ff",
  "stwo",
@@ -3546,7 +3548,7 @@ dependencies = [
 
 [[package]]
 name = "stwo-cairo-serialize-derive"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "quote",
  "syn 2.0.114",
@@ -3554,7 +3556,7 @@ dependencies = [
 
 [[package]]
 name = "stwo-cairo-utils"
-version = "1.1.0"
+version = "1.2.0"
 dependencies = [
  "env_logger",
  "log",
@@ -3564,10 +3566,11 @@ dependencies = [
 
 [[package]]
 name = "stwo-constraint-framework"
-version = "2.1.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=aeceb74c#aeceb74c58184d7886ebd7f34a7453fee714ca40"
+version = "2.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "47aca0d5d36d4b015703fb14f162a23cb685e67f8aa08dbe7faf39bd66fe93f1"
 dependencies = [
- "hashbrown 0.15.5",
+ "hashbrown 0.16.1",
  "itertools 0.12.1",
  "num-traits",
  "rand 0.8.5",
