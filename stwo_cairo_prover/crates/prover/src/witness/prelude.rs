@@ -47,4 +47,5 @@ pub use crate::witness::fast_deduction::poseidon::{
     PackedCube252, PackedPoseidon3PartialRoundsChain, PackedPoseidonFullRoundChain,
     PackedPoseidonRoundKeys,
 };
+pub use crate::witness::fast_deduction::program::PackedProgramComponent;
 pub use crate::witness::utils::*;
