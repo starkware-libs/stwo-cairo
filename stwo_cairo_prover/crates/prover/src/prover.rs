@@ -12,6 +12,7 @@ use cairo_air::CairoProof;
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::{Channel, MerkleChannel};
+use stwo::core::circle::M31_CIRCLE_LOG_ORDER;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::fri::FriConfig;
 use stwo::core::pcs::PcsConfig;
@@ -45,7 +46,7 @@ mod json {
     pub use sonic_rs::from_str;
 }
 
-pub(crate) const LOG_MAX_ROWS: u32 = 27;
+pub(crate) const MAX_CANONICAL_COSET_LOG_SIZE: u32 = M31_CIRCLE_LOG_ORDER - 1;
 
 fn prove_verify_serialize<MC: MerkleChannel>(
     input: ProverInput,
@@ -81,12 +82,8 @@ where
     {
         lifting_log_size
     } else {
-        let cairo_air_log_degree_bound = 1;
-        LOG_MAX_ROWS
-            + std::cmp::max(
-                cairo_air_log_degree_bound,
-                prover_params.pcs_config.fri_config.log_blowup_factor,
-            )
+        // TODO(ilya): Deduces the max domain size from 'input'.
+        MAX_CANONICAL_COSET_LOG_SIZE
     };
     let twiddles = SimdBackend::precompute_twiddles(
         CanonicCoset::new(max_domain_size)
