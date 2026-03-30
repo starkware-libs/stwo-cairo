@@ -71,17 +71,34 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             commitment_domain,
             proof: first_layer_proof,
             folding_alpha: channel.draw_secure_felt(),
+            // The circle-to-line fold is always equal to `config.fold_step`.
             fold_step: config.fold_step,
         };
 
         let mut inner_layers = array![];
-        let mut layer_log_bound = log_bound - CIRCLE_TO_LINE_FOLD_STEP;
+        let mut layer_log_bound = log_bound - config.fold_step;
         let mut layer_domain = LineDomainImpl::new_unchecked(
             CosetImpl::half_odds(layer_log_bound + config.log_blowup_factor),
         );
 
+        let n_inner_layers = inner_layer_proofs.len();
         for (layer_index, layer_proof) in inner_layer_proofs.into_iter().enumerate() {
             channel.mix_commitment(*layer_proof.commitment);
+
+            // Compute the folding step for this layer.
+            let fold_step = if layer_index == n_inner_layers - 1 {
+                // At the last inner layer, fold by the amount needed to reach exactly the
+                // last layer degree bound.
+                let remaining = layer_log_bound - config.log_last_layer_degree_bound;
+                assert!(
+                    1 <= remaining && remaining <= config.fold_step,
+                    "{}",
+                    FriVerificationError::InvalidNumFriLayers,
+                );
+                remaining
+            } else {
+                config.fold_step
+            };
 
             inner_layers
                 .append(
@@ -91,13 +108,13 @@ pub impl FriVerifierImpl of FriVerifierTrait {
                         folding_alpha: channel.draw_secure_felt(),
                         layer_index,
                         proof: layer_proof,
-                        fold_step: config.fold_step,
+                        fold_step,
                     },
                 );
 
-            layer_log_bound -= FOLD_STEP;
+            layer_log_bound -= fold_step;
 
-            layer_domain = layer_domain.double();
+            layer_domain = layer_domain.repeated_double(fold_step);
         }
         assert!(
             layer_log_bound == config.log_last_layer_degree_bound,
@@ -124,7 +141,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             @self, queries, first_layer_query_evals,
         );
 
-        let inner_layer_queries = queries.fold(CIRCLE_TO_LINE_FOLD_STEP);
+        let inner_layer_queries = queries.fold(self.config.fold_step);
 
         let (last_layer_queries, last_layer_query_evals) = decommit_inner_layers(
             @self, inner_layer_queries, first_layer_sparse_evals,
@@ -264,7 +281,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
 
         let (column_decommitment_positions, sparse_evaluation) =
             compute_decommitment_positions_and_rebuild_evals(
-            queries, query_evals, ref fri_witness, CIRCLE_TO_LINE_FOLD_STEP,
+            queries, query_evals, ref fri_witness, *self.fold_step,
         );
 
         for subset_eval in sparse_evaluation.subset_evals.span() {
@@ -329,7 +346,7 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
 
         let (decommitment_positions, sparse_evaluation) =
             compute_decommitment_positions_and_rebuild_evals(
-            queries, evals_at_queries, ref fri_witness, FOLD_STEP,
+            queries, evals_at_queries, ref fri_witness, *self.fold_step,
         );
 
         // Check all proof evals have been consumed.
@@ -366,7 +383,7 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
                 (*self.proof.decommitment).clone(),
             );
 
-        let folded_queries = queries.fold(FOLD_STEP);
+        let folded_queries = queries.fold(*self.fold_step);
         let folded_evals = sparse_evaluation.fold_line(*self.folding_alpha, *self.domain);
 
         (folded_queries, folded_evals)

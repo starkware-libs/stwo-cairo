@@ -82,6 +82,11 @@ pub impl LineDomainImpl of LineDomainTrait {
     fn double(self: @LineDomain) -> LineDomain {
         LineDomain { coset: self.coset.double() }
     }
+
+    /// Returns a new domain comprising of all points in current domain doubled `n` times.
+    fn repeated_double(self: @LineDomain, n: u32) -> LineDomain {
+        LineDomain { coset: self.coset.repeated_double(n) }
+    }
 }
 
 /// Evaluations of a univariate polynomial on a [LineDomain].
