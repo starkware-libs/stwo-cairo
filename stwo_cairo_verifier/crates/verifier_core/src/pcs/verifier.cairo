@@ -232,7 +232,7 @@ pub fn get_trace_lde_log_size(
     trace_lde_log_size
 }
 
-fn prepare_preprocessed_query_positions(
+pub fn prepare_preprocessed_query_positions(
     query_positions: Span<u32>, lifting_log_size: u32, pp_max_log_size: u32,
 ) -> Span<u32> {
     // In this case, there are no preprocessed columns.
@@ -255,9 +255,9 @@ fn prepare_preprocessed_query_positions(
     for position in query_positions {
         // Compute `((position >> (log_ratio + 1)) << 1) + (position & 1)`
         let (half_position, parity) = position.div_rem(2);
-        let shift: NonZero<u32> = pow2(log_ratio - 1).try_into().unwrap();
-        let (shifted_position, _) = half_position.div_rem(shift);
-        let folded_position = shifted_position + parity;
+        let two_pow_log_ratio: NonZero<u32> = pow2(log_ratio).try_into().unwrap();
+        let (shifted_position, _) = half_position.div_rem(two_pow_log_ratio);
+        let folded_position = 2 * shifted_position + parity;
         modified_query_positions.append(folded_position);
     }
     modified_query_positions.span()
