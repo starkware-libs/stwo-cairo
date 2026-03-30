@@ -128,6 +128,14 @@ pub impl CosetImpl of CosetTrait {
         }
     }
 
+    fn repeated_double(self: @Coset, n: u32) -> Coset {
+        let mut result = *self;
+        for _ in 0..n {
+            result = result.double();
+        }
+        result
+    }
+
     #[inline]
     fn at(self: @Coset, index: usize) -> CirclePoint<M31> {
         self.index_at(index).to_point()
