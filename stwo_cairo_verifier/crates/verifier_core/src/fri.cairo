@@ -19,18 +19,6 @@ use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTra
 /// Number of QM31 evaluations packed into a single Merkle leaf when `fold_step > 1`.
 pub const LOG_PACKED_LEAF_SIZE: u32 = 2;
 
-/// Fold step size for circle polynomials.
-pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
-
-/// Equals `2^CIRCLE_TO_LINE_FOLD_STEP`.
-pub const CIRCLE_TO_LINE_FOLD_FACTOR: usize = 2;
-
-/// Fold step size for univariate polynomials.
-pub const FOLD_STEP: u32 = 1;
-
-/// Equals `2^FOLD_STEP`.
-pub const FOLD_FACTOR: usize = 2;
-
 #[derive(Drop, Serde, Copy)]
 pub struct FriConfig {
     pub log_blowup_factor: u32,
@@ -57,9 +45,6 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     fn commit(
         ref channel: Channel, config: FriConfig, proof: FriProof, log_bound: u32,
     ) -> FriVerifier {
-        // TODO(Leo): remove once support for fold_step is complete.
-        assert!(config.fold_step == 1);
-
         let FriProof {
             first_layer: first_layer_proof, inner_layers: mut inner_layer_proofs, last_layer_poly,
         } = proof;
@@ -600,6 +585,7 @@ fn build_merkle_verification_inputs(
 /// * `alpha` - the random folding factor.
 pub fn fold_coset(eval: Span<QM31>, x_coords: Span<M31>, alpha: QM31) -> QM31 {
     assert!(eval.len() == 2 * x_coords.len());
+
     let mut current_eval = eval;
     let mut current_x_coords = x_coords;
     let mut folding_alpha = alpha;
