@@ -385,7 +385,8 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
             );
 
         let folded_queries = queries.fold(*self.fold_step);
-        let folded_evals = sparse_evaluation.fold_line(*self.folding_alpha, *self.domain);
+        let folded_evals = sparse_evaluation
+            .fold_line(*self.folding_alpha, *self.domain, *self.fold_step);
 
         (folded_queries, folded_evals)
     }
@@ -467,27 +468,43 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
         SparseEvaluation { subset_evals, subset_domain_initial_indexes }
     }
 
-    /// Folds evaluations of a degree `d` univariate polynomial into evaluations of a degree `d/2`
-    /// univariate polynomial.
+    /// Folds evaluations of a degree `d` univariate polynomial into evaluations of a degree
+    /// `d / 2^fold_step` univariate polynomial.
     fn fold_line(
-        self: @SparseEvaluation, fold_alpha: QM31, source_domain: LineDomain,
+        self: @SparseEvaluation, fold_alpha: QM31, source_domain: LineDomain, fold_step: u32,
     ) -> Array<QM31> {
-        let mut domain_initials = array![];
-
+        // Collect all x-coordinates across all queries (these are the inverse twiddles).
+        let mut all_x_coords = array![];
         for subset_domain_initial_index in *self.subset_domain_initial_indexes {
-            domain_initials.append(source_domain.at(*subset_domain_initial_index));
+            let mut query_x_coords = array![];
+            let fold_domain_initial = source_domain.coset.index_at(*subset_domain_initial_index);
+            let fold_domain = LineDomainImpl::new_unchecked(
+                CosetImpl::new(fold_domain_initial, fold_step),
+            );
+            let mut j: usize = 0;
+            while j < fold_domain.size() {
+                query_x_coords.append(fold_domain.at(bit_reverse_index(j, fold_step)));
+                j += 2;
+            }
+            query_x_coords.append_span(fold_x_coords(query_x_coords.span(), fold_step));
+            all_x_coords.append_span(query_x_coords.span());
         }
 
-        let mut domain_initials_inv = BatchInvertible::batch_inverse(domain_initials);
-        let mut res = array![];
+        // Compute the twiddles by batch-inverting all x-coordinates at once. The twiddles are laid
+        // out in flat form, as [query][fold][twiddle_in_fold].
+        let all_twiddles = BatchInvertible::batch_inverse(all_x_coords);
+        let mut all_twiddles = all_twiddles.span();
 
-        for (subset_eval, x_inv) in zip_eq(self.subset_evals.span(), domain_initials_inv.span()) {
-            let values: Box<[QM31; FOLD_FACTOR]> = *subset_eval.span().try_into().unwrap();
-            let [f_at_x, f_at_neg_x] = values.unbox();
-            res.append(fri_fold(f_at_x, f_at_neg_x, *x_inv, fold_alpha));
+        // Fold each query's coset using its slice of precomputed twiddles.
+        let n_twiddles_per_query = pow2(fold_step) - 1;
+        let mut folded_eval = array![];
+        for subset_eval in self.subset_evals.span() {
+            let (query_twiddles, rest) = all_twiddles.split_at(n_twiddles_per_query);
+            all_twiddles = rest;
+            folded_eval.append(fold_coset(subset_eval.span(), query_twiddles, fold_alpha));
         }
 
-        res
+        folded_eval
     }
 
     /// Folds evaluations of a degree `d` circle polynomial into evaluations of a
