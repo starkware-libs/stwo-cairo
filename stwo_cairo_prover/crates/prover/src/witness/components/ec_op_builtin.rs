@@ -28,7 +28,7 @@ impl ClaimGenerator {
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
         range_check_8_state: &range_check_8::ClaimGenerator,
-        partial_ec_mul_generic_state: &mut partial_ec_mul_generic::ClaimGenerator,
+        partial_ec_mul_generic_state: &partial_ec_mul_generic::ClaimGenerator,
     ) -> (
         ComponentTrace<N_TRACE_COLUMNS>,
         Claim,
@@ -45,16 +45,26 @@ impl ClaimGenerator {
             partial_ec_mul_generic_state,
         );
         for inputs in sub_component_inputs.memory_address_to_id {
-            memory_address_to_id_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                memory_address_to_id_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
         for inputs in sub_component_inputs.memory_id_to_big {
-            memory_id_to_big_state.add_packed_inputs(&inputs, 0);
+            add_inputs(memory_id_to_big_state, &inputs, inputs.len() * N_LANES, 0);
         }
         for inputs in sub_component_inputs.range_check_8 {
-            range_check_8_state.add_packed_inputs(&inputs, 0);
+            add_inputs(range_check_8_state, &inputs, inputs.len() * N_LANES, 0);
         }
         for inputs in sub_component_inputs.partial_ec_mul_generic {
-            partial_ec_mul_generic_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                partial_ec_mul_generic_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
 
         (
@@ -89,7 +99,7 @@ fn write_trace_simd(
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
     range_check_8_state: &range_check_8::ClaimGenerator,
-    partial_ec_mul_generic_state: &mut partial_ec_mul_generic::ClaimGenerator,
+    partial_ec_mul_generic_state: &partial_ec_mul_generic::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,

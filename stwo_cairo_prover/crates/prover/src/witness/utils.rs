@@ -9,7 +9,7 @@ use stwo::core::channel::MerkleChannel;
 use stwo::core::fields::m31::M31;
 use stwo::core::pcs::{TreeSubspan, TreeVec};
 use stwo::core::vcs_lifted::blake2_merkle::{Blake2sM31MerkleChannel, Blake2sMerkleChannel};
-use stwo::prover::backend::simd::conversion::Pack;
+use stwo::prover::backend::simd::conversion::{Pack, Unpack};
 use stwo::prover::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
 use stwo::prover::backend::{Backend, BackendForChannel};
 use stwo::prover::poly::circle::CircleEvaluation;
@@ -232,6 +232,36 @@ pub fn make_input_to_row<const N: usize>(
     }
 
     result
+}
+
+pub trait AddInputs {
+    type PackedInputType: Unpack<CpuType = Self::InputType>;
+    type InputType: Pack<SimdType = Self::PackedInputType>;
+
+    fn add_packed_inputs(&self, packed_inputs: &[Self::PackedInputType], _relation_index: usize);
+    fn add_input(&self, input: &Self::InputType, _relation_index: usize);
+}
+
+pub fn add_inputs<C, Packed, Unpacked>(
+    component: &C,
+    packed_inputs: &[Packed],
+    num_inputs: usize,
+    relation_index: usize,
+) where
+    C: AddInputs<PackedInputType = Packed, InputType = Unpacked>,
+    Packed: Unpack<CpuType = Unpacked>,
+    Unpacked: Pack,
+{
+    let full_packed_inputs = num_inputs / N_LANES;
+    component.add_packed_inputs(&packed_inputs[..full_packed_inputs], relation_index);
+    let remainder = num_inputs % N_LANES;
+    if remainder > 0 {
+        let last_block = packed_inputs[full_packed_inputs];
+        let unpacked_last_block = last_block.unpack();
+        for input in unpacked_last_block.iter().take(remainder) {
+            component.add_input(input, relation_index);
+        }
+    }
 }
 
 #[cfg(test)]

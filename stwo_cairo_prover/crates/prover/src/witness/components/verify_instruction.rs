@@ -62,16 +62,21 @@ impl ClaimGenerator {
             memory_id_to_big_state,
         );
         for inputs in sub_component_inputs.range_check_7_2_5 {
-            range_check_7_2_5_state.add_packed_inputs(&inputs, 0);
+            add_inputs(range_check_7_2_5_state, &inputs, inputs.len() * N_LANES, 0);
         }
         for inputs in sub_component_inputs.range_check_4_3 {
-            range_check_4_3_state.add_packed_inputs(&inputs, 0);
+            add_inputs(range_check_4_3_state, &inputs, inputs.len() * N_LANES, 0);
         }
         for inputs in sub_component_inputs.memory_address_to_id {
-            memory_address_to_id_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                memory_address_to_id_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
         for inputs in sub_component_inputs.memory_id_to_big {
-            memory_id_to_big_state.add_packed_inputs(&inputs, 0);
+            add_inputs(memory_id_to_big_state, &inputs, inputs.len() * N_LANES, 0);
         }
 
         (
@@ -83,8 +88,13 @@ impl ClaimGenerator {
             },
         )
     }
+}
 
-    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], _relation_index: usize) {
+impl AddInputs for ClaimGenerator {
+    type PackedInputType = PackedInputType;
+    type InputType = InputType;
+
+    fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], _relation_index: usize) {
         let merged: HashMap<InputType, u32> = packed_inputs
             .par_iter()
             .flat_map(|p| p.unpack())
@@ -105,6 +115,12 @@ impl ClaimGenerator {
                 .or_insert_with(|| AtomicU32::new(0))
                 .fetch_add(v, Ordering::Relaxed);
         }
+    }
+    fn add_input(&self, input: &InputType, _relation_index: usize) {
+        self.mults
+            .entry(*input)
+            .or_insert_with(|| AtomicU32::new(0))
+            .fetch_add(1, Ordering::Relaxed);
     }
 }
 

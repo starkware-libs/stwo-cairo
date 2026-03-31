@@ -39,10 +39,20 @@ impl ClaimGenerator {
             pedersen_aggregator_window_bits_18_state,
         );
         for inputs in sub_component_inputs.memory_address_to_id {
-            memory_address_to_id_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                memory_address_to_id_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
         for inputs in sub_component_inputs.pedersen_aggregator_window_bits_18 {
-            pedersen_aggregator_window_bits_18_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                pedersen_aggregator_window_bits_18_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
 
         (

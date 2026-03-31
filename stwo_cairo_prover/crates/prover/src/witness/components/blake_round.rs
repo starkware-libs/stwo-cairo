@@ -1,6 +1,4 @@
 #![allow(unused_parens)]
-use std::sync::Arc;
-
 use cairo_air::components::blake_round::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use stwo_cairo_adapter::memory::Memory;
 
@@ -9,48 +7,48 @@ use crate::witness::components::{
 };
 use crate::witness::prelude::*;
 
+pub type InputType = (M31, M31, ([UInt32; 16], M31));
 pub type PackedInputType = (PackedM31, PackedM31, ([PackedUInt32; 16], PackedM31));
 
 pub struct ClaimGenerator {
-    pub packed_inputs: Vec<PackedInputType>,
     state: BlakeRound,
+    pub packed_inputs: Mutex<Vec<PackedInputType>>,
+    pub remainder_inputs: Mutex<Vec<InputType>>,
 }
 
 impl ClaimGenerator {
     pub fn new(memory: Arc<Memory>) -> Self {
         let state = BlakeRound::new(memory);
         Self {
-            packed_inputs: vec![],
+            packed_inputs: Mutex::new(vec![]),
+            remainder_inputs: Mutex::new(vec![]),
             state,
         }
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.packed_inputs.is_empty()
-    }
-
     pub fn write_trace(
-        mut self,
+        self,
         blake_round_sigma_state: &blake_round_sigma::ClaimGenerator,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
         range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
-        blake_g_state: &mut blake_g::ClaimGenerator,
+        blake_g_state: &blake_g::ClaimGenerator,
     ) -> (
         ComponentTrace<N_TRACE_COLUMNS>,
         Claim,
         InteractionClaimGenerator,
     ) {
-        assert!(!self.packed_inputs.is_empty());
-        let n_vec_rows = self.packed_inputs.len();
+        let mut packed_inputs = self.packed_inputs.into_inner().unwrap();
+        assert!(!packed_inputs.is_empty());
+        assert!(self.remainder_inputs.lock().unwrap().is_empty());
+        let n_vec_rows = packed_inputs.len();
         let n_rows = n_vec_rows * N_LANES;
         let packed_size = n_vec_rows.next_power_of_two();
         let log_size = packed_size.ilog2() + LOG_N_LANES;
-        self.packed_inputs
-            .resize(packed_size, *self.packed_inputs.first().unwrap());
+        packed_inputs.resize(packed_size, *packed_inputs.first().unwrap());
 
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
-            self.packed_inputs,
+            packed_inputs,
             n_rows,
             blake_round_sigma_state,
             memory_address_to_id_state,
@@ -97,15 +95,23 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType], _relation_index: usize) {
-        self.packed_inputs.extend(inputs);
-    }
-
     pub fn deduce_output(
         &self,
         input: (PackedM31, PackedM31, ([PackedUInt32; 16], PackedM31)),
     ) -> (PackedM31, PackedM31, ([PackedUInt32; 16], PackedM31)) {
         self.state.deduce_output(input.0, input.1, input.2)
+    }
+}
+
+impl AddInputs for ClaimGenerator {
+    type PackedInputType = PackedInputType;
+    type InputType = InputType;
+
+    fn add_packed_inputs(&self, inputs: &[PackedInputType], _relation_index: usize) {
+        self.packed_inputs.lock().unwrap().extend(inputs);
+    }
+    fn add_input(&self, input: &InputType, _relation_index: usize) {
+        self.remainder_inputs.lock().unwrap().push(*input);
     }
 }
 
@@ -129,7 +135,7 @@ fn write_trace_simd(
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
     range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
-    blake_g_state: &mut blake_g::ClaimGenerator,
+    blake_g_state: &blake_g::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,

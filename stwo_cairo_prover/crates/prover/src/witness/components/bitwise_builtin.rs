@@ -45,16 +45,31 @@ impl ClaimGenerator {
             verify_bitwise_xor_8_state,
         );
         for inputs in sub_component_inputs.memory_address_to_id {
-            memory_address_to_id_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                memory_address_to_id_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
         for inputs in sub_component_inputs.memory_id_to_big {
-            memory_id_to_big_state.add_packed_inputs(&inputs, 0);
+            add_inputs(memory_id_to_big_state, &inputs, inputs.len() * N_LANES, 0);
         }
         for inputs in sub_component_inputs.verify_bitwise_xor_9 {
-            verify_bitwise_xor_9_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                verify_bitwise_xor_9_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
         for inputs in sub_component_inputs.verify_bitwise_xor_8 {
-            verify_bitwise_xor_8_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                verify_bitwise_xor_8_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
 
         (

@@ -12,7 +12,7 @@ use stwo_cairo_adapter::{ProverInput, PublicSegmentContext};
 use crate::witness::builtins::get_builtins;
 use crate::witness::cairo_claim_generator::{get_sub_components, CairoClaimGenerator};
 use crate::witness::opcodes::get_opcodes;
-use crate::witness::prelude::{PreProcessedTrace, M31};
+use crate::witness::prelude::{AddInputs, PreProcessedTrace, M31};
 use crate::witness::range_checks::get_range_checks;
 
 fn extract_public_segments(
@@ -175,8 +175,8 @@ pub fn create_cairo_claim_generator(
         .map(M31::from_u32_unchecked)
     {
         let id = memory_address_to_id_trace_generator.get_id(addr);
-        memory_address_to_id_trace_generator.add_input(&addr);
-        memory_id_to_value_trace_generator.add_input(&id);
+        memory_address_to_id_trace_generator.add_input(&addr, 0);
+        memory_id_to_value_trace_generator.add_input(&id, 0);
     }
 
     cairo_claim_generator
