@@ -719,7 +719,7 @@ impl CairoClaimGenerator {
     }
 
     pub fn write_trace(
-        mut self,
+        self,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>>,
         CairoClaim,
@@ -812,8 +812,8 @@ impl CairoClaimGenerator {
                         self.verify_instruction.as_ref().unwrap(),
                         self.range_check_7_2_5.as_ref().unwrap(),
                         self.verify_bitwise_xor_8.as_ref().unwrap(),
-                        self.blake_round.as_mut().unwrap(),
-                        self.triple_xor_32.as_mut().unwrap(),
+                        self.blake_round.as_ref().unwrap(),
+                        self.triple_xor_32.as_ref().unwrap(),
                     ));
                 });
             }
@@ -1093,7 +1093,7 @@ impl CairoClaimGenerator {
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.memory_id_to_big.as_ref().unwrap(),
                     self.range_check_7_2_5.as_ref().unwrap(),
-                    self.blake_g.as_mut().unwrap(),
+                    self.blake_g.as_ref().unwrap(),
                 );
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
@@ -1242,7 +1242,7 @@ impl CairoClaimGenerator {
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.memory_id_to_big.as_ref().unwrap(),
                     self.range_check_8.as_ref().unwrap(),
-                    self.partial_ec_mul_generic.as_mut().unwrap(),
+                    self.partial_ec_mul_generic.as_ref().unwrap(),
                 );
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
@@ -1269,7 +1269,7 @@ impl CairoClaimGenerator {
                 let (trace, claim, interaction_gen) = gen.write_trace(
                     self.memory_id_to_big.as_ref().unwrap(),
                     self.range_check_8.as_ref().unwrap(),
-                    self.partial_ec_mul_window_bits_18.as_mut().unwrap(),
+                    self.partial_ec_mul_window_bits_18.as_ref().unwrap(),
                 );
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
@@ -1307,7 +1307,7 @@ impl CairoClaimGenerator {
                 let (trace, claim, interaction_gen) = gen.write_trace(
                     self.memory_id_to_big.as_ref().unwrap(),
                     self.range_check_8.as_ref().unwrap(),
-                    self.partial_ec_mul_window_bits_9.as_mut().unwrap(),
+                    self.partial_ec_mul_window_bits_9.as_ref().unwrap(),
                 );
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
@@ -1341,13 +1341,13 @@ impl CairoClaimGenerator {
             .map(|gen| {
                 let (trace, claim, interaction_gen) = gen.write_trace(
                     self.memory_id_to_big.as_ref().unwrap(),
-                    self.poseidon_full_round_chain.as_mut().unwrap(),
-                    self.range_check_252_width_27.as_mut().unwrap(),
-                    self.cube_252.as_mut().unwrap(),
+                    self.poseidon_full_round_chain.as_ref().unwrap(),
+                    self.range_check_252_width_27.as_ref().unwrap(),
+                    self.cube_252.as_ref().unwrap(),
                     self.range_check_3_3_3_3_3.as_ref().unwrap(),
                     self.range_check_4_4_4_4.as_ref().unwrap(),
                     self.range_check_4_4.as_ref().unwrap(),
-                    self.poseidon_3_partial_rounds_chain.as_mut().unwrap(),
+                    self.poseidon_3_partial_rounds_chain.as_ref().unwrap(),
                 );
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
@@ -1361,10 +1361,10 @@ impl CairoClaimGenerator {
             .map(|gen| {
                 let (trace, claim, interaction_gen) = gen.write_trace(
                     self.poseidon_round_keys.as_ref().unwrap(),
-                    self.cube_252.as_mut().unwrap(),
+                    self.cube_252.as_ref().unwrap(),
                     self.range_check_4_4_4_4.as_ref().unwrap(),
                     self.range_check_4_4.as_ref().unwrap(),
-                    self.range_check_252_width_27.as_mut().unwrap(),
+                    self.range_check_252_width_27.as_ref().unwrap(),
                 );
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
@@ -1374,7 +1374,7 @@ impl CairoClaimGenerator {
             .poseidon_full_round_chain
             .map(|gen| {
                 let (trace, claim, interaction_gen) = gen.write_trace(
-                    self.cube_252.as_mut().unwrap(),
+                    self.cube_252.as_ref().unwrap(),
                     self.poseidon_round_keys.as_ref().unwrap(),
                     self.range_check_3_3_3_3_3.as_ref().unwrap(),
                 );

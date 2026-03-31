@@ -25,13 +25,13 @@ impl ClaimGenerator {
     pub fn write_trace(
         self,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-        poseidon_full_round_chain_state: &mut poseidon_full_round_chain::ClaimGenerator,
-        range_check_252_width_27_state: &mut range_check_252_width_27::ClaimGenerator,
-        cube_252_state: &mut cube_252::ClaimGenerator,
+        poseidon_full_round_chain_state: &poseidon_full_round_chain::ClaimGenerator,
+        range_check_252_width_27_state: &range_check_252_width_27::ClaimGenerator,
+        cube_252_state: &cube_252::ClaimGenerator,
         range_check_3_3_3_3_3_state: &range_check_3_3_3_3_3::ClaimGenerator,
         range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
         range_check_4_4_state: &range_check_4_4::ClaimGenerator,
-        poseidon_3_partial_rounds_chain_state: &mut poseidon_3_partial_rounds_chain::ClaimGenerator,
+        poseidon_3_partial_rounds_chain_state: &poseidon_3_partial_rounds_chain::ClaimGenerator,
     ) -> (
         ComponentTrace<N_TRACE_COLUMNS>,
         Claim,
@@ -71,28 +71,53 @@ impl ClaimGenerator {
             poseidon_3_partial_rounds_chain_state,
         );
         for inputs in sub_component_inputs.memory_id_to_big {
-            memory_id_to_big_state.add_packed_inputs(&inputs, 0);
+            add_inputs(memory_id_to_big_state, &inputs, inputs.len() * N_LANES, 0);
         }
         for inputs in sub_component_inputs.poseidon_full_round_chain {
-            poseidon_full_round_chain_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                poseidon_full_round_chain_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
         for inputs in sub_component_inputs.range_check_252_width_27 {
-            range_check_252_width_27_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                range_check_252_width_27_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
         for inputs in sub_component_inputs.cube_252 {
-            cube_252_state.add_packed_inputs(&inputs, 0);
+            add_inputs(cube_252_state, &inputs, inputs.len() * N_LANES, 0);
         }
         for inputs in sub_component_inputs.range_check_3_3_3_3_3 {
-            range_check_3_3_3_3_3_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                range_check_3_3_3_3_3_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
         for inputs in sub_component_inputs.range_check_4_4_4_4 {
-            range_check_4_4_4_4_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                range_check_4_4_4_4_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
         for inputs in sub_component_inputs.range_check_4_4 {
-            range_check_4_4_state.add_packed_inputs(&inputs, 0);
+            add_inputs(range_check_4_4_state, &inputs, inputs.len() * N_LANES, 0);
         }
         for inputs in sub_component_inputs.poseidon_3_partial_rounds_chain {
-            poseidon_3_partial_rounds_chain_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                poseidon_3_partial_rounds_chain_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
 
         (
@@ -104,8 +129,13 @@ impl ClaimGenerator {
             },
         )
     }
+}
 
-    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], _relation_index: usize) {
+impl AddInputs for ClaimGenerator {
+    type PackedInputType = PackedInputType;
+    type InputType = InputType;
+
+    fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], _relation_index: usize) {
         let merged: HashMap<InputType, u32> = packed_inputs
             .par_iter()
             .flat_map(|p| p.unpack())
@@ -126,6 +156,12 @@ impl ClaimGenerator {
                 .or_insert_with(|| AtomicU32::new(0))
                 .fetch_add(v, Ordering::Relaxed);
         }
+    }
+    fn add_input(&self, input: &InputType, _relation_index: usize) {
+        self.mults
+            .entry(*input)
+            .or_insert_with(|| AtomicU32::new(0))
+            .fetch_add(1, Ordering::Relaxed);
     }
 }
 
@@ -149,13 +185,13 @@ fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     mults: Vec<PackedM31>,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-    poseidon_full_round_chain_state: &mut poseidon_full_round_chain::ClaimGenerator,
-    range_check_252_width_27_state: &mut range_check_252_width_27::ClaimGenerator,
-    cube_252_state: &mut cube_252::ClaimGenerator,
+    poseidon_full_round_chain_state: &poseidon_full_round_chain::ClaimGenerator,
+    range_check_252_width_27_state: &range_check_252_width_27::ClaimGenerator,
+    cube_252_state: &cube_252::ClaimGenerator,
     range_check_3_3_3_3_3_state: &range_check_3_3_3_3_3::ClaimGenerator,
     range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
     range_check_4_4_state: &range_check_4_4::ClaimGenerator,
-    poseidon_3_partial_rounds_chain_state: &mut poseidon_3_partial_rounds_chain::ClaimGenerator,
+    poseidon_3_partial_rounds_chain_state: &poseidon_3_partial_rounds_chain::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,
