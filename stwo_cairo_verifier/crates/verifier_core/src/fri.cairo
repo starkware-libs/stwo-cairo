@@ -552,7 +552,31 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
     }
 }
 
-/// Folds `2^n` evaluations into a single evaluation by repeatedly applying `fri_fold`.
+/// Shifts decommitment positions right by `leaf_log_size` and deduplicates them, producing
+/// Merkle tree positions for packed leaves. When `leaf_log_size == 0`, it returns the positions
+/// unchanged.
+///
+/// It assumes that `decommitment positions` is sorted in ascending order.
+fn build_merkle_verification_inputs(
+    decommitment_positions: Span<u32>, leaf_log_size: u32,
+) -> Span<u32> {
+    if leaf_log_size == 0 {
+        return decommitment_positions;
+    }
+    let leaf_size = pow2(leaf_log_size);
+    let mut merkle_positions = array![];
+    let mut prev: Option<u32> = Option::None;
+    for pos in decommitment_positions {
+        let merkle_pos = *pos / leaf_size;
+        if prev != Option::Some(merkle_pos) {
+            merkle_positions.append(merkle_pos);
+            prev = Option::Some(merkle_pos);
+        }
+    }
+    merkle_positions.span()
+}
+
+/// Folds `2^n` evaluations into a single evaluation using precomputed twiddles.
 ///
 /// # Arguments
 ///
