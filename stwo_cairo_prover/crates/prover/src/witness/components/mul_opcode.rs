@@ -48,37 +48,42 @@ impl ClaimGenerator {
             range_check_20_state,
         );
         for inputs in sub_component_inputs.verify_instruction {
-            verify_instruction_state.add_packed_inputs(&inputs, 0);
+            add_inputs(verify_instruction_state, &inputs, inputs.len() * N_LANES, 0);
         }
         for inputs in sub_component_inputs.memory_address_to_id {
-            memory_address_to_id_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                memory_address_to_id_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
         for inputs in sub_component_inputs.memory_id_to_big {
-            memory_id_to_big_state.add_packed_inputs(&inputs, 0);
+            add_inputs(memory_id_to_big_state, &inputs, inputs.len() * N_LANES, 0);
         }
         for inputs in sub_component_inputs.range_check_20 {
-            range_check_20_state.add_packed_inputs(&inputs, 0);
+            add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 0);
         }
         for inputs in sub_component_inputs.range_check_20_b {
-            range_check_20_state.add_packed_inputs(&inputs, 1);
+            add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 1);
         }
         for inputs in sub_component_inputs.range_check_20_c {
-            range_check_20_state.add_packed_inputs(&inputs, 2);
+            add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 2);
         }
         for inputs in sub_component_inputs.range_check_20_d {
-            range_check_20_state.add_packed_inputs(&inputs, 3);
+            add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 3);
         }
         for inputs in sub_component_inputs.range_check_20_e {
-            range_check_20_state.add_packed_inputs(&inputs, 4);
+            add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 4);
         }
         for inputs in sub_component_inputs.range_check_20_f {
-            range_check_20_state.add_packed_inputs(&inputs, 5);
+            add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 5);
         }
         for inputs in sub_component_inputs.range_check_20_g {
-            range_check_20_state.add_packed_inputs(&inputs, 6);
+            add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 6);
         }
         for inputs in sub_component_inputs.range_check_20_h {
-            range_check_20_state.add_packed_inputs(&inputs, 7);
+            add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 7);
         }
 
         (
