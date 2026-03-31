@@ -16,6 +16,9 @@ use crate::utils::{ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, pow2};
 use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 
+/// Number of QM31 evaluations packed into a single Merkle leaf when `fold_step > 1`.
+pub const LOG_PACKED_LEAF_SIZE: u32 = 2;
+
 /// Fold step size for circle polynomials.
 pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
 
@@ -305,21 +308,25 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
             fri_witness.next().is_none(), "{}", FriVerificationError::FirstLayerEvaluationsInvalid,
         );
 
-        let degree_bound_by_column = ArrayImpl::new_repeated(
-            n: QM31_EXTENSION_DEGREE, v: *self.log_bound,
+        let leaf_log_size: u32 = if self.commitment_domain.log_size() >= LOG_PACKED_LEAF_SIZE
+            && *self.fold_step > 1 {
+            LOG_PACKED_LEAF_SIZE
+        } else {
+            0
+        };
+        let merkle_positions = build_merkle_verification_inputs(
+            column_decommitment_positions, leaf_log_size,
         );
+        let n_columns = QM31_EXTENSION_DEGREE * pow2(leaf_log_size);
+        let degree_bound_by_column = ArrayImpl::new_repeated(n: n_columns, v: *self.log_bound);
         let merkle_verifier = MerkleVerifier {
             root: *self.proof.commitment,
-            tree_height: log_size,
+            tree_height: log_size - leaf_log_size,
             column_log_deg_bounds: degree_bound_by_column.span(),
         };
 
         merkle_verifier
-            .verify(
-                column_decommitment_positions,
-                decommitted_values.span(),
-                self.proof.decommitment.clone(),
-            );
+            .verify(merkle_positions, decommitted_values.span(), self.proof.decommitment.clone());
 
         sparse_evaluation
     }
@@ -372,20 +379,28 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
         }
 
         let column_log_size = self.domain.log_size();
+        let leaf_log_size: u32 = if self.domain.log_size() >= LOG_PACKED_LEAF_SIZE
+            && *self.fold_step > 1 {
+            LOG_PACKED_LEAF_SIZE
+        } else {
+            0
+        };
+        let merkle_positions = build_merkle_verification_inputs(
+            decommitment_positions, leaf_log_size,
+        );
+        let n_columns = QM31_EXTENSION_DEGREE * pow2(leaf_log_size);
         let degree_bound_by_column = ArrayImpl::new_repeated(
-            n: QM31_EXTENSION_DEGREE, v: *self.log_degree_bound,
+            n: n_columns, v: *self.log_degree_bound,
         );
         let merkle_verifier = MerkleVerifier {
             root: **self.proof.commitment,
-            tree_height: column_log_size,
+            tree_height: column_log_size - leaf_log_size,
             column_log_deg_bounds: degree_bound_by_column.span(),
         };
 
         merkle_verifier
             .verify(
-                decommitment_positions,
-                decommitted_values.span(),
-                (*self.proof.decommitment).clone(),
+                merkle_positions, decommitted_values.span(), (*self.proof.decommitment).clone(),
             );
 
         let folded_queries = queries.fold(*self.fold_step);
