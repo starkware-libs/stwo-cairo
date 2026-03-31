@@ -19,13 +19,13 @@ use crate::components::{
     pedersen_aggregator_window_bits_18, pedersen_aggregator_window_bits_9, pedersen_builtin,
     pedersen_builtin_narrow_windows, pedersen_points_table_window_bits_18,
     pedersen_points_table_window_bits_9, poseidon_3_partial_rounds_chain, poseidon_aggregator,
-    poseidon_builtin, poseidon_full_round_chain, poseidon_round_keys, qm_31_add_mul_opcode,
-    range_check96_builtin, range_check_11, range_check_12, range_check_18, range_check_20,
-    range_check_252_width_27, range_check_3_3_3_3_3, range_check_3_6_6_3, range_check_4_3,
-    range_check_4_4, range_check_4_4_4_4, range_check_6, range_check_7_2_5, range_check_8,
-    range_check_9_9, range_check_builtin, ret_opcode, triple_xor_32, verify_bitwise_xor_12,
-    verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9,
-    verify_instruction,
+    poseidon_builtin, poseidon_full_round_chain, poseidon_round_keys, program_component,
+    qm_31_add_mul_opcode, range_check96_builtin, range_check_11, range_check_12, range_check_18,
+    range_check_20, range_check_252_width_27, range_check_3_3_3_3_3, range_check_3_6_6_3,
+    range_check_4_3, range_check_4_4, range_check_4_4_4_4, range_check_6, range_check_7_2_5,
+    range_check_8, range_check_9_9, range_check_builtin, ret_opcode, triple_xor_32,
+    verify_bitwise_xor_12, verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8,
+    verify_bitwise_xor_9, verify_instruction, verify_program,
 };
 use crate::relations::CommonLookupElements;
 
@@ -66,6 +66,8 @@ pub struct CairoComponents {
     pub range_check_builtin: Option<range_check_builtin::Component>,
     pub ec_op_builtin: Option<ec_op_builtin::Component>,
     pub partial_ec_mul_generic: Option<partial_ec_mul_generic::Component>,
+    pub verify_program: Option<verify_program::Component>,
+    pub program_component: Option<program_component::Component>,
     pub pedersen_aggregator_window_bits_18: Option<pedersen_aggregator_window_bits_18::Component>,
     pub partial_ec_mul_window_bits_18: Option<partial_ec_mul_window_bits_18::Component>,
     pub pedersen_points_table_window_bits_18:
@@ -516,6 +518,26 @@ impl CairoComponents {
                             .claimed_sum,
                     )
                 });
+        let verify_program_component = cairo_claim.verify_program.map(|verify_program| {
+            verify_program::Component::new(
+                tree_span_provider,
+                verify_program::Eval {
+                    claim: verify_program,
+                    common_lookup_elements: common_lookup_elements.clone(),
+                },
+                interaction_claim.verify_program.unwrap().claimed_sum,
+            )
+        });
+        let program_component_component = cairo_claim.program_component.map(|program_component| {
+            program_component::Component::new(
+                tree_span_provider,
+                program_component::Eval {
+                    claim: program_component,
+                    common_lookup_elements: common_lookup_elements.clone(),
+                },
+                interaction_claim.program_component.unwrap().claimed_sum,
+            )
+        });
         let pedersen_aggregator_window_bits_18_component = cairo_claim
             .pedersen_aggregator_window_bits_18
             .map(|pedersen_aggregator_window_bits_18| {
@@ -945,6 +967,8 @@ impl CairoComponents {
             range_check_builtin: range_check_builtin_component,
             ec_op_builtin: ec_op_builtin_component,
             partial_ec_mul_generic: partial_ec_mul_generic_component,
+            verify_program: verify_program_component,
+            program_component: program_component_component,
             pedersen_aggregator_window_bits_18: pedersen_aggregator_window_bits_18_component,
             partial_ec_mul_window_bits_18: partial_ec_mul_window_bits_18_component,
             pedersen_points_table_window_bits_18: pedersen_points_table_window_bits_18_component,
@@ -1088,6 +1112,12 @@ impl CairoComponents {
             vec.push(component as &dyn Component);
         }
         if let Some(component) = &self.partial_ec_mul_generic {
+            vec.push(component as &dyn Component);
+        }
+        if let Some(component) = &self.verify_program {
+            vec.push(component as &dyn Component);
+        }
+        if let Some(component) = &self.program_component {
             vec.push(component as &dyn Component);
         }
         if let Some(component) = &self.pedersen_aggregator_window_bits_18 {
@@ -1410,6 +1440,20 @@ impl Display for CairoComponents {
             writeln!(
                 f,
                 "PartialEcMulGeneric: {}",
+                indented_component_display(component)
+            )?;
+        }
+        if let Some(ref component) = self.verify_program {
+            writeln!(
+                f,
+                "VerifyProgram: {}",
+                indented_component_display(component)
+            )?;
+        }
+        if let Some(ref component) = self.program_component {
+            writeln!(
+                f,
+                "ProgramComponent: {}",
                 indented_component_display(component)
             )?;
         }

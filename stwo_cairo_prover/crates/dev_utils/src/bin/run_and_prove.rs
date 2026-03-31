@@ -75,6 +75,7 @@ fn main() -> Result<()> {
         args.program_type,
         LayoutName::all_cairo_stwo,
         args.program_arguments_file.as_ref(),
+        false,
     )?;
 
     let result = create_and_serialize_proof(
