@@ -14,6 +14,8 @@ use crate::fri::FriConfig;
 
 mod quotients;
 pub mod verifier;
+#[cfg(test)]
+mod verifier_test;
 
 #[derive(Drop, Serde, Copy)]
 pub struct PcsConfig {
