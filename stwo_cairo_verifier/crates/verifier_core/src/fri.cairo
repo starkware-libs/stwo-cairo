@@ -9,7 +9,7 @@ use crate::fields::m31::M31;
 use crate::fields::qm31::{QM31, QM31Serde, QM31Trait, QM31_EXTENSION_DEGREE};
 use crate::fields::{BatchInvertible, Invertible};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomain, CircleDomainImpl};
-use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly};
+use crate::poly::line::{LineDomain, LineDomainImpl, LineDomainTrait, LineEvaluationImpl, LinePoly};
 use crate::poly::utils::fri_fold;
 use crate::queries::{Queries, QueriesImpl};
 use crate::utils::{ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, pow2};
@@ -385,7 +385,8 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
             );
 
         let folded_queries = queries.fold(*self.fold_step);
-        let folded_evals = sparse_evaluation.fold_line(*self.folding_alpha, *self.domain);
+        let folded_evals = sparse_evaluation
+            .fold_line(*self.folding_alpha, *self.domain, *self.fold_step);
 
         (folded_queries, folded_evals)
     }
@@ -467,27 +468,32 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
         SparseEvaluation { subset_evals, subset_domain_initial_indexes }
     }
 
-    /// Folds evaluations of a degree `d` univariate polynomial into evaluations of a degree `d/2`
-    /// univariate polynomial.
+    /// Folds evaluations of a degree `d` univariate polynomial into evaluations of a degree
+    /// `d / 2^fold_step` univariate polynomial.
     fn fold_line(
-        self: @SparseEvaluation, fold_alpha: QM31, source_domain: LineDomain,
+        self: @SparseEvaluation, fold_alpha: QM31, source_domain: LineDomain, fold_step: u32,
     ) -> Array<QM31> {
-        let mut domain_initials = array![];
+        let mut folded_eval = array![];
 
-        for subset_domain_initial_index in *self.subset_domain_initial_indexes {
-            domain_initials.append(source_domain.at(*subset_domain_initial_index));
+        for (subset_eval, subset_domain_initial_index) in zip_eq(
+            self.subset_evals.span(), *self.subset_domain_initial_indexes,
+        ) {
+            let fold_domain_initial = source_domain.coset.index_at(*subset_domain_initial_index);
+            let fold_domain = LineDomainImpl::new_unchecked(
+                CosetImpl::new(fold_domain_initial, fold_step),
+            );
+            let mut x_coords = array![];
+            let mut j = 0;
+            while j < fold_domain.size() {
+                let point = fold_domain.at(bit_reverse_index(j, fold_step));
+                x_coords.append_span([point, -point].span());
+                j += 2;
+            }
+
+            folded_eval.append(fold_coset(subset_eval.span(), x_coords.span(), fold_alpha));
         }
 
-        let mut domain_initials_inv = BatchInvertible::batch_inverse(domain_initials);
-        let mut res = array![];
-
-        for (subset_eval, x_inv) in zip_eq(self.subset_evals.span(), domain_initials_inv.span()) {
-            let values: Box<[QM31; FOLD_FACTOR]> = *subset_eval.span().try_into().unwrap();
-            let [f_at_x, f_at_neg_x] = values.unbox();
-            res.append(fri_fold(f_at_x, f_at_neg_x, *x_inv, fold_alpha));
-        }
-
-        res
+        folded_eval
     }
 
     /// Folds evaluations of a degree `d` circle polynomial into evaluations of a
