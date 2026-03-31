@@ -41,7 +41,6 @@ pub mod poseidon_aggregator;
 pub mod poseidon_builtin;
 pub mod poseidon_full_round_chain;
 pub mod poseidon_round_keys;
-pub mod program_component;
 pub mod qm_31_add_mul_opcode;
 pub mod range_check96_builtin;
 pub mod range_check_11;

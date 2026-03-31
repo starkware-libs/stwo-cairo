@@ -1,7 +1,6 @@
 use anyhow::Result;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use itertools::Itertools;
-use stwo_cairo_common::preprocessed_columns::program::MAX_PROGRAM_LOG_LEN;
 use tracing::{info, span, Level};
 
 use super::memory::{MemoryBuilder, MemoryConfig};
@@ -21,8 +20,8 @@ pub fn adapt(runner: &CairoRunner, pad_program_segment: bool) -> Result<ProverIn
     let builtin_segments = runner.get_builtin_segments();
 
     let program_length = relocatable_memory[0].len();
-    let padded_program_length = 1 << MAX_PROGRAM_LOG_LEN;
-    // Pad the program segment (segment 0) to constant size.
+    let padded_program_length = program_length.next_power_of_two();
+    // Pad the program segment (segment 0) such that its length is a power of 2.
     if pad_program_segment {
         let program_segment = &mut relocatable_memory[0];
         assert!(program_segment.len() <= padded_program_length);

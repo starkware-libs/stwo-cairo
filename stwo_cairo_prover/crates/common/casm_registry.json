@@ -1,5 +1,5 @@
 {
-  "air_version": "64d4253e",
+  "air_version": "1160acc8",
   "canonical_ppt_n_trace_cells": 543100528,
   "canonical_without_pedersen_ppt_n_trace_cells": 73338480,
   "air_fns": {
@@ -1281,43 +1281,23 @@
       "max_instances_uses_limit": 299593,
       "max_instances_rows_limit": 1048576
     },
-    "program_component": {
-      "trace_type": "Component",
-      "log_height": 12,
-      "num_state_cols": 1,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "ProgramComponent": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
     "verify_program": {
       "trace_type": "Builtin",
       "log_height": null,
-      "num_state_cols": 29,
+      "num_state_cols": 1,
       "use_lookup_cols": {
-        "ProgramComponent": 1,
         "MemoryAddressToId": 1,
         "MemoryIdToBig": 1
       },
       "yield_lookup_cols": {},
       "lookup_rows": {
-        "ProgramComponent": 1,
         "MemoryAddressToId": 1,
         "MemoryIdToBig": 1
       },
       "padding_type": "None",
-      "total_num_trace_cols": 37,
-      "trace_cells_upper_bound": 37,
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
       "uses_upper_bound": {
-        "program_component": 1,
         "memory_address_to_id": 1,
         "range_check_9_9": 2,
         "range_check_9_9_b": 2,
