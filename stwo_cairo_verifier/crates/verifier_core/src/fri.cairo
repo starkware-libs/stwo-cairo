@@ -5,9 +5,9 @@ use stwo_verifier_utils::zip_eq::zip_eq;
 use crate::Hash;
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::{CirclePointM31Impl, CosetImpl};
+use crate::fields::Invertible;
 use crate::fields::m31::M31;
 use crate::fields::qm31::{QM31, QM31Serde, QM31Trait, QM31_EXTENSION_DEGREE};
-use crate::fields::{BatchInvertible, Invertible};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomain, CircleDomainImpl};
 use crate::poly::line::{LineDomain, LineDomainImpl, LineDomainTrait, LineEvaluationImpl, LinePoly};
 use crate::poly::utils::fri_fold;
@@ -179,7 +179,11 @@ fn decommit_inner_layers(
     verifier: @FriVerifier, queries: Queries, mut first_layer_sparse_eval: SparseEvaluation,
 ) -> (Queries, Array<QM31>) {
     let mut layer_query_evals = first_layer_sparse_eval
-        .fold_circle(*verifier.first_layer.folding_alpha, *verifier.first_layer.commitment_domain);
+        .fold_circle(
+            *verifier.first_layer.folding_alpha,
+            *verifier.first_layer.commitment_domain,
+            *verifier.config.fold_step,
+        );
 
     let mut layer_queries = queries;
     for layer in verifier.inner_layers.span() {
@@ -497,29 +501,54 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
     }
 
     /// Folds evaluations of a degree `d` circle polynomial into evaluations of a
-    /// degree `d/2` univariate polynomial.
+    /// degree `d / 2^fold_step` univariate polynomial.
     fn fold_circle(
-        self: @SparseEvaluation, fold_alpha: QM31, source_domain: CircleDomain,
+        self: @SparseEvaluation, fold_alpha: QM31, source_domain: CircleDomain, fold_step: u32,
     ) -> Array<QM31> {
-        let mut domain_initial_ys = array![];
+        let mut folded_eval = array![];
 
-        for subset_domain_initial_index in *self.subset_domain_initial_indexes {
-            domain_initial_ys.append(source_domain.at(*subset_domain_initial_index).y);
+        if fold_step == 1 {
+            for (subset_eval, subset_domain_initial_index) in zip_eq(
+                self.subset_evals.span(), *self.subset_domain_initial_indexes,
+            ) {
+                let boxed_pair: Box<[QM31; 2]> = *subset_eval.span().try_into().unwrap();
+                let [v0, v1] = boxed_pair.unbox();
+                let circle_point = source_domain.at(*subset_domain_initial_index);
+                folded_eval.append(fri_fold(v0, v1, circle_point.y.inverse(), fold_alpha));
+            }
+            return folded_eval;
         }
 
-        let mut domain_initial_ys_inv = BatchInvertible::batch_inverse(domain_initial_ys);
-        let mut res = array![];
+        for (subset_eval, subset_domain_initial_index) in zip_eq(
+            self.subset_evals.span(), *self.subset_domain_initial_indexes,
+        ) {
+            let fold_domain_initial = source_domain.index_at(*subset_domain_initial_index);
+            let circle_fold_domain = CircleDomainImpl::new(
+                CosetImpl::new(fold_domain_initial, fold_step - 1),
+            );
 
-        for (subset_eval, y_inv) in zip_eq(self.subset_evals.span(), domain_initial_ys_inv.span()) {
-            let values: Box<[QM31; CIRCLE_TO_LINE_FOLD_FACTOR]> = *subset_eval
-                .span()
-                .try_into()
-                .unwrap();
-            let [f_at_p, f_at_neg_p] = values.unbox();
-            res.append(fri_fold(f_at_p, f_at_neg_p, *y_inv, fold_alpha));
+            let mut subset_eval = subset_eval.span();
+            let mut x_coords = array![];
+            let mut line_eval_domain = array![];
+            let mut j = 0;
+            // Iterate with stride 4. This is done in order to only populate the array `x_coords`
+            // with coordinates that are actually needed.
+            // Since fold_step > 1, we are guaranteed that circle_fold_domain = 2^k with k >= 2,
+            // hence the indices are never out of bounds.
+            while let Some(evals) = subset_eval.multi_pop_front::<4>() {
+                let [v0, v1, v2, v3] = evals.unbox();
+                let circle_pt_0 = circle_fold_domain.at(bit_reverse_index(j, fold_step));
+                let circle_pt_1 = circle_fold_domain.at(bit_reverse_index(j + 2, fold_step));
+                line_eval_domain.append(fri_fold(v0, v1, circle_pt_0.y.inverse(), fold_alpha));
+                line_eval_domain.append(fri_fold(v2, v3, circle_pt_1.y.inverse(), fold_alpha));
+                x_coords.append(circle_pt_0.x);
+                j += 4;
+            }
+            let alpha_sq = fold_alpha * fold_alpha;
+            folded_eval.append(fold_coset(line_eval_domain.span(), x_coords.span(), alpha_sq));
         }
 
-        res
+        folded_eval
     }
 }
 
