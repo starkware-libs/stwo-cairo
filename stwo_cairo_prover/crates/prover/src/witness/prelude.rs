@@ -30,6 +30,7 @@ pub use stwo_cairo_common::preprocessed_columns::poseidon::PoseidonRoundKeys;
 pub use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
     PreProcessedColumn, PreProcessedTrace, Seq,
 };
+pub use stwo_cairo_common::preprocessed_columns::program::ProgramColumn;
 pub use stwo_cairo_common::prover_types::cpu::*;
 pub use stwo_cairo_common::prover_types::simd::*;
 pub use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;

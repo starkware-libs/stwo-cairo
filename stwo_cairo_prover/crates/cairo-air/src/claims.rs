@@ -54,7 +54,6 @@ pub struct CairoClaim {
     pub ec_op_builtin: Option<ec_op_builtin::Claim>,
     pub partial_ec_mul_generic: Option<partial_ec_mul_generic::Claim>,
     pub verify_program: Option<verify_program::Claim>,
-    pub program_component: Option<program_component::Claim>,
     pub pedersen_aggregator_window_bits_18: Option<pedersen_aggregator_window_bits_18::Claim>,
     pub partial_ec_mul_window_bits_18: Option<partial_ec_mul_window_bits_18::Claim>,
     pub pedersen_points_table_window_bits_18: Option<pedersen_points_table_window_bits_18::Claim>,
@@ -518,9 +517,6 @@ impl CairoClaim {
         self.verify_program
             .as_ref()
             .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.program_component
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
         self.pedersen_aggregator_window_bits_18
             .as_ref()
             .inspect(|c| log_sizes_list.push(c.log_sizes()));
@@ -883,13 +879,6 @@ impl CairoClaim {
             component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
-        if let Some(_c) = self.program_component {
-            component_log_sizes.push(program_component::LOG_SIZE);
-            component_enable_bits.push(true);
-        } else {
-            component_log_sizes.push(0_u32);
-            component_enable_bits.push(false);
-        }
         if let Some(c) = self.pedersen_aggregator_window_bits_18 {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
@@ -1165,7 +1154,6 @@ pub struct CairoInteractionClaim {
     pub ec_op_builtin: Option<ec_op_builtin::InteractionClaim>,
     pub partial_ec_mul_generic: Option<partial_ec_mul_generic::InteractionClaim>,
     pub verify_program: Option<verify_program::InteractionClaim>,
-    pub program_component: Option<program_component::InteractionClaim>,
     pub pedersen_aggregator_window_bits_18:
         Option<pedersen_aggregator_window_bits_18::InteractionClaim>,
     pub partial_ec_mul_window_bits_18: Option<partial_ec_mul_window_bits_18::InteractionClaim>,
@@ -1398,11 +1386,6 @@ impl CairoInteractionClaim {
             claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.verify_program {
-            claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
-        }
-        if let Some(c) = self.program_component {
             claimed_sums.push(c.claimed_sum);
         } else {
             claimed_sums.push(SecureField::zero());
@@ -1733,9 +1716,6 @@ pub fn lookup_sum(
             sum += ic.claimed_sum;
         });
     interaction_claim.verify_program.as_ref().inspect(|ic| {
-        sum += ic.claimed_sum;
-    });
-    interaction_claim.program_component.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
     interaction_claim
