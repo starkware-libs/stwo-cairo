@@ -15,6 +15,9 @@ use crate::utils::{ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, pow2};
 use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 
+/// Number of QM31 evaluations packed into a single Merkle leaf when `fold_step > 1`.
+pub const LOG_PACKED_LEAF_SIZE: u32 = 2;
+
 /// Fold step size for circle polynomials.
 pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
 
@@ -73,6 +76,8 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             folding_alpha: channel.draw_secure_felt(),
             // The circle-to-line fold is always equal to `config.fold_step`.
             fold_step: config.fold_step,
+            pack_leaves: commitment_domain.log_size() >= LOG_PACKED_LEAF_SIZE
+                && config.fold_step > 1,
         };
 
         let mut inner_layers = array![];
@@ -109,6 +114,8 @@ pub impl FriVerifierImpl of FriVerifierTrait {
                         layer_index,
                         proof: layer_proof,
                         fold_step,
+                        pack_leaves: layer_domain.log_size() >= LOG_PACKED_LEAF_SIZE
+                            && fold_step > 1,
                     },
                 );
 
@@ -259,6 +266,7 @@ struct FriFirstLayerVerifier {
     folding_alpha: QM31,
     proof: FriLayerProof,
     fold_step: u32,
+    pack_leaves: bool,
 }
 
 #[generate_trait]
@@ -332,6 +340,7 @@ struct FriInnerLayerVerifier {
     layer_index: usize,
     proof: @FriLayerProof,
     fold_step: u32,
+    pack_leaves: bool,
 }
 
 #[generate_trait]
