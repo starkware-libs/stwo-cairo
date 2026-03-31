@@ -581,7 +581,7 @@ pub mod tests {
                 channel_hash: ChannelHash::Blake2s,
                 pcs_config: PcsConfig {
                     pow_bits: 26,
-                    fri_config: FriConfig::new(0, 1, 70, 1),
+                    fri_config: FriConfig::new(0, 1, 70, 3),
                     lifting_log_size: None,
                 },
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
