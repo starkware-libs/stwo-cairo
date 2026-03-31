@@ -6,6 +6,7 @@ use crate::Hash;
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CosetImpl;
 use crate::fields::BatchInvertible;
+use crate::fields::m31::M31;
 use crate::fields::qm31::{QM31, QM31Serde, QM31Trait, QM31_EXTENSION_DEGREE};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomain, CircleDomainImpl};
 use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly};
@@ -514,6 +515,37 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
 
         res
     }
+}
+
+/// Folds `2^n` evaluations into a single evaluation using precomputed twiddles.
+///
+/// # Arguments
+///
+/// * `eval` contains evaluations on either a circle domain (for the circle-to-line case) or
+/// a coset (for the line-to-line case).
+/// * `twiddles` is a flat span of twiddle factors laid out as:
+///     `[fold_0_tw_0, ..., fold_0_tw_{2^(n-1)-1}, fold_1_tw_0, ..., fold_{n-1}_tw_0]`
+/// where `fold_i_tw_j` denotes the j-th twiddle in the i-th fold. The i-th fold has `2^(n-1-i)`
+/// twiddles.
+/// * `alpha`: the random folding factor.
+///
+/// The function assumes that `eval` is of length `2^n`, and `twiddles` is of length `2^n - 1`.
+pub fn fold_coset(eval: Span<QM31>, mut twiddles: Span<M31>, alpha: QM31) -> QM31 {
+    let mut current_eval = eval;
+    let mut folding_alpha = alpha;
+    #[cairofmt::skip]
+    while current_eval.len() > 1 {
+        let mut next_eval = array![];
+        while let Some(boxed_pair) = current_eval.multi_pop_front::<2>() {
+            let [v0, v1]: [QM31; 2] = boxed_pair.unbox();
+            let itwid = *twiddles.pop_front().unwrap();
+            next_eval.append(fri_fold(v0, v1, itwid, folding_alpha));
+        }
+        folding_alpha = folding_alpha * folding_alpha;
+        current_eval = next_eval.span();
+    };
+    assert!(twiddles.is_empty());
+    *current_eval[0]
 }
 
 /// Proof of an individual FRI layer.
