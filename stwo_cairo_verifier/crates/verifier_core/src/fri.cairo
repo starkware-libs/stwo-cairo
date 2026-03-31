@@ -1,10 +1,9 @@
 use core::array::SpanIter;
 use core::dict::Felt252Dict;
 use core::iter::{IntoIterator, Iterator};
-use stwo_verifier_utils::zip_eq::zip_eq;
 use crate::Hash;
 use crate::channel::{Channel, ChannelTrait};
-use crate::circle::{CirclePointM31Impl, CosetImpl};
+use crate::circle::{CirclePoint, CirclePointM31Impl, CosetImpl};
 use crate::fields::BatchInvertible;
 use crate::fields::m31::M31;
 use crate::fields::qm31::{QM31, QM31Serde, QM31Trait, QM31_EXTENSION_DEGREE};
@@ -179,7 +178,11 @@ fn decommit_inner_layers(
     verifier: @FriVerifier, queries: Queries, mut first_layer_sparse_eval: SparseEvaluation,
 ) -> (Queries, Array<QM31>) {
     let mut layer_query_evals = first_layer_sparse_eval
-        .fold_circle(*verifier.first_layer.folding_alpha, *verifier.first_layer.commitment_domain);
+        .fold_circle(
+            *verifier.first_layer.folding_alpha,
+            *verifier.first_layer.commitment_domain,
+            *verifier.config.fold_step,
+        );
 
     let mut layer_queries = queries;
     for layer in verifier.inner_layers.span() {
@@ -508,26 +511,53 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
     }
 
     /// Folds evaluations of a degree `d` circle polynomial into evaluations of a
-    /// degree `d/2` univariate polynomial.
+    /// degree `d / 2^fold_step` univariate polynomial.
     fn fold_circle(
-        self: @SparseEvaluation, fold_alpha: QM31, source_domain: CircleDomain,
+        self: @SparseEvaluation, fold_alpha: QM31, source_domain: CircleDomain, fold_step: u32,
     ) -> Array<QM31> {
-        let mut domain_initial_ys = array![];
-
+        // Collect all twiddle coordinates across all queries: first fold uses y-coordinates
+        // (circle-to-line), remaining folds use x-coordinates.
+        let mut all_coords = array![];
         for subset_domain_initial_index in *self.subset_domain_initial_indexes {
-            domain_initial_ys.append(source_domain.at(*subset_domain_initial_index).y);
+            let fold_domain_initial = source_domain.index_at(*subset_domain_initial_index);
+            let circle_fold_domain = CircleDomainImpl::new(
+                CosetImpl::new(fold_domain_initial, fold_step - 1),
+            );
+            // Collect the even-index points of the folding circle domain.
+            let mut circle_fold_points = array![];
+            let mut i: usize = 0;
+            // The first fold's inverse twiddles are the y-coordinates of `circle_fold_points`.
+            while i < circle_fold_domain.size() {
+                let p = circle_fold_domain.at(bit_reverse_index(i, fold_step));
+                circle_fold_points.append(p);
+                all_coords.append(p.y);
+                i += 2;
+            }
+            // The remaining inverse twiddles are the x-coordinates of even-index points of
+            // `circle_fold_points`, and their doublings.
+            if fold_step > 1 {
+                let mut x_coords = array![];
+                let mut circle_fold_points = circle_fold_points.span();
+                while let Some(boxed_pair) = circle_fold_points.multi_pop_front::<2>() {
+                    let [p, _]: [CirclePoint; 2] = boxed_pair.unbox();
+                    x_coords.append(p.x);
+                }
+                x_coords.append_span(fold_x_coords(x_coords.span(), fold_step - 1));
+                all_coords.append_span(x_coords.span());
+            }
         }
 
-        let mut domain_initial_ys_inv = BatchInvertible::batch_inverse(domain_initial_ys);
-        let mut res = array![];
+        // Batch invert all twiddles at once.
+        let all_twiddles = BatchInvertible::batch_inverse(all_coords);
+        let mut all_twiddles = all_twiddles.span();
 
-        for (subset_eval, y_inv) in zip_eq(self.subset_evals.span(), domain_initial_ys_inv.span()) {
-            let values: Box<[QM31; CIRCLE_TO_LINE_FOLD_FACTOR]> = *subset_eval
-                .span()
-                .try_into()
-                .unwrap();
-            let [f_at_p, f_at_neg_p] = values.unbox();
-            res.append(fri_fold(f_at_p, f_at_neg_p, *y_inv, fold_alpha));
+        // Fold each query's coset using its slice of precomputed twiddles.
+        let n_twiddles_per_query = pow2(fold_step) - 1;
+        let mut res = array![];
+        for subset_eval in self.subset_evals.span() {
+            let (query_twiddles, rest) = all_twiddles.split_at(n_twiddles_per_query);
+            all_twiddles = rest;
+            res.append(fold_coset(subset_eval.span(), query_twiddles, fold_alpha));
         }
 
         res
