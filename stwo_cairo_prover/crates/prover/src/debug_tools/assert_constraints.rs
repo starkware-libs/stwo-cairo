@@ -265,7 +265,8 @@ pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: Arc<PreP
     tree_builder.finalize_interaction();
 
     // Base trace.
-    let cairo_claim_generator = create_cairo_claim_generator(input, preprocessed_trace.clone());
+    let cairo_claim_generator =
+        create_cairo_claim_generator(input, preprocessed_trace.clone(), false);
     let mut tree_builder = commitment_scheme.tree_builder();
     let (claim, interaction_generator) = cairo_claim_generator.write_trace(&mut tree_builder);
     tree_builder.finalize_interaction();
