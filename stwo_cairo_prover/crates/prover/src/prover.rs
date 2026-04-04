@@ -165,7 +165,8 @@ where
     commitment_scheme.commit_tree(preprocessed_tree, channel);
 
     // Run Cairo.
-    let cairo_claim_generator = create_cairo_claim_generator(input, preprocessed_trace.clone());
+    let cairo_claim_generator =
+        create_cairo_claim_generator(input, preprocessed_trace.clone(), program_in_ppt);
     // Base trace.
     let mut tree_builder = commitment_scheme.tree_builder();
     let span = span!(Level::INFO, "Base trace").entered();
