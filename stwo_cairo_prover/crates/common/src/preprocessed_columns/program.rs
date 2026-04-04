@@ -8,7 +8,7 @@ use super::preprocessed_trace::PreProcessedColumn;
 use super::simd_prelude::*;
 use crate::prover_types::cpu::{Felt252, FELT252_N_WORDS};
 
-pub const PROGRAM_N_COLUMNS: usize = FELT252_N_WORDS;
+pub const PROGRAM_N_COLUMNS: usize = FELT252_N_WORDS + 1;
 
 static PROGRAM_TABLE: LazyLock<RwLock<Vec<[M31; FELT252_N_WORDS]>>> =
     LazyLock::new(|| RwLock::new(vec![[M31(0); FELT252_N_WORDS]]));
@@ -16,7 +16,7 @@ static PROGRAM_TABLE: LazyLock<RwLock<Vec<[M31; FELT252_N_WORDS]>>> =
 /// Sets the global PROGRAM_TABLE. Pre-computes 9-bit limbs from the raw `[u32; 8]` values.
 /// Called automatically when creating a preprocessed trace with program data.
 pub fn set_program_table(program: &[(u32, [u32; 8])]) {
-    let mut values: Vec<[M31; FELT252_N_WORDS]> = program
+    let values: Vec<[M31; FELT252_N_WORDS]> = program
         .iter()
         .map(|(_, v)| {
             let limbs = [
@@ -28,8 +28,6 @@ pub fn set_program_table(program: &[(u32, [u32; 8])]) {
             Felt252::from(limbs).get_limbs()
         })
         .collect();
-    // Pad to the length of the next power of 2.
-    values.resize(program.len().next_power_of_two(), [M31(0); FELT252_N_WORDS]);
     *PROGRAM_TABLE.write().unwrap() = values;
 }
 
@@ -41,6 +39,11 @@ pub fn get_program_limbs(index: usize) -> [M31; FELT252_N_WORDS] {
     } else {
         [M31(0); FELT252_N_WORDS]
     }
+}
+
+/// Returns the number of entries in the program table.
+pub fn get_program_len() -> usize {
+    PROGRAM_TABLE.read().unwrap().len()
 }
 
 #[derive(Debug)]
@@ -55,7 +58,11 @@ impl ProgramColumn {
         let column_data = (0..padded_len)
             .map(|i| {
                 if i < data.len() {
-                    data[i][col_index]
+                    if col_index == FELT252_N_WORDS {
+                        M31(1)
+                    } else {
+                        data[i][col_index]
+                    }
                 } else {
                     M31(0)
                 }

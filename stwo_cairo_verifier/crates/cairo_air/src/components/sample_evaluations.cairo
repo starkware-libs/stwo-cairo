@@ -1,4 +1,4 @@
-// AIR version 1160acc8
+// AIR version 234036a3-dirty
 use stwo_verifier_core::fields::m31::M31;
 pub const ADD_AP_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1435814162 }, M31 { inner: 1618992457 }, M31 { inner: 840348268 },
@@ -273,6 +273,6 @@ pub const VERIFY_INSTRUCTION_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1058351204 },
 ];
 pub const VERIFY_PROGRAM_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1253286041 }, M31 { inner: 1712881693 }, M31 { inner: 947747979 },
-    M31 { inner: 1770681791 },
+    M31 { inner: 569219114 }, M31 { inner: 1343621177 }, M31 { inner: 1979923119 },
+    M31 { inner: 1165274489 },
 ];

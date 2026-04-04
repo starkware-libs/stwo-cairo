@@ -1,5 +1,5 @@
 {
-  "air_version": "1160acc8",
+  "air_version": "234036a3-dirty",
   "canonical_ppt_n_trace_cells": 543100528,
   "canonical_without_pedersen_ppt_n_trace_cells": 73338480,
   "air_fns": {

@@ -387,7 +387,6 @@ pub mod tests {
             ProgramType::Json,
             LayoutName::all_cairo_stwo,
             None,
-            false,
         )
         .unwrap();
         let pp_tree = Arc::new(testing_preprocessed_tree(24));
@@ -403,7 +402,6 @@ pub mod tests {
             ProgramType::Json,
             LayoutName::all_cairo_stwo,
             None,
-            false,
         )
         .unwrap();
         let pp_tree = Arc::new(PreProcessedTrace::canonical_small());
@@ -437,7 +435,6 @@ pub mod tests {
                 ProgramType::Json,
                 LayoutName::all_cairo_stwo,
                 None,
-                false,
             )
             .unwrap();
             let prover_params = ProverParameters {
@@ -535,7 +532,6 @@ pub mod tests {
                 ProgramType::Json,
                 LayoutName::all_cairo_stwo,
                 None,
-                false,
             )
             .unwrap();
             assert_cairo_constraints(
@@ -553,7 +549,6 @@ pub mod tests {
                 ProgramType::Json,
                 LayoutName::all_cairo_stwo,
                 None,
-                false,
             )
             .unwrap();
             for (opcode, n_instances) in &input.state_transitions.casm_states_by_opcode.counts() {
@@ -584,7 +579,6 @@ pub mod tests {
                 ProgramType::Json,
                 LayoutName::all_cairo_stwo,
                 None,
-                false,
             )
             .unwrap();
             let prover_params = ProverParameters {
@@ -655,7 +649,6 @@ pub mod tests {
                 ProgramType::Json,
                 LayoutName::all_cairo_stwo,
                 None,
-                false,
             )
             .unwrap();
             let prover_params = ProverParameters {
@@ -709,7 +702,6 @@ pub mod tests {
                 ProgramType::Json,
                 LayoutName::all_cairo_stwo,
                 None,
-                true,
             )
             .unwrap();
             let prover_params = ProverParameters {
@@ -732,7 +724,6 @@ pub mod tests {
                 ProgramType::Json,
                 LayoutName::all_cairo_stwo,
                 None,
-                false,
             )
             .unwrap();
             let prover_params = ProverParameters {
@@ -802,7 +793,6 @@ pub mod tests {
                     ProgramType::Json,
                     LayoutName::all_cairo_stwo,
                     None,
-                    false,
                 )
                 .unwrap();
                 assert_all_builtins_in_input(&input);
@@ -829,7 +819,6 @@ pub mod tests {
                     ProgramType::Json,
                     LayoutName::stwo_no_ecop,
                     None,
-                    false,
                 )
                 .unwrap();
                 let prover_params = ProverParameters {
@@ -855,7 +844,6 @@ pub mod tests {
                     ProgramType::Json,
                     LayoutName::all_cairo_stwo,
                     None,
-                    false,
                 )
                 .unwrap();
                 assert_cairo_constraints(
@@ -873,7 +861,6 @@ pub mod tests {
                     ProgramType::Json,
                     LayoutName::all_cairo_stwo,
                     None,
-                    false,
                 )
                 .unwrap();
                 assert_cairo_constraints(input, Arc::new(testing_preprocessed_tree(20)));
@@ -888,7 +875,6 @@ pub mod tests {
                     ProgramType::Json,
                     LayoutName::all_cairo_stwo,
                     None,
-                    false,
                 )
                 .unwrap();
                 assert_cairo_constraints(input, Arc::new(testing_preprocessed_tree(20)));
@@ -903,7 +889,6 @@ pub mod tests {
                     ProgramType::Json,
                     LayoutName::all_cairo_stwo,
                     None,
-                    false,
                 )
                 .unwrap();
                 assert_cairo_constraints(input, Arc::new(PreProcessedTrace::canonical()));
@@ -918,7 +903,6 @@ pub mod tests {
                     ProgramType::Json,
                     LayoutName::all_cairo_stwo,
                     None,
-                    false,
                 )
                 .unwrap();
                 assert_cairo_constraints(input, Arc::new(PreProcessedTrace::canonical_small()));
@@ -933,7 +917,6 @@ pub mod tests {
                     ProgramType::Json,
                     LayoutName::all_cairo_stwo,
                     None,
-                    false,
                 )
                 .unwrap();
                 assert_cairo_constraints(input, Arc::new(testing_preprocessed_tree(20)));
@@ -949,7 +932,6 @@ pub mod tests {
                     ProgramType::Json,
                     LayoutName::all_cairo_stwo,
                     None,
-                    false,
                 )
                 .unwrap();
                 assert_cairo_constraints(input, Arc::new(testing_preprocessed_tree(20)));
@@ -991,7 +973,6 @@ pub mod tests {
                     ProgramType::Json,
                     LayoutName::all_cairo_stwo,
                     None,
-                    false,
                 )
                 .unwrap();
                 let proof_a = prove_cairo::<Blake2sMerkleChannel>(input_a, prover_params).unwrap();
@@ -1018,7 +999,6 @@ pub mod tests {
                     ProgramType::Json,
                     LayoutName::all_cairo_stwo,
                     None,
-                    false,
                 )
                 .unwrap();
                 let proof_b = prove_cairo::<Blake2sMerkleChannel>(input_b, prover_params).unwrap();
@@ -1064,7 +1044,6 @@ pub mod tests {
                     ProgramType::Json,
                     LayoutName::all_cairo_stwo,
                     None,
-                    false,
                 )
                 .unwrap();
                 let proof_a = prove_cairo::<Blake2sMerkleChannel>(input_a, prover_params).unwrap();
@@ -1091,7 +1070,6 @@ pub mod tests {
                     ProgramType::Json,
                     LayoutName::all_cairo_stwo,
                     None,
-                    false,
                 )
                 .unwrap();
                 let proof_b = prove_cairo::<Blake2sMerkleChannel>(input_b, prover_params).unwrap();

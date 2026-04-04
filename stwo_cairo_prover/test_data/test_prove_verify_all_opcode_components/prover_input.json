@@ -12293,7 +12293,7 @@
     "ec_op_builtin": null,
     "verify_program": {
       "begin_addr": 1,
-      "stop_ptr": 1334
+      "stop_ptr": 4097
     }
   },
   "public_segment_context": {
