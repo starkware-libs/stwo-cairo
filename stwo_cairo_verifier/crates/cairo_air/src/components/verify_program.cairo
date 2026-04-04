@@ -1,6 +1,6 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::mem_verify::mem_verify_evaluate;
+use crate::components::subroutines::mem_verify_cond::mem_verify_cond_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
@@ -91,6 +91,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let mut numerator_0: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_1: QM31 = Zero::zero();
         let mut numerator_1: QM31 = Zero::zero();
+        let curr_program_28 = preprocessed_mask_values.get_and_mark_used(CURR_PROGRAM_28_IDX);
         let seq = preprocessed_mask_values
             .get_and_mark_used(seq_column_idx(*(self.claim.log_size)));
         let curr_program_0 = preprocessed_mask_values.get_and_mark_used(CURR_PROGRAM_0_IDX);
@@ -128,7 +129,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        mem_verify_evaluate(
+        mem_verify_cond_evaluate(
             [
                 (verify_program_segment_start + seq), curr_program_0, curr_program_1,
                 curr_program_2, curr_program_3, curr_program_4, curr_program_5, curr_program_6,
@@ -136,7 +137,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 curr_program_12, curr_program_13, curr_program_14, curr_program_15, curr_program_16,
                 curr_program_17, curr_program_18, curr_program_19, curr_program_20, curr_program_21,
                 curr_program_22, curr_program_23, curr_program_24, curr_program_25, curr_program_26,
-                curr_program_27,
+                curr_program_27, curr_program_28,
             ],
             address_id_col0,
             self.common_lookup_elements,

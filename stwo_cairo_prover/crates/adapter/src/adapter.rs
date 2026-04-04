@@ -9,7 +9,7 @@ use crate::builtins::{BuiltinSegments, MemorySegmentAddresses};
 use crate::relocator::Relocator;
 use crate::{PublicSegmentContext, StateTransitions};
 
-pub fn adapt(runner: &CairoRunner, pad_program_segment: bool) -> Result<ProverInput> {
+pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
     let _span = span!(Level::INFO, "adapt").entered();
 
     // Extract the relevant information from the Runner.
@@ -20,12 +20,6 @@ pub fn adapt(runner: &CairoRunner, pad_program_segment: bool) -> Result<ProverIn
     let builtin_segments = runner.get_builtin_segments();
 
     let program_length = relocatable_memory[0].len();
-    let padded_program_length = program_length.next_power_of_two();
-    // Pad the program segment (segment 0) such that its length is a power of 2.
-    if pad_program_segment {
-        let program_segment = &mut relocatable_memory[0];
-        program_segment.resize(padded_program_length, None);
-    }
 
     // Relocation part.
     BuiltinSegments::pad_relocatble_builtin_segments(&mut relocatable_memory, &builtin_segments);
@@ -56,12 +50,7 @@ pub fn adapt(runner: &CairoRunner, pad_program_segment: bool) -> Result<ProverIn
     // It is not a standard cairo_vm builtin, so we set it manually.
     builtin_segments.verify_program = Some(MemorySegmentAddresses {
         begin_addr: initial_pc as usize,
-        stop_ptr: initial_pc as usize
-            + if pad_program_segment {
-                padded_program_length
-            } else {
-                program_length
-            },
+        stop_ptr: initial_pc as usize + program_length.next_power_of_two(),
     });
 
     // The actual program entries before padding.
@@ -113,7 +102,6 @@ mod tests {
             ProgramType::Json,
             LayoutName::all_cairo_stwo,
             None,
-            false,
         )
         .unwrap();
         // Public memory addresses are not deterministic, sort them.
