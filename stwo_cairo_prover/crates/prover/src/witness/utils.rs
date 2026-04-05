@@ -124,7 +124,7 @@ fn tree_trace_cells(tree_log_sizes: TreeVec<Vec<u32>>) -> Vec<u64> {
 /// Preprocess trace is determined by the `pp_trace` parameter (and not by the claim).
 pub fn witness_trace_cells(claim: &CairoClaim, pp_trace: &PreProcessedTrace) -> Vec<u64> {
     let mut log_sizes = claim.log_sizes();
-    log_sizes[PREPROCESSED_TRACE_IDX] = pp_trace.log_sizes();
+    log_sizes.insert(PREPROCESSED_TRACE_IDX, pp_trace.log_sizes());
 
     tree_trace_cells(log_sizes)
 }

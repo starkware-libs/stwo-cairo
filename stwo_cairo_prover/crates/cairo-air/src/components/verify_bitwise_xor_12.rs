@@ -19,7 +19,7 @@ impl Claim {
         let trace_log_sizes = vec![LOG_SIZE; N_TRACE_COLUMNS];
         let interaction_log_sizes =
             vec![LOG_SIZE; SECURE_EXTENSION_DEGREE * N_MULT_COLUMNS.div_ceil(2)];
-        TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
+        TreeVec::new(vec![trace_log_sizes, interaction_log_sizes])
     }
 
     pub fn mix_into(&self, _channel: &mut impl Channel) {}
