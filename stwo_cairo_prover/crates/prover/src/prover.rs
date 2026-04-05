@@ -158,7 +158,8 @@ where
     // Base trace.
     let mut tree_builder = commitment_scheme.tree_builder();
     let span = span!(Level::INFO, "Base trace").entered();
-    let (claim, interaction_generator) = cairo_claim_generator.write_trace(&mut tree_builder);
+    let (trace_evals, claim, interaction_generator) = cairo_claim_generator.write_trace();
+    tree_builder.extend_evals(trace_evals);
     span.exit();
 
     claim.mix_into::<MC>(channel);
@@ -172,8 +173,9 @@ where
     // Interaction trace.
     let span = span!(Level::INFO, "Interaction trace").entered();
     let mut tree_builder = commitment_scheme.tree_builder();
-    let interaction_claim =
-        interaction_generator.write_interaction_trace(&mut tree_builder, &interaction_elements);
+    let (interaction_trace_evals, interaction_claim) =
+        interaction_generator.write_interaction_trace(&interaction_elements);
+    tree_builder.extend_evals(interaction_trace_evals);
     span.exit();
 
     tracing::info!(
