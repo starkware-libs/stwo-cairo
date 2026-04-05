@@ -3,18 +3,14 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::mem_verify::MemVerify;
 
-pub const N_TRACE_COLUMNS: usize = 29;
-pub const RELATION_USES_PER_ROW: [RelationUse; 3] = [
+pub const N_TRACE_COLUMNS: usize = 1;
+pub const RELATION_USES_PER_ROW: [RelationUse; 2] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
         uses: 1,
     },
     RelationUse {
         relation_id: "MemoryIdToBig",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "ProgramComponent",
         uses: 1,
     },
 ];
@@ -32,7 +28,7 @@ pub struct Claim {
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 2];
+        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 }
@@ -57,109 +53,70 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let M31_1 = E::F::from(M31::from(1));
-        let M31_1942035206 = E::F::from(M31::from(1942035206));
         let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
-        let program_component_output_limb_0_col0 = eval.next_trace_mask();
-        let program_component_output_limb_1_col1 = eval.next_trace_mask();
-        let program_component_output_limb_2_col2 = eval.next_trace_mask();
-        let program_component_output_limb_3_col3 = eval.next_trace_mask();
-        let program_component_output_limb_4_col4 = eval.next_trace_mask();
-        let program_component_output_limb_5_col5 = eval.next_trace_mask();
-        let program_component_output_limb_6_col6 = eval.next_trace_mask();
-        let program_component_output_limb_7_col7 = eval.next_trace_mask();
-        let program_component_output_limb_8_col8 = eval.next_trace_mask();
-        let program_component_output_limb_9_col9 = eval.next_trace_mask();
-        let program_component_output_limb_10_col10 = eval.next_trace_mask();
-        let program_component_output_limb_11_col11 = eval.next_trace_mask();
-        let program_component_output_limb_12_col12 = eval.next_trace_mask();
-        let program_component_output_limb_13_col13 = eval.next_trace_mask();
-        let program_component_output_limb_14_col14 = eval.next_trace_mask();
-        let program_component_output_limb_15_col15 = eval.next_trace_mask();
-        let program_component_output_limb_16_col16 = eval.next_trace_mask();
-        let program_component_output_limb_17_col17 = eval.next_trace_mask();
-        let program_component_output_limb_18_col18 = eval.next_trace_mask();
-        let program_component_output_limb_19_col19 = eval.next_trace_mask();
-        let program_component_output_limb_20_col20 = eval.next_trace_mask();
-        let program_component_output_limb_21_col21 = eval.next_trace_mask();
-        let program_component_output_limb_22_col22 = eval.next_trace_mask();
-        let program_component_output_limb_23_col23 = eval.next_trace_mask();
-        let program_component_output_limb_24_col24 = eval.next_trace_mask();
-        let program_component_output_limb_25_col25 = eval.next_trace_mask();
-        let program_component_output_limb_26_col26 = eval.next_trace_mask();
-        let program_component_output_limb_27_col27 = eval.next_trace_mask();
-        let address_id_col28 = eval.next_trace_mask();
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.common_lookup_elements,
-            E::EF::from(M31_1.clone()),
-            &[
-                M31_1942035206.clone(),
-                seq.clone(),
-                program_component_output_limb_0_col0.clone(),
-                program_component_output_limb_1_col1.clone(),
-                program_component_output_limb_2_col2.clone(),
-                program_component_output_limb_3_col3.clone(),
-                program_component_output_limb_4_col4.clone(),
-                program_component_output_limb_5_col5.clone(),
-                program_component_output_limb_6_col6.clone(),
-                program_component_output_limb_7_col7.clone(),
-                program_component_output_limb_8_col8.clone(),
-                program_component_output_limb_9_col9.clone(),
-                program_component_output_limb_10_col10.clone(),
-                program_component_output_limb_11_col11.clone(),
-                program_component_output_limb_12_col12.clone(),
-                program_component_output_limb_13_col13.clone(),
-                program_component_output_limb_14_col14.clone(),
-                program_component_output_limb_15_col15.clone(),
-                program_component_output_limb_16_col16.clone(),
-                program_component_output_limb_17_col17.clone(),
-                program_component_output_limb_18_col18.clone(),
-                program_component_output_limb_19_col19.clone(),
-                program_component_output_limb_20_col20.clone(),
-                program_component_output_limb_21_col21.clone(),
-                program_component_output_limb_22_col22.clone(),
-                program_component_output_limb_23_col23.clone(),
-                program_component_output_limb_24_col24.clone(),
-                program_component_output_limb_25_col25.clone(),
-                program_component_output_limb_26_col26.clone(),
-                program_component_output_limb_27_col27.clone(),
-            ],
-        ));
+        let curr_program_0 = eval.get_preprocessed_column(ProgramColumn::new(0).id());
+        let curr_program_1 = eval.get_preprocessed_column(ProgramColumn::new(1).id());
+        let curr_program_2 = eval.get_preprocessed_column(ProgramColumn::new(2).id());
+        let curr_program_3 = eval.get_preprocessed_column(ProgramColumn::new(3).id());
+        let curr_program_4 = eval.get_preprocessed_column(ProgramColumn::new(4).id());
+        let curr_program_5 = eval.get_preprocessed_column(ProgramColumn::new(5).id());
+        let curr_program_6 = eval.get_preprocessed_column(ProgramColumn::new(6).id());
+        let curr_program_7 = eval.get_preprocessed_column(ProgramColumn::new(7).id());
+        let curr_program_8 = eval.get_preprocessed_column(ProgramColumn::new(8).id());
+        let curr_program_9 = eval.get_preprocessed_column(ProgramColumn::new(9).id());
+        let curr_program_10 = eval.get_preprocessed_column(ProgramColumn::new(10).id());
+        let curr_program_11 = eval.get_preprocessed_column(ProgramColumn::new(11).id());
+        let curr_program_12 = eval.get_preprocessed_column(ProgramColumn::new(12).id());
+        let curr_program_13 = eval.get_preprocessed_column(ProgramColumn::new(13).id());
+        let curr_program_14 = eval.get_preprocessed_column(ProgramColumn::new(14).id());
+        let curr_program_15 = eval.get_preprocessed_column(ProgramColumn::new(15).id());
+        let curr_program_16 = eval.get_preprocessed_column(ProgramColumn::new(16).id());
+        let curr_program_17 = eval.get_preprocessed_column(ProgramColumn::new(17).id());
+        let curr_program_18 = eval.get_preprocessed_column(ProgramColumn::new(18).id());
+        let curr_program_19 = eval.get_preprocessed_column(ProgramColumn::new(19).id());
+        let curr_program_20 = eval.get_preprocessed_column(ProgramColumn::new(20).id());
+        let curr_program_21 = eval.get_preprocessed_column(ProgramColumn::new(21).id());
+        let curr_program_22 = eval.get_preprocessed_column(ProgramColumn::new(22).id());
+        let curr_program_23 = eval.get_preprocessed_column(ProgramColumn::new(23).id());
+        let curr_program_24 = eval.get_preprocessed_column(ProgramColumn::new(24).id());
+        let curr_program_25 = eval.get_preprocessed_column(ProgramColumn::new(25).id());
+        let curr_program_26 = eval.get_preprocessed_column(ProgramColumn::new(26).id());
+        let curr_program_27 = eval.get_preprocessed_column(ProgramColumn::new(27).id());
+        let address_id_col0 = eval.next_trace_mask();
 
         MemVerify::evaluate(
             [
                 (E::F::from(M31::from(self.claim.verify_program_segment_start)) + seq.clone()),
-                program_component_output_limb_0_col0.clone(),
-                program_component_output_limb_1_col1.clone(),
-                program_component_output_limb_2_col2.clone(),
-                program_component_output_limb_3_col3.clone(),
-                program_component_output_limb_4_col4.clone(),
-                program_component_output_limb_5_col5.clone(),
-                program_component_output_limb_6_col6.clone(),
-                program_component_output_limb_7_col7.clone(),
-                program_component_output_limb_8_col8.clone(),
-                program_component_output_limb_9_col9.clone(),
-                program_component_output_limb_10_col10.clone(),
-                program_component_output_limb_11_col11.clone(),
-                program_component_output_limb_12_col12.clone(),
-                program_component_output_limb_13_col13.clone(),
-                program_component_output_limb_14_col14.clone(),
-                program_component_output_limb_15_col15.clone(),
-                program_component_output_limb_16_col16.clone(),
-                program_component_output_limb_17_col17.clone(),
-                program_component_output_limb_18_col18.clone(),
-                program_component_output_limb_19_col19.clone(),
-                program_component_output_limb_20_col20.clone(),
-                program_component_output_limb_21_col21.clone(),
-                program_component_output_limb_22_col22.clone(),
-                program_component_output_limb_23_col23.clone(),
-                program_component_output_limb_24_col24.clone(),
-                program_component_output_limb_25_col25.clone(),
-                program_component_output_limb_26_col26.clone(),
-                program_component_output_limb_27_col27.clone(),
+                curr_program_0.clone(),
+                curr_program_1.clone(),
+                curr_program_2.clone(),
+                curr_program_3.clone(),
+                curr_program_4.clone(),
+                curr_program_5.clone(),
+                curr_program_6.clone(),
+                curr_program_7.clone(),
+                curr_program_8.clone(),
+                curr_program_9.clone(),
+                curr_program_10.clone(),
+                curr_program_11.clone(),
+                curr_program_12.clone(),
+                curr_program_13.clone(),
+                curr_program_14.clone(),
+                curr_program_15.clone(),
+                curr_program_16.clone(),
+                curr_program_17.clone(),
+                curr_program_18.clone(),
+                curr_program_19.clone(),
+                curr_program_20.clone(),
+                curr_program_21.clone(),
+                curr_program_22.clone(),
+                curr_program_23.clone(),
+                curr_program_24.clone(),
+                curr_program_25.clone(),
+                curr_program_26.clone(),
+                curr_program_27.clone(),
             ],
-            address_id_col28.clone(),
+            address_id_col0.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );

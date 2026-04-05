@@ -10,15 +10,12 @@ use crate::prover_types::cpu::{Felt252, FELT252_N_WORDS};
 
 pub const PROGRAM_N_COLUMNS: usize = FELT252_N_WORDS;
 
-pub const MAX_PROGRAM_LOG_LEN: usize = 12;
-
 static PROGRAM_TABLE: LazyLock<RwLock<Vec<[M31; FELT252_N_WORDS]>>> =
-    LazyLock::new(|| RwLock::new(vec![[M31(0); FELT252_N_WORDS]; 1 << MAX_PROGRAM_LOG_LEN]));
+    LazyLock::new(|| RwLock::new(vec![[M31(0); FELT252_N_WORDS]]));
 
 /// Sets the global PROGRAM_TABLE. Pre-computes 9-bit limbs from the raw `[u32; 8]` values.
 /// Called automatically when creating a preprocessed trace with program data.
 pub fn set_program_table(program: &[(u32, [u32; 8])]) {
-    assert!(program.len() <= 1 << MAX_PROGRAM_LOG_LEN);
     let mut values: Vec<[M31; FELT252_N_WORDS]> = program
         .iter()
         .map(|(_, v)| {
@@ -31,8 +28,8 @@ pub fn set_program_table(program: &[(u32, [u32; 8])]) {
             Felt252::from(limbs).get_limbs()
         })
         .collect();
-    // Pad to the fixed program table size so ProgramColumn has the correct log_size.
-    values.resize(1 << MAX_PROGRAM_LOG_LEN, [M31(0); FELT252_N_WORDS]);
+    // Pad to the length of the next power of 2.
+    values.resize(program.len().next_power_of_two(), [M31(0); FELT252_N_WORDS]);
     *PROGRAM_TABLE.write().unwrap() = values;
 }
 
