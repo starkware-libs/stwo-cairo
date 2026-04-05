@@ -90,6 +90,22 @@ fn write_trace_simd(
         .enumerate()
         .for_each(|(row_index, (row, lookup_data))| {
             let seq_20 = seq_20.packed_at(row_index);
+            let multiplicity_0_col0 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
+            *row[0] = multiplicity_0_col0;
+            let multiplicity_1_col1 = *mults[1].get(row_index).unwrap_or(&PackedM31::zero());
+            *row[1] = multiplicity_1_col1;
+            let multiplicity_2_col2 = *mults[2].get(row_index).unwrap_or(&PackedM31::zero());
+            *row[2] = multiplicity_2_col2;
+            let multiplicity_3_col3 = *mults[3].get(row_index).unwrap_or(&PackedM31::zero());
+            *row[3] = multiplicity_3_col3;
+            let multiplicity_4_col4 = *mults[4].get(row_index).unwrap_or(&PackedM31::zero());
+            *row[4] = multiplicity_4_col4;
+            let multiplicity_5_col5 = *mults[5].get(row_index).unwrap_or(&PackedM31::zero());
+            *row[5] = multiplicity_5_col5;
+            let multiplicity_6_col6 = *mults[6].get(row_index).unwrap_or(&PackedM31::zero());
+            *row[6] = multiplicity_6_col6;
+            let multiplicity_7_col7 = *mults[7].get(row_index).unwrap_or(&PackedM31::zero());
+            *row[7] = multiplicity_7_col7;
             *lookup_data.range_check_20_0 = [M31_1410849886, seq_20];
             *lookup_data.range_check_20_b_0 = [M31_514232941, seq_20];
             *lookup_data.range_check_20_c_0 = [M31_531010560, seq_20];
@@ -100,35 +116,27 @@ fn write_trace_simd(
             *lookup_data.range_check_20_h_0 = [M31_682009131, seq_20];
             let mult = &mults[0];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
-            *row[0] = mult_at_row;
             *lookup_data.mults_0 = mult_at_row;
             let mult = &mults[1];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
-            *row[1] = mult_at_row;
             *lookup_data.mults_1 = mult_at_row;
             let mult = &mults[2];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
-            *row[2] = mult_at_row;
             *lookup_data.mults_2 = mult_at_row;
             let mult = &mults[3];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
-            *row[3] = mult_at_row;
             *lookup_data.mults_3 = mult_at_row;
             let mult = &mults[4];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
-            *row[4] = mult_at_row;
             *lookup_data.mults_4 = mult_at_row;
             let mult = &mults[5];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
-            *row[5] = mult_at_row;
             *lookup_data.mults_5 = mult_at_row;
             let mult = &mults[6];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
-            *row[6] = mult_at_row;
             *lookup_data.mults_6 = mult_at_row;
             let mult = &mults[7];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
-            *row[7] = mult_at_row;
             *lookup_data.mults_7 = mult_at_row;
         });
 

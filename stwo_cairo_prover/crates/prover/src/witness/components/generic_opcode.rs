@@ -772,7 +772,8 @@ range_check_11_state: &range_check_11::ClaimGenerator,
     pc: next_pc_col238, ap: next_ap_col239, fp: next_fp_col241,
 };
 
-            *lookup_data.opcodes_0 = [M31_428564188, input_pc_col0, input_ap_col1, input_fp_col2];*lookup_data.opcodes_1 = [M31_428564188, next_pc_col238, next_ap_col239, next_fp_col241];*row[242] = enabler_col.packed_at(row_index);
+            let enabler_col242 = enabler_col.packed_at(row_index);
+            *row[242] = enabler_col242;*lookup_data.opcodes_0 = [M31_428564188, input_pc_col0, input_ap_col1, input_fp_col2];*lookup_data.opcodes_1 = [M31_428564188, next_pc_col238, next_ap_col239, next_fp_col241];
         });
 
     (trace, lookup_data,sub_component_inputs,)
