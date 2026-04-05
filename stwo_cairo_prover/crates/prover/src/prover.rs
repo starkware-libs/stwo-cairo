@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use cairo_air::cairo_components::CairoComponents;
-use cairo_air::claims::lookup_sum;
+use cairo_air::claims::{lookup_sum, CairoClaim};
 use cairo_air::relations::CommonLookupElements;
 use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
 use cairo_air::verifier::{verify_cairo_ex, INTERACTION_POW_BITS};
@@ -13,6 +13,7 @@ use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::{Channel, MerkleChannel};
 use stwo::core::circle::M31_CIRCLE_LOG_ORDER;
+use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::fri::FriConfig;
 use stwo::core::pcs::PcsConfig;
@@ -26,16 +27,19 @@ use stwo::prover::backend::BackendForChannel;
 use stwo::prover::mempool::BaseColumnPool;
 use stwo::prover::poly::circle::PolyOps;
 use stwo::prover::poly::twiddles::TwiddleTree;
+use stwo::prover::poly::BitReversedOrder;
 use stwo::prover::{prove_ex, CommitmentSchemeProver, CommitmentTreeProver, ProvingError};
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
     PreProcessedTrace, PreProcessedTraceVariant,
 };
+use stwo_cairo_common::preprocessed_columns::simd_prelude::CircleEvaluation;
 use stwo_cairo_serialize::CairoSerialize;
 use tracing::{event, span, Level};
 
 use crate::utils::cairo_provers;
 use crate::witness::cairo::create_cairo_claim_generator;
+use crate::witness::cairo_claim_generator::CairoInteractionClaimGenerator;
 use crate::witness::preprocessed_trace::gen_trace;
 use crate::witness::utils::witness_trace_cells;
 
@@ -78,39 +82,78 @@ pub fn prove_cairo<MC: MerkleChannel>(
 where
     SimdBackend: BackendForChannel<MC>,
 {
-    let max_domain_size = if let Some(lifting_log_size) = prover_params.pcs_config.lifting_log_size
-    {
-        lifting_log_size
-    } else {
-        // TODO(ilya): Deduces the max domain size from 'input'.
-        MAX_CANONICAL_COSET_LOG_SIZE
-    };
+    let _span = span!(Level::INFO, "prove_cairo").entered();
+    let ProverParameters {
+        channel_hash: _,
+        channel_salt: _,
+        pcs_config,
+        preprocessed_trace: preprocessed_trace_variant,
+        store_polynomials_coefficients,
+        include_all_preprocessed_columns: _,
+    } = prover_params;
+
+    let preprocessed_trace = Arc::new(preprocessed_trace_variant.to_preprocessed_trace());
+
+    // Run Cairo.
+    let cairo_claim_generator = create_cairo_claim_generator(input, preprocessed_trace.clone());
+    // Base trace.
+    let span = span!(Level::INFO, "Base trace").entered();
+    let (trace_evals, claim, interaction_generator) = cairo_claim_generator.write_trace();
+    span.exit();
+
+    // Compute the maximum log size of the trace as the maximum log size of the trace columns.
+    let max_log_trace_size = claim.log_sizes().iter().flatten().copied().max().unwrap();
+
+    let cairo_air_log_degree_bound = 1;
+    let mut max_domain_log_size = max_log_trace_size
+        + std::cmp::max(
+            cairo_air_log_degree_bound,
+            pcs_config.fri_config.log_blowup_factor,
+        );
+
+    // TODO(Ilya): Replace the panics below with errors.
+    if let Some(lifting_log_size) = pcs_config.lifting_log_size {
+        if lifting_log_size > MAX_CANONICAL_COSET_LOG_SIZE {
+            panic!("Lifting log size must be less than or equal to the maximum canonical coset log size");
+        }
+
+        if lifting_log_size < max_domain_log_size {
+            panic!("Lifting log size must be greater than or equal to the maximum log size of the preprocessed trace");
+        }
+        max_domain_log_size = lifting_log_size;
+    }
+    if max_domain_log_size > MAX_CANONICAL_COSET_LOG_SIZE {
+        panic!(
+            "Max log domain size must be less than or equal to the maximum canonical coset log size"
+        );
+    }
     let twiddles = SimdBackend::precompute_twiddles(
-        CanonicCoset::new(max_domain_size)
+        CanonicCoset::new(max_domain_log_size)
             .circle_domain()
             .half_coset,
     );
 
-    let preprocessed_trace = Arc::new(prover_params.preprocessed_trace.to_preprocessed_trace());
     let preprocessed_trace_polys =
         SimdBackend::interpolate_columns(gen_trace(preprocessed_trace.clone()), &twiddles);
 
     let base_column_pool = BaseColumnPool::new();
-    let preprocessed_tree = CommitmentTreeProver::<SimdBackend, MC>::new(
+    let preprocessed_tree = MaybeOwned::Owned(CommitmentTreeProver::<SimdBackend, MC>::new(
         preprocessed_trace_polys,
-        prover_params.pcs_config.fri_config.log_blowup_factor,
+        pcs_config.fri_config.log_blowup_factor,
         &twiddles,
-        prover_params.store_polynomials_coefficients,
-        prover_params.pcs_config.lifting_log_size,
+        store_polynomials_coefficients,
+        pcs_config.lifting_log_size,
         &base_column_pool,
-    );
+    ));
 
-    prove_cairo_with_precompute::<MC>(
-        &base_column_pool,
+    prove_cairo_common::<MC>(
         &twiddles,
+        &base_column_pool,
         preprocessed_trace,
-        MaybeOwned::Owned(preprocessed_tree),
-        input,
+        preprocessed_tree,
+        trace_evals,
+        claim,
+        interaction_generator,
         prover_params,
     )
 }
@@ -127,6 +170,39 @@ where
     SimdBackend: BackendForChannel<MC>,
 {
     let _span = span!(Level::INFO, "prove_cairo").entered();
+
+    // Run Cairo.
+    let cairo_claim_generator = create_cairo_claim_generator(input, preprocessed_trace.clone());
+    // Base trace.
+    let span = span!(Level::INFO, "Base trace").entered();
+    let (trace_evals, claim, interaction_generator) = cairo_claim_generator.write_trace();
+    span.exit();
+
+    prove_cairo_common::<MC>(
+        twiddles,
+        base_column_pool,
+        preprocessed_trace,
+        preprocessed_tree,
+        trace_evals,
+        claim,
+        interaction_generator,
+        prover_params,
+    )
+}
+
+fn prove_cairo_common<'a, MC: MerkleChannel>(
+    twiddles: &TwiddleTree<SimdBackend>,
+    base_column_pool: &BaseColumnPool<SimdBackend>,
+    preprocessed_trace: Arc<PreProcessedTrace>,
+    preprocessed_tree: MaybeOwned<'a, CommitmentTreeProver<SimdBackend, MC>>,
+    trace_evals: Vec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>>,
+    claim: CairoClaim,
+    interaction_generator: CairoInteractionClaimGenerator,
+    prover_params: ProverParameters,
+) -> Result<CairoProof<MC::H>, ProvingError>
+where
+    SimdBackend: BackendForChannel<MC>,
+{
     let ProverParameters {
         channel_hash: _,
         channel_salt,
@@ -135,13 +211,13 @@ where
         store_polynomials_coefficients,
         include_all_preprocessed_columns,
     } = prover_params;
-
     // Setup protocol.
     let channel = &mut MC::C::default();
 
     // Mix channel salt. Note that we first reduce it modulo `M31::P`, then cast it as QM31.
     channel.mix_felts(&[channel_salt.into()]);
     pcs_config.mix_into(channel);
+
     let mut commitment_scheme = CommitmentSchemeProver::<SimdBackend, MC>::with_memory_pool(
         pcs_config,
         twiddles,
@@ -150,18 +226,12 @@ where
     if store_polynomials_coefficients {
         commitment_scheme.set_store_polynomials_coefficients();
     }
+
     // Preprocessed trace.
     commitment_scheme.commit_tree(preprocessed_tree, channel);
 
-    // Run Cairo.
-    let cairo_claim_generator = create_cairo_claim_generator(input, preprocessed_trace.clone());
-    // Base trace.
     let mut tree_builder = commitment_scheme.tree_builder();
-    let span = span!(Level::INFO, "Base trace").entered();
-    let (trace_evals, claim, interaction_generator) = cairo_claim_generator.write_trace();
     tree_builder.extend_evals(trace_evals);
-    span.exit();
-
     claim.mix_into::<MC>(channel);
     tree_builder.commit(channel);
 
