@@ -488,6 +488,8 @@ fn write_trace_simd(
                     distance_to_next_pc_id_col15,
                 );
 
+                let enabler_col23 = enabler_col.packed_at(row_index);
+                *row[23] = enabler_col23;
                 *lookup_data.opcodes_0 =
                     [M31_428564188, input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
@@ -496,7 +498,6 @@ fn write_trace_simd(
                     ((input_ap_col1) + (M31_2)),
                     ((input_ap_col1) + (M31_2)),
                 ];
-                *row[23] = enabler_col.packed_at(row_index);
             },
         );
 

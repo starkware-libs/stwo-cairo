@@ -383,6 +383,8 @@ fn write_trace_simd(
                 *sub_component_inputs.range_check_11[0] = [range_check_29_bot11bits_col15];
                 *lookup_data.range_check_11_0 = [M31_991608089, range_check_29_bot11bits_col15];
 
+                let enabler_col16 = enabler_col.packed_at(row_index);
+                *row[16] = enabler_col16;
                 *lookup_data.opcodes_0 =
                     [M31_428564188, input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
@@ -391,7 +393,6 @@ fn write_trace_simd(
                     next_ap_tmp_c921e_17,
                     input_fp_col2,
                 ];
-                *row[16] = enabler_col.packed_at(row_index);
             },
         );
 

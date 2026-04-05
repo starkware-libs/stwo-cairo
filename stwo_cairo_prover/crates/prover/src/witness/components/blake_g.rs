@@ -720,6 +720,8 @@ fn write_trace_simd(
                 ]);
                 let xor_rot_32_r_7_output_tmp_f72c8_87 = xor_rot_7_output_tmp_f72c8_86;
 
+                let enabler_col52 = enabler_col.packed_at(row_index);
+                *row[52] = enabler_col52;
                 *lookup_data.blake_g_0 = [
                     M31_1139985212,
                     input_limb_0_col0,
@@ -743,7 +745,6 @@ fn write_trace_simd(
                     xor_rot_8_output_tmp_f72c8_64.low().as_m31(),
                     xor_rot_8_output_tmp_f72c8_64.high().as_m31(),
                 ];
-                *row[52] = enabler_col.packed_at(row_index);
             },
         );
 

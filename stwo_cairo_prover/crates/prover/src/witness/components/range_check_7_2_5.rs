@@ -108,6 +108,8 @@ fn write_trace_simd(
             let range_check_7_2_5_column_0 = range_check_7_2_5_column_0.packed_at(row_index);
             let range_check_7_2_5_column_1 = range_check_7_2_5_column_1.packed_at(row_index);
             let range_check_7_2_5_column_2 = range_check_7_2_5_column_2.packed_at(row_index);
+            let multiplicity_0_col0 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
+            *row[0] = multiplicity_0_col0;
             *lookup_data.range_check_7_2_5_0 = [
                 M31_371240602,
                 range_check_7_2_5_column_0,
@@ -116,7 +118,6 @@ fn write_trace_simd(
             ];
             let mult = &mults[0];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
-            *row[0] = mult_at_row;
             *lookup_data.mults_0 = mult_at_row;
         });
 

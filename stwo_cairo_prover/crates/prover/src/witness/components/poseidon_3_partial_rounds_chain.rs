@@ -1373,6 +1373,8 @@ fn write_trace_simd(
                     linear_combination_n_1_coefs_2_output_tmp_44f04_104,
                 ];
 
+                let enabler_col168 = enabler_col.packed_at(row_index);
+                *row[168] = enabler_col168;
                 *lookup_data.poseidon_3_partial_rounds_chain_0 = [
                     M31_1343313504,
                     input_limb_0_col0,
@@ -1463,7 +1465,6 @@ fn write_trace_simd(
                     combination_limb_8_col165,
                     combination_limb_9_col166,
                 ];
-                *row[168] = enabler_col.packed_at(row_index);
             },
         );
 

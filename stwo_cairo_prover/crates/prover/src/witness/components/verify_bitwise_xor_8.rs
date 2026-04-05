@@ -109,6 +109,10 @@ fn write_trace_simd(
             let bitwise_xor_8_0 = bitwise_xor_8_0.packed_at(row_index);
             let bitwise_xor_8_1 = bitwise_xor_8_1.packed_at(row_index);
             let bitwise_xor_8_2 = bitwise_xor_8_2.packed_at(row_index);
+            let multiplicity_0_col0 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
+            *row[0] = multiplicity_0_col0;
+            let multiplicity_1_col1 = *mults[1].get(row_index).unwrap_or(&PackedM31::zero());
+            *row[1] = multiplicity_1_col1;
             *lookup_data.verify_bitwise_xor_8_0 = [
                 M31_112558620,
                 bitwise_xor_8_0,
@@ -123,11 +127,9 @@ fn write_trace_simd(
             ];
             let mult = &mults[0];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
-            *row[0] = mult_at_row;
             *lookup_data.mults_0 = mult_at_row;
             let mult = &mults[1];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
-            *row[1] = mult_at_row;
             *lookup_data.mults_1 = mult_at_row;
         });
 

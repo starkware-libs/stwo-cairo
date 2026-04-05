@@ -84,15 +84,17 @@ fn write_trace_simd(
         .enumerate()
         .for_each(|(row_index, (row, lookup_data))| {
             let seq_18 = seq_18.packed_at(row_index);
+            let multiplicity_0_col0 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
+            *row[0] = multiplicity_0_col0;
+            let multiplicity_1_col1 = *mults[1].get(row_index).unwrap_or(&PackedM31::zero());
+            *row[1] = multiplicity_1_col1;
             *lookup_data.range_check_18_0 = [M31_1109051422, seq_18];
             *lookup_data.range_check_18_b_0 = [M31_1424798916, seq_18];
             let mult = &mults[0];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
-            *row[0] = mult_at_row;
             *lookup_data.mults_0 = mult_at_row;
             let mult = &mults[1];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
-            *row[1] = mult_at_row;
             *lookup_data.mults_1 = mult_at_row;
         });
 
