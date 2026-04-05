@@ -660,6 +660,8 @@ fn write_trace_simd(
                 *sub_component_inputs.range_check_11[2] = [carry_5_col35];
                 *lookup_data.range_check_11_2 = [M31_991608089, carry_5_col35];
 
+                let enabler_col36 = enabler_col.packed_at(row_index);
+                *row[36] = enabler_col36;
                 *lookup_data.opcodes_0 =
                     [M31_428564188, input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
@@ -668,7 +670,6 @@ fn write_trace_simd(
                     ((input_ap_col1) + (ap_update_add_1_col10)),
                     input_fp_col2,
                 ];
-                *row[36] = enabler_col.packed_at(row_index);
             },
         );
 

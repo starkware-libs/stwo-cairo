@@ -316,6 +316,8 @@ fn write_trace_simd(
             let pedersen_points_small_53 = pedersen_points_small_53.packed_at(row_index);
             let pedersen_points_small_54 = pedersen_points_small_54.packed_at(row_index);
             let pedersen_points_small_55 = pedersen_points_small_55.packed_at(row_index);
+            let multiplicity_0_col0 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
+            *row[0] = multiplicity_0_col0;
             *lookup_data.pedersen_points_table_window_bits_9_0 = [
                 M31_1791500038,
                 seq_15,
@@ -378,7 +380,6 @@ fn write_trace_simd(
             ];
             let mult = &mults[0];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
-            *row[0] = mult_at_row;
             *lookup_data.mults_0 = mult_at_row;
         });
 

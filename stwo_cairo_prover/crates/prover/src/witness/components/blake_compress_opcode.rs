@@ -3329,6 +3329,8 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
+                let enabler_col173 = enabler_col.packed_at(row_index);
+                *row[173] = enabler_col173;
                 *lookup_data.opcodes_0 =
                     [M31_428564188, input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
@@ -3337,7 +3339,6 @@ fn write_trace_simd(
                     ((input_ap_col1) + (ap_update_add_1_col9)),
                     input_fp_col2,
                 ];
-                *row[173] = enabler_col.packed_at(row_index);
             },
         );
 

@@ -273,6 +273,8 @@ fn write_trace_simd(
                     M31_1109051422,
                     ((input_limb_8_col8) - ((limb_8_high_part_col18) * (M31_262144))),
                 ];
+                let enabler_col19 = enabler_col.packed_at(row_index);
+                *row[19] = enabler_col19;
                 *lookup_data.range_check_252_width_27_0 = [
                     M31_1090315331,
                     input_limb_0_col0,
@@ -286,7 +288,6 @@ fn write_trace_simd(
                     input_limb_8_col8,
                     input_limb_9_col9,
                 ];
-                *row[19] = enabler_col.packed_at(row_index);
             },
         );
 

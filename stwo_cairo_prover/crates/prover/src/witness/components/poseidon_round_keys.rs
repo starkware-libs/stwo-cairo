@@ -212,6 +212,8 @@ fn write_trace_simd(
             let poseidon_round_keys_27 = poseidon_round_keys_27.packed_at(row_index);
             let poseidon_round_keys_28 = poseidon_round_keys_28.packed_at(row_index);
             let poseidon_round_keys_29 = poseidon_round_keys_29.packed_at(row_index);
+            let multiplicity_0_col0 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
+            *row[0] = multiplicity_0_col0;
             *lookup_data.poseidon_round_keys_0 = [
                 M31_1024310512,
                 seq_6,
@@ -248,7 +250,6 @@ fn write_trace_simd(
             ];
             let mult = &mults[0];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
-            *row[0] = mult_at_row;
             *lookup_data.mults_0 = mult_at_row;
         });
 
