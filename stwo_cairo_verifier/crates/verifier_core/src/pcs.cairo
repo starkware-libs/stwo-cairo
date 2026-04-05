@@ -8,7 +8,7 @@
 //! Note: Opened points cannot come from the commitment domain.
 
 use crate::channel::{Channel, ChannelTrait};
-use crate::fields::m31::{M31One, M31Zero};
+use crate::fields::m31::M31Zero;
 use crate::fields::qm31::QM31Trait;
 use crate::fri::FriConfig;
 
@@ -24,10 +24,9 @@ pub struct PcsConfig {
 pub impl PcsConfigImpl of PcsConfigTrait {
     fn mix_into(self: @PcsConfig, ref channel: Channel) {
         let PcsConfig { pow_bits, fri_config } = self;
-        let FriConfig { log_blowup_factor, log_last_layer_degree_bound, n_queries } = fri_config;
-
-        // Currently only line_fold_step == 1 is supported.
-        let line_fold_step = M31One::one();
+        let FriConfig {
+            log_blowup_factor, log_last_layer_degree_bound, n_queries, fold_step,
+        } = fri_config;
 
         let zero = M31Zero::zero();
         channel
@@ -41,7 +40,9 @@ pub impl PcsConfigImpl of PcsConfigTrait {
                             (*log_last_layer_degree_bound).try_into().unwrap(),
                         ],
                     ),
-                    QM31Trait::from_fixed_array([line_fold_step, zero, zero, zero]),
+                    QM31Trait::from_fixed_array(
+                        [(*fold_step).try_into().unwrap(), zero, zero, zero],
+                    ),
                 ]
                     .span(),
             );
@@ -50,7 +51,7 @@ pub impl PcsConfigImpl of PcsConfigTrait {
     fn security_bits(self: @PcsConfig) -> u32 {
         let PcsConfig {
             pow_bits, fri_config: FriConfig {
-                log_blowup_factor, log_last_layer_degree_bound: _, n_queries,
+                log_blowup_factor, log_last_layer_degree_bound: _, n_queries, fold_step: _,
             },
         } = self;
         *pow_bits + *log_blowup_factor * *n_queries

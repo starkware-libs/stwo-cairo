@@ -10,7 +10,9 @@ use crate::queries::{Queries, QueriesImpl};
 /// The test data was generated using [`stwo::core::fri::tests::valid_proof_passes_verification`]
 /// on commit c66302ae7afaa09e6e9fe8a5039094100121d673.
 fn valid_proof_passes_verification() {
-    let config = FriConfig { log_last_layer_degree_bound: 0, log_blowup_factor: 2, n_queries: 1 };
+    let config = FriConfig {
+        log_last_layer_degree_bound: 0, log_blowup_factor: 2, n_queries: 1, fold_step: 1,
+    };
     let column_log_bound = 4;
     let column_log_size = column_log_bound + config.log_blowup_factor;
     let queries = Queries { positions: array![5].span(), log_domain_size: column_log_size };
@@ -52,7 +54,9 @@ fn valid_proof_passes_verification() {
 #[test]
 #[should_panic]
 fn proof_with_invalid_inner_layer_evaluation_fails_verification() {
-    let config = FriConfig { log_last_layer_degree_bound: 0, log_blowup_factor: 2, n_queries: 1 };
+    let config = FriConfig {
+        log_last_layer_degree_bound: 0, log_blowup_factor: 2, n_queries: 1, fold_step: 1,
+    };
     let column_log_bound = 6;
     let column_log_size = column_log_bound + config.log_blowup_factor;
     let queries = Queries { positions: array![5].span(), log_domain_size: column_log_size };
@@ -112,7 +116,9 @@ fn proof_with_invalid_inner_layer_evaluation_fails_verification() {
 #[test]
 #[should_panic(expected: "Invalid number of FRI layers")]
 fn proof_with_added_layer_fails_verification() {
-    let config = FriConfig { log_last_layer_degree_bound: 1, log_blowup_factor: 2, n_queries: 1 };
+    let config = FriConfig {
+        log_last_layer_degree_bound: 1, log_blowup_factor: 2, n_queries: 1, fold_step: 1,
+    };
     let column_log_bound = 6;
     // The proof is created with a fri config with log_last_layer_degree_bound = 0, so the verifier
     // receives one more layer than it expects.
@@ -169,7 +175,9 @@ fn proof_with_added_layer_fails_verification() {
 #[test]
 #[should_panic(expected: "Invalid number of FRI layers")]
 fn proof_with_removed_layer_fails_verification() {
-    let config = FriConfig { log_last_layer_degree_bound: 0, log_blowup_factor: 2, n_queries: 1 };
+    let config = FriConfig {
+        log_last_layer_degree_bound: 0, log_blowup_factor: 2, n_queries: 1, fold_step: 1,
+    };
     let column_log_bound = 6;
     // The proof is created with a fri config with log_last_layer_degree_bound = 1, so the verifier
     // expects another layer.
@@ -222,7 +230,9 @@ fn proof_with_removed_layer_fails_verification() {
 #[test]
 #[should_panic(expected: "Invalid last layer degree")]
 fn proof_with_invalid_last_layer_degree_fails_verification() {
-    let config = FriConfig { log_last_layer_degree_bound: 0, log_blowup_factor: 2, n_queries: 1 };
+    let config = FriConfig {
+        log_last_layer_degree_bound: 0, log_blowup_factor: 2, n_queries: 1, fold_step: 1,
+    };
     let column_log_bound = 6;
     // The last layer polynomial has degree 1, not 0.
     let mut proof_data = array![
@@ -277,7 +287,9 @@ fn proof_with_invalid_last_layer_degree_fails_verification() {
 #[test]
 #[should_panic(expected: "Invalid last layer evaluations")]
 fn proof_with_invalid_last_layer_fails_verification() {
-    let config = FriConfig { log_last_layer_degree_bound: 0, log_blowup_factor: 2, n_queries: 3 };
+    let config = FriConfig {
+        log_last_layer_degree_bound: 0, log_blowup_factor: 2, n_queries: 3, fold_step: 1,
+    };
     let column_log_bound = 6;
     let column_log_size = column_log_bound + config.log_blowup_factor;
     let queries = Queries { positions: array![1, 7, 8].span(), log_domain_size: column_log_size };
@@ -341,7 +353,9 @@ fn proof_with_invalid_last_layer_fails_verification() {
 #[test]
 #[should_panic]
 fn decommit_queries_on_invalid_domain_fails_verification() {
-    let config = FriConfig { log_last_layer_degree_bound: 0, log_blowup_factor: 2, n_queries: 3 };
+    let config = FriConfig {
+        log_last_layer_degree_bound: 0, log_blowup_factor: 2, n_queries: 3, fold_step: 1,
+    };
     let column_log_bound = 6;
     let column_log_size = column_log_bound + config.log_blowup_factor;
     let invalid_column_log_size = column_log_size - 1;
