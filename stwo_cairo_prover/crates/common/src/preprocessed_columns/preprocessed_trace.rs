@@ -31,6 +31,21 @@ pub enum PreProcessedTraceVariant {
     CanonicalSmall,
 }
 impl PreProcessedTraceVariant {
+    pub const ALL_VARIANTS: [Self; 3] = {
+        // Exhaustive match: if a new variant is added to the enum, this match will fail to
+        // compile. When updating the match, update the array below as well.
+        let _: () = match Self::Canonical {
+            Self::Canonical => (),
+            Self::CanonicalWithoutPedersen => (),
+            Self::CanonicalSmall => (),
+        };
+        [
+            Self::Canonical,
+            Self::CanonicalWithoutPedersen,
+            Self::CanonicalSmall,
+        ]
+    };
+
     pub fn to_preprocessed_trace(&self) -> PreProcessedTrace {
         match self {
             PreProcessedTraceVariant::Canonical => PreProcessedTrace::canonical(),
@@ -475,11 +490,7 @@ pub mod tests {
 
     #[test]
     fn test_n_columns() {
-        for variant in [
-            PreProcessedTraceVariant::Canonical,
-            PreProcessedTraceVariant::CanonicalWithoutPedersen,
-            PreProcessedTraceVariant::CanonicalSmall,
-        ] {
+        for variant in PreProcessedTraceVariant::ALL_VARIANTS {
             let trace = variant.to_preprocessed_trace();
             assert_eq!(trace.columns.len(), variant.n_columns());
         }
@@ -487,11 +498,7 @@ pub mod tests {
 
     #[test]
     fn test_max_log_trace_size() {
-        for variant in [
-            PreProcessedTraceVariant::Canonical,
-            PreProcessedTraceVariant::CanonicalWithoutPedersen,
-            PreProcessedTraceVariant::CanonicalSmall,
-        ] {
+        for variant in PreProcessedTraceVariant::ALL_VARIANTS {
             let trace = variant.to_preprocessed_trace();
             let actual_max = trace
                 .columns
@@ -505,11 +512,7 @@ pub mod tests {
 
     #[test]
     fn test_n_trace_cells() {
-        for variant in [
-            PreProcessedTraceVariant::Canonical,
-            PreProcessedTraceVariant::CanonicalWithoutPedersen,
-            PreProcessedTraceVariant::CanonicalSmall,
-        ] {
+        for variant in PreProcessedTraceVariant::ALL_VARIANTS {
             let trace = variant.to_preprocessed_trace();
             let actual_size: u32 = trace.columns.iter().map(|col| 1 << col.log_size()).sum();
             assert_eq!(actual_size, variant.n_trace_cells());
