@@ -32,6 +32,7 @@ pub struct FriConfig {
     pub log_blowup_factor: u32,
     pub log_last_layer_degree_bound: u32,
     pub n_queries: usize,
+    pub fold_step: u32,
 }
 
 #[derive(Drop)]
@@ -67,6 +68,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             commitment_domain,
             proof: first_layer_proof,
             folding_alpha: channel.draw_secure_felt(),
+            fold_step: config.fold_step,
         };
 
         let mut inner_layers = array![];
@@ -86,6 +88,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
                         folding_alpha: channel.draw_secure_felt(),
                         layer_index,
                         proof: layer_proof,
+                        fold_step: config.fold_step,
                     },
                 );
 
@@ -231,6 +234,7 @@ struct FriFirstLayerVerifier {
     commitment_domain: CircleDomain,
     folding_alpha: QM31,
     proof: FriLayerProof,
+    fold_step: u32,
 }
 
 #[generate_trait]
@@ -303,6 +307,7 @@ struct FriInnerLayerVerifier {
     folding_alpha: QM31,
     layer_index: usize,
     proof: @FriLayerProof,
+    fold_step: u32,
 }
 
 #[generate_trait]
