@@ -34,10 +34,11 @@ pub impl FlatClaimImpl of FlatClaimTrait {
         channel.mix_felts(pack_into_qm31s(array![self.component_enable_bits.len()].span()));
         channel.mix_felts(pack_into_qm31s(enable_bits_to_u32s(*self.component_enable_bits)));
         channel.mix_felts(pack_into_qm31s(*self.component_log_sizes));
-        channel
-            .mix_felts(
-                pack_into_qm31s(array![self.public_data.public_memory.program.len()].span()),
-            );
+        let program_len: u32 = match self.public_data.public_memory.program {
+            Some(program) => program.len(),
+            None => 0,
+        };
+        channel.mix_felts(pack_into_qm31s(array![program_len].span()));
         self.public_data.mix_into(ref channel);
     }
 }

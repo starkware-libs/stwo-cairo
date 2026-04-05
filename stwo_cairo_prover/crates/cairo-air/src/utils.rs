@@ -166,7 +166,11 @@ pub struct VerificationOutput {
 
 /// Extract program hash (blake2s) and public output from the public memory.
 pub fn get_verification_output(public_memory: &PublicMemory) -> VerificationOutput {
-    let program_hash = construct_f252(&encode_and_hash_memory_section(&public_memory.program));
+    let program_hash = public_memory
+        .program
+        .as_ref()
+        .map(|p| construct_f252(&encode_and_hash_memory_section(p)))
+        .unwrap_or_default();
     let output = public_memory
         .output
         .iter()
