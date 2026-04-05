@@ -265,7 +265,7 @@ impl Claim {
             })
             .collect_vec();
 
-        TreeVec::new(vec![vec![], big_trace_log_sizes, big_interaction_log_sizes])
+        TreeVec::new(vec![big_trace_log_sizes, big_interaction_log_sizes])
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
