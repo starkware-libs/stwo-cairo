@@ -17,9 +17,7 @@ use stwo::core::pcs::TreeVec;
 use stwo::core::vcs::blake2_hash::Blake2sHasher;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
-use stwo_constraint_framework::{
-    INTERACTION_TRACE_IDX, ORIGINAL_TRACE_IDX, PREPROCESSED_TRACE_IDX,
-};
+use stwo_constraint_framework::{INTERACTION_TRACE_IDX, ORIGINAL_TRACE_IDX};
 use tracing::{span, Level};
 
 use crate::air::{CairoProof, MemorySection, PublicMemory};
@@ -234,8 +232,7 @@ pub fn sort_and_transpose_queried_values(
     queried_values: &TreeVec<Vec<Vec<BaseField>>>,
     trace_and_interaction_trace_log_sizes: Vec<&[u32]>,
 ) -> TreeVec<Vec<BaseField>> {
-    debug_assert!(trace_and_interaction_trace_log_sizes[PREPROCESSED_TRACE_IDX].is_empty());
-    debug_assert!(trace_and_interaction_trace_log_sizes.len() == 3);
+    debug_assert!(trace_and_interaction_trace_log_sizes.len() == 2);
 
     let mut new_queried_values_per_tree = vec![];
     let n_queries = queried_values[0][0].len();
@@ -251,10 +248,7 @@ pub fn sort_and_transpose_queried_values(
     // Sort and transpose the queried values of the base trace and interaction trace.
     for (queried_values, col_sizes) in queried_values[ORIGINAL_TRACE_IDX..=INTERACTION_TRACE_IDX]
         .iter()
-        .zip_eq(
-            trace_and_interaction_trace_log_sizes[ORIGINAL_TRACE_IDX..=INTERACTION_TRACE_IDX]
-                .iter(),
-        )
+        .zip_eq(trace_and_interaction_trace_log_sizes.iter())
     {
         let mut new_queried_values = vec![];
         let mut sorted_queries: Vec<_> = queried_values
@@ -349,7 +343,7 @@ mod tests {
 
     #[test]
     fn test_sort_queried_values() {
-        let trace_and_interaction_trace_log_sizes = [vec![], vec![4, 3, 2, 1], vec![4, 1, 3, 2]];
+        let trace_and_interaction_trace_log_sizes = [vec![4, 3, 2, 1], vec![4, 1, 3, 2]];
         let trace_and_interaction_trace_log_sizes: Vec<&[u32]> =
             trace_and_interaction_trace_log_sizes
                 .iter()

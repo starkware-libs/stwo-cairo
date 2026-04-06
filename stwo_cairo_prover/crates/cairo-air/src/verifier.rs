@@ -344,9 +344,12 @@ pub fn verify_cairo_ex<MC: MerkleChannel>(
     let commitment_scheme_verifier = &mut CommitmentSchemeVerifier::<MC>::new(pcs_config);
 
     let mut log_sizes = claim.log_sizes();
-    log_sizes[PREPROCESSED_TRACE_IDX] = preprocessed_trace_variant
-        .to_preprocessed_trace()
-        .log_sizes();
+    log_sizes.insert(
+        PREPROCESSED_TRACE_IDX,
+        preprocessed_trace_variant
+            .to_preprocessed_trace()
+            .log_sizes(),
+    );
 
     // Preproccessed trace.
     commitment_scheme_verifier.commit(stark_proof.commitments[0], &log_sizes[0], channel);
