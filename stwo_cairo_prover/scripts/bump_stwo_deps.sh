@@ -94,3 +94,6 @@ echo "Updated ${CARGO_TOML}:"
 for dep in "${deps[@]}"; do
   grep -nE "^${dep}[[:space:]]*=" "$CARGO_TOML"
 done
+
+echo "Regenerating Cargo.lock..."
+cargo update --workspace --manifest-path "${CARGO_TOML}"

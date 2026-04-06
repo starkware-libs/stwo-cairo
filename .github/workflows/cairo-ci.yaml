@@ -246,6 +246,19 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - run: scripts/clippy.sh
 
+  cargo-lock:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./stwo_cairo_prover
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.NIGHTLY_VERSION }}
+      - name: Check Cargo.lock is up-to-date
+        run: cargo fetch --locked
+
   typos:
     runs-on: ubuntu-latest
     steps:
