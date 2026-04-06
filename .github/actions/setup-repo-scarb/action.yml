@@ -1,0 +1,24 @@
+name: Setup Scarb (repo defaults)
+description: Wraps software-mansion/setup-scarb with default version 2.15.0.
+
+inputs:
+  scarb-version:
+    description: Scarb version to install.
+    required: false
+    default: "2.15.0"
+  scarb-lock:
+    description: Path to Scarb.lock for cache keying (optional).
+    required: false
+  cache:
+    description: Whether to cache Scarb install.
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - uses: software-mansion/setup-scarb@v1
+      with:
+        scarb-version: ${{ inputs.scarb-version }}
+        scarb-lock: ${{ inputs.scarb-lock }}
+        cache: ${{ inputs.cache }}
