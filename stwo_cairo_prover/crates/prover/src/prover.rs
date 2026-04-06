@@ -85,13 +85,19 @@ where
         // TODO(ilya): Deduces the max domain size from 'input'.
         MAX_CANONICAL_COSET_LOG_SIZE
     };
+    let span = span!(Level::INFO, "Precompute Twiddles").entered();
     let twiddles = SimdBackend::precompute_twiddles(
         CanonicCoset::new(max_domain_size)
             .circle_domain()
             .half_coset,
     );
+    span.exit();
 
+    let span = span!(Level::INFO, "Write Preprocessed trace").entered();
     let preprocessed_trace = Arc::new(prover_params.preprocessed_trace.to_preprocessed_trace());
+    span.exit();
+
+    let span = span!(Level::INFO, "Commit on Preprocessed trace").entered();
     let preprocessed_trace_polys =
         SimdBackend::interpolate_columns(gen_trace(preprocessed_trace.clone()), &twiddles);
 
@@ -104,6 +110,7 @@ where
         prover_params.pcs_config.lifting_log_size,
         &base_column_pool,
     );
+    span.exit();
 
     prove_cairo_with_precompute::<MC>(
         &base_column_pool,
@@ -156,9 +163,12 @@ where
     // Run Cairo.
     let cairo_claim_generator = create_cairo_claim_generator(input, preprocessed_trace.clone());
     // Base trace.
-    let mut tree_builder = commitment_scheme.tree_builder();
-    let span = span!(Level::INFO, "Base trace").entered();
+
+    let span = span!(Level::INFO, "Write Base trace").entered();
     let (trace_evals, claim, interaction_generator) = cairo_claim_generator.write_trace();
+    span.exit();
+    let span = span!(Level::INFO, "Commit on Base trace").entered();
+    let mut tree_builder = commitment_scheme.tree_builder();
     tree_builder.extend_evals(trace_evals);
     span.exit();
 
@@ -171,10 +181,12 @@ where
     let interaction_elements = CommonLookupElements::draw(channel);
 
     // Interaction trace.
-    let span = span!(Level::INFO, "Interaction trace").entered();
-    let mut tree_builder = commitment_scheme.tree_builder();
+    let span = span!(Level::INFO, "Write Interaction trace").entered();
     let (interaction_trace_evals, interaction_claim) =
         interaction_generator.write_interaction_trace(&interaction_elements);
+    span.exit();
+    let span = span!(Level::INFO, "Commit on Interaction trace").entered();
+    let mut tree_builder = commitment_scheme.tree_builder();
     tree_builder.extend_evals(interaction_trace_evals);
     span.exit();
 
