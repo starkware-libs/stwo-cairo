@@ -4,7 +4,7 @@ use core::iter::{IntoIterator, Iterator};
 use stwo_verifier_utils::zip_eq::zip_eq;
 use crate::Hash;
 use crate::channel::{Channel, ChannelTrait};
-use crate::circle::CosetImpl;
+use crate::circle::{CirclePointM31Impl, CosetImpl};
 use crate::fields::BatchInvertible;
 use crate::fields::m31::M31;
 use crate::fields::qm31::{QM31, QM31Serde, QM31Trait, QM31_EXTENSION_DEGREE};
@@ -515,6 +515,28 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
 
         res
     }
+}
+
+/// Computes the x-coordinates for fold levels `1..fold_step` by repeatedly applying `double_x`
+/// to every other element of the previous level.
+///
+/// `coset_x_coords` contains the x-coordinates for fold level 0.
+/// Returns the flat x-coordinates (not yet inverted) for levels `1..fold_step`, in the layout
+/// expected by [`fold_coset`].
+pub fn fold_x_coords(coset_x_coords: Span<M31>, fold_step: u32) -> Span<M31> {
+    let mut prev_layer = coset_x_coords;
+    let mut res = array![];
+    for _ in 1..fold_step {
+        let mut k: usize = 0;
+        while k < prev_layer.len() {
+            res.append(CirclePointM31Impl::double_x(*prev_layer[k]));
+            k += 2;
+        }
+        let next_len = prev_layer.len() / 2;
+        // Slice the last `next_len` elements of the current fold.
+        prev_layer = res.span().slice(res.len() - next_len, next_len);
+    }
+    res.span()
 }
 
 /// Folds `2^n` evaluations into a single evaluation using precomputed twiddles.
