@@ -4,10 +4,10 @@ use core::iter::{IntoIterator, Iterator};
 use stwo_verifier_utils::zip_eq::zip_eq;
 use crate::Hash;
 use crate::channel::{Channel, ChannelTrait};
-use crate::circle::CosetImpl;
-use crate::fields::BatchInvertible;
+use crate::circle::{CirclePointM31Impl, CosetImpl};
 use crate::fields::m31::M31;
 use crate::fields::qm31::{QM31, QM31Serde, QM31Trait, QM31_EXTENSION_DEGREE};
+use crate::fields::{BatchInvertible, Invertible};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomain, CircleDomainImpl};
 use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly};
 use crate::poly::utils::fri_fold;
@@ -517,34 +517,32 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
     }
 }
 
-/// Folds `2^n` evaluations into a single evaluation using precomputed twiddles.
+/// Folds `2^n` evaluations into a single evaluation by repeatedly applying `fri_fold`.
 ///
 /// # Arguments
 ///
-/// * `eval` contains evaluations on either a circle domain (for the circle-to-line case) or
-/// a coset (for the line-to-line case).
-/// * `twiddles` is a flat span of twiddle factors laid out as:
-///     `[fold_0_tw_0, ..., fold_0_tw_{2^(n-1)-1}, fold_1_tw_0, ..., fold_{n-1}_tw_0]`
-/// where `fold_i_tw_j` denotes the j-th twiddle in the i-th fold. The i-th fold has `2^(n-1-i)`
-/// twiddles.
-/// * `alpha`: the random folding factor.
-///
-/// The function assumes that `eval` is of length `2^n`, and `twiddles` is of length `2^n - 1`.
-pub fn fold_coset(eval: Span<QM31>, mut twiddles: Span<M31>, alpha: QM31) -> QM31 {
+/// * `eval` - evaluations of length `2^n` on a coset domain.
+/// * `x_coords` - x-coordinates of the coset points, of length `2^n`.
+/// * `alpha` - the random folding factor.
+pub fn fold_coset(eval: Span<QM31>, x_coords: Span<M31>, alpha: QM31) -> QM31 {
+    assert!(eval.len() == x_coords.len());
     let mut current_eval = eval;
+    let mut current_x_coords = x_coords;
     let mut folding_alpha = alpha;
     #[cairofmt::skip]
     while current_eval.len() > 1 {
         let mut next_eval = array![];
+        let mut next_x_coords = array![];
         while let Some(boxed_pair) = current_eval.multi_pop_front::<2>() {
             let [v0, v1]: [QM31; 2] = boxed_pair.unbox();
-            let itwid = *twiddles.pop_front().unwrap();
-            next_eval.append(fri_fold(v0, v1, itwid, folding_alpha));
+            let [x0, _]: [M31; 2] = current_x_coords.multi_pop_front::<2>().unwrap().unbox();
+            next_eval.append(fri_fold(v0, v1, x0.inverse(), folding_alpha));
+            next_x_coords.append(CirclePointM31Impl::double_x(x0));
         }
         folding_alpha = folding_alpha * folding_alpha;
         current_eval = next_eval.span();
+        current_x_coords = next_x_coords.span();
     };
-    assert!(twiddles.is_empty());
     *current_eval[0]
 }
 
