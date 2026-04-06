@@ -1,10 +1,14 @@
 use crate::channel::Channel;
-use crate::circle::{CirclePointIndexImpl, CosetImpl};
+use crate::circle::{CirclePointIndexImpl, CirclePointM31Impl, CosetImpl};
+use crate::fields::m31::m31;
 use crate::fields::qm31::qm31_const;
-use crate::fri::{FriConfig, FriVerifierImpl, FriVerifierTrait};
+use crate::fields::{BatchInvertible, Invertible};
+use crate::fri::{FriConfig, FriVerifierImpl, FriVerifierTrait, fold_coset, fold_x_coords};
 use crate::poly::circle::CircleEvaluationImpl;
-use crate::poly::line::LineDomainImpl;
+use crate::poly::line::{LineDomainImpl, LineDomainTrait};
+use crate::poly::utils::fri_fold;
 use crate::queries::{Queries, QueriesImpl};
+use crate::utils::bit_reverse_index;
 
 #[test]
 /// The test data was generated using [`stwo::core::fri::tests::valid_proof_passes_verification`]
@@ -417,4 +421,82 @@ fn decommit_queries_on_invalid_domain_fails_verification() {
     let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bound);
 
     verifier.decommit(invalid_queries, query_evals);
+}
+
+#[test]
+fn test_fold_coset_step_2() {
+    // A coset of size 4 (fold_step = 2). fold_coset applies two rounds of fri_fold.
+    let fold_step: u32 = 2;
+    let fold_domain_initial = CirclePointIndexImpl::new(1);
+    let domain = LineDomainImpl::new_unchecked(CosetImpl::new(fold_domain_initial, fold_step));
+
+    let v0 = qm31_const::<100, 200, 300, 400>();
+    let v1 = qm31_const::<500, 600, 700, 800>();
+    let v2 = qm31_const::<900, 1000, 1100, 1200>();
+    let v3 = qm31_const::<1300, 1400, 1500, 1600>();
+    let alpha = qm31_const::<17, 23, 31, 37>();
+    let eval = array![v0, v1, v2, v3];
+
+    // Compute twiddles via compute_x_coords + batch_inverse.
+    // First layer: x-coordinates at bit-reversed even positions of the domain.
+    let log_size = domain.log_size();
+    let mut x_coords = array![];
+    let mut j: usize = 0;
+    while j < domain.size() {
+        x_coords.append(domain.at(bit_reverse_index(j, log_size)));
+        j += 2;
+    }
+    x_coords.append_span(fold_x_coords(x_coords.span(), fold_step));
+    let inv_twiddles = BatchInvertible::batch_inverse(x_coords);
+
+    let result = fold_coset(eval.span(), inv_twiddles.span(), alpha);
+
+    // Manually apply two rounds of fri_fold.
+    // Round 0: fold pairs (v0,v1) and (v2,v3) with the first two twiddles.
+    let x0 = domain.at(bit_reverse_index(0, domain.log_size()));
+    let x1 = domain.at(bit_reverse_index(2, domain.log_size()));
+    let r0 = fri_fold(v0, v1, x0.inverse(), alpha);
+    let r1 = fri_fold(v2, v3, x1.inverse(), alpha);
+
+    // Round 1: fold (r0, r1) with alpha^2 and the doubled domain's twiddle.
+    let doubled_domain = domain.double();
+    let x2 = doubled_domain.at(bit_reverse_index(0, doubled_domain.log_size()));
+    let alpha2 = alpha * alpha;
+    let expected = fri_fold(r0, r1, x2.inverse(), alpha2);
+
+    assert_eq!(result, expected);
+}
+
+#[test]
+fn test_fold_x_coords_step_1_returns_empty() {
+    let coords = array![m31(3), m31(5)].span();
+    let result = fold_x_coords(coords, 1);
+    assert!(result.is_empty());
+}
+
+#[test]
+fn test_fold_x_coords_step_3() {
+    // Input: 8 x-coordinates. fold_step=3 produces two fold levels.
+    // Level 1: [double_x(x0), double_x(x2), double_x(x4), double_x(x6)]
+    // Level 2: [double_x(double_x(x0)), double_x(double_x(x4))]
+    let x0 = m31(3);
+    let x1 = m31(5);
+    let x2 = m31(7);
+    let x3 = m31(11);
+    let x4 = m31(13);
+    let x5 = m31(17);
+    let x6 = m31(19);
+    let x7 = m31(23);
+    let coords = array![x0, x1, x2, x3, x4, x5, x6, x7].span();
+
+    let result = fold_x_coords(coords, 3);
+
+    let dx0 = CirclePointM31Impl::double_x(x0);
+    let dx2 = CirclePointM31Impl::double_x(x2);
+    let dx4 = CirclePointM31Impl::double_x(x4);
+    let dx6 = CirclePointM31Impl::double_x(x6);
+    let expected = array![
+        dx0, dx2, dx4, dx6, CirclePointM31Impl::double_x(dx0), CirclePointM31Impl::double_x(dx4),
+    ];
+    assert_eq!(result, expected.span());
 }
