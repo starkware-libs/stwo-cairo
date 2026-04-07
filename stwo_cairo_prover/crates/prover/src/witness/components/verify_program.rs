@@ -38,11 +38,36 @@ impl ClaimGenerator {
             memory_address_to_id_state,
             memory_id_to_big_state,
         );
-        for inputs in sub_component_inputs.memory_address_to_id {
-            memory_address_to_id_state.add_packed_inputs(&inputs, 0);
+        // Memory sub-component inputs are conditional on cond (is_active).
+        // Only add inputs for lanes where cond=1 (actual program entries, not padding).
+        let cond_values: Vec<PackedM31> = lookup_data
+            .memory_address_to_id_0
+            .iter()
+            .map(|v| v[0])
+            .collect();
+        for (inputs, cond) in sub_component_inputs
+            .memory_address_to_id
+            .iter()
+            .flat_map(|v| v.iter())
+            .zip(cond_values.iter())
+        {
+            for (input, c) in inputs.to_array().iter().zip(cond.to_array().iter()) {
+                if c.0 != 0 {
+                    memory_address_to_id_state.add_input(input);
+                }
+            }
         }
-        for inputs in sub_component_inputs.memory_id_to_big {
-            memory_id_to_big_state.add_packed_inputs(&inputs, 0);
+        for (inputs, cond) in sub_component_inputs
+            .memory_id_to_big
+            .iter()
+            .flat_map(|v| v.iter())
+            .zip(cond_values.iter())
+        {
+            for (input, c) in inputs.to_array().iter().zip(cond.to_array().iter()) {
+                if c.0 != 0 {
+                    memory_id_to_big_state.add_input(input);
+                }
+            }
         }
 
         (
@@ -91,34 +116,7 @@ fn write_trace_simd(
     let M31_1444891767 = PackedM31::broadcast(M31::from(1444891767));
     let M31_1662111297 = PackedM31::broadcast(M31::from(1662111297));
     let seq = Seq::new(log_size);
-    let curr_program_0 = ProgramColumn::new(0);
-    let curr_program_1 = ProgramColumn::new(1);
-    let curr_program_2 = ProgramColumn::new(2);
-    let curr_program_3 = ProgramColumn::new(3);
-    let curr_program_4 = ProgramColumn::new(4);
-    let curr_program_5 = ProgramColumn::new(5);
-    let curr_program_6 = ProgramColumn::new(6);
-    let curr_program_7 = ProgramColumn::new(7);
-    let curr_program_8 = ProgramColumn::new(8);
-    let curr_program_9 = ProgramColumn::new(9);
-    let curr_program_10 = ProgramColumn::new(10);
-    let curr_program_11 = ProgramColumn::new(11);
-    let curr_program_12 = ProgramColumn::new(12);
-    let curr_program_13 = ProgramColumn::new(13);
-    let curr_program_14 = ProgramColumn::new(14);
-    let curr_program_15 = ProgramColumn::new(15);
-    let curr_program_16 = ProgramColumn::new(16);
-    let curr_program_17 = ProgramColumn::new(17);
-    let curr_program_18 = ProgramColumn::new(18);
-    let curr_program_19 = ProgramColumn::new(19);
-    let curr_program_20 = ProgramColumn::new(20);
-    let curr_program_21 = ProgramColumn::new(21);
-    let curr_program_22 = ProgramColumn::new(22);
-    let curr_program_23 = ProgramColumn::new(23);
-    let curr_program_24 = ProgramColumn::new(24);
-    let curr_program_25 = ProgramColumn::new(25);
-    let curr_program_26 = ProgramColumn::new(26);
-    let curr_program_27 = ProgramColumn::new(27);
+    let curr_program_cols: [ProgramColumn; 29] = std::array::from_fn(ProgramColumn::new);
 
     (
         trace.par_iter_mut(),
@@ -129,84 +127,53 @@ fn write_trace_simd(
         .enumerate()
         .for_each(|(row_index, (row, lookup_data, sub_component_inputs))| {
             let seq = seq.packed_at(row_index);
-            let curr_program_0 = curr_program_0.packed_at(row_index);
-            let curr_program_1 = curr_program_1.packed_at(row_index);
-            let curr_program_2 = curr_program_2.packed_at(row_index);
-            let curr_program_3 = curr_program_3.packed_at(row_index);
-            let curr_program_4 = curr_program_4.packed_at(row_index);
-            let curr_program_5 = curr_program_5.packed_at(row_index);
-            let curr_program_6 = curr_program_6.packed_at(row_index);
-            let curr_program_7 = curr_program_7.packed_at(row_index);
-            let curr_program_8 = curr_program_8.packed_at(row_index);
-            let curr_program_9 = curr_program_9.packed_at(row_index);
-            let curr_program_10 = curr_program_10.packed_at(row_index);
-            let curr_program_11 = curr_program_11.packed_at(row_index);
-            let curr_program_12 = curr_program_12.packed_at(row_index);
-            let curr_program_13 = curr_program_13.packed_at(row_index);
-            let curr_program_14 = curr_program_14.packed_at(row_index);
-            let curr_program_15 = curr_program_15.packed_at(row_index);
-            let curr_program_16 = curr_program_16.packed_at(row_index);
-            let curr_program_17 = curr_program_17.packed_at(row_index);
-            let curr_program_18 = curr_program_18.packed_at(row_index);
-            let curr_program_19 = curr_program_19.packed_at(row_index);
-            let curr_program_20 = curr_program_20.packed_at(row_index);
-            let curr_program_21 = curr_program_21.packed_at(row_index);
-            let curr_program_22 = curr_program_22.packed_at(row_index);
-            let curr_program_23 = curr_program_23.packed_at(row_index);
-            let curr_program_24 = curr_program_24.packed_at(row_index);
-            let curr_program_25 = curr_program_25.packed_at(row_index);
-            let curr_program_26 = curr_program_26.packed_at(row_index);
-            let curr_program_27 = curr_program_27.packed_at(row_index);
+            let limbs: [PackedM31; 28] =
+                std::array::from_fn(|i| curr_program_cols[i].packed_at(row_index));
+            let cond = curr_program_cols[28].packed_at(row_index);
 
-            // Mem Verify.
-
-            // Read Id.
-
-            let memory_address_to_id_value_tmp_c2666_0 = memory_address_to_id_state.deduce_output(
-                ((PackedM31::broadcast(M31::from(verify_program_segment_start))) + (seq)),
-            );
-            let address_id_col0 = memory_address_to_id_value_tmp_c2666_0;
+            // Mem Verify Cond.
+            // For padding rows (cond=0), use a safe address to avoid out-of-bounds access.
+            let safe_addr = PackedM31::broadcast(M31::from(verify_program_segment_start));
+            let addr = safe_addr + seq * cond;
+            let address_id_col0 = memory_address_to_id_state.deduce_output(addr);
             *row[0] = address_id_col0;
-            *sub_component_inputs.memory_address_to_id[0] =
-                ((PackedM31::broadcast(M31::from(verify_program_segment_start))) + (seq));
-            *lookup_data.memory_address_to_id_0 = [
-                M31_1444891767,
-                ((PackedM31::broadcast(M31::from(verify_program_segment_start))) + (seq)),
-                address_id_col0,
-            ];
 
+            let real_addr = PackedM31::broadcast(M31::from(verify_program_segment_start)) + seq;
+            *sub_component_inputs.memory_address_to_id[0] = real_addr;
+            *lookup_data.memory_address_to_id_0 =
+                [cond, M31_1444891767, real_addr, address_id_col0];
             *sub_component_inputs.memory_id_to_big[0] = address_id_col0;
             *lookup_data.memory_id_to_big_0 = [
                 M31_1662111297,
                 address_id_col0,
-                curr_program_0,
-                curr_program_1,
-                curr_program_2,
-                curr_program_3,
-                curr_program_4,
-                curr_program_5,
-                curr_program_6,
-                curr_program_7,
-                curr_program_8,
-                curr_program_9,
-                curr_program_10,
-                curr_program_11,
-                curr_program_12,
-                curr_program_13,
-                curr_program_14,
-                curr_program_15,
-                curr_program_16,
-                curr_program_17,
-                curr_program_18,
-                curr_program_19,
-                curr_program_20,
-                curr_program_21,
-                curr_program_22,
-                curr_program_23,
-                curr_program_24,
-                curr_program_25,
-                curr_program_26,
-                curr_program_27,
+                limbs[0],
+                limbs[1],
+                limbs[2],
+                limbs[3],
+                limbs[4],
+                limbs[5],
+                limbs[6],
+                limbs[7],
+                limbs[8],
+                limbs[9],
+                limbs[10],
+                limbs[11],
+                limbs[12],
+                limbs[13],
+                limbs[14],
+                limbs[15],
+                limbs[16],
+                limbs[17],
+                limbs[18],
+                limbs[19],
+                limbs[20],
+                limbs[21],
+                limbs[22],
+                limbs[23],
+                limbs[24],
+                limbs[25],
+                limbs[26],
+                limbs[27],
             ];
         });
 
@@ -215,7 +182,8 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    memory_address_to_id_0: Vec<[PackedM31; 3]>,
+    // [cond, relation_id, address, id]
+    memory_address_to_id_0: Vec<[PackedM31; 4]>,
     memory_id_to_big_0: Vec<[PackedM31; 30]>,
 }
 
@@ -233,7 +201,7 @@ impl InteractionClaimGenerator {
     ) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
 
-        // Sum logup terms in pairs.
+        // Sum the two memory logup terms in pairs, both with numerator=cond.
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
@@ -242,9 +210,13 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let cond: PackedQM31 = values0[0].into();
+                // values0 = [cond, relation_id, address, id] -> combine over [1..4].
+                let denom0: PackedQM31 =
+                    common_lookup_elements.combine(&[values0[1], values0[2], values0[3]]);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
+                // cond/denom0 + cond/denom1 = cond * (denom0 + denom1) / (denom0 * denom1)
+                writer.write_frac(cond * (denom0 + denom1), denom0 * denom1);
             });
         col_gen.finalize_col();
 

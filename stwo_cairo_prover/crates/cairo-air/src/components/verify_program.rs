@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::mem_verify::MemVerify;
+use crate::components::subroutines::mem_verify_cond::MemVerifyCond;
 
 pub const N_TRACE_COLUMNS: usize = 1;
 pub const RELATION_USES_PER_ROW: [RelationUse; 2] = [
@@ -53,6 +53,7 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let curr_program_28 = eval.get_preprocessed_column(ProgramColumn::new(28).id());
         let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let curr_program_0 = eval.get_preprocessed_column(ProgramColumn::new(0).id());
         let curr_program_1 = eval.get_preprocessed_column(ProgramColumn::new(1).id());
@@ -84,7 +85,7 @@ impl FrameworkEval for Eval {
         let curr_program_27 = eval.get_preprocessed_column(ProgramColumn::new(27).id());
         let address_id_col0 = eval.next_trace_mask();
 
-        MemVerify::evaluate(
+        MemVerifyCond::evaluate(
             [
                 (E::F::from(M31::from(self.claim.verify_program_segment_start)) + seq.clone()),
                 curr_program_0.clone(),
@@ -115,6 +116,7 @@ impl FrameworkEval for Eval {
                 curr_program_25.clone(),
                 curr_program_26.clone(),
                 curr_program_27.clone(),
+                curr_program_28.clone(),
             ],
             address_id_col0.clone(),
             &self.common_lookup_elements,

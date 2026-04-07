@@ -48,7 +48,6 @@ fn main() -> Result<()> {
         args.program_type,
         LayoutName::all_cairo_stwo,
         args.program_arguments_file.as_ref(),
-        false,
     )?;
 
     let execution_resources = ExecutionResources::from_prover_input(&prover_input);
