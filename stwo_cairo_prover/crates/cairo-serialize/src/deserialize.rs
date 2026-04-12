@@ -134,11 +134,12 @@ impl CairoDeserialize for FriConfig {
         let log_blowup_factor = u32::deserialize(data);
         let log_last_layer_degree_bound = u32::deserialize(data);
         let n_queries = usize::deserialize(data);
+        let fold_step = u32::deserialize(data);
         FriConfig {
             log_blowup_factor,
             log_last_layer_degree_bound,
             n_queries,
-            fold_step: 1,
+            fold_step,
         }
     }
 }
