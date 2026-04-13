@@ -85,13 +85,19 @@ where
         // TODO(ilya): Deduces the max domain size from 'input'.
         MAX_CANONICAL_COSET_LOG_SIZE
     };
+    let span = span!(Level::INFO, "Precompute Twiddles").entered();
     let twiddles = SimdBackend::precompute_twiddles(
         CanonicCoset::new(max_domain_size)
             .circle_domain()
             .half_coset,
     );
+    span.exit();
 
+    let span = span!(Level::INFO, "Write preprocessed trace").entered();
     let preprocessed_trace = Arc::new(prover_params.preprocessed_trace.to_preprocessed_trace());
+    span.exit();
+
+    let span = span!(Level::INFO, "Compute preprocessed trace commitment").entered();
     let preprocessed_trace_polys =
         SimdBackend::interpolate_columns(gen_trace(preprocessed_trace.clone()), &twiddles);
 
@@ -104,6 +110,7 @@ where
         prover_params.pcs_config.lifting_log_size,
         &base_column_pool,
     );
+    span.exit();
 
     prove_cairo_with_precompute::<MC>(
         &base_column_pool,
@@ -150,20 +157,23 @@ where
     if store_polynomials_coefficients {
         commitment_scheme.set_store_polynomials_coefficients();
     }
-    // Preprocessed trace.
+
+    // Add the preprocessed trace commitment that was computed earlier to the commitment scheme.
     commitment_scheme.commit_tree(preprocessed_tree, channel);
 
     // Run Cairo.
     let cairo_claim_generator = create_cairo_claim_generator(input, preprocessed_trace.clone());
-    // Base trace.
-    let mut tree_builder = commitment_scheme.tree_builder();
-    let span = span!(Level::INFO, "Base trace").entered();
-    let (trace_evals, claim, interaction_generator) = cairo_claim_generator.write_trace();
-    tree_builder.extend_evals(trace_evals);
-    span.exit();
 
+    // Base trace.
+    let span = span!(Level::INFO, "Write base trace").entered();
+    let (trace_evals, claim, interaction_generator) = cairo_claim_generator.write_trace();
+    span.exit();
     claim.mix_into::<MC>(channel);
+    let span = span!(Level::INFO, "Compute base trace commitment").entered();
+    let mut tree_builder = commitment_scheme.tree_builder();
+    tree_builder.extend_evals(trace_evals);
     tree_builder.commit(channel);
+    span.exit();
 
     // Draw interaction elements.
     let interaction_pow = SimdBackend::grind(channel, INTERACTION_POW_BITS);
@@ -171,11 +181,9 @@ where
     let interaction_elements = CommonLookupElements::draw(channel);
 
     // Interaction trace.
-    let span = span!(Level::INFO, "Interaction trace").entered();
-    let mut tree_builder = commitment_scheme.tree_builder();
+    let span = span!(Level::INFO, "Write interaction trace").entered();
     let (interaction_trace_evals, interaction_claim) =
         interaction_generator.write_interaction_trace(&interaction_elements);
-    tree_builder.extend_evals(interaction_trace_evals);
     span.exit();
 
     tracing::info!(
@@ -187,9 +195,13 @@ where
         lookup_sum(&claim, &interaction_elements, &interaction_claim),
         SecureField::zero()
     );
-
     interaction_claim.mix_into(channel);
+
+    let span = span!(Level::INFO, "Compute interaction trace commitment").entered();
+    let mut tree_builder = commitment_scheme.tree_builder();
+    tree_builder.extend_evals(interaction_trace_evals);
     tree_builder.commit(channel);
+    span.exit();
 
     // Component provers.
     let component_builder = CairoComponents::new(
