@@ -613,343 +613,294 @@ impl CairoClaim {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.add_opcode_small {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.add_ap_opcode {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.assert_eq_opcode {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.assert_eq_opcode_imm {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.assert_eq_opcode_double_deref {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.blake_compress_opcode {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.call_opcode_abs {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.call_opcode_rel_imm {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.generic_opcode {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.jnz_opcode_non_taken {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.jnz_opcode_taken {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.jump_opcode_abs {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.jump_opcode_double_deref {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.jump_opcode_rel {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.jump_opcode_rel_imm {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.mul_opcode {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.mul_opcode_small {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.qm_31_add_mul_opcode {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.ret_opcode {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.verify_instruction {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.blake_round {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.blake_g {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.blake_round_sigma {
             component_log_sizes.push(blake_round_sigma::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.triple_xor_32 {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.verify_bitwise_xor_12 {
             component_log_sizes.push(verify_bitwise_xor_12::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.add_mod_builtin {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.bitwise_builtin {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.mul_mod_builtin {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.pedersen_builtin {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.pedersen_builtin_narrow_windows {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.poseidon_builtin {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.range_check96_builtin {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.range_check_builtin {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.ec_op_builtin {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.partial_ec_mul_generic {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.pedersen_aggregator_window_bits_18 {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.partial_ec_mul_window_bits_18 {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.pedersen_points_table_window_bits_18 {
             component_log_sizes.push(pedersen_points_table_window_bits_18::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.pedersen_aggregator_window_bits_9 {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.partial_ec_mul_window_bits_9 {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.pedersen_points_table_window_bits_9 {
             component_log_sizes.push(pedersen_points_table_window_bits_9::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.poseidon_aggregator {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.poseidon_3_partial_rounds_chain {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.poseidon_full_round_chain {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.cube_252 {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.poseidon_round_keys {
             component_log_sizes.push(poseidon_round_keys::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.range_check_252_width_27 {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(c) = self.memory_address_to_id {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         let memory_id_to_big::Claim { big_log_sizes } = self.memory_id_to_big.as_ref().unwrap();
@@ -958,134 +909,116 @@ impl CairoClaim {
             component_log_sizes.push(*log_size);
             component_enable_bits.push(true);
         }
-        for _ in 0..(MEMORY_ADDRESS_TO_ID_SPLIT - big_log_sizes.len()) {
-            component_log_sizes.push(0_u32);
-            component_enable_bits.push(false);
-        }
+        component_enable_bits.extend(std::iter::repeat_n(
+            false,
+            MEMORY_ADDRESS_TO_ID_SPLIT - big_log_sizes.len(),
+        ));
         if let Some(c) = self.memory_id_to_small {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.range_check_6 {
             component_log_sizes.push(range_check_6::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.range_check_8 {
             component_log_sizes.push(range_check_8::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.range_check_11 {
             component_log_sizes.push(range_check_11::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.range_check_12 {
             component_log_sizes.push(range_check_12::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.range_check_18 {
             component_log_sizes.push(range_check_18::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.range_check_20 {
             component_log_sizes.push(range_check_20::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.range_check_4_3 {
             component_log_sizes.push(range_check_4_3::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.range_check_4_4 {
             component_log_sizes.push(range_check_4_4::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.range_check_9_9 {
             component_log_sizes.push(range_check_9_9::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.range_check_7_2_5 {
             component_log_sizes.push(range_check_7_2_5::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.range_check_3_6_6_3 {
             component_log_sizes.push(range_check_3_6_6_3::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.range_check_4_4_4_4 {
             component_log_sizes.push(range_check_4_4_4_4::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.range_check_3_3_3_3_3 {
             component_log_sizes.push(range_check_3_3_3_3_3::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.verify_bitwise_xor_4 {
             component_log_sizes.push(verify_bitwise_xor_4::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.verify_bitwise_xor_7 {
             component_log_sizes.push(verify_bitwise_xor_7::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.verify_bitwise_xor_8 {
             component_log_sizes.push(verify_bitwise_xor_8::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
         if let Some(_c) = self.verify_bitwise_xor_9 {
             component_log_sizes.push(verify_bitwise_xor_9::LOG_SIZE);
             component_enable_bits.push(true);
         } else {
-            component_log_sizes.push(0_u32);
             component_enable_bits.push(false);
         }
 
@@ -1188,248 +1121,150 @@ impl CairoInteractionClaim {
 
         if let Some(c) = self.add_opcode {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.add_opcode_small {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.add_ap_opcode {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.assert_eq_opcode {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.assert_eq_opcode_imm {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.assert_eq_opcode_double_deref {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.blake_compress_opcode {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.call_opcode_abs {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.call_opcode_rel_imm {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.generic_opcode {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.jnz_opcode_non_taken {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.jnz_opcode_taken {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.jump_opcode_abs {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.jump_opcode_double_deref {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.jump_opcode_rel {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.jump_opcode_rel_imm {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.mul_opcode {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.mul_opcode_small {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.qm_31_add_mul_opcode {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.ret_opcode {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.verify_instruction {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.blake_round {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.blake_g {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.blake_round_sigma {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.triple_xor_32 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.verify_bitwise_xor_12 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.add_mod_builtin {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.bitwise_builtin {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.mul_mod_builtin {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.pedersen_builtin {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.pedersen_builtin_narrow_windows {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.poseidon_builtin {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.range_check96_builtin {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.range_check_builtin {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.ec_op_builtin {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.partial_ec_mul_generic {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.pedersen_aggregator_window_bits_18 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.partial_ec_mul_window_bits_18 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.pedersen_points_table_window_bits_18 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.pedersen_aggregator_window_bits_9 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.partial_ec_mul_window_bits_9 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.pedersen_points_table_window_bits_9 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.poseidon_aggregator {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.poseidon_3_partial_rounds_chain {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.poseidon_full_round_chain {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.cube_252 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.poseidon_round_keys {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.range_check_252_width_27 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.memory_address_to_id {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         let memory_id_to_big::InteractionClaim {
             big_claimed_sums,
@@ -1439,98 +1274,59 @@ impl CairoInteractionClaim {
         for claimed_sum in big_claimed_sums {
             claimed_sums.push(*claimed_sum);
         }
-        for _ in 0..(MEMORY_ADDRESS_TO_ID_SPLIT - big_claimed_sums.len()) {
-            claimed_sums.push(SecureField::zero());
-        }
         if let Some(c) = self.memory_id_to_small {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.range_check_6 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.range_check_8 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.range_check_11 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.range_check_12 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.range_check_18 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.range_check_20 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.range_check_4_3 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.range_check_4_4 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.range_check_9_9 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.range_check_7_2_5 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.range_check_3_6_6_3 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.range_check_4_4_4_4 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.range_check_3_3_3_3_3 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.verify_bitwise_xor_4 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.verify_bitwise_xor_7 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.verify_bitwise_xor_8 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
         if let Some(c) = self.verify_bitwise_xor_9 {
             claimed_sums.push(c.claimed_sum);
-        } else {
-            claimed_sums.push(SecureField::zero());
         }
 
         claimed_sums
