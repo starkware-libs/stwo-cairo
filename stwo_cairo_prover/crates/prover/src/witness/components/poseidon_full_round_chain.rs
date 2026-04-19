@@ -6,11 +6,13 @@ use cairo_air::components::poseidon_full_round_chain::{Claim, InteractionClaim, 
 use crate::witness::components::{cube_252, poseidon_round_keys, range_check_3_3_3_3_3};
 use crate::witness::prelude::*;
 
+pub type InputType = (M31, M31, [Felt252Width27; 3]);
 pub type PackedInputType = (PackedM31, PackedM31, [PackedFelt252Width27; 3]);
 
 #[derive(Default)]
 pub struct ClaimGenerator {
-    pub packed_inputs: Vec<PackedInputType>,
+    pub packed_inputs: Mutex<Vec<PackedInputType>>,
+    pub remainder_inputs: Mutex<Vec<InputType>>,
 }
 
 impl ClaimGenerator {
@@ -19,8 +21,8 @@ impl ClaimGenerator {
     }
 
     pub fn write_trace(
-        mut self,
-        cube_252_state: &mut cube_252::ClaimGenerator,
+        self,
+        cube_252_state: &cube_252::ClaimGenerator,
         poseidon_round_keys_state: &poseidon_round_keys::ClaimGenerator,
         range_check_3_3_3_3_3_state: &range_check_3_3_3_3_3::ClaimGenerator,
     ) -> (
@@ -28,29 +30,40 @@ impl ClaimGenerator {
         Claim,
         InteractionClaimGenerator,
     ) {
-        assert!(!self.packed_inputs.is_empty());
-        let n_vec_rows = self.packed_inputs.len();
+        let mut packed_inputs = self.packed_inputs.into_inner().unwrap();
+        assert!(!packed_inputs.is_empty());
+        assert!(self.remainder_inputs.lock().unwrap().is_empty());
+        let n_vec_rows = packed_inputs.len();
         let n_rows = n_vec_rows * N_LANES;
         let packed_size = n_vec_rows.next_power_of_two();
         let log_size = packed_size.ilog2() + LOG_N_LANES;
-        self.packed_inputs
-            .resize(packed_size, *self.packed_inputs.first().unwrap());
+        packed_inputs.resize(packed_size, *packed_inputs.first().unwrap());
 
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
-            self.packed_inputs,
+            packed_inputs,
             n_rows,
             cube_252_state,
             poseidon_round_keys_state,
             range_check_3_3_3_3_3_state,
         );
         for inputs in sub_component_inputs.cube_252 {
-            cube_252_state.add_packed_inputs(&inputs, 0);
+            add_inputs(cube_252_state, &inputs, inputs.len() * N_LANES, 0);
         }
         for inputs in sub_component_inputs.poseidon_round_keys {
-            poseidon_round_keys_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                poseidon_round_keys_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
         for inputs in sub_component_inputs.range_check_3_3_3_3_3 {
-            range_check_3_3_3_3_3_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                range_check_3_3_3_3_3_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
 
         (
@@ -63,9 +76,17 @@ impl ClaimGenerator {
             },
         )
     }
+}
 
-    pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType], _relation_index: usize) {
-        self.packed_inputs.extend(inputs);
+impl AddInputs for ClaimGenerator {
+    type PackedInputType = PackedInputType;
+    type InputType = InputType;
+
+    fn add_packed_inputs(&self, inputs: &[PackedInputType], _relation_index: usize) {
+        self.packed_inputs.lock().unwrap().extend(inputs);
+    }
+    fn add_input(&self, input: &InputType, _relation_index: usize) {
+        self.remainder_inputs.lock().unwrap().push(*input);
     }
 }
 
@@ -83,7 +104,7 @@ struct SubComponentInputs {
 fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     n_rows: usize,
-    cube_252_state: &mut cube_252::ClaimGenerator,
+    cube_252_state: &cube_252::ClaimGenerator,
     poseidon_round_keys_state: &poseidon_round_keys::ClaimGenerator,
     range_check_3_3_3_3_3_state: &range_check_3_3_3_3_3::ClaimGenerator,
 ) -> (

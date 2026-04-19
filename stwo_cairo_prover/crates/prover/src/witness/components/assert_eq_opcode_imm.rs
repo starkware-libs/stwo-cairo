@@ -44,10 +44,15 @@ impl ClaimGenerator {
             verify_instruction_state,
         );
         for inputs in sub_component_inputs.verify_instruction {
-            verify_instruction_state.add_packed_inputs(&inputs, 0);
+            add_inputs(verify_instruction_state, &inputs, inputs.len() * N_LANES, 0);
         }
         for inputs in sub_component_inputs.memory_address_to_id {
-            memory_address_to_id_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                memory_address_to_id_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
 
         (

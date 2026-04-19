@@ -85,6 +85,7 @@ mod tests {
 
     use super::MockCommitmentScheme;
     use crate::witness::components::{triple_xor_32, verify_bitwise_xor_8};
+    use crate::witness::utils::AddInputs;
 
     #[test]
     fn test_mock_commitment_scheme() {
@@ -95,7 +96,7 @@ mod tests {
         let preprocessed_trace = Arc::new(PreProcessedTrace::canonical());
         let veirfy_bitwise_xor_8_trace_gen =
             &verify_bitwise_xor_8::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let mut triple_xor_32_trace_gen = triple_xor_32::ClaimGenerator::new();
+        let triple_xor_32_trace_gen = triple_xor_32::ClaimGenerator::new();
         triple_xor_32_trace_gen.add_packed_inputs(&[input], 0);
         let common_lookup_elements = relations::CommonLookupElements::dummy();
 

@@ -29,8 +29,8 @@ impl ClaimGenerator {
         verify_instruction_state: &verify_instruction::ClaimGenerator,
         range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
         verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
-        blake_round_state: &mut blake_round::ClaimGenerator,
-        triple_xor_32_state: &mut triple_xor_32::ClaimGenerator,
+        blake_round_state: &blake_round::ClaimGenerator,
+        triple_xor_32_state: &triple_xor_32::ClaimGenerator,
     ) -> (
         ComponentTrace<N_TRACE_COLUMNS>,
         Claim,
@@ -55,25 +55,35 @@ impl ClaimGenerator {
             triple_xor_32_state,
         );
         for inputs in sub_component_inputs.verify_instruction {
-            verify_instruction_state.add_packed_inputs(&inputs, 0);
+            add_inputs(verify_instruction_state, &inputs, inputs.len() * N_LANES, 0);
         }
         for inputs in sub_component_inputs.memory_address_to_id {
-            memory_address_to_id_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                memory_address_to_id_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
         for inputs in sub_component_inputs.memory_id_to_big {
-            memory_id_to_big_state.add_packed_inputs(&inputs, 0);
+            add_inputs(memory_id_to_big_state, &inputs, inputs.len() * N_LANES, 0);
         }
         for inputs in sub_component_inputs.range_check_7_2_5 {
-            range_check_7_2_5_state.add_packed_inputs(&inputs, 0);
+            add_inputs(range_check_7_2_5_state, &inputs, inputs.len() * N_LANES, 0);
         }
         for inputs in sub_component_inputs.verify_bitwise_xor_8 {
-            verify_bitwise_xor_8_state.add_packed_inputs(&inputs, 0);
+            add_inputs(
+                verify_bitwise_xor_8_state,
+                &inputs,
+                inputs.len() * N_LANES,
+                0,
+            );
         }
         for inputs in sub_component_inputs.blake_round {
-            blake_round_state.add_packed_inputs(&inputs, 0);
+            add_inputs(blake_round_state, &inputs, inputs.len() * N_LANES, 0);
         }
         for inputs in sub_component_inputs.triple_xor_32 {
-            triple_xor_32_state.add_packed_inputs(&inputs, 0);
+            add_inputs(triple_xor_32_state, &inputs, inputs.len() * N_LANES, 0);
         }
 
         (
@@ -111,8 +121,8 @@ fn write_trace_simd(
     verify_instruction_state: &verify_instruction::ClaimGenerator,
     range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
     verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
-    blake_round_state: &mut blake_round::ClaimGenerator,
-    triple_xor_32_state: &mut triple_xor_32::ClaimGenerator,
+    blake_round_state: &blake_round::ClaimGenerator,
+    triple_xor_32_state: &triple_xor_32::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,
