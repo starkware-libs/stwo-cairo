@@ -12,10 +12,10 @@ use cairo_air::CairoProof;
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::{Channel, MerkleChannel};
-use stwo::core::circle::M31_CIRCLE_LOG_ORDER;
 use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::fri::FriConfig;
+use stwo::core::pcs::utils::InvalidLiftingLogSizeError;
 use stwo::core::pcs::PcsConfig;
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::proof_of_work::GrindOps;
@@ -49,8 +49,6 @@ mod json {
     #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
     pub use sonic_rs::from_str;
 }
-
-pub(crate) const MAX_CANONICAL_COSET_LOG_SIZE: u32 = M31_CIRCLE_LOG_ORDER - 1;
 
 fn prove_verify_serialize<MC: MerkleChannel>(
     input: ProverInput,
@@ -117,25 +115,20 @@ where
             pcs_config.fri_config.log_blowup_factor,
         );
 
-    // TODO(Ilya): Replace the panics below with errors.
     if let Some(lifting_log_size) = pcs_config.lifting_log_size {
-        if lifting_log_size > MAX_CANONICAL_COSET_LOG_SIZE {
-            panic!("Lifting log size must be less than or equal to the maximum canonical coset log size");
-        }
-
         if lifting_log_size < max_domain_log_size {
-            panic!("Lifting log size must be greater than or equal to the maximum log size of the preprocessed trace");
+            return Err(ProvingError::InvalidLiftingLogSize(
+                InvalidLiftingLogSizeError {
+                    lifting_log_size,
+                    min_log_size: max_domain_log_size,
+                },
+            ));
         }
         max_domain_log_size = lifting_log_size;
     }
-    if max_domain_log_size > MAX_CANONICAL_COSET_LOG_SIZE {
-        panic!(
-            "Max log domain size must be less than or equal to the maximum canonical coset log size"
-        );
-    }
     let span = span!(Level::INFO, "Precompute Twiddles").entered();
     let twiddles = SimdBackend::precompute_twiddles(
-        CanonicCoset::new(max_domain_log_size)
+        CanonicCoset::try_new(max_domain_log_size)?
             .circle_domain()
             .half_coset,
     );
