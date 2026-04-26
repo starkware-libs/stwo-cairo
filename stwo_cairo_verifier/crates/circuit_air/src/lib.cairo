@@ -5,8 +5,9 @@ pub use stwo_constraint_framework::{RelationUse, RelationUsesDict, accumulate_re
 use stwo_verifier_core::Hash;
 use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::fields::m31::{M31Trait, P_U32};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Serde};
-use stwo_verifier_core::pcs::PcsConfigTrait;
+use stwo_verifier_core::fields::qm31::{QM31, QM31Serde, QM31Trait};
+use stwo_verifier_core::fri::FriConfig;
+use stwo_verifier_core::pcs::PcsConfig;
 use stwo_verifier_core::pcs::verifier::{CommitmentSchemeVerifierImpl, get_trace_lde_log_size};
 use stwo_verifier_core::verifier::{StarkProof, verify};
 
@@ -23,6 +24,7 @@ use claims::{
 };
 pub mod components;
 pub mod prelude;
+pub mod preprocessed_columns;
 pub mod relations;
 
 // Security constants. Must match stwo-circuits/crates/cairo_air/src/verify.rs.
@@ -60,6 +62,11 @@ pub struct CircuitVerifierConfig {
     /// (prover-side) column order. Used to override the per-component aggregate when
     /// computing the PCS tree log sizes.
     pub preprocessed_column_log_sizes: Array<u32>,
+    /// `trace_log_size + log_blowup_factor` — the rust circuit prover packs this into the
+    /// channel via `PcsConfig::mix_into`, but cairo's `PcsConfig` does not carry the
+    /// field, so it is supplied here out-of-band. Analogous to the rust in-circuit
+    /// verifier reading it from `ProofConfig.fri.log_trace_size`.
+    pub lifting_log_size: u32,
 }
 
 /// The output of a circuit verification.
@@ -90,7 +97,10 @@ pub fn verify_circuit(proof: CircuitProof, config: @CircuitVerifierConfig) {
     let channel_salt_as_felt: QM31 = M31Trait::reduce_u32(channel_salt).into();
     channel.mix_felts([channel_salt_as_felt].span());
 
-    pcs_config.mix_into(ref channel);
+    // The rust circuit prover mixes `lifting_log_size` alongside the rest of the pcs
+    // config (see `PcsConfig::mix_into` in stwo). Cairo's `PcsConfig` doesn't carry it,
+    // so it's supplied via `CircuitVerifierConfig`.
+    mix_pcs_config_with_lifting(ref channel, pcs_config, *config.lifting_log_size);
     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new();
 
     let commitments: @Box<[Hash; 4]> = stark_proof
@@ -152,8 +162,21 @@ pub fn verify_circuit(proof: CircuitProof, config: @CircuitVerifierConfig) {
 
     let trace_lde_log_size = get_trace_lde_log_size(@commitment_scheme.trees);
     let trace_log_size = trace_lde_log_size - pcs_config.fri_config.log_blowup_factor;
-    // The maximal constraint degree is 2, so the degree bound is `trace_log_size + 1`.
-    let circuit_air_log_degree_bound = trace_log_size + 1;
+    // The maximal constraint degree is 2, so the per-component degree bound is
+    // `trace_log_size + 1`. When the prover overrides `lifting_log_size` (which the
+    // circuit prover does — it sets `lifting_log_size = params.trace_log_size +
+    // log_blowup_factor`, where `params.trace_log_size = max(max_pp_log_size,
+    // blake_g_log_size)` and may exceed the trace column log sizes), the composition
+    // polynomial is committed at `lifting_log_size - log_blowup_factor`, so the OODS
+    // denominator must also be evaluated at that domain. Match stwo's
+    // `verify::verify_ex` which uses `max(components.composition_log_degree_bound(),
+    // lifting_log_size - log_blowup_factor + 1)`.
+    let lifting_log_size = *config.lifting_log_size;
+    let log_blowup_factor = pcs_config.fri_config.log_blowup_factor;
+    let lifting_based_bound = lifting_log_size - log_blowup_factor + 1;
+    let components_bound = trace_log_size + 1;
+    let circuit_air_log_degree_bound =
+        if lifting_based_bound > components_bound { lifting_based_bound } else { components_bound };
     let circuit_air = CircuitAirNewImpl::new(@claim, @common_lookup_elements, @interaction_claim);
 
     verify(
@@ -165,6 +188,41 @@ pub fn verify_circuit(proof: CircuitProof, config: @CircuitVerifierConfig) {
         ref channel,
         SECURITY_BITS,
     );
+}
+
+/// Mixes `pcs_config` into `channel` matching the rust prover's
+/// `stwo::core::pcs::PcsConfig::mix_into`, including `lifting_log_size` in the second QM31
+/// (slot 1, alongside `fold_step` in slot 0). Cairo's `PcsConfig` does not carry the
+/// field, so it's supplied here as a separate argument from `CircuitVerifierConfig`.
+fn mix_pcs_config_with_lifting(
+    ref channel: Channel, pcs_config: PcsConfig, lifting_log_size: u32,
+) {
+    let PcsConfig { pow_bits, fri_config } = pcs_config;
+    let FriConfig { log_blowup_factor, log_last_layer_degree_bound, n_queries, fold_step } =
+        fri_config;
+    let zero = stwo_verifier_core::fields::m31::M31 { inner: 0 };
+    channel
+        .mix_felts(
+            array![
+                QM31Trait::from_fixed_array(
+                    [
+                        pow_bits.try_into().unwrap(),
+                        log_blowup_factor.try_into().unwrap(),
+                        n_queries.try_into().unwrap(),
+                        log_last_layer_degree_bound.try_into().unwrap(),
+                    ],
+                ),
+                QM31Trait::from_fixed_array(
+                    [
+                        fold_step.try_into().unwrap(),
+                        lifting_log_size.try_into().unwrap(),
+                        zero,
+                        zero,
+                    ],
+                ),
+            ]
+                .span(),
+        );
 }
 
 /// Verifies the claim of the circuit proof.

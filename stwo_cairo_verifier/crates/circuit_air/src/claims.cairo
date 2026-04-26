@@ -168,15 +168,16 @@ fn circuit_enable_bits_u32s() -> Array<u32> {
 
 /// Collects the per-component `log_size` values in canonical `ComponentList` order
 /// (matches `stwo-circuits/crates/circuit_air/src/circuit_components.rs::ComponentList`).
+/// Components whose log size is fixed (empty `Claim {}`) read from their module-level
+/// `LOG_SIZE` constant; variable-size components read from `Claim.log_size`.
 fn circuit_component_log_sizes(claim: @CircuitClaim) -> Array<u32> {
     array![
         *claim.eq.log_size, *claim.qm31_ops.log_size, *claim.blake_gate.log_size,
-        *claim.blake_round.log_size, *claim.blake_round_sigma.log_size, *claim.blake_g.log_size,
+        *claim.blake_round.log_size, blake_round_sigma::LOG_SIZE, *claim.blake_g.log_size,
         *claim.blake_output.log_size, *claim.triple_xor_32.log_size, *claim.m_31_to_u_32.log_size,
-        *claim.verify_bitwise_xor_8.log_size, *claim.verify_bitwise_xor_12.log_size,
-        *claim.verify_bitwise_xor_4.log_size, *claim.verify_bitwise_xor_7.log_size,
-        *claim.verify_bitwise_xor_9.log_size, *claim.range_check_15.log_size,
-        *claim.range_check_16.log_size,
+        verify_bitwise_xor_8::LOG_SIZE, verify_bitwise_xor_12::LOG_SIZE,
+        verify_bitwise_xor_4::LOG_SIZE, verify_bitwise_xor_7::LOG_SIZE,
+        verify_bitwise_xor_9::LOG_SIZE, range_check_15::LOG_SIZE, range_check_16::LOG_SIZE,
     ]
 }
 

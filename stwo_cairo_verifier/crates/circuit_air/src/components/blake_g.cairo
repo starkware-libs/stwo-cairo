@@ -1,11 +1,17 @@
-// STUB: to be replaced by auto-generated output from stwo-air-infra.
-// Mirrors stwo-circuits/crates/circuit_air/src/components/blake_g.rs.
+// This file was created by the AIR team.
 
+use crate::components::subroutines::triple_sum_32::triple_sum_32_evaluate;
+use crate::components::subroutines::xor_rot_32_r_12::xor_rot_32_r_12_evaluate;
+use crate::components::subroutines::xor_rot_32_r_16::xor_rot_32_r_16_evaluate;
+use crate::components::subroutines::xor_rot_32_r_7::xor_rot_32_r_7_evaluate;
+use crate::components::subroutines::xor_rot_32_r_8::xor_rot_32_r_8_evaluate;
 use crate::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 0;
-pub const N_INTERACTION_COLUMNS: usize = 0;
-pub const RELATION_USES_PER_ROW: [(felt252, u32); 0] = [];
+pub const N_TRACE_COLUMNS: usize = 53;
+pub const RELATION_USES_PER_ROW: [(felt252, u32); 6] = [
+    ('VerifyBitwiseXor_8', 4), ('VerifyBitwiseXor_8_B', 4), ('VerifyBitwiseXor_12', 2),
+    ('VerifyBitwiseXor_4', 2), ('VerifyBitwiseXor_7', 2), ('VerifyBitwiseXor_9', 2),
+];
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
@@ -14,9 +20,11 @@ pub struct Claim {
 
 pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
-        // TODO(circuit-verifier): real per-tree column lists come from the auto-generated
-        // component. For now the stub declares no columns.
-        array![array![*self.log_size].span(), array![].span(), array![].span()]
+        let log_size = *(self.log_size);
+        let preprocessed_log_sizes = array![log_size].span();
+        let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
+        let interaction_log_sizes = [log_size; 36].span();
+        array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
     fn mix_into(self: @Claim, ref channel: Channel) {
@@ -33,7 +41,8 @@ pub struct InteractionClaim {
     pub claimed_sum: QM31,
 }
 
-pub impl InteractionClaimImpl of InteractionClaimTrait<InteractionClaim> {
+#[generate_trait]
+pub impl InteractionClaimImpl of InteractionClaimTrait {
     fn mix_into(self: @InteractionClaim, ref channel: Channel) {
         channel.mix_felts([*self.claimed_sum].span());
     }
@@ -73,8 +82,632 @@ pub impl CircuitComponentImpl of CircuitComponent<Component> {
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
     ) {
-        // TODO(circuit-verifier): replaced by AIR-team generated evaluator.
-        // The stub intentionally does nothing — no columns consumed, sum left unchanged.
-        let _ = (self, random_coeff);
+        let log_size = *(self.claim.log_size);
+        let claimed_sum = *self.interaction_claim.claimed_sum;
+        let column_size = m31(pow2(log_size));
+        let mut verify_bitwise_xor_8_sum_0: QM31 = Zero::zero();
+        let mut numerator_0: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_8_sum_1: QM31 = Zero::zero();
+        let mut numerator_1: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_8_b_sum_2: QM31 = Zero::zero();
+        let mut numerator_2: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_8_b_sum_3: QM31 = Zero::zero();
+        let mut numerator_3: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_12_sum_4: QM31 = Zero::zero();
+        let mut numerator_4: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_4_sum_5: QM31 = Zero::zero();
+        let mut numerator_5: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_12_sum_6: QM31 = Zero::zero();
+        let mut numerator_6: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_4_sum_7: QM31 = Zero::zero();
+        let mut numerator_7: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_8_sum_8: QM31 = Zero::zero();
+        let mut numerator_8: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_8_sum_9: QM31 = Zero::zero();
+        let mut numerator_9: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_8_b_sum_10: QM31 = Zero::zero();
+        let mut numerator_10: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_8_b_sum_11: QM31 = Zero::zero();
+        let mut numerator_11: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_7_sum_12: QM31 = Zero::zero();
+        let mut numerator_12: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_9_sum_13: QM31 = Zero::zero();
+        let mut numerator_13: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_7_sum_14: QM31 = Zero::zero();
+        let mut numerator_14: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_9_sum_15: QM31 = Zero::zero();
+        let mut numerator_15: QM31 = Zero::zero();
+        let mut blake_g_sum_16: QM31 = Zero::zero();
+        let mut numerator_16: QM31 = Zero::zero();
+
+        let [
+            input_limb_0_col0,
+            input_limb_1_col1,
+            input_limb_2_col2,
+            input_limb_3_col3,
+            input_limb_4_col4,
+            input_limb_5_col5,
+            input_limb_6_col6,
+            input_limb_7_col7,
+            input_limb_8_col8,
+            input_limb_9_col9,
+            input_limb_10_col10,
+            input_limb_11_col11,
+            triple_sum32_res_limb_0_col12,
+            triple_sum32_res_limb_1_col13,
+            ms_8_bits_col14,
+            ms_8_bits_col15,
+            ms_8_bits_col16,
+            ms_8_bits_col17,
+            xor_col18,
+            xor_col19,
+            xor_col20,
+            xor_col21,
+            triple_sum32_res_limb_0_col22,
+            triple_sum32_res_limb_1_col23,
+            ms_4_bits_col24,
+            ms_4_bits_col25,
+            ms_4_bits_col26,
+            ms_4_bits_col27,
+            xor_col28,
+            xor_col29,
+            xor_col30,
+            xor_col31,
+            triple_sum32_res_limb_0_col32,
+            triple_sum32_res_limb_1_col33,
+            ms_8_bits_col34,
+            ms_8_bits_col35,
+            ms_8_bits_col36,
+            ms_8_bits_col37,
+            xor_col38,
+            xor_col39,
+            xor_col40,
+            xor_col41,
+            triple_sum32_res_limb_0_col42,
+            triple_sum32_res_limb_1_col43,
+            ms_9_bits_col44,
+            ms_9_bits_col45,
+            ms_9_bits_col46,
+            ms_9_bits_col47,
+            xor_col48,
+            xor_col49,
+            xor_col50,
+            xor_col51,
+            enabler_col52,
+        ]: [Span<QM31>; 53] =
+            (*trace_mask_values
+            .multi_pop_front()
+            .unwrap())
+            .unbox();
+        let [input_limb_0_col0]: [QM31; 1] = (*input_limb_0_col0.try_into().unwrap()).unbox();
+        let [input_limb_1_col1]: [QM31; 1] = (*input_limb_1_col1.try_into().unwrap()).unbox();
+        let [input_limb_2_col2]: [QM31; 1] = (*input_limb_2_col2.try_into().unwrap()).unbox();
+        let [input_limb_3_col3]: [QM31; 1] = (*input_limb_3_col3.try_into().unwrap()).unbox();
+        let [input_limb_4_col4]: [QM31; 1] = (*input_limb_4_col4.try_into().unwrap()).unbox();
+        let [input_limb_5_col5]: [QM31; 1] = (*input_limb_5_col5.try_into().unwrap()).unbox();
+        let [input_limb_6_col6]: [QM31; 1] = (*input_limb_6_col6.try_into().unwrap()).unbox();
+        let [input_limb_7_col7]: [QM31; 1] = (*input_limb_7_col7.try_into().unwrap()).unbox();
+        let [input_limb_8_col8]: [QM31; 1] = (*input_limb_8_col8.try_into().unwrap()).unbox();
+        let [input_limb_9_col9]: [QM31; 1] = (*input_limb_9_col9.try_into().unwrap()).unbox();
+        let [input_limb_10_col10]: [QM31; 1] = (*input_limb_10_col10.try_into().unwrap()).unbox();
+        let [input_limb_11_col11]: [QM31; 1] = (*input_limb_11_col11.try_into().unwrap()).unbox();
+        let [triple_sum32_res_limb_0_col12]: [QM31; 1] = (*triple_sum32_res_limb_0_col12
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [triple_sum32_res_limb_1_col13]: [QM31; 1] = (*triple_sum32_res_limb_1_col13
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [ms_8_bits_col14]: [QM31; 1] = (*ms_8_bits_col14.try_into().unwrap()).unbox();
+        let [ms_8_bits_col15]: [QM31; 1] = (*ms_8_bits_col15.try_into().unwrap()).unbox();
+        let [ms_8_bits_col16]: [QM31; 1] = (*ms_8_bits_col16.try_into().unwrap()).unbox();
+        let [ms_8_bits_col17]: [QM31; 1] = (*ms_8_bits_col17.try_into().unwrap()).unbox();
+        let [xor_col18]: [QM31; 1] = (*xor_col18.try_into().unwrap()).unbox();
+        let [xor_col19]: [QM31; 1] = (*xor_col19.try_into().unwrap()).unbox();
+        let [xor_col20]: [QM31; 1] = (*xor_col20.try_into().unwrap()).unbox();
+        let [xor_col21]: [QM31; 1] = (*xor_col21.try_into().unwrap()).unbox();
+        let [triple_sum32_res_limb_0_col22]: [QM31; 1] = (*triple_sum32_res_limb_0_col22
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [triple_sum32_res_limb_1_col23]: [QM31; 1] = (*triple_sum32_res_limb_1_col23
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [ms_4_bits_col24]: [QM31; 1] = (*ms_4_bits_col24.try_into().unwrap()).unbox();
+        let [ms_4_bits_col25]: [QM31; 1] = (*ms_4_bits_col25.try_into().unwrap()).unbox();
+        let [ms_4_bits_col26]: [QM31; 1] = (*ms_4_bits_col26.try_into().unwrap()).unbox();
+        let [ms_4_bits_col27]: [QM31; 1] = (*ms_4_bits_col27.try_into().unwrap()).unbox();
+        let [xor_col28]: [QM31; 1] = (*xor_col28.try_into().unwrap()).unbox();
+        let [xor_col29]: [QM31; 1] = (*xor_col29.try_into().unwrap()).unbox();
+        let [xor_col30]: [QM31; 1] = (*xor_col30.try_into().unwrap()).unbox();
+        let [xor_col31]: [QM31; 1] = (*xor_col31.try_into().unwrap()).unbox();
+        let [triple_sum32_res_limb_0_col32]: [QM31; 1] = (*triple_sum32_res_limb_0_col32
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [triple_sum32_res_limb_1_col33]: [QM31; 1] = (*triple_sum32_res_limb_1_col33
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [ms_8_bits_col34]: [QM31; 1] = (*ms_8_bits_col34.try_into().unwrap()).unbox();
+        let [ms_8_bits_col35]: [QM31; 1] = (*ms_8_bits_col35.try_into().unwrap()).unbox();
+        let [ms_8_bits_col36]: [QM31; 1] = (*ms_8_bits_col36.try_into().unwrap()).unbox();
+        let [ms_8_bits_col37]: [QM31; 1] = (*ms_8_bits_col37.try_into().unwrap()).unbox();
+        let [xor_col38]: [QM31; 1] = (*xor_col38.try_into().unwrap()).unbox();
+        let [xor_col39]: [QM31; 1] = (*xor_col39.try_into().unwrap()).unbox();
+        let [xor_col40]: [QM31; 1] = (*xor_col40.try_into().unwrap()).unbox();
+        let [xor_col41]: [QM31; 1] = (*xor_col41.try_into().unwrap()).unbox();
+        let [triple_sum32_res_limb_0_col42]: [QM31; 1] = (*triple_sum32_res_limb_0_col42
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [triple_sum32_res_limb_1_col43]: [QM31; 1] = (*triple_sum32_res_limb_1_col43
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [ms_9_bits_col44]: [QM31; 1] = (*ms_9_bits_col44.try_into().unwrap()).unbox();
+        let [ms_9_bits_col45]: [QM31; 1] = (*ms_9_bits_col45.try_into().unwrap()).unbox();
+        let [ms_9_bits_col46]: [QM31; 1] = (*ms_9_bits_col46.try_into().unwrap()).unbox();
+        let [ms_9_bits_col47]: [QM31; 1] = (*ms_9_bits_col47.try_into().unwrap()).unbox();
+        let [xor_col48]: [QM31; 1] = (*xor_col48.try_into().unwrap()).unbox();
+        let [xor_col49]: [QM31; 1] = (*xor_col49.try_into().unwrap()).unbox();
+        let [xor_col50]: [QM31; 1] = (*xor_col50.try_into().unwrap()).unbox();
+        let [xor_col51]: [QM31; 1] = (*xor_col51.try_into().unwrap()).unbox();
+        let [enabler_col52]: [QM31; 1] = (*enabler_col52.try_into().unwrap()).unbox();
+
+        core::internal::revoke_ap_tracking();
+
+        triple_sum_32_evaluate(
+            [
+                input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, input_limb_3_col3,
+                input_limb_8_col8, input_limb_9_col9,
+            ],
+            triple_sum32_res_limb_0_col12,
+            triple_sum32_res_limb_1_col13,
+            self.common_lookup_elements,
+            ref sum,
+            random_coeff,
+        );
+        let [
+            xor_rot_32_r_16_output_tmp_f72c8_21_limb_0, xor_rot_32_r_16_output_tmp_f72c8_21_limb_1,
+        ] =
+            xor_rot_32_r_16_evaluate(
+            [
+                triple_sum32_res_limb_0_col12, triple_sum32_res_limb_1_col13, input_limb_6_col6,
+                input_limb_7_col7,
+            ],
+            ms_8_bits_col14,
+            ms_8_bits_col15,
+            ms_8_bits_col16,
+            ms_8_bits_col17,
+            xor_col18,
+            xor_col19,
+            xor_col20,
+            xor_col21,
+            self.common_lookup_elements,
+            ref verify_bitwise_xor_8_sum_0,
+            ref numerator_0,
+            ref verify_bitwise_xor_8_sum_1,
+            ref numerator_1,
+            ref verify_bitwise_xor_8_b_sum_2,
+            ref numerator_2,
+            ref verify_bitwise_xor_8_b_sum_3,
+            ref numerator_3,
+            ref sum,
+            random_coeff,
+        );
+        triple_sum_32_evaluate(
+            [
+                input_limb_4_col4, input_limb_5_col5, xor_rot_32_r_16_output_tmp_f72c8_21_limb_0,
+                xor_rot_32_r_16_output_tmp_f72c8_21_limb_1, qm31_const::<0, 0, 0, 0>(),
+                qm31_const::<0, 0, 0, 0>(),
+            ],
+            triple_sum32_res_limb_0_col22,
+            triple_sum32_res_limb_1_col23,
+            self.common_lookup_elements,
+            ref sum,
+            random_coeff,
+        );
+        let [
+            xor_rot_32_r_12_output_tmp_f72c8_43_limb_0, xor_rot_32_r_12_output_tmp_f72c8_43_limb_1,
+        ] =
+            xor_rot_32_r_12_evaluate(
+            [
+                input_limb_2_col2, input_limb_3_col3, triple_sum32_res_limb_0_col22,
+                triple_sum32_res_limb_1_col23,
+            ],
+            ms_4_bits_col24,
+            ms_4_bits_col25,
+            ms_4_bits_col26,
+            ms_4_bits_col27,
+            xor_col28,
+            xor_col29,
+            xor_col30,
+            xor_col31,
+            self.common_lookup_elements,
+            ref verify_bitwise_xor_12_sum_4,
+            ref numerator_4,
+            ref verify_bitwise_xor_4_sum_5,
+            ref numerator_5,
+            ref verify_bitwise_xor_12_sum_6,
+            ref numerator_6,
+            ref verify_bitwise_xor_4_sum_7,
+            ref numerator_7,
+            ref sum,
+            random_coeff,
+        );
+        triple_sum_32_evaluate(
+            [
+                triple_sum32_res_limb_0_col12, triple_sum32_res_limb_1_col13,
+                xor_rot_32_r_12_output_tmp_f72c8_43_limb_0,
+                xor_rot_32_r_12_output_tmp_f72c8_43_limb_1, input_limb_10_col10,
+                input_limb_11_col11,
+            ],
+            triple_sum32_res_limb_0_col32,
+            triple_sum32_res_limb_1_col33,
+            self.common_lookup_elements,
+            ref sum,
+            random_coeff,
+        );
+        let [xor_rot_32_r_8_output_tmp_f72c8_65_limb_0, xor_rot_32_r_8_output_tmp_f72c8_65_limb_1] =
+            xor_rot_32_r_8_evaluate(
+            [
+                triple_sum32_res_limb_0_col32, triple_sum32_res_limb_1_col33,
+                xor_rot_32_r_16_output_tmp_f72c8_21_limb_0,
+                xor_rot_32_r_16_output_tmp_f72c8_21_limb_1,
+            ],
+            ms_8_bits_col34,
+            ms_8_bits_col35,
+            ms_8_bits_col36,
+            ms_8_bits_col37,
+            xor_col38,
+            xor_col39,
+            xor_col40,
+            xor_col41,
+            self.common_lookup_elements,
+            ref verify_bitwise_xor_8_sum_8,
+            ref numerator_8,
+            ref verify_bitwise_xor_8_sum_9,
+            ref numerator_9,
+            ref verify_bitwise_xor_8_b_sum_10,
+            ref numerator_10,
+            ref verify_bitwise_xor_8_b_sum_11,
+            ref numerator_11,
+            ref sum,
+            random_coeff,
+        );
+        triple_sum_32_evaluate(
+            [
+                triple_sum32_res_limb_0_col22, triple_sum32_res_limb_1_col23,
+                xor_rot_32_r_8_output_tmp_f72c8_65_limb_0,
+                xor_rot_32_r_8_output_tmp_f72c8_65_limb_1, qm31_const::<0, 0, 0, 0>(),
+                qm31_const::<0, 0, 0, 0>(),
+            ],
+            triple_sum32_res_limb_0_col42,
+            triple_sum32_res_limb_1_col43,
+            self.common_lookup_elements,
+            ref sum,
+            random_coeff,
+        );
+        let [xor_rot_32_r_7_output_tmp_f72c8_87_limb_0, xor_rot_32_r_7_output_tmp_f72c8_87_limb_1] =
+            xor_rot_32_r_7_evaluate(
+            [
+                xor_rot_32_r_12_output_tmp_f72c8_43_limb_0,
+                xor_rot_32_r_12_output_tmp_f72c8_43_limb_1, triple_sum32_res_limb_0_col42,
+                triple_sum32_res_limb_1_col43,
+            ],
+            ms_9_bits_col44,
+            ms_9_bits_col45,
+            ms_9_bits_col46,
+            ms_9_bits_col47,
+            xor_col48,
+            xor_col49,
+            xor_col50,
+            xor_col51,
+            self.common_lookup_elements,
+            ref verify_bitwise_xor_7_sum_12,
+            ref numerator_12,
+            ref verify_bitwise_xor_9_sum_13,
+            ref numerator_13,
+            ref verify_bitwise_xor_7_sum_14,
+            ref numerator_14,
+            ref verify_bitwise_xor_9_sum_15,
+            ref numerator_15,
+            ref sum,
+            random_coeff,
+        );
+
+        // Constraint - Enabler is a bit
+        let constraint_quotient = (((enabler_col52 * enabler_col52) - enabler_col52));
+        sum = sum * random_coeff + constraint_quotient;
+
+        blake_g_sum_16 = self
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1139985212, 0, 0, 0>(), input_limb_0_col0, input_limb_1_col1,
+                    input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5,
+                    input_limb_6_col6, input_limb_7_col7, input_limb_8_col8, input_limb_9_col9,
+                    input_limb_10_col10, input_limb_11_col11, triple_sum32_res_limb_0_col32,
+                    triple_sum32_res_limb_1_col33, xor_rot_32_r_7_output_tmp_f72c8_87_limb_0,
+                    xor_rot_32_r_7_output_tmp_f72c8_87_limb_1, triple_sum32_res_limb_0_col42,
+                    triple_sum32_res_limb_1_col43, xor_rot_32_r_8_output_tmp_f72c8_65_limb_0,
+                    xor_rot_32_r_8_output_tmp_f72c8_65_limb_1,
+                ]
+                    .span(),
+            );
+        numerator_16 = enabler_col52;
+
+        lookup_constraints(
+            ref sum,
+            random_coeff,
+            claimed_sum,
+            numerator_0,
+            numerator_1,
+            numerator_2,
+            numerator_3,
+            numerator_4,
+            numerator_5,
+            numerator_6,
+            numerator_7,
+            numerator_8,
+            numerator_9,
+            numerator_10,
+            numerator_11,
+            numerator_12,
+            numerator_13,
+            numerator_14,
+            numerator_15,
+            numerator_16,
+            column_size,
+            ref interaction_trace_mask_values,
+            verify_bitwise_xor_8_sum_0,
+            verify_bitwise_xor_8_sum_1,
+            verify_bitwise_xor_8_b_sum_2,
+            verify_bitwise_xor_8_b_sum_3,
+            verify_bitwise_xor_12_sum_4,
+            verify_bitwise_xor_4_sum_5,
+            verify_bitwise_xor_12_sum_6,
+            verify_bitwise_xor_4_sum_7,
+            verify_bitwise_xor_8_sum_8,
+            verify_bitwise_xor_8_sum_9,
+            verify_bitwise_xor_8_b_sum_10,
+            verify_bitwise_xor_8_b_sum_11,
+            verify_bitwise_xor_7_sum_12,
+            verify_bitwise_xor_9_sum_13,
+            verify_bitwise_xor_7_sum_14,
+            verify_bitwise_xor_9_sum_15,
+            blake_g_sum_16,
+        );
     }
+}
+
+
+fn lookup_constraints(
+    ref sum: QM31,
+    random_coeff: QM31,
+    claimed_sum: QM31,
+    numerator_0: QM31,
+    numerator_1: QM31,
+    numerator_2: QM31,
+    numerator_3: QM31,
+    numerator_4: QM31,
+    numerator_5: QM31,
+    numerator_6: QM31,
+    numerator_7: QM31,
+    numerator_8: QM31,
+    numerator_9: QM31,
+    numerator_10: QM31,
+    numerator_11: QM31,
+    numerator_12: QM31,
+    numerator_13: QM31,
+    numerator_14: QM31,
+    numerator_15: QM31,
+    numerator_16: QM31,
+    column_size: M31,
+    ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
+    verify_bitwise_xor_8_sum_0: QM31,
+    verify_bitwise_xor_8_sum_1: QM31,
+    verify_bitwise_xor_8_b_sum_2: QM31,
+    verify_bitwise_xor_8_b_sum_3: QM31,
+    verify_bitwise_xor_12_sum_4: QM31,
+    verify_bitwise_xor_4_sum_5: QM31,
+    verify_bitwise_xor_12_sum_6: QM31,
+    verify_bitwise_xor_4_sum_7: QM31,
+    verify_bitwise_xor_8_sum_8: QM31,
+    verify_bitwise_xor_8_sum_9: QM31,
+    verify_bitwise_xor_8_b_sum_10: QM31,
+    verify_bitwise_xor_8_b_sum_11: QM31,
+    verify_bitwise_xor_7_sum_12: QM31,
+    verify_bitwise_xor_9_sum_13: QM31,
+    verify_bitwise_xor_7_sum_14: QM31,
+    verify_bitwise_xor_9_sum_15: QM31,
+    blake_g_sum_16: QM31,
+) {
+    let [
+        trace_2_col0,
+        trace_2_col1,
+        trace_2_col2,
+        trace_2_col3,
+        trace_2_col4,
+        trace_2_col5,
+        trace_2_col6,
+        trace_2_col7,
+        trace_2_col8,
+        trace_2_col9,
+        trace_2_col10,
+        trace_2_col11,
+        trace_2_col12,
+        trace_2_col13,
+        trace_2_col14,
+        trace_2_col15,
+        trace_2_col16,
+        trace_2_col17,
+        trace_2_col18,
+        trace_2_col19,
+        trace_2_col20,
+        trace_2_col21,
+        trace_2_col22,
+        trace_2_col23,
+        trace_2_col24,
+        trace_2_col25,
+        trace_2_col26,
+        trace_2_col27,
+        trace_2_col28,
+        trace_2_col29,
+        trace_2_col30,
+        trace_2_col31,
+        trace_2_col32,
+        trace_2_col33,
+        trace_2_col34,
+        trace_2_col35,
+    ]: [Span<QM31>; 36] =
+        (*interaction_trace_mask_values
+        .multi_pop_front()
+        .unwrap())
+        .unbox();
+
+    let [trace_2_col0]: [QM31; 1] = (*trace_2_col0.try_into().unwrap()).unbox();
+    let [trace_2_col1]: [QM31; 1] = (*trace_2_col1.try_into().unwrap()).unbox();
+    let [trace_2_col2]: [QM31; 1] = (*trace_2_col2.try_into().unwrap()).unbox();
+    let [trace_2_col3]: [QM31; 1] = (*trace_2_col3.try_into().unwrap()).unbox();
+    let [trace_2_col4]: [QM31; 1] = (*trace_2_col4.try_into().unwrap()).unbox();
+    let [trace_2_col5]: [QM31; 1] = (*trace_2_col5.try_into().unwrap()).unbox();
+    let [trace_2_col6]: [QM31; 1] = (*trace_2_col6.try_into().unwrap()).unbox();
+    let [trace_2_col7]: [QM31; 1] = (*trace_2_col7.try_into().unwrap()).unbox();
+    let [trace_2_col8]: [QM31; 1] = (*trace_2_col8.try_into().unwrap()).unbox();
+    let [trace_2_col9]: [QM31; 1] = (*trace_2_col9.try_into().unwrap()).unbox();
+    let [trace_2_col10]: [QM31; 1] = (*trace_2_col10.try_into().unwrap()).unbox();
+    let [trace_2_col11]: [QM31; 1] = (*trace_2_col11.try_into().unwrap()).unbox();
+    let [trace_2_col12]: [QM31; 1] = (*trace_2_col12.try_into().unwrap()).unbox();
+    let [trace_2_col13]: [QM31; 1] = (*trace_2_col13.try_into().unwrap()).unbox();
+    let [trace_2_col14]: [QM31; 1] = (*trace_2_col14.try_into().unwrap()).unbox();
+    let [trace_2_col15]: [QM31; 1] = (*trace_2_col15.try_into().unwrap()).unbox();
+    let [trace_2_col16]: [QM31; 1] = (*trace_2_col16.try_into().unwrap()).unbox();
+    let [trace_2_col17]: [QM31; 1] = (*trace_2_col17.try_into().unwrap()).unbox();
+    let [trace_2_col18]: [QM31; 1] = (*trace_2_col18.try_into().unwrap()).unbox();
+    let [trace_2_col19]: [QM31; 1] = (*trace_2_col19.try_into().unwrap()).unbox();
+    let [trace_2_col20]: [QM31; 1] = (*trace_2_col20.try_into().unwrap()).unbox();
+    let [trace_2_col21]: [QM31; 1] = (*trace_2_col21.try_into().unwrap()).unbox();
+    let [trace_2_col22]: [QM31; 1] = (*trace_2_col22.try_into().unwrap()).unbox();
+    let [trace_2_col23]: [QM31; 1] = (*trace_2_col23.try_into().unwrap()).unbox();
+    let [trace_2_col24]: [QM31; 1] = (*trace_2_col24.try_into().unwrap()).unbox();
+    let [trace_2_col25]: [QM31; 1] = (*trace_2_col25.try_into().unwrap()).unbox();
+    let [trace_2_col26]: [QM31; 1] = (*trace_2_col26.try_into().unwrap()).unbox();
+    let [trace_2_col27]: [QM31; 1] = (*trace_2_col27.try_into().unwrap()).unbox();
+    let [trace_2_col28]: [QM31; 1] = (*trace_2_col28.try_into().unwrap()).unbox();
+    let [trace_2_col29]: [QM31; 1] = (*trace_2_col29.try_into().unwrap()).unbox();
+    let [trace_2_col30]: [QM31; 1] = (*trace_2_col30.try_into().unwrap()).unbox();
+    let [trace_2_col31]: [QM31; 1] = (*trace_2_col31.try_into().unwrap()).unbox();
+    let [trace_2_col32_neg1, trace_2_col32]: [QM31; 2] = (*trace_2_col32.try_into().unwrap())
+        .unbox();
+    let [trace_2_col33_neg1, trace_2_col33]: [QM31; 2] = (*trace_2_col33.try_into().unwrap())
+        .unbox();
+    let [trace_2_col34_neg1, trace_2_col34]: [QM31; 2] = (*trace_2_col34.try_into().unwrap())
+        .unbox();
+    let [trace_2_col35_neg1, trace_2_col35]: [QM31; 2] = (*trace_2_col35.try_into().unwrap())
+        .unbox();
+
+    core::internal::revoke_ap_tracking();
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3],
+    ))
+        * verify_bitwise_xor_8_sum_0
+        * verify_bitwise_xor_8_sum_1)
+        - (verify_bitwise_xor_8_sum_0 * numerator_1)
+        - (verify_bitwise_xor_8_sum_1 * numerator_0));
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7],
+    )
+        - QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]))
+        * verify_bitwise_xor_8_b_sum_2
+        * verify_bitwise_xor_8_b_sum_3)
+        - (verify_bitwise_xor_8_b_sum_2 * numerator_3)
+        - (verify_bitwise_xor_8_b_sum_3 * numerator_2));
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11],
+    )
+        - QM31Impl::from_partial_evals([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7]))
+        * verify_bitwise_xor_12_sum_4
+        * verify_bitwise_xor_4_sum_5)
+        - (verify_bitwise_xor_12_sum_4 * numerator_5)
+        - (verify_bitwise_xor_4_sum_5 * numerator_4));
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col12, trace_2_col13, trace_2_col14, trace_2_col15],
+    )
+        - QM31Impl::from_partial_evals([trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11]))
+        * verify_bitwise_xor_12_sum_6
+        * verify_bitwise_xor_4_sum_7)
+        - (verify_bitwise_xor_12_sum_6 * numerator_7)
+        - (verify_bitwise_xor_4_sum_7 * numerator_6));
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col16, trace_2_col17, trace_2_col18, trace_2_col19],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col12, trace_2_col13, trace_2_col14, trace_2_col15],
+        ))
+        * verify_bitwise_xor_8_sum_8
+        * verify_bitwise_xor_8_sum_9)
+        - (verify_bitwise_xor_8_sum_8 * numerator_9)
+        - (verify_bitwise_xor_8_sum_9 * numerator_8));
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col20, trace_2_col21, trace_2_col22, trace_2_col23],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col16, trace_2_col17, trace_2_col18, trace_2_col19],
+        ))
+        * verify_bitwise_xor_8_b_sum_10
+        * verify_bitwise_xor_8_b_sum_11)
+        - (verify_bitwise_xor_8_b_sum_10 * numerator_11)
+        - (verify_bitwise_xor_8_b_sum_11 * numerator_10));
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col24, trace_2_col25, trace_2_col26, trace_2_col27],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col20, trace_2_col21, trace_2_col22, trace_2_col23],
+        ))
+        * verify_bitwise_xor_7_sum_12
+        * verify_bitwise_xor_9_sum_13)
+        - (verify_bitwise_xor_7_sum_12 * numerator_13)
+        - (verify_bitwise_xor_9_sum_13 * numerator_12));
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col28, trace_2_col29, trace_2_col30, trace_2_col31],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col24, trace_2_col25, trace_2_col26, trace_2_col27],
+        ))
+        * verify_bitwise_xor_7_sum_14
+        * verify_bitwise_xor_9_sum_15)
+        - (verify_bitwise_xor_7_sum_14 * numerator_15)
+        - (verify_bitwise_xor_9_sum_15 * numerator_14));
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col32, trace_2_col33, trace_2_col34, trace_2_col35],
+    )
+        - QM31Impl::from_partial_evals([trace_2_col28, trace_2_col29, trace_2_col30, trace_2_col31])
+        - QM31Impl::from_partial_evals(
+            [trace_2_col32_neg1, trace_2_col33_neg1, trace_2_col34_neg1, trace_2_col35_neg1],
+        )
+        + (claimed_sum * (column_size.inverse().into())))
+        * blake_g_sum_16)
+        + numerator_16);
+    sum = sum * random_coeff + constraint_quotient;
 }
