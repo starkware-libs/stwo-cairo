@@ -56,6 +56,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     mut commitment_scheme: CommitmentSchemeVerifier,
     ref channel: Channel,
     min_security_bits: u32,
+    lifting_log_size: Option<u32>,
 ) {
     let StarkProof { commitment_scheme_proof } = proof;
 
@@ -82,6 +83,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
                 .span(),
             ref channel,
             commitment_scheme_proof.config.fri_config.log_blowup_factor,
+            lifting_log_size,
         );
 
     // Draw OOD point.

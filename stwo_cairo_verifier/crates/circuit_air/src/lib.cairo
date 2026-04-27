@@ -128,15 +128,33 @@ pub fn verify_circuit(proof: CircuitProof, config: @CircuitVerifierConfig) {
         .unbox();
 
     let log_blowup_factor = pcs_config.fri_config.log_blowup_factor;
+    // The circuit prover sets `lifting_log_size = params.trace_log_size + log_blowup_factor`
+    // on its `PcsConfig`. Cairo's `PcsConfig` doesn't carry it, so it's supplied via
+    // `CircuitVerifierConfig` and threaded into every commit call so the verifier-side
+    // merkle trees match the prover-lifted heights (matching stwo's `MerkleVerifierLifted::new(.., Some(h))`).
+    let lifting_log_size_opt: Option<u32> = Option::Some(*config.lifting_log_size);
     // The preprocessed root must match the prover-side commitment. Supplied by the
     // verifier config (out-of-band), not carried in the proof.
     assert!(preprocessed_commitment == config.preprocessed_root.clone());
 
     commitment_scheme
-        .commit(preprocessed_commitment, preprocessed_log_sizes, ref channel, log_blowup_factor);
+        .commit(
+            preprocessed_commitment,
+            preprocessed_log_sizes,
+            ref channel,
+            log_blowup_factor,
+            lifting_log_size_opt,
+        );
     claim.mix_into(ref channel);
 
-    commitment_scheme.commit(trace_commitment, trace_log_sizes, ref channel, log_blowup_factor);
+    commitment_scheme
+        .commit(
+            trace_commitment,
+            trace_log_sizes,
+            ref channel,
+            log_blowup_factor,
+            lifting_log_size_opt,
+        );
     assert!(
         channel.verify_pow_nonce(INTERACTION_POW_BITS, interaction_pow),
         "{}",
@@ -158,6 +176,7 @@ pub fn verify_circuit(proof: CircuitProof, config: @CircuitVerifierConfig) {
             interaction_trace_log_sizes,
             ref channel,
             log_blowup_factor,
+            lifting_log_size_opt,
         );
 
     let trace_lde_log_size = get_trace_lde_log_size(@commitment_scheme.trees);
@@ -172,7 +191,6 @@ pub fn verify_circuit(proof: CircuitProof, config: @CircuitVerifierConfig) {
     // `verify::verify_ex` which uses `max(components.composition_log_degree_bound(),
     // lifting_log_size - log_blowup_factor + 1)`.
     let lifting_log_size = *config.lifting_log_size;
-    let log_blowup_factor = pcs_config.fri_config.log_blowup_factor;
     let lifting_based_bound = lifting_log_size - log_blowup_factor + 1;
     let components_bound = trace_log_size + 1;
     let circuit_air_log_degree_bound =
@@ -187,6 +205,7 @@ pub fn verify_circuit(proof: CircuitProof, config: @CircuitVerifierConfig) {
         commitment_scheme,
         ref channel,
         SECURITY_BITS,
+        lifting_log_size_opt,
     );
 }
 

@@ -215,14 +215,30 @@ pub fn verify_cairo(proof: CairoProof) {
     let [preprocessed_log_sizes, trace_log_sizes, interaction_trace_log_sizes] = log_sizes.unbox();
 
     let log_blowup_factor = pcs_config.fri_config.log_blowup_factor;
+    // The cairo CPU prover doesn't override `lifting_log_size`; pass `None` so each
+    // merkle tree height stays at `max(column_log_sizes) + log_blowup_factor`.
+    let lifting_log_size_opt: Option<u32> = Option::None;
     // Preprocessed trace.
     let expected_preprocessed_root = preprocessed_root(log_blowup_factor);
     assert!(preprocessed_commitment == expected_preprocessed_root);
     commitment_scheme
-        .commit(preprocessed_commitment, preprocessed_log_sizes, ref channel, log_blowup_factor);
+        .commit(
+            preprocessed_commitment,
+            preprocessed_log_sizes,
+            ref channel,
+            log_blowup_factor,
+            lifting_log_size_opt,
+        );
     claim.mix_into(ref channel);
 
-    commitment_scheme.commit(trace_commitment, trace_log_sizes, ref channel, log_blowup_factor);
+    commitment_scheme
+        .commit(
+            trace_commitment,
+            trace_log_sizes,
+            ref channel,
+            log_blowup_factor,
+            lifting_log_size_opt,
+        );
     assert!(
         channel.verify_pow_nonce(INTERACTION_POW_BITS, interaction_pow),
         "{}",
@@ -244,6 +260,7 @@ pub fn verify_cairo(proof: CairoProof) {
             interaction_trace_log_sizes,
             ref channel,
             log_blowup_factor,
+            lifting_log_size_opt,
         );
 
     let trace_lde_log_size = get_trace_lde_log_size(@commitment_scheme.trees);
@@ -261,6 +278,7 @@ pub fn verify_cairo(proof: CairoProof) {
         commitment_scheme,
         ref channel,
         SECURITY_BITS,
+        lifting_log_size_opt,
     );
 }
 

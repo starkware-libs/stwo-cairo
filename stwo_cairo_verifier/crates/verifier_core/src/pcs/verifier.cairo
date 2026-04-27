@@ -101,22 +101,34 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     /// * `commitment` - The Merkle root of the committed columns.
     /// * `degree_bound_by_column` - The log degree bounds for each column in the commitment.
     /// * `channel` - The Fiat-Shamir channel used for mixing and randomness.
+    /// * `log_blowup_factor` - Log of the FRI blowup factor (LDE multiplier).
+    /// * `lifting_log_size` - When `Some(h)`, the merkle tree is committed at height `h`,
+    ///   matching the rust prover's `MerkleVerifierLifted::new(.., Some(h))` (vcs_lifted
+    ///   lifts all columns to size `2^h` before committing). When `None`, the tree height
+    ///   is `max(degree_bound_by_column) + log_blowup_factor`. The prover sets the
+    ///   `lifting_log_size` field on its `PcsConfig`; cairo's `PcsConfig` does not carry
+    ///   the field, so it must be threaded in by callers (e.g. via a verifier config).
     fn commit(
         ref self: CommitmentSchemeVerifier,
         commitment: Hash,
         degree_bound_by_column: ColumnSpan<u32>,
         ref channel: Channel,
         log_blowup_factor: u32,
+        lifting_log_size: Option<u32>,
     ) {
         // Mix the commitment root into the Fiat-Shamir channel.
         channel.mix_commitment(commitment);
         let max_log_degree_bound = *degree_bound_by_column.max().unwrap_or_default();
+        let tree_height = match lifting_log_size {
+            Option::Some(h) => h,
+            Option::None => log_blowup_factor + max_log_degree_bound,
+        };
         self
             .trees
             .append(
                 MerkleVerifier {
                     root: commitment,
-                    tree_height: log_blowup_factor + max_log_degree_bound,
+                    tree_height,
                     column_log_deg_bounds: degree_bound_by_column,
                 },
             );
