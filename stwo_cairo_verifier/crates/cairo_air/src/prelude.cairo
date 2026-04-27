@@ -1,6 +1,7 @@
 pub use core::num::traits::Zero;
 pub use stwo_constraint_framework::{
-    CommonLookupElements, LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    CairoComponent, ClaimTrait, CommonLookupElements, LookupElementsImpl, NewComponent,
+    PreprocessedMaskValues, PreprocessedMaskValuesImpl, RelationUsesDict, accumulate_relation_uses,
 };
 pub use stwo_verifier_core::channel::{Channel, ChannelTrait};
 pub use stwo_verifier_core::circle::{
@@ -16,8 +17,6 @@ pub use stwo_verifier_core::fields::qm31::{
 pub use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 pub use stwo_verifier_core::utils::{ArrayImpl, pow2};
 pub use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-pub use crate::cairo_component::{CairoComponent, NewComponent};
-pub use crate::claim::ClaimTrait;
 pub use crate::components::subroutines::*;
+pub use crate::preprocessed_columns;
 pub use crate::preprocessed_columns::*;
-pub use crate::{RelationUsesDict, accumulate_relation_uses, preprocessed_columns};

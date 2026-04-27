@@ -15,11 +15,10 @@ use components::range_check_8::InteractionClaimImpl as RangeCheck_8InteractionCl
 use components::range_check_9_9::InteractionClaimImpl as RangeCheck_9_9InteractionClaimImpl;
 use components::range_check_builtin::InteractionClaimImpl as RangeCheckBuiltinInteractionClaimImpl;
 use core::array::Span;
-use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claims::{CairoClaim, CairoInteractionClaim};
 use stwo_cairo_air::components;
 use stwo_constraint_framework::{
-    CommonLookupElements, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    CairoComponent, CommonLookupElements, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::fields::qm31::QM31;

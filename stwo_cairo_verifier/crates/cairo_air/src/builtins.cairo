@@ -7,11 +7,11 @@ use components::range_check96_builtin::InteractionClaimImpl as RangeCheckBuiltin
 use components::range_check_builtin::InteractionClaimImpl as RangeCheckBuiltinBits128InteractionClaimImpl;
 use core::array::Span;
 use core::box::BoxImpl;
-use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claims::{CairoClaim, CairoInteractionClaim};
 use stwo_cairo_air::components;
 use stwo_constraint_framework::{
-    CommonLookupElements, LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    CairoComponent, CommonLookupElements, LookupElementsImpl, PreprocessedMaskValues,
+    PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::fields::qm31::QM31;

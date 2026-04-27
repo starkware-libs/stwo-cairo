@@ -5,13 +5,11 @@ use components::pedersen_points_table_window_bits_18::InteractionClaimImpl as Pe
 #[cfg(not(feature: "poseidon252_verifier"))]
 use core::array::Span;
 #[cfg(not(feature: "poseidon252_verifier"))]
-use stwo_cairo_air::cairo_component::CairoComponent;
-#[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_cairo_air::claims::{CairoClaim, CairoInteractionClaim};
 use stwo_cairo_air::components;
 use stwo_constraint_framework::PreprocessedMaskValuesImpl;
 #[cfg(not(feature: "poseidon252_verifier"))]
-use stwo_constraint_framework::{CommonLookupElements, PreprocessedMaskValues};
+use stwo_constraint_framework::{CairoComponent, CommonLookupElements, PreprocessedMaskValues};
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::ColumnSpan;
 #[cfg(not(feature: "poseidon252_verifier"))]

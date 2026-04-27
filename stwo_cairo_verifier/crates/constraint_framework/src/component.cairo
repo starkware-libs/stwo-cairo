@@ -1,6 +1,6 @@
-use stwo_constraint_framework::{CommonLookupElements, PreprocessedMaskValues};
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::fields::qm31::QM31;
+use crate::{CommonLookupElements, PreprocessedMaskValues};
 
 /// A component is a set of trace columns of the same sizes along with a set of constraints on them.
 pub trait CairoComponent<T> {

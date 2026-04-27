@@ -7,7 +7,15 @@ use stwo_verifier_core::fields::m31::M31;
 #[cfg(not(feature: "qm31_opcode"))]
 use stwo_verifier_core::fields::m31::MulByM31Trait;
 use stwo_verifier_core::fields::qm31::QM31;
-use stwo_verifier_core::utils::ArrayImpl;
+use stwo_verifier_core::utils::{ArrayImpl, pow2};
+
+pub mod claim;
+pub mod component;
+pub mod utils;
+
+pub use claim::ClaimTrait;
+pub use component::{CairoComponent, NewComponent};
+pub use utils::tree_array_concat_cols;
 
 /// Represents the value of the prefix sum column at some index.
 /// Should be used to eliminate padded rows for the logup sum.
@@ -173,4 +181,22 @@ pub type PreprocessedColumnIdx = u32;
 
 // Used for columns not present in the preprocessed trace
 pub const INVALID_COLUMN_IDX: PreprocessedColumnIdx = 1000000000;
+
+// A dict from relation_id, which is a string encoded as a felt252, to the number of uses of the
+// corresponding relation.
+pub type RelationUsesDict = Felt252Dict<u64>;
+
+// A tuple of (relation_id, uses).
+pub type RelationUse = (felt252, u32);
+
+pub fn accumulate_relation_uses(
+    ref relation_uses: RelationUsesDict, relation_uses_per_row: Span<RelationUse>, log_size: u32,
+) {
+    let component_size = pow2(log_size);
+    for relation_use in relation_uses_per_row {
+        let (relation_id, uses) = *relation_use;
+        let (entry, prev_uses) = relation_uses.entry(relation_id);
+        relation_uses = entry.finalize(prev_uses + uses.into() * component_size.into());
+    }
+}
 
