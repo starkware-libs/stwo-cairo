@@ -8,13 +8,11 @@ use components::range_check_252_width_27::InteractionClaimImpl as RangeCheckFelt
 #[cfg(not(feature: "poseidon252_verifier"))]
 use core::array::Span;
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
-use stwo_cairo_air::cairo_component::CairoComponent;
-#[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use stwo_cairo_air::claims::{CairoClaim, CairoInteractionClaim};
 use stwo_cairo_air::components;
 use stwo_constraint_framework::PreprocessedMaskValuesImpl;
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
-use stwo_constraint_framework::{CommonLookupElements, PreprocessedMaskValues};
+use stwo_constraint_framework::{AirComponent, CommonLookupElements, PreprocessedMaskValues};
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use stwo_verifier_core::ColumnSpan;
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]

@@ -15,7 +15,6 @@ use core::num::traits::Zero;
 use core::traits::TryInto;
 use stwo_cairo_air::blake::{BlakeContextComponents, BlakeContextComponentsImpl};
 use stwo_cairo_air::builtins::{BuiltinComponents, BuiltinComponentsImpl};
-use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::opcodes::{OpcodeComponents, OpcodeComponentsImpl};
 use stwo_verifier_core::fields::m31::M31;
 use crate::P_U32;
@@ -36,7 +35,7 @@ use stwo_cairo_air::preprocessed_columns::PREPROCESSED_COLUMN_LOG_SIZE;
 use stwo_cairo_air::range_checks::{RangeChecksComponents, RangeChecksComponentsImpl};
 use stwo_cairo_air::{PublicDataImpl, components};
 use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    AirComponent, LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;
