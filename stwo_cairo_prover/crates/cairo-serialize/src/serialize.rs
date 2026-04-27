@@ -122,8 +122,13 @@ impl CairoSerialize for PcsConfig {
         let Self {
             pow_bits,
             fri_config,
-            lifting_log_size: _,
+            lifting_log_size,
         } = self;
+
+        assert!(
+            lifting_log_size.is_none(),
+            "lifting_log_size is not supported in the Cairo1 verifier"
+        );
         pow_bits.serialize(output);
         fri_config.serialize(output);
     }
