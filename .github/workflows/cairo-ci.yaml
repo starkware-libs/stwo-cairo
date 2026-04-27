@@ -141,6 +141,29 @@ jobs:
       - if: matrix.package == 'stwo_cairo_verifier'
         run: scarb --profile proving execute --package stwo_cairo_verifier --features ${{ matrix.feature }} --print-resource-usage --output none --arguments-file ${{ matrix.proof_file }}
 
+  # Circuit verifier crates. Feature set is smaller than the Cairo verifier matrix (no
+  # `*_outputs_packing`, which are Cairo-AIR-specific), and there is no `scarb execute`
+  # step yet because no circuit-proof fixture is checked in. Matrix values are static
+  # strings defined in this workflow, not untrusted input.
+  # TODO(circuit-verifier): add an `execute` step once a circuit-proof fixture exists.
+  scarb-test-circuit:
+    runs-on: namespace-profile-starkware-libs-stwo-cairo-medium-ubuntu-24-04-amd64
+    defaults:
+      run:
+        working-directory: ./stwo_cairo_verifier
+    strategy:
+      matrix:
+        feature: [poseidon252_verifier, qm31_opcode]
+        package:
+          - stwo_circuit_air
+          - stwo_circuit_verifier
+    steps:
+      - uses: actions/checkout@v6
+      - uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: "2.15.0"
+      - run: scarb test --features=${{ matrix.feature }} --package ${{ matrix.package }}
+
   run-tests:
     runs-on: namespace-profile-starkware-libs-stwo-cairo-xlarge-ubuntu-24-04-amd64
     env:
