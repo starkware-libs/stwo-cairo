@@ -26,13 +26,13 @@ mod blake2s_verifier_uses {
 #[cfg(not(feature: "poseidon252_verifier"))]
 use blake2s_verifier_uses::*;
 use core::box::BoxImpl;
-use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait, SquashedFelt252DictTrait};
+use core::dict::{Felt252DictTrait, SquashedFelt252DictTrait};
 use core::iter::{Extend, Iterator};
 use core::num::traits::Zero;
 use core::num::traits::one::One;
 use core::traits::TryInto;
 use stwo_constraint_framework::{
-    CommonLookupElements, LookupElementsImpl, PreprocessedMaskValuesImpl,
+    CommonLookupElements, LookupElementsImpl, PreprocessedMaskValuesImpl, RelationUsesDict,
 };
 use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::fields::Invertible;
@@ -74,7 +74,6 @@ use claims::{
 pub mod cairo_air;
 use cairo_air::*;
 
-pub mod cairo_component;
 pub mod components;
 
 // This module checks the validity of feature combinations. It's placed in this crate since it's the
@@ -122,13 +121,6 @@ pub mod claim;
 mod preprocessed_columns_canonical;
 #[cfg(feature: "poseidon252_verifier")]
 mod preprocessed_columns_without_pedersen;
-
-// A dict from relation_id, which is a string encoded as a felt252, to the number of uses of the
-// corresponding relation.
-type RelationUsesDict = Felt252Dict<u64>;
-
-// A tuple of (relation_id, uses).
-type RelationUse = (felt252, u32);
 
 #[derive(Drop, Serde)]
 pub struct CairoProof {
@@ -1024,17 +1016,6 @@ impl CasmStateImpl of CasmStateTrait {
         channel.mix_u64(pc_u32.into());
         channel.mix_u64(ap_u32.into());
         channel.mix_u64(fp_u32.into());
-    }
-}
-
-pub fn accumulate_relation_uses(
-    ref relation_uses: RelationUsesDict, relation_uses_per_row: Span<RelationUse>, log_size: u32,
-) {
-    let component_size = pow2(log_size);
-    for relation_use in relation_uses_per_row {
-        let (relation_id, uses) = *relation_use;
-        let (entry, prev_uses) = relation_uses.entry(relation_id);
-        relation_uses = entry.finalize(prev_uses + uses.into() * component_size.into());
     }
 }
 

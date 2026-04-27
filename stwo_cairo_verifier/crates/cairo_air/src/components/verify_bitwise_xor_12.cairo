@@ -62,7 +62,7 @@ pub impl NewComponentImpl of NewComponent<Component> {
     }
 }
 
-pub impl CairoComponentImpl of CairoComponent<Component> {
+pub impl AirComponentImpl of AirComponent<Component> {
     fn evaluate_constraints_at_point(
         self: @Component,
         ref sum: QM31,

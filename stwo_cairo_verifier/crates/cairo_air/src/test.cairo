@@ -5,8 +5,9 @@ use stwo_cairo_air::components::memory_address_to_id::{
 };
 use stwo_cairo_air::{
     CasmState, MemorySmallValue, PublicData, PublicDataImpl, PublicMemory, PublicSegmentRanges,
-    RelationUsesDict, SegmentRange, accumulate_relation_uses,
+    SegmentRange,
 };
+use stwo_constraint_framework::{RelationUsesDict, accumulate_relation_uses};
 use stwo_verifier_core::fields::m31::M31Trait;
 use stwo_verifier_core::fields::qm31::qm31_const;
 use stwo_verifier_core::utils::ArrayImpl;
