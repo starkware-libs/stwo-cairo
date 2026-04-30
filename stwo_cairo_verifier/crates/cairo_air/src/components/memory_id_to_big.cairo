@@ -1,13 +1,13 @@
-use stwo_constraint_framework::{PreprocessedMaskValues, PreprocessedMaskValuesImpl};
+use stwo_constraint_framework::{
+    AirComponent, ClaimTrait, PreprocessedMaskValues, PreprocessedMaskValuesImpl, RelationUsesDict,
+    accumulate_relation_uses,
+};
 use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::fields::qm31::{QM31, QM31Serde, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnSpan, TreeArray};
-use crate::cairo_component::CairoComponent;
-use crate::claim::ClaimTrait;
 use crate::prelude::*;
-use crate::{RelationUsesDict, accumulate_relation_uses};
 use super::super::utils::UsizeImpl;
 
 mod constraints_big;
@@ -118,7 +118,7 @@ pub impl NewBigComponentImpl of NewBigComponent {
     }
 }
 
-pub impl CairoBigComponentImpl of CairoComponent<BigComponent> {
+pub impl CairoBigComponentImpl of AirComponent<BigComponent> {
     fn evaluate_constraints_at_point(
         self: @BigComponent,
         ref sum: QM31,

@@ -4,11 +4,10 @@ use components::blake_round_sigma::InteractionClaimImpl as BlakeRoundSigmaIntera
 use components::triple_xor_32::InteractionClaimImpl as TripleXor32InteractionClaimImpl;
 use components::verify_bitwise_xor_12::InteractionClaimImpl as VerifyBitwiseXor12InteractionClaimImpl;
 use core::array::Span;
-use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claims::{CairoClaim, CairoInteractionClaim};
 use stwo_cairo_air::components;
 use stwo_constraint_framework::{
-    CommonLookupElements, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    AirComponent, CommonLookupElements, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::fields::qm31::QM31;

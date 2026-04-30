@@ -59,7 +59,7 @@ pub impl NewComponentImpl of NewComponent<Component> {
     }
 }
 
-pub impl CairoComponentImpl of CairoComponent<Component> {
+pub impl AirComponentImpl of AirComponent<Component> {
     fn evaluate_constraints_at_point(
         self: @Component,
         ref sum: QM31,
@@ -152,12 +152,12 @@ mod tests {
     use core::num::traits::Zero;
     #[allow(unused_imports)]
     use stwo_cairo_air::preprocessed_columns::*;
+    use stwo_constraint_framework::AirComponent;
     #[allow(unused_imports)]
     use stwo_constraint_framework::{
         LookupElementsTrait, PreprocessedMaskValues, PreprocessedMaskValuesTrait,
     };
     use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Trait, qm31_const};
-    use crate::cairo_component::*;
     use crate::components::sample_evaluations::*;
     #[allow(unused_imports)]
     use crate::test_utils::{make_interaction_trace, preprocessed_mask_add};
