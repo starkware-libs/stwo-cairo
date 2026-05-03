@@ -2,6 +2,7 @@
 //! circuit.
 
 pub mod blake2s_consts;
+pub mod circuit_air;
 pub mod claims;
 pub mod component_indices;
 pub mod components;
