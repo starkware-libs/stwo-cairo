@@ -20,8 +20,8 @@ use rayon::iter::{
 use stwo::core::fields::qm31::SecureField;
 use stwo_cairo_adapter::memory::{u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId};
 use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, N_M31_IN_SMALL_FELT252};
-use stwo_cairo_common::prover_types::cpu::FELT252_N_WORDS;
-use stwo_cairo_common::prover_types::felt::split_f252_simd;
+use stwo_cairo_common::prover_types::cpu::{FELT252_BITS_PER_WORD, FELT252_N_WORDS};
+use stwo_cairo_common::prover_types::felt::{split, split_f252_simd};
 use stwo_cairo_common::prover_types::simd::{PackedFelt252, SIMD_ENUMERATION_0};
 
 use crate::witness::components::range_check_9_9;
@@ -326,25 +326,26 @@ fn gen_single_big_memory_trace(values: &[[u32; 8]], mults: &[PackedM31]) -> Vec<
     mults.resize(column_length / N_LANES, PackedM31::zero());
     let multiplicities = BaseColumn::from_simd(mults);
 
-    let packed_values = values
-        .iter()
-        .chain(std::iter::repeat(&[0; 8]))
-        .take(column_length)
-        .array_chunks::<N_LANES>()
-        .map(|chunk| {
-            std::array::from_fn(|i| Simd::from_array(std::array::from_fn(|j| chunk[j][i])))
-        })
-        .collect_vec();
-
     let mut value_trace =
         std::iter::repeat_with(|| unsafe { BaseColumn::uninitialized(column_length) })
             .take(FELT252_N_WORDS)
             .collect_vec();
-    for (i, values) in packed_values.iter().enumerate() {
-        let values = split_f252_simd(*values);
-        for (j, value) in values.iter().enumerate() {
-            value_trace[j].data[i] = *value;
+    let mask = (1u32 << FELT252_BITS_PER_WORD) - 1;
+    for (i, chunk) in values.iter().array_chunks::<N_LANES>().enumerate() {
+        let split_chunk: [[u32; FELT252_N_WORDS]; N_LANES] =
+            std::array::from_fn(|lane| split(*chunk[lane], mask));
+        for (j, value_col) in value_trace.iter_mut().enumerate() {
+            value_col.data[i] = unsafe {
+                PackedM31::from_simd_unchecked(Simd::from_array(std::array::from_fn(|lane| {
+                    split_chunk[lane][j]
+                })))
+            };
         }
+    }
+    let n_filled_packed = values.len() / N_LANES;
+    let n_total_packed = column_length / N_LANES;
+    for value_col in value_trace.iter_mut() {
+        value_col.data[n_filled_packed..n_total_packed].fill(PackedM31::zero());
     }
 
     chain!(value_trace, [multiplicities]).collect_vec()
