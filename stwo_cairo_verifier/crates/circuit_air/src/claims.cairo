@@ -84,8 +84,7 @@ pub fn lookup_sum(
     let mut addr: M31 = m31(U_VAR_IDX + 1);
     for value in claim.public_data.output_values.span() {
         let [a, b, c, d] = QM31Trait::to_fixed_array(*value);
-        let denom = common_lookup_elements
-            .combine([gate_relation_id, addr, a, b, c, d].span());
+        let denom = common_lookup_elements.combine([gate_relation_id, addr, a, b, c, d].span());
         output_sum = output_sum + denom.inverse();
         addr += m31(1);
     }
