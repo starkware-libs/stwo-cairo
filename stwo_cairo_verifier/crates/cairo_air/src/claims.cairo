@@ -1,13 +1,15 @@
 // This file was created by the AIR team.
 
+use stwo_cairo_air::preprocessed_columns::PREPROCESSED_COLUMN_LOG_SIZE;
 use stwo_cairo_air::{PublicData, PublicDataImpl, RelationUsesDict};
 use stwo_constraint_framework::claim::ClaimTrait;
-use stwo_constraint_framework::{CommonLookupElements, tree_array_concat_cols};
+use stwo_constraint_framework::{
+    CommonLookupElements, override_preprocessed_trace_log_sizes, tree_array_concat_cols,
+};
 use stwo_verifier_core::TreeArray;
 use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::utils::OptionImpl;
-use crate::cairo_air::override_preprocessed_trace_log_sizes;
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
 use crate::components::{
     add_ap_opcode, add_mod_builtin, add_opcode, add_opcode_small, assert_eq_opcode,
@@ -320,7 +322,9 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             log_sizes_list.append(claim.log_sizes());
         }
         let aggregated_log_sizes = tree_array_concat_cols(log_sizes_list);
-        override_preprocessed_trace_log_sizes(aggregated_log_sizes)
+        override_preprocessed_trace_log_sizes(
+            aggregated_log_sizes, PREPROCESSED_COLUMN_LOG_SIZE.span(),
+        )
     }
 
     fn mix_into(self: @CairoClaim, ref channel: Channel) {

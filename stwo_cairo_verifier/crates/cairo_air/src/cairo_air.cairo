@@ -31,18 +31,17 @@ pub mod poseidon_context_imports {
 }
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use poseidon_context_imports::*;
-use stwo_cairo_air::preprocessed_columns::PREPROCESSED_COLUMN_LOG_SIZE;
 use stwo_cairo_air::range_checks::{RangeChecksComponents, RangeChecksComponentsImpl};
 use stwo_cairo_air::{PublicDataImpl, components};
 use stwo_constraint_framework::{
-    AirComponent, LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    AirComponent, LookupElementsImpl, PreprocessedMaskValuesImpl, validate_mask_usage,
 };
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
 use stwo_verifier_core::verifier::Air;
-use stwo_verifier_core::{ColumnSpan, TreeArray, TreeSpan};
+use stwo_verifier_core::{ColumnSpan, TreeSpan};
 use crate::claims::{CairoClaim, CairoInteractionClaim};
 
 pub const OPCODES_RELATION_ID: M31 = M31 { inner: 428564188 };
@@ -50,43 +49,6 @@ pub const MEMORY_ADDRESS_TO_ID_RELATION_ID: M31 = M31 { inner: 1444891767 };
 pub const MEMORY_ID_TO_VALUE_RELATION_ID: M31 = M31 { inner: 1662111297 };
 pub const VERIFY_BITWISE_XOR_12_RELATION_ID: M31 = M31 { inner: 648362599 };
 
-
-/// Validates that every `mask_value` provided in the proof (in `sampled_values`) is used by at
-/// least one component.
-///
-/// Since `eval_composition_polynomial_at_point` is responsible for validating the *structure*
-/// of `sampled_values` in the proof, it needs to ensure that all sampled preprocessed
-/// mask values are actually used. Otherwise, the prover would have the freedom to
-/// send a sample of a column even if it is unused, adding another term to the FRI quotients.
-///
-/// Additionally, there is a sanity check that the columns in the trace and interaction-trace were
-/// consumed by the components.
-/// This is not strictly necessary as the verifier generates the column indices on its own and only
-/// access samples of columns for which it knows about.
-fn validate_mask_usage(
-    preprocessed_mask_values: PreprocessedMaskValues,
-    trace_mask_values: ColumnSpan<Span<QM31>>,
-    interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
-) {
-    preprocessed_mask_values.validate_usage();
-    assert!(trace_mask_values.is_empty());
-    assert!(interaction_trace_mask_values.is_empty());
-}
-
-/// Override the preprocessed trace log sizes, since they come from a global setting
-/// rather than computed by concatenating preprocessed log sizes of the individual
-/// components.
-/// TODO(ilya): consider removing the generation of `_invalid_preprocessed_trace_log_sizes`.
-pub fn override_preprocessed_trace_log_sizes(
-    aggregated_log_sizes: TreeArray<Span<u32>>,
-) -> TreeArray<Span<u32>> {
-    let boxed_triplet: Box<[Span<u32>; 3]> = *aggregated_log_sizes.span().try_into().unwrap();
-    let [_invalid_preprocessed_trace_log_sizes, trace_log_sizes, interaction_log_sizes] =
-        boxed_triplet
-        .unbox();
-
-    array![PREPROCESSED_COLUMN_LOG_SIZE.span(), trace_log_sizes, interaction_log_sizes]
-}
 
 #[derive(Drop)]
 #[cfg(not(feature: "poseidon252_verifier"))]
