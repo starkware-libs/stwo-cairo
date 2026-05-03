@@ -3,6 +3,7 @@ use std::sync::Arc;
 
 use cairo_air::components::memory_id_to_big::{
     Claim as BigClaim, InteractionClaim as BigInteractionClaim, MEMORY_ID_SIZE,
+    N_MULTIPLICITY_COLUMNS,
 };
 use cairo_air::components::memory_id_to_small::{
     Claim as SmallClaim, InteractionClaim as SmallInteractionClaim,
@@ -107,6 +108,7 @@ impl ClaimGenerator {
         self,
         range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
         log_max_big_size: u32,
+        opt_n_components: Option<usize>,
     ) -> (
         BigTraces,
         SmallTrace,
@@ -117,6 +119,7 @@ impl ClaimGenerator {
             self.big_values,
             self.big_mults.into_simd_vec(),
             log_max_big_size,
+            opt_n_components,
         );
         let small_table_trace =
             gen_small_memory_trace(self.small_values, self.small_mults.into_simd_vec());
@@ -296,10 +299,12 @@ impl AddInputs for ClaimGenerator {
 
 /// Generates the trace for the id -> f252 `big` tables. Splits the table to multiple traces
 /// according to `log_max_big_size`.
+/// If `opt_n_components` is provided, the function will pad the traces to the number of components.
 fn gen_big_memory_traces(
     values: Vec<[u32; 8]>,
     mults: Vec<PackedM31>,
     log_max_big_size: u32,
+    opt_n_components: Option<usize>,
 ) -> Vec<Vec<BaseColumn>> {
     assert!(log_max_big_size >= LOG_N_LANES);
     let max_big_size = 1 << log_max_big_size;
@@ -312,6 +317,19 @@ fn gen_big_memory_traces(
     {
         let trace = gen_single_big_memory_trace(values, mults);
         traces.push(trace);
+    }
+
+    if let Some(n_components) = opt_n_components {
+        assert!(n_components >= traces.len());
+
+        let min_trace_length = N_LANES;
+        for _ in traces.len()..n_components {
+            traces.push(
+                std::iter::repeat_with(|| BaseColumn::zeros(min_trace_length))
+                    .take(FELT252_N_WORDS + N_MULTIPLICITY_COLUMNS)
+                    .collect_vec(),
+            );
+        }
     }
 
     traces
@@ -687,7 +705,7 @@ mod tests {
         let id_to_big = super::ClaimGenerator::new(Arc::clone(&memory));
         let range_check_9_9 = range_check_9_9::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
         let (big_traces, small_trace, (big_claim, small_claim), interaction_generator) =
-            id_to_big.write_trace(&range_check_9_9, log_max_seq_size);
+            id_to_big.write_trace(&range_check_9_9, log_max_seq_size, None);
         for big_trace in big_traces {
             tree_builder.extend_evals(big_trace);
         }
@@ -763,7 +781,7 @@ mod tests {
             vec![expected_first_big_log_size, expected_second_big_log_size];
 
         let (_, _, (big_claim, small_claim), _) =
-            id_to_big.write_trace(&range_check_9_9, log_max_seq_size);
+            id_to_big.write_trace(&range_check_9_9, log_max_seq_size, None);
 
         assert_eq!(small_claim.log_size, expected_small_log_size);
         assert_eq!(big_claim.big_log_sizes, expected_big_log_sizes);
