@@ -1,0 +1,26 @@
+[package]
+name = "stwo_circuit_air"
+version = "0.1.0"
+edition = "2024_07"
+
+[lib]
+casm = true
+
+[features]
+poseidon252_verifier = ["stwo_verifier_core/poseidon252_verifier"]
+qm31_opcode = ["stwo_verifier_core/qm31_opcode"]
+
+
+[tool.fmt]
+sort-module-level-items = true
+
+[tool]
+cairo-lint.workspace = true
+
+[dependencies]
+bounded_int = { path = "../bounded_int" }
+stwo_verifier_core = { path = "../verifier_core" }
+stwo_constraint_framework = { path = "../constraint_framework" }
+
+[dev-dependencies]
+cairo_test = "2.12.2"
