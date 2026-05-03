@@ -88,6 +88,7 @@ where
         preprocessed_trace: preprocessed_trace_variant,
         store_polynomials_coefficients,
         include_all_preprocessed_columns: _,
+        opt_n_id_to_big_components,
     } = prover_params;
 
     let span = span!(Level::INFO, "Write Preprocessed trace").entered();
@@ -98,7 +99,8 @@ where
     let cairo_claim_generator = create_cairo_claim_generator(input, preprocessed_trace.clone());
     // Base trace.
     let span = span!(Level::INFO, "Write Base trace").entered();
-    let (trace_evals, claim, interaction_generator) = cairo_claim_generator.write_trace();
+    let (trace_evals, claim, interaction_generator) =
+        cairo_claim_generator.write_trace(opt_n_id_to_big_components);
     span.exit();
 
     // The maximal log trace size (without blowup factor) is the maximum over preprocessed trace
@@ -178,7 +180,8 @@ where
     let cairo_claim_generator = create_cairo_claim_generator(input, preprocessed_trace.clone());
     // Base trace.
     let span = span!(Level::INFO, "Write Base trace").entered();
-    let (trace_evals, claim, interaction_generator) = cairo_claim_generator.write_trace();
+    let (trace_evals, claim, interaction_generator) =
+        cairo_claim_generator.write_trace(prover_params.opt_n_id_to_big_components);
     span.exit();
 
     prove_cairo_common::<MC>(
@@ -213,6 +216,7 @@ where
         preprocessed_trace: preprocessed_trace_variant,
         store_polynomials_coefficients,
         include_all_preprocessed_columns,
+        opt_n_id_to_big_components: _,
     } = prover_params;
 
     // Setup protocol.
@@ -334,6 +338,10 @@ pub struct ProverParameters {
     /// Whether to include samples for every preprocessed column in the proof. Default is `false`.
     /// If `false`, the proof only includes samples for columns used by at least one component.
     pub include_all_preprocessed_columns: bool,
+
+    /// Optional number of components for the memory id to big claim.
+    /// If not provided, the number of components will be inferred from the input.
+    pub opt_n_id_to_big_components: Option<usize>,
 }
 
 /// The hash function used for commitments, for the prover-verifier channel,
@@ -387,6 +395,7 @@ pub fn create_and_serialize_proof(
             preprocessed_trace: PreProcessedTraceVariant::Canonical,
             store_polynomials_coefficients: false,
             include_all_preprocessed_columns: false,
+            opt_n_id_to_big_components: None,
         }
     };
 
@@ -512,6 +521,7 @@ pub mod tests {
                 channel_salt: 42,
                 store_polynomials_coefficients: false,
                 include_all_preprocessed_columns: false,
+                opt_n_id_to_big_components: None,
             };
             let cairo_proof =
                 prove_cairo::<Poseidon252MerkleChannel>(input, prover_params).unwrap();
@@ -627,6 +637,7 @@ pub mod tests {
                 channel_salt: 0,
                 store_polynomials_coefficients: true,
                 include_all_preprocessed_columns: false,
+                opt_n_id_to_big_components: None,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
@@ -654,6 +665,7 @@ pub mod tests {
                 channel_salt: 0,
                 store_polynomials_coefficients: false,
                 include_all_preprocessed_columns: false,
+                opt_n_id_to_big_components: None,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
             let mut proof_file = NamedTempFile::new().unwrap();
@@ -723,6 +735,7 @@ pub mod tests {
                 channel_salt: 0,
                 store_polynomials_coefficients: false,
                 include_all_preprocessed_columns: false,
+                opt_n_id_to_big_components: None,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
             let mut proof_file = NamedTempFile::new().unwrap();
@@ -769,6 +782,7 @@ pub mod tests {
                 channel_salt: 0,
                 store_polynomials_coefficients: false,
                 include_all_preprocessed_columns: false,
+                opt_n_id_to_big_components: None,
             };
             let proofs = (0..n_proofs_to_compare)
                 .map(|_| {
@@ -838,6 +852,7 @@ pub mod tests {
                     channel_salt: 0,
                     store_polynomials_coefficients: false,
                     include_all_preprocessed_columns: false,
+                    opt_n_id_to_big_components: None,
                 };
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
@@ -862,6 +877,7 @@ pub mod tests {
                     channel_salt: 0,
                     store_polynomials_coefficients: false,
                     include_all_preprocessed_columns: false,
+                    opt_n_id_to_big_components: None,
                 };
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
@@ -994,6 +1010,7 @@ pub mod tests {
                     channel_salt: 0,
                     store_polynomials_coefficients: false,
                     include_all_preprocessed_columns: false,
+                    opt_n_id_to_big_components: None,
                 };
 
                 // Run poseidon builtin with 15 different instances.
@@ -1064,6 +1081,7 @@ pub mod tests {
                     channel_salt: 0,
                     store_polynomials_coefficients: false,
                     include_all_preprocessed_columns: false,
+                    opt_n_id_to_big_components: None,
                 };
 
                 // Run pedersen builtin with 15 different instances.
