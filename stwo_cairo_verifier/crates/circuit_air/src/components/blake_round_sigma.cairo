@@ -1,0 +1,158 @@
+// This file was created by the AIR team.
+
+use crate::prelude::*;
+
+pub const N_TRACE_COLUMNS: usize = 1;
+pub const LOG_SIZE: u32 = 4;
+
+#[derive(Drop, Serde, Copy)]
+pub struct Claim {}
+
+pub impl ClaimImpl of ClaimTrait<Claim> {
+    fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
+        let log_size = LOG_SIZE;
+        let preprocessed_log_sizes = array![log_size].span();
+        let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
+        let interaction_log_sizes = [log_size; 4].span();
+        array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
+    }
+
+    fn mix_into(self: @Claim, ref channel: Channel) {}
+
+    fn accumulate_relation_uses(self: @Claim, ref relation_uses: RelationUsesDict) {}
+}
+
+#[derive(Drop, Serde, Copy)]
+pub struct InteractionClaim {
+    pub claimed_sum: QM31,
+}
+
+#[generate_trait]
+pub impl InteractionClaimImpl of InteractionClaimTrait {
+    fn mix_into(self: @InteractionClaim, ref channel: Channel) {
+        channel.mix_felts([*self.claimed_sum].span());
+    }
+}
+
+
+#[derive(Drop)]
+pub struct Component {
+    pub claim: Claim,
+    pub interaction_claim: InteractionClaim,
+    pub common_lookup_elements: CommonLookupElements,
+}
+
+pub impl NewComponentImpl of NewComponent<Component> {
+    type Claim = Claim;
+    type InteractionClaim = InteractionClaim;
+
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        common_lookup_elements: @CommonLookupElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            common_lookup_elements: common_lookup_elements.clone(),
+        }
+    }
+}
+
+pub impl AirComponentImpl of AirComponent<Component> {
+    fn evaluate_constraints_at_point(
+        self: @Component,
+        ref sum: QM31,
+        ref preprocessed_mask_values: PreprocessedMaskValues,
+        ref trace_mask_values: ColumnSpan<Span<QM31>>,
+        ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
+        random_coeff: QM31,
+    ) {
+        let log_size = LOG_SIZE;
+        let claimed_sum = *self.interaction_claim.claimed_sum;
+        let column_size = m31(pow2(log_size));
+        let mut blake_round_sigma_sum_0: QM31 = Zero::zero();
+        let mut numerator_0: QM31 = Zero::zero();
+        let seq_4 = preprocessed_mask_values.get_and_mark_used(SEQ_4_IDX);
+        let blake_sigma_0 = preprocessed_mask_values.get_and_mark_used(BLAKE_SIGMA_0_IDX);
+        let blake_sigma_1 = preprocessed_mask_values.get_and_mark_used(BLAKE_SIGMA_1_IDX);
+        let blake_sigma_2 = preprocessed_mask_values.get_and_mark_used(BLAKE_SIGMA_2_IDX);
+        let blake_sigma_3 = preprocessed_mask_values.get_and_mark_used(BLAKE_SIGMA_3_IDX);
+        let blake_sigma_4 = preprocessed_mask_values.get_and_mark_used(BLAKE_SIGMA_4_IDX);
+        let blake_sigma_5 = preprocessed_mask_values.get_and_mark_used(BLAKE_SIGMA_5_IDX);
+        let blake_sigma_6 = preprocessed_mask_values.get_and_mark_used(BLAKE_SIGMA_6_IDX);
+        let blake_sigma_7 = preprocessed_mask_values.get_and_mark_used(BLAKE_SIGMA_7_IDX);
+        let blake_sigma_8 = preprocessed_mask_values.get_and_mark_used(BLAKE_SIGMA_8_IDX);
+        let blake_sigma_9 = preprocessed_mask_values.get_and_mark_used(BLAKE_SIGMA_9_IDX);
+        let blake_sigma_10 = preprocessed_mask_values.get_and_mark_used(BLAKE_SIGMA_10_IDX);
+        let blake_sigma_11 = preprocessed_mask_values.get_and_mark_used(BLAKE_SIGMA_11_IDX);
+        let blake_sigma_12 = preprocessed_mask_values.get_and_mark_used(BLAKE_SIGMA_12_IDX);
+        let blake_sigma_13 = preprocessed_mask_values.get_and_mark_used(BLAKE_SIGMA_13_IDX);
+        let blake_sigma_14 = preprocessed_mask_values.get_and_mark_used(BLAKE_SIGMA_14_IDX);
+        let blake_sigma_15 = preprocessed_mask_values.get_and_mark_used(BLAKE_SIGMA_15_IDX);
+
+        let [multiplicity_0_col0]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap())
+            .unbox();
+        let [multiplicity_0_col0]: [QM31; 1] = (*multiplicity_0_col0.try_into().unwrap()).unbox();
+
+        core::internal::revoke_ap_tracking();
+
+        blake_round_sigma_sum_0 = self
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1805967942, 0, 0, 0>(), seq_4, blake_sigma_0, blake_sigma_1,
+                    blake_sigma_2, blake_sigma_3, blake_sigma_4, blake_sigma_5, blake_sigma_6,
+                    blake_sigma_7, blake_sigma_8, blake_sigma_9, blake_sigma_10, blake_sigma_11,
+                    blake_sigma_12, blake_sigma_13, blake_sigma_14, blake_sigma_15,
+                ]
+                    .span(),
+            );
+        numerator_0 = multiplicity_0_col0;
+
+        lookup_constraints(
+            ref sum,
+            random_coeff,
+            claimed_sum,
+            numerator_0,
+            column_size,
+            ref interaction_trace_mask_values,
+            blake_round_sigma_sum_0,
+        );
+    }
+}
+
+
+fn lookup_constraints(
+    ref sum: QM31,
+    random_coeff: QM31,
+    claimed_sum: QM31,
+    numerator_0: QM31,
+    column_size: M31,
+    ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
+    blake_round_sigma_sum_0: QM31,
+) {
+    let [trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]: [Span<QM31>; 4] =
+        (*interaction_trace_mask_values
+        .multi_pop_front()
+        .unwrap())
+        .unbox();
+
+    let [trace_2_col0_neg1, trace_2_col0]: [QM31; 2] = (*trace_2_col0.try_into().unwrap()).unbox();
+    let [trace_2_col1_neg1, trace_2_col1]: [QM31; 2] = (*trace_2_col1.try_into().unwrap()).unbox();
+    let [trace_2_col2_neg1, trace_2_col2]: [QM31; 2] = (*trace_2_col2.try_into().unwrap()).unbox();
+    let [trace_2_col3_neg1, trace_2_col3]: [QM31; 2] = (*trace_2_col3.try_into().unwrap()).unbox();
+
+    core::internal::revoke_ap_tracking();
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col0_neg1, trace_2_col1_neg1, trace_2_col2_neg1, trace_2_col3_neg1],
+        )
+        + (claimed_sum * (column_size.inverse().into())))
+        * blake_round_sigma_sum_0)
+        + numerator_0);
+    sum = sum * random_coeff + constraint_quotient;
+}
