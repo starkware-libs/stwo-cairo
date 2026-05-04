@@ -1,9 +1,8 @@
 // This file was created by the AIR team.
 
-use stwo_cairo_air::{PublicData, PublicDataImpl};
-use stwo_constraint_framework::{
-    ClaimTrait, CommonLookupElements, RelationUsesDict, tree_array_concat_cols,
-};
+use stwo_cairo_air::{PublicData, PublicDataImpl, RelationUsesDict};
+use stwo_constraint_framework::claim::ClaimTrait;
+use stwo_constraint_framework::{CommonLookupElements, tree_array_concat_cols};
 use stwo_verifier_core::TreeArray;
 use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::fields::qm31::QM31;

@@ -1,0 +1,102 @@
+// This file was created by the AIR team.
+
+use crate::components::subroutines::bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate;
+use crate::components::subroutines::bitwise_xor_num_bits_8_b::bitwise_xor_num_bits_8_b_evaluate;
+use crate::components::subroutines::split_16_low_part_size_8::split_16_low_part_size_8_evaluate;
+use crate::prelude::*;
+
+
+pub fn xor_rot_32_r_16_evaluate(
+    input: [QM31; 4],
+    ms_8_bits_col0: QM31,
+    ms_8_bits_col1: QM31,
+    ms_8_bits_col2: QM31,
+    ms_8_bits_col3: QM31,
+    xor_col4: QM31,
+    xor_col5: QM31,
+    xor_col6: QM31,
+    xor_col7: QM31,
+    common_lookup_elements: @CommonLookupElements,
+    ref verify_bitwise_xor_8_sum_0: QM31,
+    ref numerator_0: QM31,
+    ref verify_bitwise_xor_8_sum_1: QM31,
+    ref numerator_1: QM31,
+    ref verify_bitwise_xor_8_b_sum_2: QM31,
+    ref numerator_2: QM31,
+    ref verify_bitwise_xor_8_b_sum_3: QM31,
+    ref numerator_3: QM31,
+    ref sum: QM31,
+    random_coeff: QM31,
+) -> [QM31; 2] {
+    let [
+        xor_rot_32_r_16_input_limb_0,
+        xor_rot_32_r_16_input_limb_1,
+        xor_rot_32_r_16_input_limb_2,
+        xor_rot_32_r_16_input_limb_3,
+    ] =
+        input;
+    let split_16_low_part_size_8_output_tmp_813a9_1_limb_0: QM31 =
+        split_16_low_part_size_8_evaluate(
+        xor_rot_32_r_16_input_limb_0, ms_8_bits_col0, common_lookup_elements, ref sum, random_coeff,
+    );
+    let split_16_low_part_size_8_output_tmp_813a9_3_limb_0: QM31 =
+        split_16_low_part_size_8_evaluate(
+        xor_rot_32_r_16_input_limb_1, ms_8_bits_col1, common_lookup_elements, ref sum, random_coeff,
+    );
+    let split_16_low_part_size_8_output_tmp_813a9_5_limb_0: QM31 =
+        split_16_low_part_size_8_evaluate(
+        xor_rot_32_r_16_input_limb_2, ms_8_bits_col2, common_lookup_elements, ref sum, random_coeff,
+    );
+    let split_16_low_part_size_8_output_tmp_813a9_7_limb_0: QM31 =
+        split_16_low_part_size_8_evaluate(
+        xor_rot_32_r_16_input_limb_3, ms_8_bits_col3, common_lookup_elements, ref sum, random_coeff,
+    );
+    bitwise_xor_num_bits_8_evaluate(
+        [
+            split_16_low_part_size_8_output_tmp_813a9_1_limb_0,
+            split_16_low_part_size_8_output_tmp_813a9_5_limb_0,
+        ],
+        xor_col4,
+        common_lookup_elements,
+        ref verify_bitwise_xor_8_sum_0,
+        ref numerator_0,
+        ref sum,
+        random_coeff,
+    );
+    bitwise_xor_num_bits_8_evaluate(
+        [ms_8_bits_col0, ms_8_bits_col2],
+        xor_col5,
+        common_lookup_elements,
+        ref verify_bitwise_xor_8_sum_1,
+        ref numerator_1,
+        ref sum,
+        random_coeff,
+    );
+    bitwise_xor_num_bits_8_b_evaluate(
+        [
+            split_16_low_part_size_8_output_tmp_813a9_3_limb_0,
+            split_16_low_part_size_8_output_tmp_813a9_7_limb_0,
+        ],
+        xor_col6,
+        common_lookup_elements,
+        ref verify_bitwise_xor_8_b_sum_2,
+        ref numerator_2,
+        ref sum,
+        random_coeff,
+    );
+    bitwise_xor_num_bits_8_b_evaluate(
+        [ms_8_bits_col1, ms_8_bits_col3],
+        xor_col7,
+        common_lookup_elements,
+        ref verify_bitwise_xor_8_b_sum_3,
+        ref numerator_3,
+        ref sum,
+        random_coeff,
+    );
+    let xor_rot_16_output_tmp_813a9_16_limb_0: QM31 = (xor_col6
+        + (xor_col7 * qm31_const::<256, 0, 0, 0>()));
+    let xor_rot_16_output_tmp_813a9_16_limb_1: QM31 = (xor_col4
+        + (xor_col5 * qm31_const::<256, 0, 0, 0>()));
+
+    [xor_rot_16_output_tmp_813a9_16_limb_0, xor_rot_16_output_tmp_813a9_16_limb_1]
+}

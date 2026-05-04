@@ -17,4 +17,5 @@ pub use stwo_verifier_core::fields::qm31::{
 pub use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 pub use stwo_verifier_core::utils::{ArrayImpl, pow2};
 pub use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
+pub use crate::components::subroutines::*;
 pub use crate::preprocessed_columns::*;
