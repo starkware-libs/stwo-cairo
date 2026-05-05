@@ -60,7 +60,7 @@ fn test_fri_answers() {
         random_coeff,
         query_positions,
         query_evals,
-        col1_degree_bound,
+        col1_degree_bound + log_blowup_factor,
     );
     assert!(res.len() == 2);
     assert!(*res[0] == qm31_const::<1037270598, 1666156792, 1481464786, 376406587>());
@@ -148,7 +148,7 @@ fn test_fri_answers_with_1000_columns() {
         random_coeff,
         query_positions.span(),
         queried_values_per_tree,
-        log_degree_bound,
+        log_degree_bound + log_blowup_factor,
     );
 }
 
