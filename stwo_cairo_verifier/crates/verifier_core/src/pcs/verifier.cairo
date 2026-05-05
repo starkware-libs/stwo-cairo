@@ -107,17 +107,22 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         degree_bound_by_column: ColumnSpan<u32>,
         ref channel: Channel,
         log_blowup_factor: u32,
+        lifting_log_size: Option<u32>,
     ) {
         // Mix the commitment root into the Fiat-Shamir channel.
         channel.mix_commitment(commitment);
         let max_log_degree_bound = *degree_bound_by_column.max().unwrap_or_default();
+        let max_column_lde_log_size = log_blowup_factor + max_log_degree_bound;
+        let tree_height = lifting_log_size.unwrap_or(max_column_lde_log_size);
+        assert!(
+            max_column_lde_log_size <= tree_height,
+            "The lifting log size is smaller than the largest column.",
+        );
         self
             .trees
             .append(
                 MerkleVerifier {
-                    root: commitment,
-                    tree_height: log_blowup_factor + max_log_degree_bound,
-                    column_log_deg_bounds: degree_bound_by_column,
+                    root: commitment, tree_height, column_log_deg_bounds: degree_bound_by_column,
                 },
             );
     }
@@ -163,7 +168,9 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // Get FRI query positions.
         let queries = fri_verifier.sample_query_positions(ref channel);
         let query_positions = queries.positions;
-        let lifting_log_size = max_log_degree_bound + fri_config.log_blowup_factor;
+        let lifting_log_size = config
+            .lifting_log_size
+            .unwrap_or(max_log_degree_bound + fri_config.log_blowup_factor);
         // Verify Merkle decommitments.
         let mut tree_index = 0;
         for (tree, (queried_values, decommitment)) in zip_eq(
@@ -190,6 +197,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             query_positions,
             queried_values_per_tree,
             max_log_degree_bound,
+            lifting_log_size,
         );
 
         fri_verifier.decommit(queries, fri_answers);

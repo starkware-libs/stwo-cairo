@@ -220,10 +220,23 @@ pub fn verify_cairo(proof: CairoProof) {
     let expected_preprocessed_root = preprocessed_root(log_blowup_factor);
     assert!(preprocessed_commitment == expected_preprocessed_root);
     commitment_scheme
-        .commit(preprocessed_commitment, preprocessed_log_sizes, ref channel, log_blowup_factor);
+        .commit(
+            preprocessed_commitment,
+            preprocessed_log_sizes,
+            ref channel,
+            log_blowup_factor,
+            pcs_config.lifting_log_size,
+        );
     claim.mix_into(ref channel);
 
-    commitment_scheme.commit(trace_commitment, trace_log_sizes, ref channel, log_blowup_factor);
+    commitment_scheme
+        .commit(
+            trace_commitment,
+            trace_log_sizes,
+            ref channel,
+            log_blowup_factor,
+            pcs_config.lifting_log_size,
+        );
     assert!(
         channel.verify_pow_nonce(INTERACTION_POW_BITS, interaction_pow),
         "{}",
@@ -245,6 +258,7 @@ pub fn verify_cairo(proof: CairoProof) {
             interaction_trace_log_sizes,
             ref channel,
             log_blowup_factor,
+            pcs_config.lifting_log_size,
         );
 
     let trace_lde_log_size = get_trace_lde_log_size(@commitment_scheme.trees);
