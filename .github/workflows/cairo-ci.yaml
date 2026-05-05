@@ -155,6 +155,8 @@ jobs:
         working-directory: ./stwo_cairo_prover
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential
       - name: Install Rust toolchain
@@ -168,8 +170,16 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: stwo_cairo_prover
-      - run: cargo nextest run --cargo-profile witness-opt-1 --features=slow-tests -j ${{ env.NEXTTEST_THREADS }} -P ci
-      - run: cargo nextest run --cargo-profile witness-opt-1 --features=extract-mem-trace test_serialize_deserialize_mem_trace -j ${{ env.NEXTTEST_THREADS }} -P ci
+      - name: Run nextest (PR — diff-scoped)
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: origin/${{ github.base_ref }}
+        run: scripts/test_changed.py
+      - name: Run nextest (full)
+        if: github.event_name != 'pull_request'
+        run: |
+          cargo nextest run --cargo-profile witness-opt-1 --features=slow-tests -j ${{ env.NEXTTEST_THREADS }} -P ci
+          cargo nextest run --cargo-profile witness-opt-1 --features=extract-mem-trace test_serialize_deserialize_mem_trace -j ${{ env.NEXTTEST_THREADS }} -P ci
 
   cairo-prover-wasm:
     runs-on: ubuntu-latest
