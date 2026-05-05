@@ -8,6 +8,7 @@ fn test_security_bits() {
         fri_config: FriConfig {
             log_blowup_factor: 10, log_last_layer_degree_bound: 1, n_queries: 70, fold_step: 1,
         },
+        lifting_log_size: Option::None,
     };
     assert_eq!(config.security_bits(), 10 * 70 + 42);
 }

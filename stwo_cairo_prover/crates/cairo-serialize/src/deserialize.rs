@@ -148,9 +148,7 @@ impl CairoDeserialize for PcsConfig {
     fn deserialize<'a>(data: &mut impl Iterator<Item = &'a FieldElement>) -> Self {
         let pow_bits = u32::deserialize(data);
         let fri_config = FriConfig::deserialize(data);
-
-        // The cairo1 does not support fixed lifting log size in the PCS config.
-        let lifting_log_size = None;
+        let lifting_log_size = Option::<u32>::deserialize(data);
         PcsConfig {
             pow_bits,
             fri_config,
