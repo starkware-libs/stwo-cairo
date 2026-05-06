@@ -4,6 +4,7 @@ members = [
     "crates/cairo_air",
     "crates/cairo_verifier",
     "crates/cairo_verifier_mock",
+    "crates/circuit_air",
     "crates/constraint_framework",
     "crates/verifier_core",
     "crates/verifier_utils",
