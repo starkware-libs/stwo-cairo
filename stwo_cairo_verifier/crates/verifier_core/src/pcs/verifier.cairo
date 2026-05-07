@@ -107,17 +107,22 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         degree_bound_by_column: ColumnSpan<u32>,
         ref channel: Channel,
         log_blowup_factor: u32,
+        lifting_log_size: Option<u32>,
     ) {
         // Mix the commitment root into the Fiat-Shamir channel.
         channel.mix_commitment(commitment);
         let max_log_degree_bound = *degree_bound_by_column.max().unwrap_or_default();
+        let max_column_lde_log_size = log_blowup_factor + max_log_degree_bound;
+        let tree_height = lifting_log_size.unwrap_or(max_column_lde_log_size);
+        assert!(
+            max_column_lde_log_size <= tree_height,
+            "The lifting log size is smaller than the largest column.",
+        );
         self
             .trees
             .append(
                 MerkleVerifier {
-                    root: commitment,
-                    tree_height: log_blowup_factor + max_log_degree_bound,
-                    column_log_deg_bounds: degree_bound_by_column,
+                    root: commitment, tree_height, column_log_deg_bounds: degree_bound_by_column,
                 },
             );
     }
@@ -163,7 +168,9 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // Get FRI query positions.
         let queries = fri_verifier.sample_query_positions(ref channel);
         let query_positions = queries.positions;
-        let lifting_log_size = max_log_degree_bound + fri_config.log_blowup_factor;
+        let lifting_log_size = config
+            .lifting_log_size
+            .unwrap_or(max_log_degree_bound + fri_config.log_blowup_factor);
         // Verify Merkle decommitments.
         let mut tree_index = 0;
         for (tree, (queried_values, decommitment)) in zip_eq(
@@ -189,7 +196,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             random_coeff,
             query_positions,
             queried_values_per_tree,
-            max_log_degree_bound,
+            lifting_log_size,
         );
 
         fri_verifier.decommit(queries, fri_answers);
@@ -211,12 +218,17 @@ fn mix_sampled_values(sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>, ref chan
     channel.mix_felts(flattened_sampled_values.span());
 }
 
-/// Retrieves the trace LDE log size from the commitment scheme’s tree array.
+/// Retrieves the trace LDE log size from the commitment scheme’s tree array and the log blowup
+/// factor.
+///
+/// Derived from the trace and interaction trees' `column_log_deg_bounds` (not `tree_height`), so
+/// the result is the actual largest trace LDE log size regardless of any `lifting_log_size` set in
+/// the `PcsConfig` (which can lift `tree_height` above the LDE size).
 ///
 /// Marked with `#[inline(never)]` to avoid a const-folding bug in the compiler.
 #[inline(never)]
 pub fn get_trace_lde_log_size(
-    commitment_scheme_trees: @TreeArray<MerkleVerifier<MerkleHasher>>,
+    commitment_scheme_trees: @TreeArray<MerkleVerifier<MerkleHasher>>, log_blowup_factor: u32,
 ) -> u32 {
     let boxed_triplet: @Box<[MerkleVerifier<MerkleHasher>; 3]> = commitment_scheme_trees
         .span()
@@ -227,9 +239,13 @@ pub fn get_trace_lde_log_size(
         .as_snapshot()
         .unbox();
 
-    let trace_lde_log_size = *trace_merkle_verifier.tree_height;
-    assert!(trace_lde_log_size == *interaction_trace_merkle_verifier.tree_height);
-    trace_lde_log_size
+    let trace_max_log_deg_bound = *trace_merkle_verifier.column_log_deg_bounds.max().unwrap_or(@0);
+    let interaction_max_log_deg_bound = *interaction_trace_merkle_verifier
+        .column_log_deg_bounds
+        .max()
+        .unwrap_or(@0);
+    assert!(trace_max_log_deg_bound == interaction_max_log_deg_bound);
+    trace_max_log_deg_bound + log_blowup_factor
 }
 
 pub fn prepare_preprocessed_query_positions(

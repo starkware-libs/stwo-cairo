@@ -82,6 +82,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
                 .span(),
             ref channel,
             commitment_scheme_proof.config.fri_config.log_blowup_factor,
+            commitment_scheme_proof.config.lifting_log_size,
         );
 
     // Draw OOD point.
