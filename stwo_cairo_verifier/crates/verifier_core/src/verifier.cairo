@@ -41,7 +41,9 @@ pub trait Air<T> {
 ///
 /// - `proof`: the STARK proof to verify.
 /// - `air`: AIR instance defining the constraints for the statement being proven.
-/// - `composition_log_degree_bound`: log2 upper bound on the degree of the composition polynomial.
+/// -  log_degree_bound`: log2 upper bound on the degree of the of the trace after lifting.
+///    The log degree bound of the composition polynomial after the splitting must be less than or
+///    equal to this value.
 /// - `composition_commitment`: commitment to the composition polynomial sent by the prover.
 /// - `commitment_scheme`: verifier-side state for the polynomial commitment scheme used by the
 ///    proof, the commitment scheme already holds the commitments for the preprocessed trace, trace,
@@ -51,7 +53,7 @@ pub trait Air<T> {
 pub fn verify<A, +Air<A>, +Drop<A>>(
     proof: StarkProof,
     air: A,
-    composition_log_degree_bound: u32,
+    log_trace_degree_bound: u32,
     composition_commitment: Hash,
     mut commitment_scheme: CommitmentSchemeVerifier,
     ref channel: Channel,
@@ -70,16 +72,12 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     // The composition polynomial is defined as: Σ_i (composition_random_coeff^i * quotient_i).
     let composition_random_coeff = channel.draw_secure_felt();
 
-    let split_composition_log_degree_bound = composition_log_degree_bound
-        - LOG_COMPOSITION_SPLIT_FACTOR;
-
     // Read composition polynomial commitment, there are 8 columns, 4 columns for left,
     // and 4 columns for right, where composition(z) = left(z) + pi^{log_size-2} * right(z).
     commitment_scheme
         .commit(
             composition_commitment,
-            [split_composition_log_degree_bound; COMPOSITION_SPLIT_FACTOR * QM31_EXTENSION_DEGREE]
-                .span(),
+            [log_trace_degree_bound; COMPOSITION_SPLIT_FACTOR * QM31_EXTENSION_DEGREE].span(),
             ref channel,
             commitment_scheme_proof.config.fri_config.log_blowup_factor,
         );
@@ -90,7 +88,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     let sampled_oods_values = commitment_scheme_proof.sampled_values;
 
     let composition_oods_eval = try_extract_composition_eval(
-        sampled_oods_values, ood_point, composition_log_degree_bound,
+        sampled_oods_values, ood_point, log_trace_degree_bound,
     )
         .unwrap_or_else(
             || panic!("{}", VerificationError::InvalidStructure('Invalid sampled_values')),
@@ -102,7 +100,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
             ood_point, sampled_oods_values, composition_random_coeff,
         );
     // `max_trace_domain` is the largest domain of a trace polynomial (before LDE).
-    let max_trace_domain = CanonicCosetImpl::new(split_composition_log_degree_bound);
+    let max_trace_domain = CanonicCosetImpl::new(log_trace_degree_bound);
     let denominator_inv = max_trace_domain.eval_vanishing(ood_point).inverse();
     assert!(
         composition_oods_eval == numerator * denominator_inv,
@@ -111,9 +109,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     );
 
     commitment_scheme
-        .verify_values(
-            ood_point, commitment_scheme_proof, ref channel, split_composition_log_degree_bound,
-        );
+        .verify_values(ood_point, commitment_scheme_proof, ref channel, log_trace_degree_bound);
 }
 
 fn circle_double_x(x: QM31) -> QM31 {
@@ -133,7 +129,7 @@ fn repeated_circle_double_x(x: QM31, n: u32) -> QM31 {
 fn try_extract_composition_eval(
     mask: TreeSpan<ColumnSpan<Span<QM31>>>,
     oods_point: CirclePoint<QM31>,
-    composition_log_size: u32,
+    trace_log_degree_bound: u32,
 ) -> Option<QM31> {
     let cols = *mask.last()?;
     let [c0, c1, c2, c3, c4, c5, c6, c7]: [Span<QM31>; 8] = (*cols.try_into()?).unbox();
@@ -150,7 +146,7 @@ fn try_extract_composition_eval(
         QM31Trait::from_partial_evals([v0, v1, v2, v3]),
         QM31Trait::from_partial_evals([v4, v5, v6, v7]),
     ];
-    Some(left + repeated_circle_double_x(x: oods_point.x, n: composition_log_size - 2) * right)
+    Some(left + repeated_circle_double_x(x: oods_point.x, n: trace_log_degree_bound - 1) * right)
 }
 
 #[derive(Drop, Serde)]
