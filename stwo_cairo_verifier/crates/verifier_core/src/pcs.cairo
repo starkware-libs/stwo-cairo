@@ -21,16 +21,25 @@ mod verifier_test;
 pub struct PcsConfig {
     pub pow_bits: u32,
     pub fri_config: FriConfig,
+    /// An optional integer which controls the size of the lifting domain (this size includes the
+    /// `log_blowup_factor`). When specified, the verifier lifts all polynomials to the domain of
+    /// the given log size.
+    /// If `None`, the verifier lifts each tree's polynomials to the largest domain within that
+    /// tree.
+    /// (an implicit assumption here is that the largest domains are all of equal size across
+    /// trees, except possibly for the preprocessed tree).
+    pub lifting_log_size: Option<u32>,
 }
 #[generate_trait]
 pub impl PcsConfigImpl of PcsConfigTrait {
     fn mix_into(self: @PcsConfig, ref channel: Channel) {
-        let PcsConfig { pow_bits, fri_config } = self;
+        let PcsConfig { pow_bits, fri_config, lifting_log_size } = self;
         let FriConfig {
             log_blowup_factor, log_last_layer_degree_bound, n_queries, fold_step,
         } = fri_config;
 
         let zero = M31Zero::zero();
+        let lifting_log_size_m31 = (*lifting_log_size).unwrap_or(0).try_into().unwrap();
         channel
             .mix_felts(
                 array![
@@ -43,7 +52,7 @@ pub impl PcsConfigImpl of PcsConfigTrait {
                         ],
                     ),
                     QM31Trait::from_fixed_array(
-                        [(*fold_step).try_into().unwrap(), zero, zero, zero],
+                        [(*fold_step).try_into().unwrap(), lifting_log_size_m31, zero, zero],
                     ),
                 ]
                     .span(),
@@ -54,7 +63,7 @@ pub impl PcsConfigImpl of PcsConfigTrait {
         let PcsConfig {
             pow_bits, fri_config: FriConfig {
                 log_blowup_factor, log_last_layer_degree_bound: _, n_queries, fold_step: _,
-            },
+            }, lifting_log_size: _,
         } = self;
         *pow_bits + *log_blowup_factor * *n_queries
     }
