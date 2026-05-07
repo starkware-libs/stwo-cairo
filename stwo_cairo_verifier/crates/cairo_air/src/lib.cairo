@@ -248,16 +248,13 @@ pub fn verify_cairo(proof: CairoProof) {
         );
 
     let trace_lde_log_size = get_trace_lde_log_size(@commitment_scheme.trees);
-    let trace_log_size = trace_lde_log_size - pcs_config.fri_config.log_blowup_factor;
-    // The maximal constraint degree is 2, so the degree bound for the cairo air is the degree bound
-    // of the trace plus 1.
-    let cairo_air_log_degree_bound = trace_log_size + 1;
+    let trace_log_degree_bound = trace_lde_log_size - pcs_config.fri_config.log_blowup_factor;
     let cairo_air = CairoAirNewImpl::new(@claim, @common_lookup_elements, @interaction_claim);
 
     verify(
         stark_proof,
         cairo_air,
-        cairo_air_log_degree_bound,
+        trace_log_degree_bound,
         composition_commitment,
         commitment_scheme,
         ref channel,
