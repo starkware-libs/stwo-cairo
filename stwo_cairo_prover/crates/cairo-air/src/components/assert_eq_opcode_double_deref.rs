@@ -1,9 +1,10 @@
 // This file was created by the AIR team.
 
+use subroutines::decode_instruction_ed841::DecodeInstructionEd841;
+use subroutines::mem_verify_equal::MemVerifyEqual;
+use subroutines::read_positive_num_bits_29::ReadPositiveNumBits29;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_ed841::DecodeInstructionEd841;
-use crate::components::subroutines::mem_verify_equal::MemVerifyEqual;
-use crate::components::subroutines::read_positive_num_bits_29::ReadPositiveNumBits29;
 
 pub const N_TRACE_COLUMNS: usize = 19;
 pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
@@ -179,7 +180,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::ASSERT_EQ_OPCODE_DOUBLE_DEREF;
 
     #[test]
     fn assert_eq_opcode_double_deref_constraints_regression() {
@@ -193,9 +193,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        ASSERT_EQ_OPCODE_DOUBLE_DEREF.assert_debug_eq(&sum);
+        constraints_regression_test_values::ASSERT_EQ_OPCODE_DOUBLE_DEREF.assert_debug_eq(&sum);
     }
 }

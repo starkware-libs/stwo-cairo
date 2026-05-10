@@ -1,10 +1,11 @@
 // This file was created by the AIR team.
 
-use crate::components::prelude::*;
-use crate::components::subroutines::cond_range_check_2::CondRangeCheck2;
-use crate::components::subroutines::decode_small_sign::DecodeSmallSign;
+use subroutines::cond_range_check_2::CondRangeCheck2;
+use subroutines::decode_small_sign::DecodeSmallSign;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+use crate::components::prelude::*;
+
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct CondFelt252AsRelImm {}
 
 impl CondFelt252AsRelImm {

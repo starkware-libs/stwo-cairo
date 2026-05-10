@@ -1,10 +1,11 @@
 // This file was created by the AIR team.
 
-use crate::components::prelude::*;
-use crate::components::subroutines::read_id::ReadId;
-use crate::components::subroutines::read_positive_known_id_num_bits_36::ReadPositiveKnownIdNumBits36;
+use subroutines::read_id::ReadId;
+use subroutines::read_positive_known_id_num_bits_36::ReadPositiveKnownIdNumBits36;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+use crate::components::prelude::*;
+
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct ReadPositiveNumBits36 {}
 
 impl ReadPositiveNumBits36 {

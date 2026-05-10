@@ -1,9 +1,10 @@
 // This file was created by the AIR team.
 
-use crate::components::prelude::*;
-use crate::components::subroutines::read_positive_num_bits_144::ReadPositiveNumBits144;
+use subroutines::read_positive_num_bits_144::ReadPositiveNumBits144;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+use crate::components::prelude::*;
+
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Qm31ReadReduced {}
 
 impl Qm31ReadReduced {

@@ -1,11 +1,12 @@
 // This file was created by the AIR team.
 
-use crate::components::prelude::*;
-use crate::components::subroutines::cond_felt_252_as_addr::CondFelt252AsAddr;
-use crate::components::subroutines::cond_felt_252_as_rel_imm::CondFelt252AsRelImm;
-use crate::components::subroutines::range_check_29::RangeCheck29;
+use subroutines::cond_felt_252_as_addr::CondFelt252AsAddr;
+use subroutines::cond_felt_252_as_rel_imm::CondFelt252AsRelImm;
+use subroutines::range_check_29::RangeCheck29;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+use crate::components::prelude::*;
+
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct UpdateRegisters {}
 
 impl UpdateRegisters {

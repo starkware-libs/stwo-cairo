@@ -1,9 +1,10 @@
 // This file was created by the AIR team.
 
-use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_a1c8b::DecodeInstructionA1C8B;
+use subroutines::decode_instruction_a1c8b::DecodeInstructionA1C8B;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+use crate::components::prelude::*;
+
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct DecodeGenericInstruction {}
 
 impl DecodeGenericInstruction {

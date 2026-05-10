@@ -1,10 +1,11 @@
 // This file was created by the AIR team.
 
+use subroutines::decode_instruction_c630b::DecodeInstructionC630B;
+use subroutines::read_positive_num_bits_36::ReadPositiveNumBits36;
+use subroutines::read_positive_num_bits_72::ReadPositiveNumBits72;
+use subroutines::verify_mul_small::VerifyMulSmall;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_c630b::DecodeInstructionC630B;
-use crate::components::subroutines::read_positive_num_bits_36::ReadPositiveNumBits36;
-use crate::components::subroutines::read_positive_num_bits_72::ReadPositiveNumBits72;
-use crate::components::subroutines::verify_mul_small::VerifyMulSmall;
 
 pub const N_TRACE_COLUMNS: usize = 37;
 pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
@@ -250,7 +251,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::MUL_OPCODE_SMALL;
 
     #[test]
     fn mul_opcode_small_constraints_regression() {
@@ -264,9 +264,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        MUL_OPCODE_SMALL.assert_debug_eq(&sum);
+        constraints_regression_test_values::MUL_OPCODE_SMALL.assert_debug_eq(&sum);
     }
 }

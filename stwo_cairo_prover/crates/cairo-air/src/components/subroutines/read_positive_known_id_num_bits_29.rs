@@ -1,9 +1,10 @@
 // This file was created by the AIR team.
 
-use crate::components::prelude::*;
-use crate::components::subroutines::range_check_last_limb_bits_in_ms_limb_2::RangeCheckLastLimbBitsInMsLimb2;
+use subroutines::range_check_last_limb_bits_in_ms_limb_2::RangeCheckLastLimbBitsInMsLimb2;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+use crate::components::prelude::*;
+
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct ReadPositiveKnownIdNumBits29 {}
 
 impl ReadPositiveKnownIdNumBits29 {

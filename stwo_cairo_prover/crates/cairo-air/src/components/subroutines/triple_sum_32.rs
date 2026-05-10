@@ -1,9 +1,10 @@
 // This file was created by the AIR team.
 
-use crate::components::prelude::*;
-use crate::components::subroutines::verify_triple_sum_32::VerifyTripleSum32;
+use subroutines::verify_triple_sum_32::VerifyTripleSum32;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+use crate::components::prelude::*;
+
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct TripleSum32 {}
 
 impl TripleSum32 {
