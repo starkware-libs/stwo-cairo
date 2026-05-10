@@ -1,0 +1,129 @@
+// This file was created by the AIR team.
+
+use crate::components::subroutines::split_16_low_part_size_7::split_16_low_part_size_7_evaluate;
+use crate::components::subroutines::split_16_low_part_size_9::split_16_low_part_size_9_evaluate;
+use crate::prelude::*;
+
+
+pub fn verify_xor_rot_32_r_7_evaluate(
+    input: [QM31; 6],
+    ms_9_bits_col0: QM31,
+    ms_9_bits_col1: QM31,
+    ms_9_bits_col2: QM31,
+    ms_9_bits_col3: QM31,
+    ms_7_bits_col4: QM31,
+    ms_7_bits_col5: QM31,
+    common_lookup_elements: @CommonLookupElements,
+    ref verify_bitwise_xor_9_sum_0: QM31,
+    ref numerator_0: QM31,
+    ref verify_bitwise_xor_7_sum_1: QM31,
+    ref numerator_1: QM31,
+    ref verify_bitwise_xor_9_sum_2: QM31,
+    ref numerator_2: QM31,
+    ref verify_bitwise_xor_7_sum_3: QM31,
+    ref numerator_3: QM31,
+    ref sum: QM31,
+    random_coeff: QM31,
+) -> [QM31; 0] {
+    let [
+        verify_xor_rot_32_r_7_input_limb_0,
+        verify_xor_rot_32_r_7_input_limb_1,
+        verify_xor_rot_32_r_7_input_limb_2,
+        verify_xor_rot_32_r_7_input_limb_3,
+        verify_xor_rot_32_r_7_input_limb_4,
+        verify_xor_rot_32_r_7_input_limb_5,
+    ] =
+        input;
+    let split_16_low_part_size_7_output_tmp_f88f9_1_limb_0: QM31 =
+        split_16_low_part_size_7_evaluate(
+        verify_xor_rot_32_r_7_input_limb_0,
+        ms_9_bits_col0,
+        common_lookup_elements,
+        ref sum,
+        random_coeff,
+    );
+    let split_16_low_part_size_7_output_tmp_f88f9_3_limb_0: QM31 =
+        split_16_low_part_size_7_evaluate(
+        verify_xor_rot_32_r_7_input_limb_1,
+        ms_9_bits_col1,
+        common_lookup_elements,
+        ref sum,
+        random_coeff,
+    );
+    let split_16_low_part_size_7_output_tmp_f88f9_5_limb_0: QM31 =
+        split_16_low_part_size_7_evaluate(
+        verify_xor_rot_32_r_7_input_limb_2,
+        ms_9_bits_col2,
+        common_lookup_elements,
+        ref sum,
+        random_coeff,
+    );
+    let split_16_low_part_size_7_output_tmp_f88f9_7_limb_0: QM31 =
+        split_16_low_part_size_7_evaluate(
+        verify_xor_rot_32_r_7_input_limb_3,
+        ms_9_bits_col3,
+        common_lookup_elements,
+        ref sum,
+        random_coeff,
+    );
+    let split_16_low_part_size_9_output_tmp_f88f9_9_limb_0: QM31 =
+        split_16_low_part_size_9_evaluate(
+        verify_xor_rot_32_r_7_input_limb_4,
+        ms_7_bits_col4,
+        common_lookup_elements,
+        ref sum,
+        random_coeff,
+    );
+    let split_16_low_part_size_9_output_tmp_f88f9_11_limb_0: QM31 =
+        split_16_low_part_size_9_evaluate(
+        verify_xor_rot_32_r_7_input_limb_5,
+        ms_7_bits_col5,
+        common_lookup_elements,
+        ref sum,
+        random_coeff,
+    );
+
+    verify_bitwise_xor_9_sum_0 = common_lookup_elements
+        .combine_qm31(
+            [
+                qm31_const::<95781001, 0, 0, 0>(), ms_9_bits_col0, ms_9_bits_col2,
+                split_16_low_part_size_9_output_tmp_f88f9_9_limb_0,
+            ]
+                .span(),
+        );
+    numerator_0 = qm31_const::<1, 0, 0, 0>();
+
+    verify_bitwise_xor_7_sum_1 = common_lookup_elements
+        .combine_qm31(
+            [
+                qm31_const::<62225763, 0, 0, 0>(),
+                split_16_low_part_size_7_output_tmp_f88f9_3_limb_0,
+                split_16_low_part_size_7_output_tmp_f88f9_7_limb_0, ms_7_bits_col4,
+            ]
+                .span(),
+        );
+    numerator_1 = qm31_const::<1, 0, 0, 0>();
+
+    verify_bitwise_xor_9_sum_2 = common_lookup_elements
+        .combine_qm31(
+            [
+                qm31_const::<95781001, 0, 0, 0>(), ms_9_bits_col1, ms_9_bits_col3,
+                split_16_low_part_size_9_output_tmp_f88f9_11_limb_0,
+            ]
+                .span(),
+        );
+    numerator_2 = qm31_const::<1, 0, 0, 0>();
+
+    verify_bitwise_xor_7_sum_3 = common_lookup_elements
+        .combine_qm31(
+            [
+                qm31_const::<62225763, 0, 0, 0>(),
+                split_16_low_part_size_7_output_tmp_f88f9_1_limb_0,
+                split_16_low_part_size_7_output_tmp_f88f9_5_limb_0, ms_7_bits_col5,
+            ]
+                .span(),
+        );
+    numerator_3 = qm31_const::<1, 0, 0, 0>();
+
+    []
+}

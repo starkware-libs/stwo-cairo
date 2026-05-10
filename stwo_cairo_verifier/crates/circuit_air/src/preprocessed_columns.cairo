@@ -118,6 +118,24 @@ pub const BITWISE_XOR_12_0_IDX: PreprocessedColumnIdx = 60;
 pub const BITWISE_XOR_12_1_IDX: PreprocessedColumnIdx = 61;
 pub const BITWISE_XOR_12_2_IDX: PreprocessedColumnIdx = 62;
 
+pub const BLAKE_G_GATE_INPUT_ADDR_A_IDX: PreprocessedColumnIdx = INVALID_COLUMN_IDX;
+pub const BLAKE_G_GATE_INPUT_ADDR_B_IDX: PreprocessedColumnIdx = INVALID_COLUMN_IDX;
+pub const BLAKE_G_GATE_INPUT_ADDR_C_IDX: PreprocessedColumnIdx = INVALID_COLUMN_IDX;
+pub const BLAKE_G_GATE_INPUT_ADDR_D_IDX: PreprocessedColumnIdx = INVALID_COLUMN_IDX;
+pub const BLAKE_G_GATE_INPUT_ADDR_F_0_IDX: PreprocessedColumnIdx = INVALID_COLUMN_IDX;
+pub const BLAKE_G_GATE_INPUT_ADDR_F_1_IDX: PreprocessedColumnIdx = INVALID_COLUMN_IDX;
+pub const BLAKE_G_GATE_OUTPUT_ADDR_A_IDX: PreprocessedColumnIdx = INVALID_COLUMN_IDX;
+pub const BLAKE_G_GATE_OUTPUT_ADDR_B_IDX: PreprocessedColumnIdx = INVALID_COLUMN_IDX;
+pub const BLAKE_G_GATE_OUTPUT_ADDR_C_IDX: PreprocessedColumnIdx = INVALID_COLUMN_IDX;
+pub const BLAKE_G_GATE_OUTPUT_ADDR_D_IDX: PreprocessedColumnIdx = INVALID_COLUMN_IDX;
+pub const BLAKE_G_GATE_MULTIPLICITY_IDX: PreprocessedColumnIdx = INVALID_COLUMN_IDX;
+
+pub const TRIPLE_XOR_INPUT_ADDR_0_IDX: PreprocessedColumnIdx = INVALID_COLUMN_IDX;
+pub const TRIPLE_XOR_INPUT_ADDR_1_IDX: PreprocessedColumnIdx = INVALID_COLUMN_IDX;
+pub const TRIPLE_XOR_INPUT_ADDR_2_IDX: PreprocessedColumnIdx = INVALID_COLUMN_IDX;
+pub const TRIPLE_XOR_OUTPUT_ADDR_IDX: PreprocessedColumnIdx = INVALID_COLUMN_IDX;
+pub const TRIPLE_XOR_MULTIPLICITY_IDX: PreprocessedColumnIdx = INVALID_COLUMN_IDX;
+
 // Make sure INVALID_COLUMN_IDX is not the ID of any column
 const INVALID_IDX_CHECK: () = if NUM_PREPROCESSED_COLUMNS >= INVALID_COLUMN_IDX {
     core::panic_with_felt252('invalid idx too small')

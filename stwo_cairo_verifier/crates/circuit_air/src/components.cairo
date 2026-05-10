@@ -2,6 +2,7 @@
 // --cairo-constraints --source crates/compiled_circuit_air <json>`).
 
 pub mod blake_g;
+pub mod blake_g_gate;
 pub mod blake_gate;
 pub mod blake_output;
 pub mod blake_round;
@@ -13,6 +14,7 @@ pub mod range_check_15;
 pub mod range_check_16;
 pub mod sample_evaluations;
 pub mod subroutines;
+pub mod triple_xor;
 pub mod triple_xor_32;
 pub mod verify_bitwise_xor_12;
 pub mod verify_bitwise_xor_4;
