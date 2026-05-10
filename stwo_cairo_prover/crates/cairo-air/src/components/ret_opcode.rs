@@ -1,8 +1,9 @@
 // This file was created by the AIR team.
 
+use subroutines::decode_instruction_a4d88::DecodeInstructionA4D88;
+use subroutines::read_positive_num_bits_29::ReadPositiveNumBits29;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_a4d88::DecodeInstructionA4D88;
-use crate::components::subroutines::read_positive_num_bits_29::ReadPositiveNumBits29;
 
 pub const N_TRACE_COLUMNS: usize = 16;
 pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
@@ -156,7 +157,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::RET_OPCODE;
 
     #[test]
     fn ret_opcode_constraints_regression() {
@@ -170,9 +170,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        RET_OPCODE.assert_debug_eq(&sum);
+        constraints_regression_test_values::RET_OPCODE.assert_debug_eq(&sum);
     }
 }

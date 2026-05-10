@@ -2,7 +2,7 @@
 
 use crate::components::prelude::*;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone)]
 pub struct ReadPositiveKnownIdNumBits252 {}
 
 impl ReadPositiveKnownIdNumBits252 {

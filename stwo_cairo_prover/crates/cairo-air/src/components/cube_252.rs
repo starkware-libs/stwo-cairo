@@ -1,8 +1,9 @@
 // This file was created by the AIR team.
 
+use subroutines::felt_252_unpack_from_27_range_check_output::Felt252UnpackFrom27RangeCheckOutput;
+use subroutines::mul_252::Mul252;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::felt_252_unpack_from_27_range_check_output::Felt252UnpackFrom27RangeCheckOutput;
-use crate::components::subroutines::mul_252::Mul252;
 
 pub const N_TRACE_COLUMNS: usize = 141;
 pub const RELATION_USES_PER_ROW: [RelationUse; 16] = [
@@ -588,7 +589,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::CUBE_252;
 
     #[test]
     fn cube_252_constraints_regression() {
@@ -602,9 +602,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        CUBE_252.assert_debug_eq(&sum);
+        constraints_regression_test_values::CUBE_252.assert_debug_eq(&sum);
     }
 }

@@ -1,9 +1,10 @@
 // This file was created by the AIR team.
 
+use subroutines::decode_instruction_ad440::DecodeInstructionAd440;
+use subroutines::read_positive_num_bits_252::ReadPositiveNumBits252;
+use subroutines::read_small::ReadSmall;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_ad440::DecodeInstructionAd440;
-use crate::components::subroutines::read_positive_num_bits_252::ReadPositiveNumBits252;
-use crate::components::subroutines::read_small::ReadSmall;
 
 pub const N_TRACE_COLUMNS: usize = 47;
 pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
@@ -271,7 +272,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::JNZ_OPCODE_TAKEN;
 
     #[test]
     fn jnz_opcode_taken_constraints_regression() {
@@ -285,9 +285,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        JNZ_OPCODE_TAKEN.assert_debug_eq(&sum);
+        constraints_regression_test_values::JNZ_OPCODE_TAKEN.assert_debug_eq(&sum);
     }
 }

@@ -1,9 +1,10 @@
 // This file was created by the AIR team.
 
+use subroutines::bitwise_xor_num_bits_8::BitwiseXorNumBits8;
+use subroutines::bitwise_xor_num_bits_8_b::BitwiseXorNumBits8B;
+use subroutines::split_16_low_part_size_8::Split16LowPartSize8;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::bitwise_xor_num_bits_8::BitwiseXorNumBits8;
-use crate::components::subroutines::bitwise_xor_num_bits_8_b::BitwiseXorNumBits8B;
-use crate::components::subroutines::split_16_low_part_size_8::Split16LowPartSize8;
 
 pub const N_TRACE_COLUMNS: usize = 21;
 pub const RELATION_USES_PER_ROW: [RelationUse; 2] = [
@@ -224,7 +225,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::TRIPLE_XOR_32;
 
     #[test]
     fn triple_xor_32_constraints_regression() {
@@ -238,9 +238,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        TRIPLE_XOR_32.assert_debug_eq(&sum);
+        constraints_regression_test_values::TRIPLE_XOR_32.assert_debug_eq(&sum);
     }
 }
