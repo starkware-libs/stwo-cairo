@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_fe864::DecodeInstructionFe864;
+use crate::components::subroutines::decode_instruction_135e3::DecodeInstruction135E3;
 use crate::components::subroutines::mem_verify_equal::MemVerifyEqual;
 
 pub const N_TRACE_COLUMNS: usize = 12;
@@ -74,8 +74,8 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_fe864_output_tmp_d6f03_7_offset0, decode_instruction_fe864_output_tmp_d6f03_7_offset2, decode_instruction_fe864_output_tmp_d6f03_7_op1_base_ap] =
-            DecodeInstructionFe864::evaluate(
+        let [decode_instruction_135e3_output_tmp_36a9d_7_offset0, decode_instruction_135e3_output_tmp_36a9d_7_offset2, decode_instruction_135e3_output_tmp_36a9d_7_op1_base_ap] =
+            DecodeInstruction135E3::evaluate(
                 [input_pc_col0.clone()],
                 offset0_col3.clone(),
                 offset2_col4.clone(),
@@ -95,15 +95,15 @@ impl FrameworkEval for Eval {
         eval.add_constraint(
             (mem1_base_col9.clone()
                 - ((op1_base_fp_col6.clone() * input_fp_col2.clone())
-                    + (decode_instruction_fe864_output_tmp_d6f03_7_op1_base_ap.clone()
+                    + (decode_instruction_135e3_output_tmp_36a9d_7_op1_base_ap.clone()
                         * input_ap_col1.clone()))),
         );
         MemVerifyEqual::evaluate(
             [
                 (mem_dst_base_col8.clone()
-                    + decode_instruction_fe864_output_tmp_d6f03_7_offset0.clone()),
+                    + decode_instruction_135e3_output_tmp_36a9d_7_offset0.clone()),
                 (mem1_base_col9.clone()
-                    + decode_instruction_fe864_output_tmp_d6f03_7_offset2.clone()),
+                    + decode_instruction_135e3_output_tmp_36a9d_7_offset2.clone()),
             ],
             dst_id_col10.clone(),
             &self.common_lookup_elements,

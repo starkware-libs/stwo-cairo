@@ -1,6 +1,6 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::decode_instruction_9bd86::decode_instruction_9bd86_evaluate;
+use crate::components::subroutines::decode_instruction_11364::decode_instruction_11364_evaluate;
 use crate::components::subroutines::read_positive_num_bits_29::read_positive_num_bits_29_evaluate;
 use crate::prelude::*;
 
@@ -154,10 +154,10 @@ pub impl AirComponentImpl of AirComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         let [
-            decode_instruction_9bd86_output_tmp_22134_6_offset1,
-            decode_instruction_9bd86_output_tmp_22134_6_offset2,
+            decode_instruction_11364_output_tmp_b5a8f_6_offset1,
+            decode_instruction_11364_output_tmp_b5a8f_6_offset2,
         ] =
-            decode_instruction_9bd86_evaluate(
+            decode_instruction_11364_evaluate(
             input_pc_col0,
             offset1_col3,
             offset2_col4,
@@ -176,7 +176,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
                 + ((qm31_const::<1, 0, 0, 0>() - op0_base_fp_col5) * input_ap_col1))));
         sum = sum * random_coeff + constraint_quotient;
         read_positive_num_bits_29_evaluate(
-            (mem0_base_col7 + decode_instruction_9bd86_output_tmp_22134_6_offset1),
+            (mem0_base_col7 + decode_instruction_11364_output_tmp_b5a8f_6_offset1),
             mem1_base_id_col8,
             mem1_base_limb_0_col9,
             mem1_base_limb_1_col10,
@@ -195,7 +195,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ((((mem1_base_limb_0_col9 + (mem1_base_limb_1_col10 * qm31_const::<512, 0, 0, 0>()))
                 + (mem1_base_limb_2_col11 * qm31_const::<262144, 0, 0, 0>()))
                 + (mem1_base_limb_3_col12 * qm31_const::<134217728, 0, 0, 0>()))
-                + decode_instruction_9bd86_output_tmp_22134_6_offset2),
+                + decode_instruction_11364_output_tmp_b5a8f_6_offset2),
             next_pc_id_col14,
             next_pc_limb_0_col15,
             next_pc_limb_1_col16,

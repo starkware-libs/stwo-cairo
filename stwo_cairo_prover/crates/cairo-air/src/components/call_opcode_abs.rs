@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_f1edd::DecodeInstructionF1Edd;
+use crate::components::subroutines::decode_instruction_edfb6::DecodeInstructionEdfb6;
 use crate::components::subroutines::read_positive_num_bits_29::ReadPositiveNumBits29;
 
 pub const N_TRACE_COLUMNS: usize = 25;
@@ -95,8 +95,8 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_f1edd_output_tmp_32b66_4_offset2, decode_instruction_f1edd_output_tmp_32b66_4_op1_base_ap] =
-            DecodeInstructionF1Edd::evaluate(
+        let [decode_instruction_edfb6_output_tmp_46e76_4_offset2, decode_instruction_edfb6_output_tmp_46e76_4_op1_base_ap] =
+            DecodeInstructionEdfb6::evaluate(
                 [input_pc_col0.clone()],
                 offset2_col3.clone(),
                 op1_base_fp_col4.clone(),
@@ -145,12 +145,12 @@ impl FrameworkEval for Eval {
         eval.add_constraint(
             (mem1_base_col17.clone()
                 - ((op1_base_fp_col4.clone() * input_fp_col2.clone())
-                    + (decode_instruction_f1edd_output_tmp_32b66_4_op1_base_ap.clone()
+                    + (decode_instruction_edfb6_output_tmp_46e76_4_op1_base_ap.clone()
                         * input_ap_col1.clone()))),
         );
         ReadPositiveNumBits29::evaluate(
             [(mem1_base_col17.clone()
-                + decode_instruction_f1edd_output_tmp_32b66_4_offset2.clone())],
+                + decode_instruction_edfb6_output_tmp_46e76_4_offset2.clone())],
             next_pc_id_col18.clone(),
             next_pc_limb_0_col19.clone(),
             next_pc_limb_1_col20.clone(),

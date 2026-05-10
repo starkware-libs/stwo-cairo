@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_de75a::DecodeInstructionDe75A;
+use crate::components::subroutines::decode_instruction_ad440::DecodeInstructionAd440;
 use crate::components::subroutines::mem_verify::MemVerify;
 
 pub const N_TRACE_COLUMNS: usize = 9;
@@ -77,8 +77,8 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_de75a_output_tmp_e1597_5_offset0] =
-            DecodeInstructionDe75A::evaluate(
+        let [decode_instruction_ad440_output_tmp_59be2_5_offset0] =
+            DecodeInstructionAd440::evaluate(
                 [input_pc_col0.clone()],
                 offset0_col3.clone(),
                 dst_base_fp_col4.clone(),
@@ -95,7 +95,7 @@ impl FrameworkEval for Eval {
         MemVerify::evaluate(
             [
                 (mem_dst_base_col6.clone()
-                    + decode_instruction_de75a_output_tmp_e1597_5_offset0.clone()),
+                    + decode_instruction_ad440_output_tmp_59be2_5_offset0.clone()),
                 M31_0.clone(),
                 M31_0.clone(),
                 M31_0.clone(),

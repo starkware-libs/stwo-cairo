@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_cb32b::DecodeInstructionCb32B;
+use crate::components::subroutines::decode_instruction_ed841::DecodeInstructionEd841;
 use crate::components::subroutines::mem_verify_equal::MemVerifyEqual;
 use crate::components::subroutines::read_positive_num_bits_29::ReadPositiveNumBits29;
 
@@ -89,8 +89,8 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_cb32b_output_tmp_b1151_8_offset0, decode_instruction_cb32b_output_tmp_b1151_8_offset1, decode_instruction_cb32b_output_tmp_b1151_8_offset2] =
-            DecodeInstructionCb32B::evaluate(
+        let [decode_instruction_ed841_output_tmp_b7bfa_8_offset0, decode_instruction_ed841_output_tmp_b7bfa_8_offset1, decode_instruction_ed841_output_tmp_b7bfa_8_offset2] =
+            DecodeInstructionEd841::evaluate(
                 [input_pc_col0.clone()],
                 offset0_col3.clone(),
                 offset1_col4.clone(),
@@ -115,7 +115,7 @@ impl FrameworkEval for Eval {
         );
         ReadPositiveNumBits29::evaluate(
             [(mem0_base_col10.clone()
-                + decode_instruction_cb32b_output_tmp_b1151_8_offset1.clone())],
+                + decode_instruction_ed841_output_tmp_b7bfa_8_offset1.clone())],
             mem1_base_id_col11.clone(),
             mem1_base_limb_0_col12.clone(),
             mem1_base_limb_1_col13.clone(),
@@ -128,12 +128,12 @@ impl FrameworkEval for Eval {
         MemVerifyEqual::evaluate(
             [
                 (mem_dst_base_col9.clone()
-                    + decode_instruction_cb32b_output_tmp_b1151_8_offset0.clone()),
+                    + decode_instruction_ed841_output_tmp_b7bfa_8_offset0.clone()),
                 ((((mem1_base_limb_0_col12.clone()
                     + (mem1_base_limb_1_col13.clone() * M31_512.clone()))
                     + (mem1_base_limb_2_col14.clone() * M31_262144.clone()))
                     + (mem1_base_limb_3_col15.clone() * M31_134217728.clone()))
-                    + decode_instruction_cb32b_output_tmp_b1151_8_offset2.clone()),
+                    + decode_instruction_ed841_output_tmp_b7bfa_8_offset2.clone()),
             ],
             dst_id_col17.clone(),
             &self.common_lookup_elements,

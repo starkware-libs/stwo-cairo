@@ -21,7 +21,7 @@ impl VerifyTripleSum32 {
         let M31_2 = E::F::from(M31::from(2));
         let M31_32768 = E::F::from(M31::from(32768));
 
-        let carry_low_tmp_24c23_0 = eval.add_intermediate(
+        let carry_low_tmp_a7b7a_0 = eval.add_intermediate(
             ((((verify_triple_sum_32_input_limb_0.clone()
                 + verify_triple_sum_32_input_limb_2.clone())
                 + verify_triple_sum_32_input_limb_4.clone())
@@ -30,21 +30,21 @@ impl VerifyTripleSum32 {
         );
         // carry low is 0 or 1 or 2.
         eval.add_constraint(
-            ((carry_low_tmp_24c23_0.clone() * (carry_low_tmp_24c23_0.clone() - M31_1.clone()))
-                * (carry_low_tmp_24c23_0.clone() - M31_2.clone())),
+            ((carry_low_tmp_a7b7a_0.clone() * (carry_low_tmp_a7b7a_0.clone() - M31_1.clone()))
+                * (carry_low_tmp_a7b7a_0.clone() - M31_2.clone())),
         );
-        let carry_high_tmp_24c23_1 = eval.add_intermediate(
+        let carry_high_tmp_a7b7a_1 = eval.add_intermediate(
             (((((verify_triple_sum_32_input_limb_1.clone()
                 + verify_triple_sum_32_input_limb_3.clone())
                 + verify_triple_sum_32_input_limb_5.clone())
-                + carry_low_tmp_24c23_0.clone())
+                + carry_low_tmp_a7b7a_0.clone())
                 - verify_triple_sum_32_input_limb_7.clone())
                 * M31_32768.clone()),
         );
         // carry high is 0 or 1 or 2.
         eval.add_constraint(
-            ((carry_high_tmp_24c23_1.clone() * (carry_high_tmp_24c23_1.clone() - M31_1.clone()))
-                * (carry_high_tmp_24c23_1.clone() - M31_2.clone())),
+            ((carry_high_tmp_a7b7a_1.clone() * (carry_high_tmp_a7b7a_1.clone() - M31_1.clone()))
+                * (carry_high_tmp_a7b7a_1.clone() - M31_2.clone())),
         );
         []
     }

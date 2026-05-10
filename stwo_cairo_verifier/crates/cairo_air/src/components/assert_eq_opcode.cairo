@@ -1,6 +1,6 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::decode_instruction_fe864::decode_instruction_fe864_evaluate;
+use crate::components::subroutines::decode_instruction_135e3::decode_instruction_135e3_evaluate;
 use crate::components::subroutines::mem_verify_equal::mem_verify_equal_evaluate;
 use crate::prelude::*;
 
@@ -126,11 +126,11 @@ pub impl AirComponentImpl of AirComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         let [
-            decode_instruction_fe864_output_tmp_d6f03_7_offset0,
-            decode_instruction_fe864_output_tmp_d6f03_7_offset2,
-            decode_instruction_fe864_output_tmp_d6f03_7_op1_base_ap,
+            decode_instruction_135e3_output_tmp_36a9d_7_offset0,
+            decode_instruction_135e3_output_tmp_36a9d_7_offset2,
+            decode_instruction_135e3_output_tmp_36a9d_7_op1_base_ap,
         ] =
-            decode_instruction_fe864_evaluate(
+            decode_instruction_135e3_evaluate(
             input_pc_col0,
             offset0_col3,
             offset2_col4,
@@ -153,12 +153,12 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - mem1_base
         let constraint_quotient = ((mem1_base_col9
             - ((op1_base_fp_col6 * input_fp_col2)
-                + (decode_instruction_fe864_output_tmp_d6f03_7_op1_base_ap * input_ap_col1))));
+                + (decode_instruction_135e3_output_tmp_36a9d_7_op1_base_ap * input_ap_col1))));
         sum = sum * random_coeff + constraint_quotient;
         mem_verify_equal_evaluate(
             [
-                (mem_dst_base_col8 + decode_instruction_fe864_output_tmp_d6f03_7_offset0),
-                (mem1_base_col9 + decode_instruction_fe864_output_tmp_d6f03_7_offset2),
+                (mem_dst_base_col8 + decode_instruction_135e3_output_tmp_36a9d_7_offset0),
+                (mem1_base_col9 + decode_instruction_135e3_output_tmp_36a9d_7_offset2),
             ],
             dst_id_col10,
             self.common_lookup_elements,

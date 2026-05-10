@@ -370,13 +370,13 @@ pub fn poseidon_hades_permutation_evaluate(
         ref sum,
         random_coeff,
     );
-    let poseidon_full_round_chain_chain_tmp_tmp_7d028_63: QM31 = (seq * qm31_const::<2, 0, 0, 0>());
+    let poseidon_full_round_chain_chain_tmp_tmp_da3c7_63: QM31 = (seq * qm31_const::<2, 0, 0, 0>());
 
     poseidon_full_round_chain_sum_0 = common_lookup_elements
         .combine_qm31(
             [
                 qm31_const::<1480369132, 0, 0, 0>(),
-                poseidon_full_round_chain_chain_tmp_tmp_7d028_63, qm31_const::<0, 0, 0, 0>(),
+                poseidon_full_round_chain_chain_tmp_tmp_da3c7_63, qm31_const::<0, 0, 0, 0>(),
                 combination_limb_0_col0, combination_limb_1_col1, combination_limb_2_col2,
                 combination_limb_3_col3, combination_limb_4_col4, combination_limb_5_col5,
                 combination_limb_6_col6, combination_limb_7_col7, combination_limb_8_col8,
@@ -396,7 +396,7 @@ pub fn poseidon_hades_permutation_evaluate(
         .combine_qm31(
             [
                 qm31_const::<1480369132, 0, 0, 0>(),
-                poseidon_full_round_chain_chain_tmp_tmp_7d028_63, qm31_const::<4, 0, 0, 0>(),
+                poseidon_full_round_chain_chain_tmp_tmp_da3c7_63, qm31_const::<4, 0, 0, 0>(),
                 poseidon_full_round_chain_output_limb_0_col33,
                 poseidon_full_round_chain_output_limb_1_col34,
                 poseidon_full_round_chain_output_limb_2_col35,
@@ -794,15 +794,15 @@ pub fn poseidon_hades_permutation_evaluate(
         ref sum,
         random_coeff,
     );
-    let poseidon_full_round_chain_chain_id_tmp_7d028_146: QM31 =
-        (poseidon_full_round_chain_chain_tmp_tmp_7d028_63
+    let poseidon_full_round_chain_chain_id_tmp_da3c7_146: QM31 =
+        (poseidon_full_round_chain_chain_tmp_tmp_da3c7_63
         + qm31_const::<1, 0, 0, 0>());
 
     poseidon_full_round_chain_sum_19 = common_lookup_elements
         .combine_qm31(
             [
                 qm31_const::<1480369132, 0, 0, 0>(),
-                poseidon_full_round_chain_chain_id_tmp_7d028_146, qm31_const::<31, 0, 0, 0>(),
+                poseidon_full_round_chain_chain_id_tmp_da3c7_146, qm31_const::<31, 0, 0, 0>(),
                 combination_limb_0_col156, combination_limb_1_col157, combination_limb_2_col158,
                 combination_limb_3_col159, combination_limb_4_col160, combination_limb_5_col161,
                 combination_limb_6_col162, combination_limb_7_col163, combination_limb_8_col164,
@@ -829,7 +829,7 @@ pub fn poseidon_hades_permutation_evaluate(
         .combine_qm31(
             [
                 qm31_const::<1480369132, 0, 0, 0>(),
-                poseidon_full_round_chain_chain_id_tmp_7d028_146, qm31_const::<35, 0, 0, 0>(),
+                poseidon_full_round_chain_chain_id_tmp_da3c7_146, qm31_const::<35, 0, 0, 0>(),
                 poseidon_full_round_chain_output_limb_0_col167,
                 poseidon_full_round_chain_output_limb_1_col168,
                 poseidon_full_round_chain_output_limb_2_col169,

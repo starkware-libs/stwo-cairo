@@ -142,7 +142,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        let [encode_offsets_output_tmp_16a4f_8_limb_1, encode_offsets_output_tmp_16a4f_8_limb_3] =
+        let [encode_offsets_output_tmp_40a8f_8_limb_1, encode_offsets_output_tmp_40a8f_8_limb_3] =
             encode_offsets_evaluate(
             [input_offset0_col1, input_offset1_col2, input_offset2_col3],
             offset0_low_col7,
@@ -163,8 +163,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         mem_verify_evaluate(
             [
-                input_pc_col0, offset0_low_col7, encode_offsets_output_tmp_16a4f_8_limb_1,
-                offset1_mid_col10, encode_offsets_output_tmp_16a4f_8_limb_3, offset2_mid_col13,
+                input_pc_col0, offset0_low_col7, encode_offsets_output_tmp_40a8f_8_limb_1,
+                offset1_mid_col10, encode_offsets_output_tmp_40a8f_8_limb_3, offset2_mid_col13,
                 (offset2_high_col14 + input_inst_felt5_high_col4), input_inst_felt6_col5,
                 input_opcode_extension_col6, qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
                 qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),

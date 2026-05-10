@@ -980,35 +980,35 @@ pub fn ec_double_evaluate(
         ref sum,
         random_coeff,
     );
-    let numerator_0_tmp_63f6c_36: QM31 = ((qm31_const::<3, 0, 0, 0>() * mul_res_limb_0_col0)
+    let numerator_0_tmp_abe44_36: QM31 = ((qm31_const::<3, 0, 0, 0>() * mul_res_limb_0_col0)
         + qm31_const::<1, 0, 0, 0>());
-    let numerator_1_tmp_63f6c_37: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_1_col1);
-    let numerator_2_tmp_63f6c_38: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_2_col2);
-    let numerator_3_tmp_63f6c_39: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_3_col3);
-    let numerator_4_tmp_63f6c_40: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_4_col4);
-    let numerator_5_tmp_63f6c_41: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_5_col5);
-    let numerator_6_tmp_63f6c_42: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_6_col6);
-    let numerator_7_tmp_63f6c_43: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_7_col7);
-    let numerator_8_tmp_63f6c_44: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_8_col8);
-    let numerator_9_tmp_63f6c_45: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_9_col9);
-    let numerator_10_tmp_63f6c_46: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_10_col10);
-    let numerator_11_tmp_63f6c_47: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_11_col11);
-    let numerator_12_tmp_63f6c_48: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_12_col12);
-    let numerator_13_tmp_63f6c_49: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_13_col13);
-    let numerator_14_tmp_63f6c_50: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_14_col14);
-    let numerator_15_tmp_63f6c_51: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_15_col15);
-    let numerator_16_tmp_63f6c_52: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_16_col16);
-    let numerator_17_tmp_63f6c_53: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_17_col17);
-    let numerator_18_tmp_63f6c_54: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_18_col18);
-    let numerator_19_tmp_63f6c_55: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_19_col19);
-    let numerator_20_tmp_63f6c_56: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_20_col20);
-    let numerator_21_tmp_63f6c_57: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_21_col21);
-    let numerator_22_tmp_63f6c_58: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_22_col22);
-    let numerator_23_tmp_63f6c_59: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_23_col23);
-    let numerator_24_tmp_63f6c_60: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_24_col24);
-    let numerator_25_tmp_63f6c_61: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_25_col25);
-    let numerator_26_tmp_63f6c_62: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_26_col26);
-    let numerator_27_tmp_63f6c_63: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_27_col27);
+    let numerator_1_tmp_abe44_37: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_1_col1);
+    let numerator_2_tmp_abe44_38: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_2_col2);
+    let numerator_3_tmp_abe44_39: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_3_col3);
+    let numerator_4_tmp_abe44_40: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_4_col4);
+    let numerator_5_tmp_abe44_41: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_5_col5);
+    let numerator_6_tmp_abe44_42: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_6_col6);
+    let numerator_7_tmp_abe44_43: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_7_col7);
+    let numerator_8_tmp_abe44_44: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_8_col8);
+    let numerator_9_tmp_abe44_45: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_9_col9);
+    let numerator_10_tmp_abe44_46: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_10_col10);
+    let numerator_11_tmp_abe44_47: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_11_col11);
+    let numerator_12_tmp_abe44_48: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_12_col12);
+    let numerator_13_tmp_abe44_49: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_13_col13);
+    let numerator_14_tmp_abe44_50: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_14_col14);
+    let numerator_15_tmp_abe44_51: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_15_col15);
+    let numerator_16_tmp_abe44_52: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_16_col16);
+    let numerator_17_tmp_abe44_53: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_17_col17);
+    let numerator_18_tmp_abe44_54: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_18_col18);
+    let numerator_19_tmp_abe44_55: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_19_col19);
+    let numerator_20_tmp_abe44_56: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_20_col20);
+    let numerator_21_tmp_abe44_57: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_21_col21);
+    let numerator_22_tmp_abe44_58: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_22_col22);
+    let numerator_23_tmp_abe44_59: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_23_col23);
+    let numerator_24_tmp_abe44_60: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_24_col24);
+    let numerator_25_tmp_abe44_61: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_25_col25);
+    let numerator_26_tmp_abe44_62: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_26_col26);
+    let numerator_27_tmp_abe44_63: QM31 = (qm31_const::<3, 0, 0, 0>() * mul_res_limb_27_col27);
     verify_mul_252_evaluate(
         [
             slope_limb_0_col85, slope_limb_1_col86, slope_limb_2_col87, slope_limb_3_col88,
@@ -1026,16 +1026,16 @@ pub fn ec_double_evaluate(
             add_res_limb_17_col73, add_res_limb_18_col74, add_res_limb_19_col75,
             add_res_limb_20_col76, add_res_limb_21_col77, add_res_limb_22_col78,
             add_res_limb_23_col79, add_res_limb_24_col80, add_res_limb_25_col81,
-            add_res_limb_26_col82, add_res_limb_27_col83, numerator_0_tmp_63f6c_36,
-            numerator_1_tmp_63f6c_37, numerator_2_tmp_63f6c_38, numerator_3_tmp_63f6c_39,
-            numerator_4_tmp_63f6c_40, numerator_5_tmp_63f6c_41, numerator_6_tmp_63f6c_42,
-            numerator_7_tmp_63f6c_43, numerator_8_tmp_63f6c_44, numerator_9_tmp_63f6c_45,
-            numerator_10_tmp_63f6c_46, numerator_11_tmp_63f6c_47, numerator_12_tmp_63f6c_48,
-            numerator_13_tmp_63f6c_49, numerator_14_tmp_63f6c_50, numerator_15_tmp_63f6c_51,
-            numerator_16_tmp_63f6c_52, numerator_17_tmp_63f6c_53, numerator_18_tmp_63f6c_54,
-            numerator_19_tmp_63f6c_55, numerator_20_tmp_63f6c_56, numerator_21_tmp_63f6c_57,
-            numerator_22_tmp_63f6c_58, numerator_23_tmp_63f6c_59, numerator_24_tmp_63f6c_60,
-            numerator_25_tmp_63f6c_61, numerator_26_tmp_63f6c_62, numerator_27_tmp_63f6c_63,
+            add_res_limb_26_col82, add_res_limb_27_col83, numerator_0_tmp_abe44_36,
+            numerator_1_tmp_abe44_37, numerator_2_tmp_abe44_38, numerator_3_tmp_abe44_39,
+            numerator_4_tmp_abe44_40, numerator_5_tmp_abe44_41, numerator_6_tmp_abe44_42,
+            numerator_7_tmp_abe44_43, numerator_8_tmp_abe44_44, numerator_9_tmp_abe44_45,
+            numerator_10_tmp_abe44_46, numerator_11_tmp_abe44_47, numerator_12_tmp_abe44_48,
+            numerator_13_tmp_abe44_49, numerator_14_tmp_abe44_50, numerator_15_tmp_abe44_51,
+            numerator_16_tmp_abe44_52, numerator_17_tmp_abe44_53, numerator_18_tmp_abe44_54,
+            numerator_19_tmp_abe44_55, numerator_20_tmp_abe44_56, numerator_21_tmp_abe44_57,
+            numerator_22_tmp_abe44_58, numerator_23_tmp_abe44_59, numerator_24_tmp_abe44_60,
+            numerator_25_tmp_abe44_61, numerator_26_tmp_abe44_62, numerator_27_tmp_abe44_63,
         ],
         k_col113,
         carry_0_col114,
@@ -1170,61 +1170,61 @@ pub fn ec_double_evaluate(
         ref sum,
         random_coeff,
     );
-    let x_sum_0_tmp_63f6c_86: QM31 = ((ec_double_input_x_limb_0 + ec_double_input_x_limb_0)
+    let x_sum_0_tmp_abe44_86: QM31 = ((ec_double_input_x_limb_0 + ec_double_input_x_limb_0)
         + result_x_limb_0_col141);
-    let x_sum_1_tmp_63f6c_87: QM31 = ((ec_double_input_x_limb_1 + ec_double_input_x_limb_1)
+    let x_sum_1_tmp_abe44_87: QM31 = ((ec_double_input_x_limb_1 + ec_double_input_x_limb_1)
         + result_x_limb_1_col142);
-    let x_sum_2_tmp_63f6c_88: QM31 = ((ec_double_input_x_limb_2 + ec_double_input_x_limb_2)
+    let x_sum_2_tmp_abe44_88: QM31 = ((ec_double_input_x_limb_2 + ec_double_input_x_limb_2)
         + result_x_limb_2_col143);
-    let x_sum_3_tmp_63f6c_89: QM31 = ((ec_double_input_x_limb_3 + ec_double_input_x_limb_3)
+    let x_sum_3_tmp_abe44_89: QM31 = ((ec_double_input_x_limb_3 + ec_double_input_x_limb_3)
         + result_x_limb_3_col144);
-    let x_sum_4_tmp_63f6c_90: QM31 = ((ec_double_input_x_limb_4 + ec_double_input_x_limb_4)
+    let x_sum_4_tmp_abe44_90: QM31 = ((ec_double_input_x_limb_4 + ec_double_input_x_limb_4)
         + result_x_limb_4_col145);
-    let x_sum_5_tmp_63f6c_91: QM31 = ((ec_double_input_x_limb_5 + ec_double_input_x_limb_5)
+    let x_sum_5_tmp_abe44_91: QM31 = ((ec_double_input_x_limb_5 + ec_double_input_x_limb_5)
         + result_x_limb_5_col146);
-    let x_sum_6_tmp_63f6c_92: QM31 = ((ec_double_input_x_limb_6 + ec_double_input_x_limb_6)
+    let x_sum_6_tmp_abe44_92: QM31 = ((ec_double_input_x_limb_6 + ec_double_input_x_limb_6)
         + result_x_limb_6_col147);
-    let x_sum_7_tmp_63f6c_93: QM31 = ((ec_double_input_x_limb_7 + ec_double_input_x_limb_7)
+    let x_sum_7_tmp_abe44_93: QM31 = ((ec_double_input_x_limb_7 + ec_double_input_x_limb_7)
         + result_x_limb_7_col148);
-    let x_sum_8_tmp_63f6c_94: QM31 = ((ec_double_input_x_limb_8 + ec_double_input_x_limb_8)
+    let x_sum_8_tmp_abe44_94: QM31 = ((ec_double_input_x_limb_8 + ec_double_input_x_limb_8)
         + result_x_limb_8_col149);
-    let x_sum_9_tmp_63f6c_95: QM31 = ((ec_double_input_x_limb_9 + ec_double_input_x_limb_9)
+    let x_sum_9_tmp_abe44_95: QM31 = ((ec_double_input_x_limb_9 + ec_double_input_x_limb_9)
         + result_x_limb_9_col150);
-    let x_sum_10_tmp_63f6c_96: QM31 = ((ec_double_input_x_limb_10 + ec_double_input_x_limb_10)
+    let x_sum_10_tmp_abe44_96: QM31 = ((ec_double_input_x_limb_10 + ec_double_input_x_limb_10)
         + result_x_limb_10_col151);
-    let x_sum_11_tmp_63f6c_97: QM31 = ((ec_double_input_x_limb_11 + ec_double_input_x_limb_11)
+    let x_sum_11_tmp_abe44_97: QM31 = ((ec_double_input_x_limb_11 + ec_double_input_x_limb_11)
         + result_x_limb_11_col152);
-    let x_sum_12_tmp_63f6c_98: QM31 = ((ec_double_input_x_limb_12 + ec_double_input_x_limb_12)
+    let x_sum_12_tmp_abe44_98: QM31 = ((ec_double_input_x_limb_12 + ec_double_input_x_limb_12)
         + result_x_limb_12_col153);
-    let x_sum_13_tmp_63f6c_99: QM31 = ((ec_double_input_x_limb_13 + ec_double_input_x_limb_13)
+    let x_sum_13_tmp_abe44_99: QM31 = ((ec_double_input_x_limb_13 + ec_double_input_x_limb_13)
         + result_x_limb_13_col154);
-    let x_sum_14_tmp_63f6c_100: QM31 = ((ec_double_input_x_limb_14 + ec_double_input_x_limb_14)
+    let x_sum_14_tmp_abe44_100: QM31 = ((ec_double_input_x_limb_14 + ec_double_input_x_limb_14)
         + result_x_limb_14_col155);
-    let x_sum_15_tmp_63f6c_101: QM31 = ((ec_double_input_x_limb_15 + ec_double_input_x_limb_15)
+    let x_sum_15_tmp_abe44_101: QM31 = ((ec_double_input_x_limb_15 + ec_double_input_x_limb_15)
         + result_x_limb_15_col156);
-    let x_sum_16_tmp_63f6c_102: QM31 = ((ec_double_input_x_limb_16 + ec_double_input_x_limb_16)
+    let x_sum_16_tmp_abe44_102: QM31 = ((ec_double_input_x_limb_16 + ec_double_input_x_limb_16)
         + result_x_limb_16_col157);
-    let x_sum_17_tmp_63f6c_103: QM31 = ((ec_double_input_x_limb_17 + ec_double_input_x_limb_17)
+    let x_sum_17_tmp_abe44_103: QM31 = ((ec_double_input_x_limb_17 + ec_double_input_x_limb_17)
         + result_x_limb_17_col158);
-    let x_sum_18_tmp_63f6c_104: QM31 = ((ec_double_input_x_limb_18 + ec_double_input_x_limb_18)
+    let x_sum_18_tmp_abe44_104: QM31 = ((ec_double_input_x_limb_18 + ec_double_input_x_limb_18)
         + result_x_limb_18_col159);
-    let x_sum_19_tmp_63f6c_105: QM31 = ((ec_double_input_x_limb_19 + ec_double_input_x_limb_19)
+    let x_sum_19_tmp_abe44_105: QM31 = ((ec_double_input_x_limb_19 + ec_double_input_x_limb_19)
         + result_x_limb_19_col160);
-    let x_sum_20_tmp_63f6c_106: QM31 = ((ec_double_input_x_limb_20 + ec_double_input_x_limb_20)
+    let x_sum_20_tmp_abe44_106: QM31 = ((ec_double_input_x_limb_20 + ec_double_input_x_limb_20)
         + result_x_limb_20_col161);
-    let x_sum_21_tmp_63f6c_107: QM31 = ((ec_double_input_x_limb_21 + ec_double_input_x_limb_21)
+    let x_sum_21_tmp_abe44_107: QM31 = ((ec_double_input_x_limb_21 + ec_double_input_x_limb_21)
         + result_x_limb_21_col162);
-    let x_sum_22_tmp_63f6c_108: QM31 = ((ec_double_input_x_limb_22 + ec_double_input_x_limb_22)
+    let x_sum_22_tmp_abe44_108: QM31 = ((ec_double_input_x_limb_22 + ec_double_input_x_limb_22)
         + result_x_limb_22_col163);
-    let x_sum_23_tmp_63f6c_109: QM31 = ((ec_double_input_x_limb_23 + ec_double_input_x_limb_23)
+    let x_sum_23_tmp_abe44_109: QM31 = ((ec_double_input_x_limb_23 + ec_double_input_x_limb_23)
         + result_x_limb_23_col164);
-    let x_sum_24_tmp_63f6c_110: QM31 = ((ec_double_input_x_limb_24 + ec_double_input_x_limb_24)
+    let x_sum_24_tmp_abe44_110: QM31 = ((ec_double_input_x_limb_24 + ec_double_input_x_limb_24)
         + result_x_limb_24_col165);
-    let x_sum_25_tmp_63f6c_111: QM31 = ((ec_double_input_x_limb_25 + ec_double_input_x_limb_25)
+    let x_sum_25_tmp_abe44_111: QM31 = ((ec_double_input_x_limb_25 + ec_double_input_x_limb_25)
         + result_x_limb_25_col166);
-    let x_sum_26_tmp_63f6c_112: QM31 = ((ec_double_input_x_limb_26 + ec_double_input_x_limb_26)
+    let x_sum_26_tmp_abe44_112: QM31 = ((ec_double_input_x_limb_26 + ec_double_input_x_limb_26)
         + result_x_limb_26_col167);
-    let x_sum_27_tmp_63f6c_113: QM31 = ((ec_double_input_x_limb_27 + ec_double_input_x_limb_27)
+    let x_sum_27_tmp_abe44_113: QM31 = ((ec_double_input_x_limb_27 + ec_double_input_x_limb_27)
         + result_x_limb_27_col168);
     verify_mul_252_evaluate(
         [
@@ -1242,15 +1242,15 @@ pub fn ec_double_evaluate(
             slope_limb_16_col101, slope_limb_17_col102, slope_limb_18_col103, slope_limb_19_col104,
             slope_limb_20_col105, slope_limb_21_col106, slope_limb_22_col107, slope_limb_23_col108,
             slope_limb_24_col109, slope_limb_25_col110, slope_limb_26_col111, slope_limb_27_col112,
-            x_sum_0_tmp_63f6c_86, x_sum_1_tmp_63f6c_87, x_sum_2_tmp_63f6c_88, x_sum_3_tmp_63f6c_89,
-            x_sum_4_tmp_63f6c_90, x_sum_5_tmp_63f6c_91, x_sum_6_tmp_63f6c_92, x_sum_7_tmp_63f6c_93,
-            x_sum_8_tmp_63f6c_94, x_sum_9_tmp_63f6c_95, x_sum_10_tmp_63f6c_96,
-            x_sum_11_tmp_63f6c_97, x_sum_12_tmp_63f6c_98, x_sum_13_tmp_63f6c_99,
-            x_sum_14_tmp_63f6c_100, x_sum_15_tmp_63f6c_101, x_sum_16_tmp_63f6c_102,
-            x_sum_17_tmp_63f6c_103, x_sum_18_tmp_63f6c_104, x_sum_19_tmp_63f6c_105,
-            x_sum_20_tmp_63f6c_106, x_sum_21_tmp_63f6c_107, x_sum_22_tmp_63f6c_108,
-            x_sum_23_tmp_63f6c_109, x_sum_24_tmp_63f6c_110, x_sum_25_tmp_63f6c_111,
-            x_sum_26_tmp_63f6c_112, x_sum_27_tmp_63f6c_113,
+            x_sum_0_tmp_abe44_86, x_sum_1_tmp_abe44_87, x_sum_2_tmp_abe44_88, x_sum_3_tmp_abe44_89,
+            x_sum_4_tmp_abe44_90, x_sum_5_tmp_abe44_91, x_sum_6_tmp_abe44_92, x_sum_7_tmp_abe44_93,
+            x_sum_8_tmp_abe44_94, x_sum_9_tmp_abe44_95, x_sum_10_tmp_abe44_96,
+            x_sum_11_tmp_abe44_97, x_sum_12_tmp_abe44_98, x_sum_13_tmp_abe44_99,
+            x_sum_14_tmp_abe44_100, x_sum_15_tmp_abe44_101, x_sum_16_tmp_abe44_102,
+            x_sum_17_tmp_abe44_103, x_sum_18_tmp_abe44_104, x_sum_19_tmp_abe44_105,
+            x_sum_20_tmp_abe44_106, x_sum_21_tmp_abe44_107, x_sum_22_tmp_abe44_108,
+            x_sum_23_tmp_abe44_109, x_sum_24_tmp_abe44_110, x_sum_25_tmp_abe44_111,
+            x_sum_26_tmp_abe44_112, x_sum_27_tmp_abe44_113,
         ],
         k_col169,
         carry_0_col170,
@@ -1385,62 +1385,62 @@ pub fn ec_double_evaluate(
         ref sum,
         random_coeff,
     );
-    let x_diff_0_tmp_63f6c_136: QM31 = (ec_double_input_x_limb_0 - result_x_limb_0_col141);
-    let x_diff_1_tmp_63f6c_137: QM31 = (ec_double_input_x_limb_1 - result_x_limb_1_col142);
-    let x_diff_2_tmp_63f6c_138: QM31 = (ec_double_input_x_limb_2 - result_x_limb_2_col143);
-    let x_diff_3_tmp_63f6c_139: QM31 = (ec_double_input_x_limb_3 - result_x_limb_3_col144);
-    let x_diff_4_tmp_63f6c_140: QM31 = (ec_double_input_x_limb_4 - result_x_limb_4_col145);
-    let x_diff_5_tmp_63f6c_141: QM31 = (ec_double_input_x_limb_5 - result_x_limb_5_col146);
-    let x_diff_6_tmp_63f6c_142: QM31 = (ec_double_input_x_limb_6 - result_x_limb_6_col147);
-    let x_diff_7_tmp_63f6c_143: QM31 = (ec_double_input_x_limb_7 - result_x_limb_7_col148);
-    let x_diff_8_tmp_63f6c_144: QM31 = (ec_double_input_x_limb_8 - result_x_limb_8_col149);
-    let x_diff_9_tmp_63f6c_145: QM31 = (ec_double_input_x_limb_9 - result_x_limb_9_col150);
-    let x_diff_10_tmp_63f6c_146: QM31 = (ec_double_input_x_limb_10 - result_x_limb_10_col151);
-    let x_diff_11_tmp_63f6c_147: QM31 = (ec_double_input_x_limb_11 - result_x_limb_11_col152);
-    let x_diff_12_tmp_63f6c_148: QM31 = (ec_double_input_x_limb_12 - result_x_limb_12_col153);
-    let x_diff_13_tmp_63f6c_149: QM31 = (ec_double_input_x_limb_13 - result_x_limb_13_col154);
-    let x_diff_14_tmp_63f6c_150: QM31 = (ec_double_input_x_limb_14 - result_x_limb_14_col155);
-    let x_diff_15_tmp_63f6c_151: QM31 = (ec_double_input_x_limb_15 - result_x_limb_15_col156);
-    let x_diff_16_tmp_63f6c_152: QM31 = (ec_double_input_x_limb_16 - result_x_limb_16_col157);
-    let x_diff_17_tmp_63f6c_153: QM31 = (ec_double_input_x_limb_17 - result_x_limb_17_col158);
-    let x_diff_18_tmp_63f6c_154: QM31 = (ec_double_input_x_limb_18 - result_x_limb_18_col159);
-    let x_diff_19_tmp_63f6c_155: QM31 = (ec_double_input_x_limb_19 - result_x_limb_19_col160);
-    let x_diff_20_tmp_63f6c_156: QM31 = (ec_double_input_x_limb_20 - result_x_limb_20_col161);
-    let x_diff_21_tmp_63f6c_157: QM31 = (ec_double_input_x_limb_21 - result_x_limb_21_col162);
-    let x_diff_22_tmp_63f6c_158: QM31 = (ec_double_input_x_limb_22 - result_x_limb_22_col163);
-    let x_diff_23_tmp_63f6c_159: QM31 = (ec_double_input_x_limb_23 - result_x_limb_23_col164);
-    let x_diff_24_tmp_63f6c_160: QM31 = (ec_double_input_x_limb_24 - result_x_limb_24_col165);
-    let x_diff_25_tmp_63f6c_161: QM31 = (ec_double_input_x_limb_25 - result_x_limb_25_col166);
-    let x_diff_26_tmp_63f6c_162: QM31 = (ec_double_input_x_limb_26 - result_x_limb_26_col167);
-    let x_diff_27_tmp_63f6c_163: QM31 = (ec_double_input_x_limb_27 - result_x_limb_27_col168);
-    let y_sum_0_tmp_63f6c_164: QM31 = (ec_double_input_y_limb_0 + result_y_limb_0_col197);
-    let y_sum_1_tmp_63f6c_165: QM31 = (ec_double_input_y_limb_1 + result_y_limb_1_col198);
-    let y_sum_2_tmp_63f6c_166: QM31 = (ec_double_input_y_limb_2 + result_y_limb_2_col199);
-    let y_sum_3_tmp_63f6c_167: QM31 = (ec_double_input_y_limb_3 + result_y_limb_3_col200);
-    let y_sum_4_tmp_63f6c_168: QM31 = (ec_double_input_y_limb_4 + result_y_limb_4_col201);
-    let y_sum_5_tmp_63f6c_169: QM31 = (ec_double_input_y_limb_5 + result_y_limb_5_col202);
-    let y_sum_6_tmp_63f6c_170: QM31 = (ec_double_input_y_limb_6 + result_y_limb_6_col203);
-    let y_sum_7_tmp_63f6c_171: QM31 = (ec_double_input_y_limb_7 + result_y_limb_7_col204);
-    let y_sum_8_tmp_63f6c_172: QM31 = (ec_double_input_y_limb_8 + result_y_limb_8_col205);
-    let y_sum_9_tmp_63f6c_173: QM31 = (ec_double_input_y_limb_9 + result_y_limb_9_col206);
-    let y_sum_10_tmp_63f6c_174: QM31 = (ec_double_input_y_limb_10 + result_y_limb_10_col207);
-    let y_sum_11_tmp_63f6c_175: QM31 = (ec_double_input_y_limb_11 + result_y_limb_11_col208);
-    let y_sum_12_tmp_63f6c_176: QM31 = (ec_double_input_y_limb_12 + result_y_limb_12_col209);
-    let y_sum_13_tmp_63f6c_177: QM31 = (ec_double_input_y_limb_13 + result_y_limb_13_col210);
-    let y_sum_14_tmp_63f6c_178: QM31 = (ec_double_input_y_limb_14 + result_y_limb_14_col211);
-    let y_sum_15_tmp_63f6c_179: QM31 = (ec_double_input_y_limb_15 + result_y_limb_15_col212);
-    let y_sum_16_tmp_63f6c_180: QM31 = (ec_double_input_y_limb_16 + result_y_limb_16_col213);
-    let y_sum_17_tmp_63f6c_181: QM31 = (ec_double_input_y_limb_17 + result_y_limb_17_col214);
-    let y_sum_18_tmp_63f6c_182: QM31 = (ec_double_input_y_limb_18 + result_y_limb_18_col215);
-    let y_sum_19_tmp_63f6c_183: QM31 = (ec_double_input_y_limb_19 + result_y_limb_19_col216);
-    let y_sum_20_tmp_63f6c_184: QM31 = (ec_double_input_y_limb_20 + result_y_limb_20_col217);
-    let y_sum_21_tmp_63f6c_185: QM31 = (ec_double_input_y_limb_21 + result_y_limb_21_col218);
-    let y_sum_22_tmp_63f6c_186: QM31 = (ec_double_input_y_limb_22 + result_y_limb_22_col219);
-    let y_sum_23_tmp_63f6c_187: QM31 = (ec_double_input_y_limb_23 + result_y_limb_23_col220);
-    let y_sum_24_tmp_63f6c_188: QM31 = (ec_double_input_y_limb_24 + result_y_limb_24_col221);
-    let y_sum_25_tmp_63f6c_189: QM31 = (ec_double_input_y_limb_25 + result_y_limb_25_col222);
-    let y_sum_26_tmp_63f6c_190: QM31 = (ec_double_input_y_limb_26 + result_y_limb_26_col223);
-    let y_sum_27_tmp_63f6c_191: QM31 = (ec_double_input_y_limb_27 + result_y_limb_27_col224);
+    let x_diff_0_tmp_abe44_136: QM31 = (ec_double_input_x_limb_0 - result_x_limb_0_col141);
+    let x_diff_1_tmp_abe44_137: QM31 = (ec_double_input_x_limb_1 - result_x_limb_1_col142);
+    let x_diff_2_tmp_abe44_138: QM31 = (ec_double_input_x_limb_2 - result_x_limb_2_col143);
+    let x_diff_3_tmp_abe44_139: QM31 = (ec_double_input_x_limb_3 - result_x_limb_3_col144);
+    let x_diff_4_tmp_abe44_140: QM31 = (ec_double_input_x_limb_4 - result_x_limb_4_col145);
+    let x_diff_5_tmp_abe44_141: QM31 = (ec_double_input_x_limb_5 - result_x_limb_5_col146);
+    let x_diff_6_tmp_abe44_142: QM31 = (ec_double_input_x_limb_6 - result_x_limb_6_col147);
+    let x_diff_7_tmp_abe44_143: QM31 = (ec_double_input_x_limb_7 - result_x_limb_7_col148);
+    let x_diff_8_tmp_abe44_144: QM31 = (ec_double_input_x_limb_8 - result_x_limb_8_col149);
+    let x_diff_9_tmp_abe44_145: QM31 = (ec_double_input_x_limb_9 - result_x_limb_9_col150);
+    let x_diff_10_tmp_abe44_146: QM31 = (ec_double_input_x_limb_10 - result_x_limb_10_col151);
+    let x_diff_11_tmp_abe44_147: QM31 = (ec_double_input_x_limb_11 - result_x_limb_11_col152);
+    let x_diff_12_tmp_abe44_148: QM31 = (ec_double_input_x_limb_12 - result_x_limb_12_col153);
+    let x_diff_13_tmp_abe44_149: QM31 = (ec_double_input_x_limb_13 - result_x_limb_13_col154);
+    let x_diff_14_tmp_abe44_150: QM31 = (ec_double_input_x_limb_14 - result_x_limb_14_col155);
+    let x_diff_15_tmp_abe44_151: QM31 = (ec_double_input_x_limb_15 - result_x_limb_15_col156);
+    let x_diff_16_tmp_abe44_152: QM31 = (ec_double_input_x_limb_16 - result_x_limb_16_col157);
+    let x_diff_17_tmp_abe44_153: QM31 = (ec_double_input_x_limb_17 - result_x_limb_17_col158);
+    let x_diff_18_tmp_abe44_154: QM31 = (ec_double_input_x_limb_18 - result_x_limb_18_col159);
+    let x_diff_19_tmp_abe44_155: QM31 = (ec_double_input_x_limb_19 - result_x_limb_19_col160);
+    let x_diff_20_tmp_abe44_156: QM31 = (ec_double_input_x_limb_20 - result_x_limb_20_col161);
+    let x_diff_21_tmp_abe44_157: QM31 = (ec_double_input_x_limb_21 - result_x_limb_21_col162);
+    let x_diff_22_tmp_abe44_158: QM31 = (ec_double_input_x_limb_22 - result_x_limb_22_col163);
+    let x_diff_23_tmp_abe44_159: QM31 = (ec_double_input_x_limb_23 - result_x_limb_23_col164);
+    let x_diff_24_tmp_abe44_160: QM31 = (ec_double_input_x_limb_24 - result_x_limb_24_col165);
+    let x_diff_25_tmp_abe44_161: QM31 = (ec_double_input_x_limb_25 - result_x_limb_25_col166);
+    let x_diff_26_tmp_abe44_162: QM31 = (ec_double_input_x_limb_26 - result_x_limb_26_col167);
+    let x_diff_27_tmp_abe44_163: QM31 = (ec_double_input_x_limb_27 - result_x_limb_27_col168);
+    let y_sum_0_tmp_abe44_164: QM31 = (ec_double_input_y_limb_0 + result_y_limb_0_col197);
+    let y_sum_1_tmp_abe44_165: QM31 = (ec_double_input_y_limb_1 + result_y_limb_1_col198);
+    let y_sum_2_tmp_abe44_166: QM31 = (ec_double_input_y_limb_2 + result_y_limb_2_col199);
+    let y_sum_3_tmp_abe44_167: QM31 = (ec_double_input_y_limb_3 + result_y_limb_3_col200);
+    let y_sum_4_tmp_abe44_168: QM31 = (ec_double_input_y_limb_4 + result_y_limb_4_col201);
+    let y_sum_5_tmp_abe44_169: QM31 = (ec_double_input_y_limb_5 + result_y_limb_5_col202);
+    let y_sum_6_tmp_abe44_170: QM31 = (ec_double_input_y_limb_6 + result_y_limb_6_col203);
+    let y_sum_7_tmp_abe44_171: QM31 = (ec_double_input_y_limb_7 + result_y_limb_7_col204);
+    let y_sum_8_tmp_abe44_172: QM31 = (ec_double_input_y_limb_8 + result_y_limb_8_col205);
+    let y_sum_9_tmp_abe44_173: QM31 = (ec_double_input_y_limb_9 + result_y_limb_9_col206);
+    let y_sum_10_tmp_abe44_174: QM31 = (ec_double_input_y_limb_10 + result_y_limb_10_col207);
+    let y_sum_11_tmp_abe44_175: QM31 = (ec_double_input_y_limb_11 + result_y_limb_11_col208);
+    let y_sum_12_tmp_abe44_176: QM31 = (ec_double_input_y_limb_12 + result_y_limb_12_col209);
+    let y_sum_13_tmp_abe44_177: QM31 = (ec_double_input_y_limb_13 + result_y_limb_13_col210);
+    let y_sum_14_tmp_abe44_178: QM31 = (ec_double_input_y_limb_14 + result_y_limb_14_col211);
+    let y_sum_15_tmp_abe44_179: QM31 = (ec_double_input_y_limb_15 + result_y_limb_15_col212);
+    let y_sum_16_tmp_abe44_180: QM31 = (ec_double_input_y_limb_16 + result_y_limb_16_col213);
+    let y_sum_17_tmp_abe44_181: QM31 = (ec_double_input_y_limb_17 + result_y_limb_17_col214);
+    let y_sum_18_tmp_abe44_182: QM31 = (ec_double_input_y_limb_18 + result_y_limb_18_col215);
+    let y_sum_19_tmp_abe44_183: QM31 = (ec_double_input_y_limb_19 + result_y_limb_19_col216);
+    let y_sum_20_tmp_abe44_184: QM31 = (ec_double_input_y_limb_20 + result_y_limb_20_col217);
+    let y_sum_21_tmp_abe44_185: QM31 = (ec_double_input_y_limb_21 + result_y_limb_21_col218);
+    let y_sum_22_tmp_abe44_186: QM31 = (ec_double_input_y_limb_22 + result_y_limb_22_col219);
+    let y_sum_23_tmp_abe44_187: QM31 = (ec_double_input_y_limb_23 + result_y_limb_23_col220);
+    let y_sum_24_tmp_abe44_188: QM31 = (ec_double_input_y_limb_24 + result_y_limb_24_col221);
+    let y_sum_25_tmp_abe44_189: QM31 = (ec_double_input_y_limb_25 + result_y_limb_25_col222);
+    let y_sum_26_tmp_abe44_190: QM31 = (ec_double_input_y_limb_26 + result_y_limb_26_col223);
+    let y_sum_27_tmp_abe44_191: QM31 = (ec_double_input_y_limb_27 + result_y_limb_27_col224);
     verify_mul_252_evaluate(
         [
             slope_limb_0_col85, slope_limb_1_col86, slope_limb_2_col87, slope_limb_3_col88,
@@ -1450,25 +1450,25 @@ pub fn ec_double_evaluate(
             slope_limb_16_col101, slope_limb_17_col102, slope_limb_18_col103, slope_limb_19_col104,
             slope_limb_20_col105, slope_limb_21_col106, slope_limb_22_col107, slope_limb_23_col108,
             slope_limb_24_col109, slope_limb_25_col110, slope_limb_26_col111, slope_limb_27_col112,
-            x_diff_0_tmp_63f6c_136, x_diff_1_tmp_63f6c_137, x_diff_2_tmp_63f6c_138,
-            x_diff_3_tmp_63f6c_139, x_diff_4_tmp_63f6c_140, x_diff_5_tmp_63f6c_141,
-            x_diff_6_tmp_63f6c_142, x_diff_7_tmp_63f6c_143, x_diff_8_tmp_63f6c_144,
-            x_diff_9_tmp_63f6c_145, x_diff_10_tmp_63f6c_146, x_diff_11_tmp_63f6c_147,
-            x_diff_12_tmp_63f6c_148, x_diff_13_tmp_63f6c_149, x_diff_14_tmp_63f6c_150,
-            x_diff_15_tmp_63f6c_151, x_diff_16_tmp_63f6c_152, x_diff_17_tmp_63f6c_153,
-            x_diff_18_tmp_63f6c_154, x_diff_19_tmp_63f6c_155, x_diff_20_tmp_63f6c_156,
-            x_diff_21_tmp_63f6c_157, x_diff_22_tmp_63f6c_158, x_diff_23_tmp_63f6c_159,
-            x_diff_24_tmp_63f6c_160, x_diff_25_tmp_63f6c_161, x_diff_26_tmp_63f6c_162,
-            x_diff_27_tmp_63f6c_163, y_sum_0_tmp_63f6c_164, y_sum_1_tmp_63f6c_165,
-            y_sum_2_tmp_63f6c_166, y_sum_3_tmp_63f6c_167, y_sum_4_tmp_63f6c_168,
-            y_sum_5_tmp_63f6c_169, y_sum_6_tmp_63f6c_170, y_sum_7_tmp_63f6c_171,
-            y_sum_8_tmp_63f6c_172, y_sum_9_tmp_63f6c_173, y_sum_10_tmp_63f6c_174,
-            y_sum_11_tmp_63f6c_175, y_sum_12_tmp_63f6c_176, y_sum_13_tmp_63f6c_177,
-            y_sum_14_tmp_63f6c_178, y_sum_15_tmp_63f6c_179, y_sum_16_tmp_63f6c_180,
-            y_sum_17_tmp_63f6c_181, y_sum_18_tmp_63f6c_182, y_sum_19_tmp_63f6c_183,
-            y_sum_20_tmp_63f6c_184, y_sum_21_tmp_63f6c_185, y_sum_22_tmp_63f6c_186,
-            y_sum_23_tmp_63f6c_187, y_sum_24_tmp_63f6c_188, y_sum_25_tmp_63f6c_189,
-            y_sum_26_tmp_63f6c_190, y_sum_27_tmp_63f6c_191,
+            x_diff_0_tmp_abe44_136, x_diff_1_tmp_abe44_137, x_diff_2_tmp_abe44_138,
+            x_diff_3_tmp_abe44_139, x_diff_4_tmp_abe44_140, x_diff_5_tmp_abe44_141,
+            x_diff_6_tmp_abe44_142, x_diff_7_tmp_abe44_143, x_diff_8_tmp_abe44_144,
+            x_diff_9_tmp_abe44_145, x_diff_10_tmp_abe44_146, x_diff_11_tmp_abe44_147,
+            x_diff_12_tmp_abe44_148, x_diff_13_tmp_abe44_149, x_diff_14_tmp_abe44_150,
+            x_diff_15_tmp_abe44_151, x_diff_16_tmp_abe44_152, x_diff_17_tmp_abe44_153,
+            x_diff_18_tmp_abe44_154, x_diff_19_tmp_abe44_155, x_diff_20_tmp_abe44_156,
+            x_diff_21_tmp_abe44_157, x_diff_22_tmp_abe44_158, x_diff_23_tmp_abe44_159,
+            x_diff_24_tmp_abe44_160, x_diff_25_tmp_abe44_161, x_diff_26_tmp_abe44_162,
+            x_diff_27_tmp_abe44_163, y_sum_0_tmp_abe44_164, y_sum_1_tmp_abe44_165,
+            y_sum_2_tmp_abe44_166, y_sum_3_tmp_abe44_167, y_sum_4_tmp_abe44_168,
+            y_sum_5_tmp_abe44_169, y_sum_6_tmp_abe44_170, y_sum_7_tmp_abe44_171,
+            y_sum_8_tmp_abe44_172, y_sum_9_tmp_abe44_173, y_sum_10_tmp_abe44_174,
+            y_sum_11_tmp_abe44_175, y_sum_12_tmp_abe44_176, y_sum_13_tmp_abe44_177,
+            y_sum_14_tmp_abe44_178, y_sum_15_tmp_abe44_179, y_sum_16_tmp_abe44_180,
+            y_sum_17_tmp_abe44_181, y_sum_18_tmp_abe44_182, y_sum_19_tmp_abe44_183,
+            y_sum_20_tmp_abe44_184, y_sum_21_tmp_abe44_185, y_sum_22_tmp_abe44_186,
+            y_sum_23_tmp_abe44_187, y_sum_24_tmp_abe44_188, y_sum_25_tmp_abe44_189,
+            y_sum_26_tmp_abe44_190, y_sum_27_tmp_abe44_191,
         ],
         k_col225,
         carry_0_col226,

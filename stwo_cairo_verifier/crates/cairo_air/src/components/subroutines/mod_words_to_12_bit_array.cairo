@@ -54,72 +54,72 @@ pub fn mod_words_to_12_bit_array_evaluate(
         mod_words_to_12_bit_array_input_limb_38,
     ] =
         input;
-    let limb1a_0_tmp_f4497_1: QM31 = (mod_words_to_12_bit_array_input_limb_1
+    let limb1a_0_tmp_2aff4_1: QM31 = (mod_words_to_12_bit_array_input_limb_1
         - (limb1b_0_col0 * qm31_const::<8, 0, 0, 0>()));
-    let limb2a_0_tmp_f4497_3: QM31 = (mod_words_to_12_bit_array_input_limb_2
+    let limb2a_0_tmp_2aff4_3: QM31 = (mod_words_to_12_bit_array_input_limb_2
         - (limb2b_0_col1 * qm31_const::<64, 0, 0, 0>()));
 
     range_check_3_6_6_3_sum_0 = common_lookup_elements
         .combine_qm31(
             [
-                qm31_const::<1005786011, 0, 0, 0>(), limb1a_0_tmp_f4497_1, limb1b_0_col0,
-                limb2a_0_tmp_f4497_3, limb2b_0_col1,
+                qm31_const::<1005786011, 0, 0, 0>(), limb1a_0_tmp_2aff4_1, limb1b_0_col0,
+                limb2a_0_tmp_2aff4_3, limb2b_0_col1,
             ]
                 .span(),
         );
     numerator_0 = qm31_const::<1, 0, 0, 0>();
-    let limb5a_0_tmp_f4497_5: QM31 = (mod_words_to_12_bit_array_input_limb_5
+    let limb5a_0_tmp_2aff4_5: QM31 = (mod_words_to_12_bit_array_input_limb_5
         - (limb5b_0_col2 * qm31_const::<8, 0, 0, 0>()));
-    let limb6a_0_tmp_f4497_7: QM31 = (mod_words_to_12_bit_array_input_limb_6
+    let limb6a_0_tmp_2aff4_7: QM31 = (mod_words_to_12_bit_array_input_limb_6
         - (limb6b_0_col3 * qm31_const::<64, 0, 0, 0>()));
 
     range_check_3_6_6_3_sum_1 = common_lookup_elements
         .combine_qm31(
             [
-                qm31_const::<1005786011, 0, 0, 0>(), limb5a_0_tmp_f4497_5, limb5b_0_col2,
-                limb6a_0_tmp_f4497_7, limb6b_0_col3,
+                qm31_const::<1005786011, 0, 0, 0>(), limb5a_0_tmp_2aff4_5, limb5b_0_col2,
+                limb6a_0_tmp_2aff4_7, limb6b_0_col3,
             ]
                 .span(),
         );
     numerator_1 = qm31_const::<1, 0, 0, 0>();
-    let limb9a_0_tmp_f4497_9: QM31 = (mod_words_to_12_bit_array_input_limb_9
+    let limb9a_0_tmp_2aff4_9: QM31 = (mod_words_to_12_bit_array_input_limb_9
         - (limb9b_0_col4 * qm31_const::<8, 0, 0, 0>()));
-    let limb1a_1_tmp_f4497_11: QM31 = (mod_words_to_12_bit_array_input_limb_29
+    let limb1a_1_tmp_2aff4_11: QM31 = (mod_words_to_12_bit_array_input_limb_29
         - (limb1b_1_col5 * qm31_const::<8, 0, 0, 0>()));
-    let limb2a_1_tmp_f4497_13: QM31 = (mod_words_to_12_bit_array_input_limb_30
+    let limb2a_1_tmp_2aff4_13: QM31 = (mod_words_to_12_bit_array_input_limb_30
         - (limb2b_1_col6 * qm31_const::<64, 0, 0, 0>()));
 
     range_check_3_6_6_3_sum_2 = common_lookup_elements
         .combine_qm31(
             [
-                qm31_const::<1005786011, 0, 0, 0>(), limb1a_1_tmp_f4497_11, limb1b_1_col5,
-                limb2a_1_tmp_f4497_13, limb2b_1_col6,
+                qm31_const::<1005786011, 0, 0, 0>(), limb1a_1_tmp_2aff4_11, limb1b_1_col5,
+                limb2a_1_tmp_2aff4_13, limb2b_1_col6,
             ]
                 .span(),
         );
     numerator_2 = qm31_const::<1, 0, 0, 0>();
-    let limb5a_1_tmp_f4497_15: QM31 = (mod_words_to_12_bit_array_input_limb_33
+    let limb5a_1_tmp_2aff4_15: QM31 = (mod_words_to_12_bit_array_input_limb_33
         - (limb5b_1_col7 * qm31_const::<8, 0, 0, 0>()));
-    let limb6a_1_tmp_f4497_17: QM31 = (mod_words_to_12_bit_array_input_limb_34
+    let limb6a_1_tmp_2aff4_17: QM31 = (mod_words_to_12_bit_array_input_limb_34
         - (limb6b_1_col8 * qm31_const::<64, 0, 0, 0>()));
 
     range_check_3_6_6_3_sum_3 = common_lookup_elements
         .combine_qm31(
             [
-                qm31_const::<1005786011, 0, 0, 0>(), limb5a_1_tmp_f4497_15, limb5b_1_col7,
-                limb6a_1_tmp_f4497_17, limb6b_1_col8,
+                qm31_const::<1005786011, 0, 0, 0>(), limb5a_1_tmp_2aff4_15, limb5b_1_col7,
+                limb6a_1_tmp_2aff4_17, limb6b_1_col8,
             ]
                 .span(),
         );
     numerator_3 = qm31_const::<1, 0, 0, 0>();
-    let limb9a_1_tmp_f4497_19: QM31 = (mod_words_to_12_bit_array_input_limb_37
+    let limb9a_1_tmp_2aff4_19: QM31 = (mod_words_to_12_bit_array_input_limb_37
         - (limb9b_1_col9 * qm31_const::<8, 0, 0, 0>()));
 
     range_check_3_6_6_3_sum_4 = common_lookup_elements
         .combine_qm31(
             [
-                qm31_const::<1005786011, 0, 0, 0>(), limb9a_0_tmp_f4497_9, limb9b_0_col4,
-                limb9b_1_col9, limb9a_1_tmp_f4497_19,
+                qm31_const::<1005786011, 0, 0, 0>(), limb9a_0_tmp_2aff4_9, limb9b_0_col4,
+                limb9b_1_col9, limb9a_1_tmp_2aff4_19,
             ]
                 .span(),
         );
@@ -127,26 +127,26 @@ pub fn mod_words_to_12_bit_array_evaluate(
 
     [
         (mod_words_to_12_bit_array_input_limb_0
-            + (qm31_const::<512, 0, 0, 0>() * limb1a_0_tmp_f4497_1)),
-        (limb1b_0_col0 + (qm31_const::<64, 0, 0, 0>() * limb2a_0_tmp_f4497_3)),
+            + (qm31_const::<512, 0, 0, 0>() * limb1a_0_tmp_2aff4_1)),
+        (limb1b_0_col0 + (qm31_const::<64, 0, 0, 0>() * limb2a_0_tmp_2aff4_3)),
         (limb2b_0_col1 + (qm31_const::<8, 0, 0, 0>() * mod_words_to_12_bit_array_input_limb_3)),
         (mod_words_to_12_bit_array_input_limb_4
-            + (qm31_const::<512, 0, 0, 0>() * limb5a_0_tmp_f4497_5)),
-        (limb5b_0_col2 + (qm31_const::<64, 0, 0, 0>() * limb6a_0_tmp_f4497_7)),
+            + (qm31_const::<512, 0, 0, 0>() * limb5a_0_tmp_2aff4_5)),
+        (limb5b_0_col2 + (qm31_const::<64, 0, 0, 0>() * limb6a_0_tmp_2aff4_7)),
         (limb6b_0_col3 + (qm31_const::<8, 0, 0, 0>() * mod_words_to_12_bit_array_input_limb_7)),
         (mod_words_to_12_bit_array_input_limb_8
-            + (qm31_const::<512, 0, 0, 0>() * limb9a_0_tmp_f4497_9)),
+            + (qm31_const::<512, 0, 0, 0>() * limb9a_0_tmp_2aff4_9)),
         (limb9b_0_col4 + (qm31_const::<64, 0, 0, 0>() * mod_words_to_12_bit_array_input_limb_10)),
         (mod_words_to_12_bit_array_input_limb_28
-            + (qm31_const::<512, 0, 0, 0>() * limb1a_1_tmp_f4497_11)),
-        (limb1b_1_col5 + (qm31_const::<64, 0, 0, 0>() * limb2a_1_tmp_f4497_13)),
+            + (qm31_const::<512, 0, 0, 0>() * limb1a_1_tmp_2aff4_11)),
+        (limb1b_1_col5 + (qm31_const::<64, 0, 0, 0>() * limb2a_1_tmp_2aff4_13)),
         (limb2b_1_col6 + (qm31_const::<8, 0, 0, 0>() * mod_words_to_12_bit_array_input_limb_31)),
         (mod_words_to_12_bit_array_input_limb_32
-            + (qm31_const::<512, 0, 0, 0>() * limb5a_1_tmp_f4497_15)),
-        (limb5b_1_col7 + (qm31_const::<64, 0, 0, 0>() * limb6a_1_tmp_f4497_17)),
+            + (qm31_const::<512, 0, 0, 0>() * limb5a_1_tmp_2aff4_15)),
+        (limb5b_1_col7 + (qm31_const::<64, 0, 0, 0>() * limb6a_1_tmp_2aff4_17)),
         (limb6b_1_col8 + (qm31_const::<8, 0, 0, 0>() * mod_words_to_12_bit_array_input_limb_35)),
         (mod_words_to_12_bit_array_input_limb_36
-            + (qm31_const::<512, 0, 0, 0>() * limb9a_1_tmp_f4497_19)),
+            + (qm31_const::<512, 0, 0, 0>() * limb9a_1_tmp_2aff4_19)),
         (limb9b_1_col9 + (qm31_const::<64, 0, 0, 0>() * mod_words_to_12_bit_array_input_limb_38)),
     ]
 }

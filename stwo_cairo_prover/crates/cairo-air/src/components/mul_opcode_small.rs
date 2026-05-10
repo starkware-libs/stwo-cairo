@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_4b8cf::DecodeInstruction4B8Cf;
+use crate::components::subroutines::decode_instruction_c630b::DecodeInstructionC630B;
 use crate::components::subroutines::read_positive_num_bits_36::ReadPositiveNumBits36;
 use crate::components::subroutines::read_positive_num_bits_72::ReadPositiveNumBits72;
 use crate::components::subroutines::verify_mul_small::VerifyMulSmall;
@@ -109,8 +109,8 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_4b8cf_output_tmp_9d1ad_11_offset0, decode_instruction_4b8cf_output_tmp_9d1ad_11_offset1, decode_instruction_4b8cf_output_tmp_9d1ad_11_offset2, decode_instruction_4b8cf_output_tmp_9d1ad_11_op1_base_ap] =
-            DecodeInstruction4B8Cf::evaluate(
+        let [decode_instruction_c630b_output_tmp_3c8b0_11_offset0, decode_instruction_c630b_output_tmp_3c8b0_11_offset1, decode_instruction_c630b_output_tmp_3c8b0_11_offset2, decode_instruction_c630b_output_tmp_3c8b0_11_op1_base_ap] =
+            DecodeInstructionC630B::evaluate(
                 [input_pc_col0.clone()],
                 offset0_col3.clone(),
                 offset1_col4.clone(),
@@ -126,7 +126,7 @@ impl FrameworkEval for Eval {
         // if imm then offset2 is 1.
         eval.add_constraint(
             (op1_imm_col8.clone()
-                * (M31_1.clone() - decode_instruction_4b8cf_output_tmp_9d1ad_11_offset2.clone())),
+                * (M31_1.clone() - decode_instruction_c630b_output_tmp_3c8b0_11_offset2.clone())),
         );
         // mem_dst_base.
         eval.add_constraint(
@@ -145,12 +145,12 @@ impl FrameworkEval for Eval {
             (mem1_base_col13.clone()
                 - (((op1_imm_col8.clone() * input_pc_col0.clone())
                     + (op1_base_fp_col9.clone() * input_fp_col2.clone()))
-                    + (decode_instruction_4b8cf_output_tmp_9d1ad_11_op1_base_ap.clone()
+                    + (decode_instruction_c630b_output_tmp_3c8b0_11_op1_base_ap.clone()
                         * input_ap_col1.clone()))),
         );
         ReadPositiveNumBits72::evaluate(
             [(mem_dst_base_col11.clone()
-                + decode_instruction_4b8cf_output_tmp_9d1ad_11_offset0.clone())],
+                + decode_instruction_c630b_output_tmp_3c8b0_11_offset0.clone())],
             dst_id_col14.clone(),
             dst_limb_0_col15.clone(),
             dst_limb_1_col16.clone(),
@@ -165,7 +165,7 @@ impl FrameworkEval for Eval {
         );
         ReadPositiveNumBits36::evaluate(
             [(mem0_base_col12.clone()
-                + decode_instruction_4b8cf_output_tmp_9d1ad_11_offset1.clone())],
+                + decode_instruction_c630b_output_tmp_3c8b0_11_offset1.clone())],
             op0_id_col23.clone(),
             op0_limb_0_col24.clone(),
             op0_limb_1_col25.clone(),
@@ -176,7 +176,7 @@ impl FrameworkEval for Eval {
         );
         ReadPositiveNumBits36::evaluate(
             [(mem1_base_col13.clone()
-                + decode_instruction_4b8cf_output_tmp_9d1ad_11_offset2.clone())],
+                + decode_instruction_c630b_output_tmp_3c8b0_11_offset2.clone())],
             op1_id_col28.clone(),
             op1_limb_0_col29.clone(),
             op1_limb_1_col30.clone(),

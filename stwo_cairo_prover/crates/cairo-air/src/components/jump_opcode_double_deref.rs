@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_9bd86::DecodeInstruction9Bd86;
+use crate::components::subroutines::decode_instruction_11364::DecodeInstruction11364;
 use crate::components::subroutines::read_positive_num_bits_29::ReadPositiveNumBits29;
 
 pub const N_TRACE_COLUMNS: usize = 21;
@@ -90,8 +90,8 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_9bd86_output_tmp_22134_6_offset1, decode_instruction_9bd86_output_tmp_22134_6_offset2] =
-            DecodeInstruction9Bd86::evaluate(
+        let [decode_instruction_11364_output_tmp_b5a8f_6_offset1, decode_instruction_11364_output_tmp_b5a8f_6_offset2] =
+            DecodeInstruction11364::evaluate(
                 [input_pc_col0.clone()],
                 offset1_col3.clone(),
                 offset2_col4.clone(),
@@ -108,7 +108,7 @@ impl FrameworkEval for Eval {
         );
         ReadPositiveNumBits29::evaluate(
             [(mem0_base_col7.clone()
-                + decode_instruction_9bd86_output_tmp_22134_6_offset1.clone())],
+                + decode_instruction_11364_output_tmp_b5a8f_6_offset1.clone())],
             mem1_base_id_col8.clone(),
             mem1_base_limb_0_col9.clone(),
             mem1_base_limb_1_col10.clone(),
@@ -123,7 +123,7 @@ impl FrameworkEval for Eval {
                 + (mem1_base_limb_1_col10.clone() * M31_512.clone()))
                 + (mem1_base_limb_2_col11.clone() * M31_262144.clone()))
                 + (mem1_base_limb_3_col12.clone() * M31_134217728.clone()))
-                + decode_instruction_9bd86_output_tmp_22134_6_offset2.clone())],
+                + decode_instruction_11364_output_tmp_b5a8f_6_offset2.clone())],
             next_pc_id_col14.clone(),
             next_pc_limb_0_col15.clone(),
             next_pc_limb_1_col16.clone(),
