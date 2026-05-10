@@ -1,6 +1,6 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::decode_instruction_2a7a2::decode_instruction_2a7a2_evaluate;
+use crate::components::subroutines::decode_instruction_e4e14::decode_instruction_e4e14_evaluate;
 use crate::components::subroutines::read_positive_num_bits_29::read_positive_num_bits_29_evaluate;
 use crate::components::subroutines::read_small::read_small_evaluate;
 use crate::prelude::*;
@@ -190,7 +190,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        decode_instruction_2a7a2_evaluate(
+        decode_instruction_e4e14_evaluate(
             input_pc_col0,
             self.common_lookup_elements,
             ref verify_instruction_sum_0,
@@ -246,7 +246,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             + (stored_ret_pc_limb_3_col13 * qm31_const::<134217728, 0, 0, 0>()))
             - (input_pc_col0 + qm31_const::<2, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
-        let read_small_output_tmp_9db06_26_limb_0: QM31 = read_small_evaluate(
+        let read_small_output_tmp_82d62_26_limb_0: QM31 = read_small_evaluate(
             (input_pc_col0 + qm31_const::<1, 0, 0, 0>()),
             distance_to_next_pc_id_col15,
             msb_col16,
@@ -282,7 +282,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             .combine_qm31(
                 [
                     qm31_const::<428564188, 0, 0, 0>(),
-                    (input_pc_col0 + read_small_output_tmp_9db06_26_limb_0),
+                    (input_pc_col0 + read_small_output_tmp_82d62_26_limb_0),
                     (input_ap_col1 + qm31_const::<2, 0, 0, 0>()),
                     (input_ap_col1 + qm31_const::<2, 0, 0, 0>()),
                 ]

@@ -1,6 +1,6 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::decode_instruction_df7a6::decode_instruction_df7a6_evaluate;
+use crate::components::subroutines::decode_instruction_a1c8b::decode_instruction_a1c8b_evaluate;
 use crate::prelude::*;
 
 
@@ -32,11 +32,11 @@ pub fn decode_generic_instruction_evaluate(
 ) -> [QM31; 8] {
     let decode_generic_instruction_input = input;
     let [
-        decode_instruction_df7a6_output_tmp_62f3c_20_offset0,
-        decode_instruction_df7a6_output_tmp_62f3c_20_offset1,
-        decode_instruction_df7a6_output_tmp_62f3c_20_offset2,
+        decode_instruction_a1c8b_output_tmp_e6fd8_20_offset0,
+        decode_instruction_a1c8b_output_tmp_e6fd8_20_offset1,
+        decode_instruction_a1c8b_output_tmp_e6fd8_20_offset2,
     ] =
-        decode_instruction_df7a6_evaluate(
+        decode_instruction_a1c8b_evaluate(
         decode_generic_instruction_input,
         offset0_col0,
         offset1_col1,
@@ -62,50 +62,50 @@ pub fn decode_generic_instruction_evaluate(
         ref sum,
         random_coeff,
     );
-    let op1_base_op0_tmp_62f3c_21: QM31 = (((qm31_const::<1, 0, 0, 0>() - op1_imm_col5)
+    let op1_base_op0_tmp_e6fd8_21: QM31 = (((qm31_const::<1, 0, 0, 0>() - op1_imm_col5)
         - op1_base_fp_col6)
         - op1_base_ap_col7);
 
     // Constraint - op1_src is 0, 1, 2, or 4
-    let constraint_quotient = ((op1_base_op0_tmp_62f3c_21
-        * (qm31_const::<1, 0, 0, 0>() - op1_base_op0_tmp_62f3c_21)));
+    let constraint_quotient = ((op1_base_op0_tmp_e6fd8_21
+        * (qm31_const::<1, 0, 0, 0>() - op1_base_op0_tmp_e6fd8_21)));
     sum = sum * random_coeff + constraint_quotient;
-    let res_op1_tmp_62f3c_22: QM31 = (((qm31_const::<1, 0, 0, 0>() - res_add_col8) - res_mul_col9)
+    let res_op1_tmp_e6fd8_22: QM31 = (((qm31_const::<1, 0, 0, 0>() - res_add_col8) - res_mul_col9)
         - pc_update_jnz_col12);
 
     // Constraint - res_logic is 0, 1, or 2
-    let constraint_quotient = ((res_op1_tmp_62f3c_22
-        * (qm31_const::<1, 0, 0, 0>() - res_op1_tmp_62f3c_22)));
+    let constraint_quotient = ((res_op1_tmp_e6fd8_22
+        * (qm31_const::<1, 0, 0, 0>() - res_op1_tmp_e6fd8_22)));
     sum = sum * random_coeff + constraint_quotient;
-    let pc_update_regular_tmp_62f3c_23: QM31 = (((qm31_const::<1, 0, 0, 0>() - pc_update_jump_col10)
+    let pc_update_regular_tmp_e6fd8_23: QM31 = (((qm31_const::<1, 0, 0, 0>() - pc_update_jump_col10)
         - pc_update_jump_rel_col11)
         - pc_update_jnz_col12);
 
     // Constraint - pc_update is 0, 1, 2, or 4
-    let constraint_quotient = ((pc_update_regular_tmp_62f3c_23
-        * (qm31_const::<1, 0, 0, 0>() - pc_update_regular_tmp_62f3c_23)));
+    let constraint_quotient = ((pc_update_regular_tmp_e6fd8_23
+        * (qm31_const::<1, 0, 0, 0>() - pc_update_regular_tmp_e6fd8_23)));
     sum = sum * random_coeff + constraint_quotient;
-    let ap_update_regular_tmp_62f3c_24: QM31 = (((qm31_const::<1, 0, 0, 0>() - ap_update_add_col13)
+    let ap_update_regular_tmp_e6fd8_24: QM31 = (((qm31_const::<1, 0, 0, 0>() - ap_update_add_col13)
         - ap_update_add_1_col14)
         - opcode_call_col15);
 
     // Constraint - ap_update is 0, 1, 2, or 4
-    let constraint_quotient = ((ap_update_regular_tmp_62f3c_24
-        * (qm31_const::<1, 0, 0, 0>() - ap_update_regular_tmp_62f3c_24)));
+    let constraint_quotient = ((ap_update_regular_tmp_e6fd8_24
+        * (qm31_const::<1, 0, 0, 0>() - ap_update_regular_tmp_e6fd8_24)));
     sum = sum * random_coeff + constraint_quotient;
-    let fp_update_regular_tmp_62f3c_25: QM31 = ((qm31_const::<1, 0, 0, 0>() - opcode_call_col15)
+    let fp_update_regular_tmp_e6fd8_25: QM31 = ((qm31_const::<1, 0, 0, 0>() - opcode_call_col15)
         - opcode_ret_col16);
 
     // Constraint - opcode is 0, 1, 2, or 4
-    let constraint_quotient = ((fp_update_regular_tmp_62f3c_25
-        * (qm31_const::<1, 0, 0, 0>() - fp_update_regular_tmp_62f3c_25)));
+    let constraint_quotient = ((fp_update_regular_tmp_e6fd8_25
+        * (qm31_const::<1, 0, 0, 0>() - fp_update_regular_tmp_e6fd8_25)));
     sum = sum * random_coeff + constraint_quotient;
 
     [
-        op1_base_op0_tmp_62f3c_21, res_op1_tmp_62f3c_22, pc_update_regular_tmp_62f3c_23,
-        fp_update_regular_tmp_62f3c_25, (qm31_const::<1, 0, 0, 0>() + op1_imm_col5),
-        decode_instruction_df7a6_output_tmp_62f3c_20_offset0,
-        decode_instruction_df7a6_output_tmp_62f3c_20_offset1,
-        decode_instruction_df7a6_output_tmp_62f3c_20_offset2,
+        op1_base_op0_tmp_e6fd8_21, res_op1_tmp_e6fd8_22, pc_update_regular_tmp_e6fd8_23,
+        fp_update_regular_tmp_e6fd8_25, (qm31_const::<1, 0, 0, 0>() + op1_imm_col5),
+        decode_instruction_a1c8b_output_tmp_e6fd8_20_offset0,
+        decode_instruction_a1c8b_output_tmp_e6fd8_20_offset1,
+        decode_instruction_a1c8b_output_tmp_e6fd8_20_offset2,
     ]
 }

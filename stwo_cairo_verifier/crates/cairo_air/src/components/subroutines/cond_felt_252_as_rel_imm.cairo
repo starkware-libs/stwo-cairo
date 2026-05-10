@@ -47,18 +47,18 @@ pub fn cond_felt_252_as_rel_imm_evaluate(
     ] =
         input;
     let [
-        decode_small_sign_output_tmp_1e9bf_2_limb3_7_high_bits,
-        decode_small_sign_output_tmp_1e9bf_2_limbs4_to_20,
-        decode_small_sign_output_tmp_1e9bf_2_limb21,
-        decode_small_sign_output_tmp_1e9bf_2_limb27,
+        decode_small_sign_output_tmp_37f57_2_limb3_7_high_bits,
+        decode_small_sign_output_tmp_37f57_2_limbs4_to_20,
+        decode_small_sign_output_tmp_37f57_2_limb21,
+        decode_small_sign_output_tmp_37f57_2_limb27,
     ] =
         decode_small_sign_evaluate(
         [], msb_col0, mid_limbs_set_col1, common_lookup_elements, ref sum, random_coeff,
     );
-    let remainder_bits_tmp_1e9bf_3: QM31 = (cond_felt_252_as_rel_imm_input_limb_3
-        - decode_small_sign_output_tmp_1e9bf_2_limb3_7_high_bits);
+    let remainder_bits_tmp_37f57_3: QM31 = (cond_felt_252_as_rel_imm_input_limb_3
+        - decode_small_sign_output_tmp_37f57_2_limb3_7_high_bits);
     cond_range_check_2_evaluate(
-        [remainder_bits_tmp_1e9bf_3, cond_felt_252_as_rel_imm_input_limb_28],
+        [remainder_bits_tmp_37f57_3, cond_felt_252_as_rel_imm_input_limb_28],
         partial_limb_msb_col2,
         common_lookup_elements,
         ref sum,
@@ -84,12 +84,12 @@ pub fn cond_felt_252_as_rel_imm_evaluate(
             + cond_felt_252_as_rel_imm_input_limb_18)
             + cond_felt_252_as_rel_imm_input_limb_19)
             + cond_felt_252_as_rel_imm_input_limb_20)
-            - (decode_small_sign_output_tmp_1e9bf_2_limbs4_to_20 * qm31_const::<17, 0, 0, 0>()))));
+            - (decode_small_sign_output_tmp_37f57_2_limbs4_to_20 * qm31_const::<17, 0, 0, 0>()))));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - When the condition holds, limb 21 must be 0x0, 0x88 or 0x87
     let constraint_quotient = ((cond_felt_252_as_rel_imm_input_limb_28
-        * (cond_felt_252_as_rel_imm_input_limb_21 - decode_small_sign_output_tmp_1e9bf_2_limb21)));
+        * (cond_felt_252_as_rel_imm_input_limb_21 - decode_small_sign_output_tmp_37f57_2_limb21)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - When the condition holds, limbs 22-26 must be zero
@@ -102,13 +102,13 @@ pub fn cond_felt_252_as_rel_imm_evaluate(
 
     // Constraint - When the condition holds, limb 27 must be 0x0 or 0x100
     let constraint_quotient = ((cond_felt_252_as_rel_imm_input_limb_28
-        * (cond_felt_252_as_rel_imm_input_limb_27 - decode_small_sign_output_tmp_1e9bf_2_limb27)));
+        * (cond_felt_252_as_rel_imm_input_limb_27 - decode_small_sign_output_tmp_37f57_2_limb27)));
     sum = sum * random_coeff + constraint_quotient;
 
     (((((cond_felt_252_as_rel_imm_input_limb_0
         + (cond_felt_252_as_rel_imm_input_limb_1 * qm31_const::<512, 0, 0, 0>()))
         + (cond_felt_252_as_rel_imm_input_limb_2 * qm31_const::<262144, 0, 0, 0>()))
-        + (remainder_bits_tmp_1e9bf_3 * qm31_const::<134217728, 0, 0, 0>()))
+        + (remainder_bits_tmp_37f57_3 * qm31_const::<134217728, 0, 0, 0>()))
         - msb_col0)
         - (qm31_const::<536870912, 0, 0, 0>() * mid_limbs_set_col1))
 }

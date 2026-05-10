@@ -1,6 +1,6 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::decode_instruction_7ebc4::decode_instruction_7ebc4_evaluate;
+use crate::components::subroutines::decode_instruction_7dcb2::decode_instruction_7dcb2_evaluate;
 use crate::components::subroutines::read_small::read_small_evaluate;
 use crate::prelude::*;
 
@@ -128,7 +128,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        decode_instruction_7ebc4_evaluate(
+        decode_instruction_7dcb2_evaluate(
             input_pc_col0,
             ap_update_add_1_col3,
             self.common_lookup_elements,
@@ -137,7 +137,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let read_small_output_tmp_81a39_13_limb_0: QM31 = read_small_evaluate(
+        let read_small_output_tmp_78364_13_limb_0: QM31 = read_small_evaluate(
             (input_pc_col0 + qm31_const::<1, 0, 0, 0>()),
             next_pc_id_col4,
             msb_col5,
@@ -173,7 +173,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             .combine_qm31(
                 [
                     qm31_const::<428564188, 0, 0, 0>(),
-                    (input_pc_col0 + read_small_output_tmp_81a39_13_limb_0),
+                    (input_pc_col0 + read_small_output_tmp_78364_13_limb_0),
                     (input_ap_col1 + ap_update_add_1_col3), input_fp_col2,
                 ]
                     .span(),

@@ -1,6 +1,6 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::decode_instruction_161c9::decode_instruction_161c9_evaluate;
+use crate::components::subroutines::decode_instruction_324b0::decode_instruction_324b0_evaluate;
 use crate::components::subroutines::mem_verify_equal::mem_verify_equal_evaluate;
 use crate::prelude::*;
 
@@ -119,8 +119,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        let decode_instruction_161c9_output_tmp_bb09e_5_offset0: QM31 =
-            decode_instruction_161c9_evaluate(
+        let decode_instruction_324b0_output_tmp_86a47_5_offset0: QM31 =
+            decode_instruction_324b0_evaluate(
             input_pc_col0,
             offset0_col3,
             dst_base_fp_col4,
@@ -139,7 +139,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
         mem_verify_equal_evaluate(
             [
-                (mem_dst_base_col6 + decode_instruction_161c9_output_tmp_bb09e_5_offset0),
+                (mem_dst_base_col6 + decode_instruction_324b0_output_tmp_86a47_5_offset0),
                 (input_pc_col0 + qm31_const::<1, 0, 0, 0>()),
             ],
             dst_id_col7,

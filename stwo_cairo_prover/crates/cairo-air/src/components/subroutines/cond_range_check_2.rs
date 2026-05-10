@@ -26,14 +26,14 @@ impl CondRangeCheck2 {
             ((partial_limb_msb_col0.clone() * (M31_1.clone() - partial_limb_msb_col0.clone()))
                 * cond_range_check_2_input_limb_1.clone()),
         );
-        let partial_limb_bit_before_msb_tmp_88401_1 = eval.add_intermediate(
+        let partial_limb_bit_before_msb_tmp_36c3a_1 = eval.add_intermediate(
             (cond_range_check_2_input_limb_0.clone()
                 - (partial_limb_msb_col0.clone() * M31_2.clone())),
         );
         // bit before msb is a bit or condition is 0.
         eval.add_constraint(
-            ((partial_limb_bit_before_msb_tmp_88401_1.clone()
-                * (M31_1.clone() - partial_limb_bit_before_msb_tmp_88401_1.clone()))
+            ((partial_limb_bit_before_msb_tmp_36c3a_1.clone()
+                * (M31_1.clone() - partial_limb_bit_before_msb_tmp_36c3a_1.clone()))
                 * cond_range_check_2_input_limb_1.clone()),
         );
         []

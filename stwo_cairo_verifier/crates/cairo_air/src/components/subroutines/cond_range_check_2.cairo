@@ -17,12 +17,12 @@ pub fn cond_range_check_2_evaluate(
         * (qm31_const::<1, 0, 0, 0>() - partial_limb_msb_col0))
         * cond_range_check_2_input_limb_1));
     sum = sum * random_coeff + constraint_quotient;
-    let partial_limb_bit_before_msb_tmp_88401_1: QM31 = (cond_range_check_2_input_limb_0
+    let partial_limb_bit_before_msb_tmp_36c3a_1: QM31 = (cond_range_check_2_input_limb_0
         - (partial_limb_msb_col0 * qm31_const::<2, 0, 0, 0>()));
 
     // Constraint - bit before msb is a bit or condition is 0
-    let constraint_quotient = (((partial_limb_bit_before_msb_tmp_88401_1
-        * (qm31_const::<1, 0, 0, 0>() - partial_limb_bit_before_msb_tmp_88401_1))
+    let constraint_quotient = (((partial_limb_bit_before_msb_tmp_36c3a_1
+        * (qm31_const::<1, 0, 0, 0>() - partial_limb_bit_before_msb_tmp_36c3a_1))
         * cond_range_check_2_input_limb_1));
     sum = sum * random_coeff + constraint_quotient;
 

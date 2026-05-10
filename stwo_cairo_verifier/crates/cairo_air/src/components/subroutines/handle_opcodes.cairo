@@ -286,7 +286,7 @@ pub fn handle_opcodes_evaluate(
     let constraint_quotient = ((handle_opcodes_input_opcode_call
         * (handle_opcodes_input_op0_base_fp + handle_opcodes_input_dst_base_fp)));
     sum = sum * random_coeff + constraint_quotient;
-    let cond_felt_252_as_addr_output_tmp_aa5c5_2: QM31 = cond_felt_252_as_addr_evaluate(
+    let cond_felt_252_as_addr_output_tmp_fe176_2: QM31 = cond_felt_252_as_addr_evaluate(
         [
             handle_opcodes_input_dst_limb_0, handle_opcodes_input_dst_limb_1,
             handle_opcodes_input_dst_limb_2, handle_opcodes_input_dst_limb_3,
@@ -312,9 +312,9 @@ pub fn handle_opcodes_evaluate(
 
     // Constraint -
     let constraint_quotient = ((handle_opcodes_input_opcode_call
-        * (cond_felt_252_as_addr_output_tmp_aa5c5_2 - handle_opcodes_input_fp)));
+        * (cond_felt_252_as_addr_output_tmp_fe176_2 - handle_opcodes_input_fp)));
     sum = sum * random_coeff + constraint_quotient;
-    let cond_felt_252_as_addr_output_tmp_aa5c5_5: QM31 = cond_felt_252_as_addr_evaluate(
+    let cond_felt_252_as_addr_output_tmp_fe176_5: QM31 = cond_felt_252_as_addr_evaluate(
         [
             handle_opcodes_input_op0_limb_0, handle_opcodes_input_op0_limb_1,
             handle_opcodes_input_op0_limb_2, handle_opcodes_input_op0_limb_3,
@@ -340,7 +340,7 @@ pub fn handle_opcodes_evaluate(
 
     // Constraint -
     let constraint_quotient = ((handle_opcodes_input_opcode_call
-        * (cond_felt_252_as_addr_output_tmp_aa5c5_5
+        * (cond_felt_252_as_addr_output_tmp_fe176_5
             - (handle_opcodes_input_pc + handle_opcodes_input_instruction_size))));
     sum = sum * random_coeff + constraint_quotient;
 

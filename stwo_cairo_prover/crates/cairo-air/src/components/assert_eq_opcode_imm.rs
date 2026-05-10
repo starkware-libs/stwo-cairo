@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_161c9::DecodeInstruction161C9;
+use crate::components::subroutines::decode_instruction_324b0::DecodeInstruction324B0;
 use crate::components::subroutines::mem_verify_equal::MemVerifyEqual;
 
 pub const N_TRACE_COLUMNS: usize = 9;
@@ -72,8 +72,8 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_161c9_output_tmp_bb09e_5_offset0] =
-            DecodeInstruction161C9::evaluate(
+        let [decode_instruction_324b0_output_tmp_86a47_5_offset0] =
+            DecodeInstruction324B0::evaluate(
                 [input_pc_col0.clone()],
                 offset0_col3.clone(),
                 dst_base_fp_col4.clone(),
@@ -90,7 +90,7 @@ impl FrameworkEval for Eval {
         MemVerifyEqual::evaluate(
             [
                 (mem_dst_base_col6.clone()
-                    + decode_instruction_161c9_output_tmp_bb09e_5_offset0.clone()),
+                    + decode_instruction_324b0_output_tmp_86a47_5_offset0.clone()),
                 (input_pc_col0.clone() + M31_1.clone()),
             ],
             dst_id_col7.clone(),

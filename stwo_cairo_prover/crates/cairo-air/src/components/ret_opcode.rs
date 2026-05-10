@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_15a61::DecodeInstruction15A61;
+use crate::components::subroutines::decode_instruction_a4d88::DecodeInstructionA4D88;
 use crate::components::subroutines::read_positive_num_bits_29::ReadPositiveNumBits29;
 
 pub const N_TRACE_COLUMNS: usize = 16;
@@ -84,7 +84,7 @@ impl FrameworkEval for Eval {
         let partial_limb_msb_col14 = eval.next_trace_mask();
         let enabler_col15 = eval.next_trace_mask();
 
-        DecodeInstruction15A61::evaluate(
+        DecodeInstructionA4D88::evaluate(
             [input_pc_col0.clone()],
             &self.common_lookup_elements,
             &mut eval,

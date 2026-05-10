@@ -1,6 +1,6 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::decode_instruction_cb32b::decode_instruction_cb32b_evaluate;
+use crate::components::subroutines::decode_instruction_ed841::decode_instruction_ed841_evaluate;
 use crate::components::subroutines::mem_verify_equal::mem_verify_equal_evaluate;
 use crate::components::subroutines::read_positive_num_bits_29::read_positive_num_bits_29_evaluate;
 use crate::prelude::*;
@@ -150,11 +150,11 @@ pub impl AirComponentImpl of AirComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         let [
-            decode_instruction_cb32b_output_tmp_b1151_8_offset0,
-            decode_instruction_cb32b_output_tmp_b1151_8_offset1,
-            decode_instruction_cb32b_output_tmp_b1151_8_offset2,
+            decode_instruction_ed841_output_tmp_b7bfa_8_offset0,
+            decode_instruction_ed841_output_tmp_b7bfa_8_offset1,
+            decode_instruction_ed841_output_tmp_b7bfa_8_offset2,
         ] =
-            decode_instruction_cb32b_evaluate(
+            decode_instruction_ed841_evaluate(
             input_pc_col0,
             offset0_col3,
             offset1_col4,
@@ -181,7 +181,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
                 + ((qm31_const::<1, 0, 0, 0>() - op0_base_fp_col7) * input_ap_col1))));
         sum = sum * random_coeff + constraint_quotient;
         read_positive_num_bits_29_evaluate(
-            (mem0_base_col10 + decode_instruction_cb32b_output_tmp_b1151_8_offset1),
+            (mem0_base_col10 + decode_instruction_ed841_output_tmp_b7bfa_8_offset1),
             mem1_base_id_col11,
             mem1_base_limb_0_col12,
             mem1_base_limb_1_col13,
@@ -198,12 +198,12 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         mem_verify_equal_evaluate(
             [
-                (mem_dst_base_col9 + decode_instruction_cb32b_output_tmp_b1151_8_offset0),
+                (mem_dst_base_col9 + decode_instruction_ed841_output_tmp_b7bfa_8_offset0),
                 ((((mem1_base_limb_0_col12
                     + (mem1_base_limb_1_col13 * qm31_const::<512, 0, 0, 0>()))
                     + (mem1_base_limb_2_col14 * qm31_const::<262144, 0, 0, 0>()))
                     + (mem1_base_limb_3_col15 * qm31_const::<134217728, 0, 0, 0>()))
-                    + decode_instruction_cb32b_output_tmp_b1151_8_offset2),
+                    + decode_instruction_ed841_output_tmp_b7bfa_8_offset2),
             ],
             dst_id_col17,
             self.common_lookup_elements,

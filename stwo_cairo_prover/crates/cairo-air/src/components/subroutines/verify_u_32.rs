@@ -29,7 +29,7 @@ impl VerifyU32 {
         let M31_4 = E::F::from(M31::from(4));
         let M31_512 = E::F::from(M31::from(512));
 
-        let high_2_ls_bits_tmp_c4bc0_2 = eval.add_intermediate(
+        let high_2_ls_bits_tmp_1a63a_2 = eval.add_intermediate(
             (verify_u_32_input_limb_2.clone() - (high_14_ms_bits_col1.clone() * M31_4.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
@@ -38,7 +38,7 @@ impl VerifyU32 {
             &[
                 M31_371240602.clone(),
                 low_7_ms_bits_col0.clone(),
-                high_2_ls_bits_tmp_c4bc0_2.clone(),
+                high_2_ls_bits_tmp_1a63a_2.clone(),
                 high_5_ms_bits_col2.clone(),
             ],
         ));
@@ -48,7 +48,7 @@ impl VerifyU32 {
                 verify_u_32_input_limb_0.clone(),
                 (verify_u_32_input_limb_1.clone() - (low_7_ms_bits_col0.clone() * M31_512.clone())),
                 (low_7_ms_bits_col0.clone()
-                    + (high_2_ls_bits_tmp_c4bc0_2.clone() * M31_128.clone())),
+                    + (high_2_ls_bits_tmp_1a63a_2.clone() * M31_128.clone())),
                 (high_14_ms_bits_col1.clone() - (high_5_ms_bits_col2.clone() * M31_512.clone())),
                 high_5_ms_bits_col2.clone(),
                 M31_0.clone(),

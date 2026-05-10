@@ -1,6 +1,6 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::decode_instruction_f1edd::decode_instruction_f1edd_evaluate;
+use crate::components::subroutines::decode_instruction_edfb6::decode_instruction_edfb6_evaluate;
 use crate::components::subroutines::read_positive_num_bits_29::read_positive_num_bits_29_evaluate;
 use crate::prelude::*;
 
@@ -180,10 +180,10 @@ pub impl AirComponentImpl of AirComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         let [
-            decode_instruction_f1edd_output_tmp_32b66_4_offset2,
-            decode_instruction_f1edd_output_tmp_32b66_4_op1_base_ap,
+            decode_instruction_edfb6_output_tmp_46e76_4_offset2,
+            decode_instruction_edfb6_output_tmp_46e76_4_op1_base_ap,
         ] =
-            decode_instruction_f1edd_evaluate(
+            decode_instruction_edfb6_evaluate(
             input_pc_col0,
             offset2_col3,
             op1_base_fp_col4,
@@ -245,10 +245,10 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - mem1_base
         let constraint_quotient = ((mem1_base_col17
             - ((op1_base_fp_col4 * input_fp_col2)
-                + (decode_instruction_f1edd_output_tmp_32b66_4_op1_base_ap * input_ap_col1))));
+                + (decode_instruction_edfb6_output_tmp_46e76_4_op1_base_ap * input_ap_col1))));
         sum = sum * random_coeff + constraint_quotient;
         read_positive_num_bits_29_evaluate(
-            (mem1_base_col17 + decode_instruction_f1edd_output_tmp_32b66_4_offset2),
+            (mem1_base_col17 + decode_instruction_edfb6_output_tmp_46e76_4_offset2),
             next_pc_id_col18,
             next_pc_limb_0_col19,
             next_pc_limb_1_col20,

@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_ba944::DecodeInstructionBa944;
+use crate::components::subroutines::decode_instruction_1af1f::DecodeInstruction1Af1F;
 use crate::components::subroutines::read_small::ReadSmall;
 
 pub const N_TRACE_COLUMNS: usize = 16;
@@ -81,8 +81,8 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_ba944_output_tmp_62dfc_5_offset2, decode_instruction_ba944_output_tmp_62dfc_5_op1_base_ap] =
-            DecodeInstructionBa944::evaluate(
+        let [decode_instruction_1af1f_output_tmp_6218d_5_offset2, decode_instruction_1af1f_output_tmp_6218d_5_op1_base_ap] =
+            DecodeInstruction1Af1F::evaluate(
                 [input_pc_col0.clone()],
                 offset2_col3.clone(),
                 op1_base_fp_col4.clone(),
@@ -94,14 +94,14 @@ impl FrameworkEval for Eval {
         eval.add_constraint(
             (mem1_base_col6.clone()
                 - ((op1_base_fp_col4.clone() * input_fp_col2.clone())
-                    + (decode_instruction_ba944_output_tmp_62dfc_5_op1_base_ap.clone()
+                    + (decode_instruction_1af1f_output_tmp_6218d_5_op1_base_ap.clone()
                         * input_ap_col1.clone()))),
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [read_small_output_tmp_62dfc_15_limb_0] = ReadSmall::evaluate(
+        let [read_small_output_tmp_6218d_15_limb_0] = ReadSmall::evaluate(
             [(mem1_base_col6.clone()
-                + decode_instruction_ba944_output_tmp_62dfc_5_offset2.clone())],
+                + decode_instruction_1af1f_output_tmp_6218d_5_offset2.clone())],
             next_pc_id_col7.clone(),
             msb_col8.clone(),
             mid_limbs_set_col9.clone(),
@@ -133,7 +133,7 @@ impl FrameworkEval for Eval {
             -E::EF::from(enabler_col15.clone()),
             &[
                 M31_428564188.clone(),
-                (input_pc_col0.clone() + read_small_output_tmp_62dfc_15_limb_0.clone()),
+                (input_pc_col0.clone() + read_small_output_tmp_6218d_15_limb_0.clone()),
                 (input_ap_col1.clone() + ap_update_add_1_col5.clone()),
                 input_fp_col2.clone(),
             ],
