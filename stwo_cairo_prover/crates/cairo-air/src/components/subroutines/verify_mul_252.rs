@@ -1,9 +1,10 @@
 // This file was created by the AIR team.
 
-use crate::components::prelude::*;
-use crate::components::subroutines::double_karatsuba_f0fc6::DoubleKaratsubaF0Fc6;
+use subroutines::double_karatsuba_f0fc6::DoubleKaratsubaF0Fc6;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+use crate::components::prelude::*;
+
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct VerifyMul252 {}
 
 impl VerifyMul252 {

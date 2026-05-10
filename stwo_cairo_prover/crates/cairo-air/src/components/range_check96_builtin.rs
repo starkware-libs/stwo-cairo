@@ -1,7 +1,8 @@
 // This file was created by the AIR team.
 
+use subroutines::read_positive_num_bits_96::ReadPositiveNumBits96;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::read_positive_num_bits_96::ReadPositiveNumBits96;
 
 pub const N_TRACE_COLUMNS: usize = 12;
 pub const RELATION_USES_PER_ROW: [RelationUse; 3] = [
@@ -105,7 +106,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::RANGE_CHECK_96_BUILTIN;
 
     #[test]
     fn range_check96_builtin_constraints_regression() {
@@ -113,7 +113,7 @@ mod tests {
         let eval = Eval {
             claim: Claim {
                 log_size: 4,
-                range_check96_builtin_segment_start: rng.gen::<u32>(),
+                range_check96_builtin_segment_start: rng.r#gen::<u32>(),
             },
             common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
@@ -122,9 +122,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        RANGE_CHECK_96_BUILTIN.assert_debug_eq(&sum);
+        constraints_regression_test_values::RANGE_CHECK_96_BUILTIN.assert_debug_eq(&sum);
     }
 }

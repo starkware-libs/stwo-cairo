@@ -1,10 +1,11 @@
 // This file was created by the AIR team.
 
+use subroutines::decode_generic_instruction::DecodeGenericInstruction;
+use subroutines::eval_operands::EvalOperands;
+use subroutines::handle_opcodes::HandleOpcodes;
+use subroutines::update_registers::UpdateRegisters;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::decode_generic_instruction::DecodeGenericInstruction;
-use crate::components::subroutines::eval_operands::EvalOperands;
-use crate::components::subroutines::handle_opcodes::HandleOpcodes;
-use crate::components::subroutines::update_registers::UpdateRegisters;
 
 pub const N_TRACE_COLUMNS: usize = 243;
 pub const RELATION_USES_PER_ROW: [RelationUse; 22] = [
@@ -896,7 +897,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::GENERIC_OPCODE;
 
     #[test]
     fn generic_opcode_constraints_regression() {
@@ -910,9 +910,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        GENERIC_OPCODE.assert_debug_eq(&sum);
+        constraints_regression_test_values::GENERIC_OPCODE.assert_debug_eq(&sum);
     }
 }

@@ -1,12 +1,13 @@
 // This file was created by the AIR team.
 
-use crate::components::prelude::*;
-use crate::components::subroutines::add_252::Add252;
-use crate::components::subroutines::mul_252::Mul252;
-use crate::components::subroutines::range_check_mem_value_n_28::RangeCheckMemValueN28;
-use crate::components::subroutines::verify_mul_252::VerifyMul252;
+use subroutines::add_252::Add252;
+use subroutines::mul_252::Mul252;
+use subroutines::range_check_mem_value_n_28::RangeCheckMemValueN28;
+use subroutines::verify_mul_252::VerifyMul252;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+use crate::components::prelude::*;
+
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct EcDouble {}
 
 impl EcDouble {

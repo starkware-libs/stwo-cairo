@@ -1,11 +1,12 @@
 // This file was created by the AIR team.
 
-use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_30129::DecodeInstruction30129;
-use crate::components::subroutines::read_positive_num_bits_29::ReadPositiveNumBits29;
-use crate::components::subroutines::read_u_32::ReadU32;
+use subroutines::decode_instruction_30129::DecodeInstruction30129;
+use subroutines::read_positive_num_bits_29::ReadPositiveNumBits29;
+use subroutines::read_u_32::ReadU32;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+use crate::components::prelude::*;
+
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct DecodeBlakeOpcode {}
 
 impl DecodeBlakeOpcode {

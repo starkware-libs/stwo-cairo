@@ -1,9 +1,10 @@
 // This file was created by the AIR team.
 
+use subroutines::ec_add::EcAdd;
+use subroutines::ec_double::EcDouble;
+use subroutines::verify_reduced_252::VerifyReduced252;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::ec_add::EcAdd;
-use crate::components::subroutines::ec_double::EcDouble;
-use crate::components::subroutines::verify_reduced_252::VerifyReduced252;
 
 pub const N_TRACE_COLUMNS: usize = 624;
 pub const RELATION_USES_PER_ROW: [RelationUse; 18] = [
@@ -2372,7 +2373,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::PARTIAL_EC_MUL_GENERIC;
 
     #[test]
     fn partial_ec_mul_generic_constraints_regression() {
@@ -2386,9 +2386,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        PARTIAL_EC_MUL_GENERIC.assert_debug_eq(&sum);
+        constraints_regression_test_values::PARTIAL_EC_MUL_GENERIC.assert_debug_eq(&sum);
     }
 }

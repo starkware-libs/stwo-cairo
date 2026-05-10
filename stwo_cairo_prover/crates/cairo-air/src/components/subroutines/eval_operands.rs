@@ -1,12 +1,13 @@
 // This file was created by the AIR team.
 
-use crate::components::prelude::*;
-use crate::components::subroutines::add_252::Add252;
-use crate::components::subroutines::cond_felt_252_as_addr::CondFelt252AsAddr;
-use crate::components::subroutines::mul_252::Mul252;
-use crate::components::subroutines::read_positive_num_bits_252::ReadPositiveNumBits252;
+use subroutines::add_252::Add252;
+use subroutines::cond_felt_252_as_addr::CondFelt252AsAddr;
+use subroutines::mul_252::Mul252;
+use subroutines::read_positive_num_bits_252::ReadPositiveNumBits252;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+use crate::components::prelude::*;
+
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct EvalOperands {}
 
 impl EvalOperands {

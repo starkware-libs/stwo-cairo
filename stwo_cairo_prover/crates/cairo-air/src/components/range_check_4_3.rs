@@ -74,7 +74,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::RANGE_CHECK_4_3;
 
     #[test]
     fn range_check_4_3_constraints_regression() {
@@ -88,9 +87,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        RANGE_CHECK_4_3.assert_debug_eq(&sum);
+        constraints_regression_test_values::RANGE_CHECK_4_3.assert_debug_eq(&sum);
     }
 }

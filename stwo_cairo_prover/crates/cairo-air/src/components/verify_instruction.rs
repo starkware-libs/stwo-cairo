@@ -1,8 +1,9 @@
 // This file was created by the AIR team.
 
+use subroutines::encode_offsets::EncodeOffsets;
+use subroutines::mem_verify::MemVerify;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::encode_offsets::EncodeOffsets;
-use crate::components::subroutines::mem_verify::MemVerify;
 
 pub const N_TRACE_COLUMNS: usize = 17;
 pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
@@ -166,7 +167,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::VERIFY_INSTRUCTION;
 
     #[test]
     fn verify_instruction_constraints_regression() {
@@ -180,9 +180,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        VERIFY_INSTRUCTION.assert_debug_eq(&sum);
+        constraints_regression_test_values::VERIFY_INSTRUCTION.assert_debug_eq(&sum);
     }
 }

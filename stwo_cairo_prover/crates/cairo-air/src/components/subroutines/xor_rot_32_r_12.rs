@@ -1,11 +1,12 @@
 // This file was created by the AIR team.
 
-use crate::components::prelude::*;
-use crate::components::subroutines::bitwise_xor_num_bits_12::BitwiseXorNumBits12;
-use crate::components::subroutines::bitwise_xor_num_bits_4::BitwiseXorNumBits4;
-use crate::components::subroutines::split_16_low_part_size_12::Split16LowPartSize12;
+use subroutines::bitwise_xor_num_bits_12::BitwiseXorNumBits12;
+use subroutines::bitwise_xor_num_bits_4::BitwiseXorNumBits4;
+use subroutines::split_16_low_part_size_12::Split16LowPartSize12;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+use crate::components::prelude::*;
+
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct XorRot32R12 {}
 
 impl XorRot32R12 {

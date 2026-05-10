@@ -1,8 +1,9 @@
 // This file was created by the AIR team.
 
+use subroutines::read_positive_known_id_num_bits_252::ReadPositiveKnownIdNumBits252;
+use subroutines::verify_reduced_252::VerifyReduced252;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::read_positive_known_id_num_bits_252::ReadPositiveKnownIdNumBits252;
-use crate::components::subroutines::verify_reduced_252::VerifyReduced252;
 
 pub const N_TRACE_COLUMNS: usize = 206;
 pub const RELATION_USES_PER_ROW: [RelationUse; 3] = [
@@ -856,7 +857,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::PEDERSEN_AGGREGATOR_WINDOW_BITS_18;
 
     #[test]
     fn pedersen_aggregator_window_bits_18_constraints_regression() {
@@ -870,9 +870,10 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        PEDERSEN_AGGREGATOR_WINDOW_BITS_18.assert_debug_eq(&sum);
+        constraints_regression_test_values::PEDERSEN_AGGREGATOR_WINDOW_BITS_18
+            .assert_debug_eq(&sum);
     }
 }

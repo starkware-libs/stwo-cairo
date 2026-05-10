@@ -78,7 +78,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::VERIFY_BITWISE_XOR_7;
 
     #[test]
     fn verify_bitwise_xor_7_constraints_regression() {
@@ -92,9 +91,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        VERIFY_BITWISE_XOR_7.assert_debug_eq(&sum);
+        constraints_regression_test_values::VERIFY_BITWISE_XOR_7.assert_debug_eq(&sum);
     }
 }

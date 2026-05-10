@@ -1,8 +1,9 @@
 // This file was created by the AIR team.
 
+use subroutines::decode_instruction_c67a5::DecodeInstructionC67A5;
+use subroutines::qm_31_read_reduced::Qm31ReadReduced;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_c67a5::DecodeInstructionC67A5;
-use crate::components::subroutines::qm_31_read_reduced::Qm31ReadReduced;
 
 pub const N_TRACE_COLUMNS: usize = 73;
 pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
@@ -382,7 +383,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::QM_31_ADD_MUL_OPCODE;
 
     #[test]
     fn qm_31_add_mul_opcode_constraints_regression() {
@@ -396,9 +396,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        QM_31_ADD_MUL_OPCODE.assert_debug_eq(&sum);
+        constraints_regression_test_values::QM_31_ADD_MUL_OPCODE.assert_debug_eq(&sum);
     }
 }
