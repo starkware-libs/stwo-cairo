@@ -1,6 +1,6 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::double_karatsuba_b1daa::double_karatsuba_b1daa_evaluate;
+use crate::components::subroutines::double_karatsuba_9cdb9::double_karatsuba_9cdb9_evaluate;
 use crate::components::subroutines::mod_utils::mod_utils_evaluate;
 use crate::components::subroutines::mod_words_to_12_bit_array::mod_words_to_12_bit_array_evaluate;
 use crate::prelude::*;
@@ -2055,22 +2055,22 @@ pub impl AirComponentImpl of AirComponent<Component> {
             );
         numerator_84 = qm31_const::<1, 0, 0, 0>();
         let [
-            mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_0,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_1,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_2,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_3,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_4,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_5,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_6,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_7,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_8,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_9,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_10,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_11,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_12,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_13,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_14,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_15,
+            mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_0,
+            mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_1,
+            mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_2,
+            mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_3,
+            mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_4,
+            mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_5,
+            mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_6,
+            mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_7,
+            mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_8,
+            mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_9,
+            mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_10,
+            mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_11,
+            mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_12,
+            mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_13,
+            mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_14,
+            mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_15,
         ] =
             mod_words_to_12_bit_array_evaluate(
             [
@@ -2105,22 +2105,22 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         let [
-            mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_0,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_1,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_2,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_3,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_4,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_5,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_6,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_7,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_8,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_9,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_10,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_11,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_12,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_13,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_14,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_15,
+            mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_0,
+            mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_1,
+            mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_2,
+            mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_3,
+            mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_4,
+            mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_5,
+            mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_6,
+            mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_7,
+            mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_8,
+            mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_9,
+            mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_10,
+            mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_11,
+            mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_12,
+            mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_13,
+            mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_14,
+            mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_15,
         ] =
             mod_words_to_12_bit_array_evaluate(
             [
@@ -2155,22 +2155,22 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         let [
-            mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_0,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_1,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_2,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_3,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_4,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_5,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_6,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_7,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_8,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_9,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_10,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_11,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_12,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_13,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_14,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_15,
+            mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_0,
+            mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_1,
+            mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_2,
+            mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_3,
+            mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_4,
+            mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_5,
+            mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_6,
+            mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_7,
+            mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_8,
+            mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_9,
+            mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_10,
+            mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_11,
+            mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_12,
+            mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_13,
+            mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_14,
+            mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_15,
         ] =
             mod_words_to_12_bit_array_evaluate(
             [
@@ -2206,22 +2206,22 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         let [
-            mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_0,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_1,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_2,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_3,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_4,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_5,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_6,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_7,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_8,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_9,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_10,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_11,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_12,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_13,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_14,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_15,
+            mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_0,
+            mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_1,
+            mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_2,
+            mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_3,
+            mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_4,
+            mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_5,
+            mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_6,
+            mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_7,
+            mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_8,
+            mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_9,
+            mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_10,
+            mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_11,
+            mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_12,
+            mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_13,
+            mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_14,
+            mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_15,
         ] =
             mod_words_to_12_bit_array_evaluate(
             [
@@ -2257,22 +2257,22 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         let [
-            mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_0,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_1,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_2,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_3,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_4,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_5,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_6,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_7,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_8,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_9,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_10,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_11,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_12,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_13,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_14,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_15,
+            mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_0,
+            mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_1,
+            mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_2,
+            mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_3,
+            mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_4,
+            mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_5,
+            mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_6,
+            mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_7,
+            mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_8,
+            mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_9,
+            mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_10,
+            mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_11,
+            mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_12,
+            mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_13,
+            mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_14,
+            mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_15,
         ] =
             mod_words_to_12_bit_array_evaluate(
             [
@@ -2308,22 +2308,22 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         let [
-            mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_0,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_1,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_2,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_3,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_4,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_5,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_6,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_7,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_8,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_9,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_10,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_11,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_12,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_13,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_14,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_15,
+            mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_0,
+            mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_1,
+            mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_2,
+            mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_3,
+            mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_4,
+            mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_5,
+            mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_6,
+            mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_7,
+            mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_8,
+            mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_9,
+            mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_10,
+            mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_11,
+            mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_12,
+            mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_13,
+            mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_14,
+            mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_15,
         ] =
             mod_words_to_12_bit_array_evaluate(
             [
@@ -2359,22 +2359,22 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         let [
-            mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_0,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_1,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_2,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_3,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_4,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_5,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_6,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_7,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_8,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_9,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_10,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_11,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_12,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_13,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_14,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_15,
+            mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_0,
+            mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_1,
+            mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_2,
+            mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_3,
+            mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_4,
+            mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_5,
+            mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_6,
+            mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_7,
+            mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_8,
+            mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_9,
+            mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_10,
+            mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_11,
+            mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_12,
+            mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_13,
+            mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_14,
+            mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_15,
         ] =
             mod_words_to_12_bit_array_evaluate(
             [
@@ -2410,22 +2410,22 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         let [
-            mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_0,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_1,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_2,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_3,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_4,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_5,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_6,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_7,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_8,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_9,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_10,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_11,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_12,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_13,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_14,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_15,
+            mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_0,
+            mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_1,
+            mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_2,
+            mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_3,
+            mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_4,
+            mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_5,
+            mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_6,
+            mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_7,
+            mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_8,
+            mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_9,
+            mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_10,
+            mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_11,
+            mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_12,
+            mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_13,
+            mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_14,
+            mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_15,
         ] =
             mod_words_to_12_bit_array_evaluate(
             [
@@ -2461,207 +2461,207 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         let [
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_0,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_1,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_2,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_3,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_4,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_5,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_6,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_7,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_8,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_9,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_10,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_11,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_12,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_13,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_14,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_15,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_16,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_17,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_18,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_19,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_20,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_21,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_22,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_23,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_24,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_25,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_26,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_27,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_28,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_29,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_30,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_31,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_32,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_33,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_34,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_35,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_36,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_37,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_38,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_39,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_40,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_41,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_42,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_43,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_44,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_45,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_46,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_47,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_48,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_49,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_50,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_51,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_52,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_53,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_54,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_55,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_56,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_57,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_58,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_59,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_60,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_61,
-            double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_62,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_0,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_1,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_2,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_3,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_4,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_5,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_6,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_7,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_8,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_9,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_10,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_11,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_12,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_13,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_14,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_15,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_16,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_17,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_18,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_19,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_20,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_21,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_22,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_23,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_24,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_25,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_26,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_27,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_28,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_29,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_30,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_31,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_32,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_33,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_34,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_35,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_36,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_37,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_38,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_39,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_40,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_41,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_42,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_43,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_44,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_45,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_46,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_47,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_48,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_49,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_50,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_51,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_52,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_53,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_54,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_55,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_56,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_57,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_58,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_59,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_60,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_61,
+            double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_62,
         ] =
-            double_karatsuba_b1daa_evaluate(
+            double_karatsuba_9cdb9_evaluate(
             [
-                mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_0,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_1,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_2,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_3,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_4,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_5,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_6,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_7,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_8,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_9,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_10,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_11,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_12,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_13,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_14,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_227_limb_15,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_0,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_1,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_2,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_3,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_4,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_5,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_6,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_7,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_8,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_9,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_10,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_11,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_12,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_13,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_14,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_248_limb_15,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_0,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_1,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_2,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_3,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_4,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_5,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_6,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_7,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_8,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_9,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_10,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_11,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_12,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_13,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_14,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_269_limb_15,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_0,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_1,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_2,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_3,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_4,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_5,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_6,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_7,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_8,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_9,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_10,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_11,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_12,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_13,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_14,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_15,
+                mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_0,
+                mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_1,
+                mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_2,
+                mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_3,
+                mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_4,
+                mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_5,
+                mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_6,
+                mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_7,
+                mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_8,
+                mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_9,
+                mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_10,
+                mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_11,
+                mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_12,
+                mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_13,
+                mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_14,
+                mod_words_to_12_bit_array_output_tmp_f64f9_227_limb_15,
+                mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_0,
+                mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_1,
+                mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_2,
+                mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_3,
+                mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_4,
+                mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_5,
+                mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_6,
+                mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_7,
+                mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_8,
+                mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_9,
+                mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_10,
+                mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_11,
+                mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_12,
+                mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_13,
+                mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_14,
+                mod_words_to_12_bit_array_output_tmp_f64f9_248_limb_15,
+                mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_0,
+                mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_1,
+                mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_2,
+                mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_3,
+                mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_4,
+                mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_5,
+                mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_6,
+                mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_7,
+                mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_8,
+                mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_9,
+                mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_10,
+                mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_11,
+                mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_12,
+                mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_13,
+                mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_14,
+                mod_words_to_12_bit_array_output_tmp_f64f9_269_limb_15,
+                mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_0,
+                mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_1,
+                mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_2,
+                mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_3,
+                mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_4,
+                mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_5,
+                mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_6,
+                mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_7,
+                mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_8,
+                mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_9,
+                mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_10,
+                mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_11,
+                mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_12,
+                mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_13,
+                mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_14,
+                mod_words_to_12_bit_array_output_tmp_f64f9_290_limb_15,
             ],
             self.common_lookup_elements,
             ref sum,
             random_coeff,
         );
         let [
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_0,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_1,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_2,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_3,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_4,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_5,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_6,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_7,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_8,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_9,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_10,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_11,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_12,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_13,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_14,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_15,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_16,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_17,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_18,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_19,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_20,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_21,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_22,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_23,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_24,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_25,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_26,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_27,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_28,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_29,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_30,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_31,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_32,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_33,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_34,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_35,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_36,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_37,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_38,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_39,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_40,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_41,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_42,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_43,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_44,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_45,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_46,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_47,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_48,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_49,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_50,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_51,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_52,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_53,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_54,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_55,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_56,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_57,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_58,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_59,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_60,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_61,
-            double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_62,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_0,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_1,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_2,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_3,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_4,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_5,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_6,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_7,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_8,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_9,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_10,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_11,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_12,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_13,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_14,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_15,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_16,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_17,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_18,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_19,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_20,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_21,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_22,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_23,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_24,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_25,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_26,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_27,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_28,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_29,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_30,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_31,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_32,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_33,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_34,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_35,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_36,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_37,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_38,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_39,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_40,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_41,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_42,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_43,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_44,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_45,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_46,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_47,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_48,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_49,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_50,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_51,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_52,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_53,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_54,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_55,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_56,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_57,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_58,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_59,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_60,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_61,
+            double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_62,
         ] =
-            double_karatsuba_b1daa_evaluate(
+            double_karatsuba_9cdb9_evaluate(
             [
                 ab_minus_c_div_p_limb_0_col252, ab_minus_c_div_p_limb_1_col253,
                 ab_minus_c_div_p_limb_2_col254, ab_minus_c_div_p_limb_3_col255,
@@ -2679,38 +2679,38 @@ pub impl AirComponentImpl of AirComponent<Component> {
                 ab_minus_c_div_p_limb_26_col278, ab_minus_c_div_p_limb_27_col279,
                 ab_minus_c_div_p_limb_28_col280, ab_minus_c_div_p_limb_29_col281,
                 ab_minus_c_div_p_limb_30_col282, ab_minus_c_div_p_limb_31_col283,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_0,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_1,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_2,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_3,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_4,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_5,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_6,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_7,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_8,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_9,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_10,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_11,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_12,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_13,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_14,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_15,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_0,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_1,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_2,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_3,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_4,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_5,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_6,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_7,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_8,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_9,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_10,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_11,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_12,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_13,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_14,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_15,
+                mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_0,
+                mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_1,
+                mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_2,
+                mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_3,
+                mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_4,
+                mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_5,
+                mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_6,
+                mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_7,
+                mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_8,
+                mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_9,
+                mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_10,
+                mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_11,
+                mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_12,
+                mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_13,
+                mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_14,
+                mod_words_to_12_bit_array_output_tmp_f64f9_185_limb_15,
+                mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_0,
+                mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_1,
+                mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_2,
+                mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_3,
+                mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_4,
+                mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_5,
+                mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_6,
+                mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_7,
+                mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_8,
+                mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_9,
+                mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_10,
+                mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_11,
+                mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_12,
+                mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_13,
+                mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_14,
+                mod_words_to_12_bit_array_output_tmp_f64f9_206_limb_15,
             ],
             self.common_lookup_elements,
             ref sum,
@@ -2719,9 +2719,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_0
         let constraint_quotient = ((carry_0_col364
-            - (((qm31_const::<0, 0, 0, 0>() - mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_0)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_0
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_0))
+            - (((qm31_const::<0, 0, 0, 0>() - mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_0)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_0
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_0))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -2738,9 +2738,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_1
         let constraint_quotient = ((carry_1_col365
-            - (((carry_0_col364 - mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_1)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_1
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_1))
+            - (((carry_0_col364 - mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_1)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_1
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_1))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -2757,9 +2757,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_2
         let constraint_quotient = ((carry_2_col366
-            - (((carry_1_col365 - mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_2)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_2
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_2))
+            - (((carry_1_col365 - mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_2)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_2
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_2))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -2776,9 +2776,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_3
         let constraint_quotient = ((carry_3_col367
-            - (((carry_2_col366 - mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_3)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_3
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_3))
+            - (((carry_2_col366 - mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_3)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_3
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_3))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -2795,9 +2795,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_4
         let constraint_quotient = ((carry_4_col368
-            - (((carry_3_col367 - mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_4)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_4
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_4))
+            - (((carry_3_col367 - mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_4)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_4
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_4))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -2814,9 +2814,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_5
         let constraint_quotient = ((carry_5_col369
-            - (((carry_4_col368 - mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_5)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_5
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_5))
+            - (((carry_4_col368 - mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_5)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_5
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_5))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -2833,9 +2833,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_6
         let constraint_quotient = ((carry_6_col370
-            - (((carry_5_col369 - mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_6)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_6
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_6))
+            - (((carry_5_col369 - mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_6)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_6
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_6))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -2852,9 +2852,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_7
         let constraint_quotient = ((carry_7_col371
-            - (((carry_6_col370 - mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_7)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_7
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_7))
+            - (((carry_6_col370 - mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_7)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_7
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_7))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -2871,9 +2871,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_8
         let constraint_quotient = ((carry_8_col372
-            - (((carry_7_col371 - mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_8)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_8
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_8))
+            - (((carry_7_col371 - mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_8)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_8
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_8))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -2890,9 +2890,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_9
         let constraint_quotient = ((carry_9_col373
-            - (((carry_8_col372 - mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_9)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_9
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_9))
+            - (((carry_8_col372 - mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_9)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_9
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_9))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -2909,9 +2909,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_10
         let constraint_quotient = ((carry_10_col374
-            - (((carry_9_col373 - mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_10)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_10
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_10))
+            - (((carry_9_col373 - mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_10)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_10
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_10))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -2928,9 +2928,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_11
         let constraint_quotient = ((carry_11_col375
-            - (((carry_10_col374 - mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_11)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_11
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_11))
+            - (((carry_10_col374 - mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_11)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_11
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_11))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -2947,9 +2947,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_12
         let constraint_quotient = ((carry_12_col376
-            - (((carry_11_col375 - mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_12)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_12
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_12))
+            - (((carry_11_col375 - mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_12)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_12
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_12))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -2966,9 +2966,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_13
         let constraint_quotient = ((carry_13_col377
-            - (((carry_12_col376 - mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_13)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_13
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_13))
+            - (((carry_12_col376 - mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_13)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_13
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_13))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -2985,9 +2985,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_14
         let constraint_quotient = ((carry_14_col378
-            - (((carry_13_col377 - mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_14)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_14
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_14))
+            - (((carry_13_col377 - mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_14)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_14
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_14))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3004,9 +3004,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_15
         let constraint_quotient = ((carry_15_col379
-            - (((carry_14_col378 - mod_words_to_12_bit_array_output_tmp_cf8b4_311_limb_15)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_15
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_15))
+            - (((carry_14_col378 - mod_words_to_12_bit_array_output_tmp_f64f9_311_limb_15)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_15
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_15))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3023,9 +3023,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_16
         let constraint_quotient = ((carry_16_col380
-            - (((carry_15_col379 - mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_0)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_16
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_16))
+            - (((carry_15_col379 - mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_0)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_16
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_16))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3042,9 +3042,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_17
         let constraint_quotient = ((carry_17_col381
-            - (((carry_16_col380 - mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_1)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_17
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_17))
+            - (((carry_16_col380 - mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_1)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_17
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_17))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3061,9 +3061,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_18
         let constraint_quotient = ((carry_18_col382
-            - (((carry_17_col381 - mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_2)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_18
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_18))
+            - (((carry_17_col381 - mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_2)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_18
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_18))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3080,9 +3080,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_19
         let constraint_quotient = ((carry_19_col383
-            - (((carry_18_col382 - mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_3)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_19
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_19))
+            - (((carry_18_col382 - mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_3)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_19
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_19))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3099,9 +3099,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_20
         let constraint_quotient = ((carry_20_col384
-            - (((carry_19_col383 - mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_4)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_20
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_20))
+            - (((carry_19_col383 - mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_4)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_20
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_20))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3118,9 +3118,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_21
         let constraint_quotient = ((carry_21_col385
-            - (((carry_20_col384 - mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_5)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_21
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_21))
+            - (((carry_20_col384 - mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_5)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_21
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_21))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3137,9 +3137,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_22
         let constraint_quotient = ((carry_22_col386
-            - (((carry_21_col385 - mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_6)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_22
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_22))
+            - (((carry_21_col385 - mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_6)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_22
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_22))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3156,9 +3156,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_23
         let constraint_quotient = ((carry_23_col387
-            - (((carry_22_col386 - mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_7)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_23
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_23))
+            - (((carry_22_col386 - mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_7)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_23
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_23))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3175,9 +3175,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_24
         let constraint_quotient = ((carry_24_col388
-            - (((carry_23_col387 - mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_8)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_24
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_24))
+            - (((carry_23_col387 - mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_8)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_24
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_24))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3194,9 +3194,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_25
         let constraint_quotient = ((carry_25_col389
-            - (((carry_24_col388 - mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_9)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_25
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_25))
+            - (((carry_24_col388 - mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_9)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_25
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_25))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3213,9 +3213,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_26
         let constraint_quotient = ((carry_26_col390
-            - (((carry_25_col389 - mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_10)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_26
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_26))
+            - (((carry_25_col389 - mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_10)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_26
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_26))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3232,9 +3232,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_27
         let constraint_quotient = ((carry_27_col391
-            - (((carry_26_col390 - mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_11)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_27
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_27))
+            - (((carry_26_col390 - mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_11)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_27
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_27))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3251,9 +3251,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_28
         let constraint_quotient = ((carry_28_col392
-            - (((carry_27_col391 - mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_12)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_28
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_28))
+            - (((carry_27_col391 - mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_12)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_28
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_28))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3270,9 +3270,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_29
         let constraint_quotient = ((carry_29_col393
-            - (((carry_28_col392 - mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_13)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_29
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_29))
+            - (((carry_28_col392 - mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_13)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_29
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_29))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3289,9 +3289,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_30
         let constraint_quotient = ((carry_30_col394
-            - (((carry_29_col393 - mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_14)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_30
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_30))
+            - (((carry_29_col393 - mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_14)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_30
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_30))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3308,9 +3308,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - carry_31
         let constraint_quotient = ((carry_31_col395
-            - (((carry_30_col394 - mod_words_to_12_bit_array_output_tmp_cf8b4_332_limb_15)
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_31
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_31))
+            - (((carry_30_col394 - mod_words_to_12_bit_array_output_tmp_f64f9_332_limb_15)
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_31
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_31))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3328,8 +3328,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_32
         let constraint_quotient = ((carry_32_col396
             - ((carry_31_col395
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_32
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_32))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_32
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_32))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3347,8 +3347,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_33
         let constraint_quotient = ((carry_33_col397
             - ((carry_32_col396
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_33
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_33))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_33
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_33))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3366,8 +3366,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_34
         let constraint_quotient = ((carry_34_col398
             - ((carry_33_col397
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_34
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_34))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_34
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_34))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3385,8 +3385,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_35
         let constraint_quotient = ((carry_35_col399
             - ((carry_34_col398
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_35
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_35))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_35
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_35))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3404,8 +3404,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_36
         let constraint_quotient = ((carry_36_col400
             - ((carry_35_col399
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_36
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_36))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_36
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_36))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3423,8 +3423,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_37
         let constraint_quotient = ((carry_37_col401
             - ((carry_36_col400
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_37
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_37))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_37
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_37))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3442,8 +3442,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_38
         let constraint_quotient = ((carry_38_col402
             - ((carry_37_col401
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_38
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_38))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_38
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_38))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3461,8 +3461,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_39
         let constraint_quotient = ((carry_39_col403
             - ((carry_38_col402
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_39
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_39))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_39
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_39))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3480,8 +3480,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_40
         let constraint_quotient = ((carry_40_col404
             - ((carry_39_col403
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_40
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_40))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_40
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_40))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3499,8 +3499,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_41
         let constraint_quotient = ((carry_41_col405
             - ((carry_40_col404
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_41
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_41))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_41
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_41))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3518,8 +3518,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_42
         let constraint_quotient = ((carry_42_col406
             - ((carry_41_col405
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_42
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_42))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_42
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_42))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3537,8 +3537,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_43
         let constraint_quotient = ((carry_43_col407
             - ((carry_42_col406
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_43
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_43))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_43
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_43))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3556,8 +3556,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_44
         let constraint_quotient = ((carry_44_col408
             - ((carry_43_col407
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_44
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_44))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_44
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_44))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3575,8 +3575,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_45
         let constraint_quotient = ((carry_45_col409
             - ((carry_44_col408
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_45
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_45))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_45
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_45))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3594,8 +3594,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_46
         let constraint_quotient = ((carry_46_col410
             - ((carry_45_col409
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_46
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_46))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_46
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_46))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3613,8 +3613,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_47
         let constraint_quotient = ((carry_47_col411
             - ((carry_46_col410
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_47
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_47))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_47
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_47))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3632,8 +3632,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_48
         let constraint_quotient = ((carry_48_col412
             - ((carry_47_col411
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_48
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_48))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_48
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_48))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3651,8 +3651,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_49
         let constraint_quotient = ((carry_49_col413
             - ((carry_48_col412
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_49
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_49))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_49
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_49))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3670,8 +3670,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_50
         let constraint_quotient = ((carry_50_col414
             - ((carry_49_col413
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_50
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_50))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_50
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_50))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3689,8 +3689,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_51
         let constraint_quotient = ((carry_51_col415
             - ((carry_50_col414
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_51
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_51))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_51
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_51))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3708,8 +3708,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_52
         let constraint_quotient = ((carry_52_col416
             - ((carry_51_col415
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_52
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_52))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_52
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_52))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3727,8 +3727,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_53
         let constraint_quotient = ((carry_53_col417
             - ((carry_52_col416
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_53
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_53))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_53
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_53))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3746,8 +3746,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_54
         let constraint_quotient = ((carry_54_col418
             - ((carry_53_col417
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_54
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_54))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_54
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_54))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3765,8 +3765,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_55
         let constraint_quotient = ((carry_55_col419
             - ((carry_54_col418
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_55
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_55))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_55
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_55))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3784,8 +3784,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_56
         let constraint_quotient = ((carry_56_col420
             - ((carry_55_col419
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_56
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_56))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_56
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_56))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3803,8 +3803,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_57
         let constraint_quotient = ((carry_57_col421
             - ((carry_56_col420
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_57
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_57))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_57
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_57))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3822,8 +3822,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_58
         let constraint_quotient = ((carry_58_col422
             - ((carry_57_col421
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_58
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_58))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_58
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_58))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3841,8 +3841,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_59
         let constraint_quotient = ((carry_59_col423
             - ((carry_58_col422
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_59
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_59))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_59
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_59))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3860,8 +3860,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_60
         let constraint_quotient = ((carry_60_col424
             - ((carry_59_col423
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_60
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_60))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_60
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_60))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3879,8 +3879,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - carry_61
         let constraint_quotient = ((carry_61_col425
             - ((carry_60_col424
-                + (double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_61
-                    - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_61))
+                + (double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_61
+                    - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_61))
                 * qm31_const::<524288, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
@@ -3896,9 +3896,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
         numerator_186 = qm31_const::<1, 0, 0, 0>();
 
         // Constraint - final limb constraint
-        let constraint_quotient = (((double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_62
+        let constraint_quotient = (((double_karatsuba_9cdb9_output_tmp_f64f9_350_limb_62
             + carry_61_col425)
-            - double_karatsuba_b1daa_output_tmp_cf8b4_368_limb_62));
+            - double_karatsuba_9cdb9_output_tmp_f64f9_368_limb_62));
         sum = sum * random_coeff + constraint_quotient;
 
         lookup_constraints(

@@ -1,6 +1,6 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::decode_instruction_15a61::decode_instruction_15a61_evaluate;
+use crate::components::subroutines::decode_instruction_a4d88::decode_instruction_a4d88_evaluate;
 use crate::components::subroutines::read_positive_num_bits_29::read_positive_num_bits_29_evaluate;
 use crate::prelude::*;
 
@@ -139,7 +139,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        decode_instruction_15a61_evaluate(
+        decode_instruction_a4d88_evaluate(
             input_pc_col0,
             self.common_lookup_elements,
             ref verify_instruction_sum_0,

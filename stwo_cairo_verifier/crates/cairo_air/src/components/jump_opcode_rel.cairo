@@ -1,6 +1,6 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::decode_instruction_ba944::decode_instruction_ba944_evaluate;
+use crate::components::subroutines::decode_instruction_1af1f::decode_instruction_1af1f_evaluate;
 use crate::components::subroutines::read_small::read_small_evaluate;
 use crate::prelude::*;
 
@@ -135,10 +135,10 @@ pub impl AirComponentImpl of AirComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         let [
-            decode_instruction_ba944_output_tmp_62dfc_5_offset2,
-            decode_instruction_ba944_output_tmp_62dfc_5_op1_base_ap,
+            decode_instruction_1af1f_output_tmp_6218d_5_offset2,
+            decode_instruction_1af1f_output_tmp_6218d_5_op1_base_ap,
         ] =
-            decode_instruction_ba944_evaluate(
+            decode_instruction_1af1f_evaluate(
             input_pc_col0,
             offset2_col3,
             op1_base_fp_col4,
@@ -153,10 +153,10 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - mem1_base
         let constraint_quotient = ((mem1_base_col6
             - ((op1_base_fp_col4 * input_fp_col2)
-                + (decode_instruction_ba944_output_tmp_62dfc_5_op1_base_ap * input_ap_col1))));
+                + (decode_instruction_1af1f_output_tmp_6218d_5_op1_base_ap * input_ap_col1))));
         sum = sum * random_coeff + constraint_quotient;
-        let read_small_output_tmp_62dfc_15_limb_0: QM31 = read_small_evaluate(
-            (mem1_base_col6 + decode_instruction_ba944_output_tmp_62dfc_5_offset2),
+        let read_small_output_tmp_6218d_15_limb_0: QM31 = read_small_evaluate(
+            (mem1_base_col6 + decode_instruction_1af1f_output_tmp_6218d_5_offset2),
             next_pc_id_col7,
             msb_col8,
             mid_limbs_set_col9,
@@ -191,7 +191,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             .combine_qm31(
                 [
                     qm31_const::<428564188, 0, 0, 0>(),
-                    (input_pc_col0 + read_small_output_tmp_62dfc_15_limb_0),
+                    (input_pc_col0 + read_small_output_tmp_6218d_15_limb_0),
                     (input_ap_col1 + ap_update_add_1_col5), input_fp_col2,
                 ]
                     .span(),

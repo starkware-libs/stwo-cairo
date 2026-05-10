@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_7ebc4::DecodeInstruction7Ebc4;
+use crate::components::subroutines::decode_instruction_7dcb2::DecodeInstruction7Dcb2;
 use crate::components::subroutines::read_small::ReadSmall;
 
 pub const N_TRACE_COLUMNS: usize = 13;
@@ -77,7 +77,7 @@ impl FrameworkEval for Eval {
         let partial_limb_msb_col11 = eval.next_trace_mask();
         let enabler_col12 = eval.next_trace_mask();
 
-        DecodeInstruction7Ebc4::evaluate(
+        DecodeInstruction7Dcb2::evaluate(
             [input_pc_col0.clone()],
             ap_update_add_1_col3.clone(),
             &self.common_lookup_elements,
@@ -85,7 +85,7 @@ impl FrameworkEval for Eval {
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [read_small_output_tmp_81a39_13_limb_0] = ReadSmall::evaluate(
+        let [read_small_output_tmp_78364_13_limb_0] = ReadSmall::evaluate(
             [(input_pc_col0.clone() + M31_1.clone())],
             next_pc_id_col4.clone(),
             msb_col5.clone(),
@@ -118,7 +118,7 @@ impl FrameworkEval for Eval {
             -E::EF::from(enabler_col12.clone()),
             &[
                 M31_428564188.clone(),
-                (input_pc_col0.clone() + read_small_output_tmp_81a39_13_limb_0.clone()),
+                (input_pc_col0.clone() + read_small_output_tmp_78364_13_limb_0.clone()),
                 (input_ap_col1.clone() + ap_update_add_1_col3.clone()),
                 input_fp_col2.clone(),
             ],

@@ -21,13 +21,13 @@ pub fn verify_u_32_evaluate(
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let [verify_u_32_input_limb_0, verify_u_32_input_limb_1, verify_u_32_input_limb_2] = input;
-    let high_2_ls_bits_tmp_c4bc0_2: QM31 = (verify_u_32_input_limb_2
+    let high_2_ls_bits_tmp_1a63a_2: QM31 = (verify_u_32_input_limb_2
         - (high_14_ms_bits_col1 * qm31_const::<4, 0, 0, 0>()));
 
     range_check_7_2_5_sum_0 = common_lookup_elements
         .combine_qm31(
             [
-                qm31_const::<371240602, 0, 0, 0>(), low_7_ms_bits_col0, high_2_ls_bits_tmp_c4bc0_2,
+                qm31_const::<371240602, 0, 0, 0>(), low_7_ms_bits_col0, high_2_ls_bits_tmp_1a63a_2,
                 high_5_ms_bits_col2,
             ]
                 .span(),
@@ -37,7 +37,7 @@ pub fn verify_u_32_evaluate(
         [
             verify_u_32_input_limb_0,
             (verify_u_32_input_limb_1 - (low_7_ms_bits_col0 * qm31_const::<512, 0, 0, 0>())),
-            (low_7_ms_bits_col0 + (high_2_ls_bits_tmp_c4bc0_2 * qm31_const::<128, 0, 0, 0>())),
+            (low_7_ms_bits_col0 + (high_2_ls_bits_tmp_1a63a_2 * qm31_const::<128, 0, 0, 0>())),
             (high_14_ms_bits_col1 - (high_5_ms_bits_col2 * qm31_const::<512, 0, 0, 0>())),
             high_5_ms_bits_col2, qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
             qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),

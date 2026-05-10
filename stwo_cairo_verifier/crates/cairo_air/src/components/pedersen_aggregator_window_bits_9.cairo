@@ -1378,7 +1378,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let partial_ec_mul_window_bits_9_chain_tmp_tmp_344c0_8: QM31 = (seq
+        let partial_ec_mul_window_bits_9_chain_tmp_tmp_e17b2_8: QM31 = (seq
             * qm31_const::<2, 0, 0, 0>());
 
         partial_ec_mul_window_bits_9_sum_6 = self
@@ -1386,7 +1386,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             .combine_qm31(
                 [
                     qm31_const::<2038149019, 0, 0, 0>(),
-                    partial_ec_mul_window_bits_9_chain_tmp_tmp_344c0_8, qm31_const::<0, 0, 0, 0>(),
+                    partial_ec_mul_window_bits_9_chain_tmp_tmp_e17b2_8, qm31_const::<0, 0, 0, 0>(),
                     value_limb_0_col3, value_limb_1_col4, value_limb_2_col5, value_limb_3_col6,
                     value_limb_4_col7, value_limb_5_col8, value_limb_6_col9, value_limb_7_col10,
                     value_limb_8_col11, value_limb_9_col12, value_limb_10_col13,
@@ -1434,7 +1434,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             .combine_qm31(
                 [
                     qm31_const::<2038149019, 0, 0, 0>(),
-                    partial_ec_mul_window_bits_9_chain_tmp_tmp_344c0_8, qm31_const::<28, 0, 0, 0>(),
+                    partial_ec_mul_window_bits_9_chain_tmp_tmp_e17b2_8, qm31_const::<28, 0, 0, 0>(),
                     partial_ec_mul_window_bits_9_output_limb_0_col65,
                     partial_ec_mul_window_bits_9_output_limb_1_col66,
                     partial_ec_mul_window_bits_9_output_limb_2_col67,
@@ -1523,8 +1523,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
                     .span(),
             );
         numerator_7 = qm31_const::<1, 0, 0, 0>();
-        let partial_ec_mul_window_bits_9_chain_id_tmp_344c0_37: QM31 =
-            (partial_ec_mul_window_bits_9_chain_tmp_tmp_344c0_8
+        let partial_ec_mul_window_bits_9_chain_id_tmp_e17b2_37: QM31 =
+            (partial_ec_mul_window_bits_9_chain_tmp_tmp_e17b2_8
             + qm31_const::<1, 0, 0, 0>());
 
         partial_ec_mul_window_bits_9_sum_8 = self
@@ -1532,7 +1532,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             .combine_qm31(
                 [
                     qm31_const::<2038149019, 0, 0, 0>(),
-                    partial_ec_mul_window_bits_9_chain_id_tmp_344c0_37, qm31_const::<28, 0, 0, 0>(),
+                    partial_ec_mul_window_bits_9_chain_id_tmp_e17b2_37, qm31_const::<28, 0, 0, 0>(),
                     value_limb_0_col31, value_limb_1_col32, value_limb_2_col33, value_limb_3_col34,
                     value_limb_4_col35, value_limb_5_col36, value_limb_6_col37, value_limb_7_col38,
                     value_limb_8_col39, value_limb_9_col40, value_limb_10_col41,
@@ -1608,7 +1608,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             .combine_qm31(
                 [
                     qm31_const::<2038149019, 0, 0, 0>(),
-                    partial_ec_mul_window_bits_9_chain_id_tmp_344c0_37, qm31_const::<56, 0, 0, 0>(),
+                    partial_ec_mul_window_bits_9_chain_id_tmp_e17b2_37, qm31_const::<56, 0, 0, 0>(),
                     partial_ec_mul_window_bits_9_output_limb_0_col149,
                     partial_ec_mul_window_bits_9_output_limb_1_col150,
                     partial_ec_mul_window_bits_9_output_limb_2_col151,

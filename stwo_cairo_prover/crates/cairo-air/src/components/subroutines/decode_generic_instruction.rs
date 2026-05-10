@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_df7a6::DecodeInstructionDf7A6;
+use crate::components::subroutines::decode_instruction_a1c8b::DecodeInstructionA1C8B;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct DecodeGenericInstruction {}
@@ -38,8 +38,8 @@ impl DecodeGenericInstruction {
     ) -> [E::F; 8] {
         let M31_1 = E::F::from(M31::from(1));
 
-        let [decode_instruction_df7a6_output_tmp_62f3c_20_offset0, decode_instruction_df7a6_output_tmp_62f3c_20_offset1, decode_instruction_df7a6_output_tmp_62f3c_20_offset2] =
-            DecodeInstructionDf7A6::evaluate(
+        let [decode_instruction_a1c8b_output_tmp_e6fd8_20_offset0, decode_instruction_a1c8b_output_tmp_e6fd8_20_offset1, decode_instruction_a1c8b_output_tmp_e6fd8_20_offset2] =
+            DecodeInstructionA1C8B::evaluate(
                 [decode_generic_instruction_input.clone()],
                 offset0_col0.clone(),
                 offset1_col1.clone(),
@@ -62,58 +62,58 @@ impl DecodeGenericInstruction {
                 common_lookup_elements,
                 eval,
             );
-        let op1_base_op0_tmp_62f3c_21 = eval.add_intermediate(
+        let op1_base_op0_tmp_e6fd8_21 = eval.add_intermediate(
             (((M31_1.clone() - op1_imm_col5.clone()) - op1_base_fp_col6.clone())
                 - op1_base_ap_col7.clone()),
         );
         // op1_src is 0, 1, 2, or 4.
         eval.add_constraint(
-            (op1_base_op0_tmp_62f3c_21.clone()
-                * (M31_1.clone() - op1_base_op0_tmp_62f3c_21.clone())),
+            (op1_base_op0_tmp_e6fd8_21.clone()
+                * (M31_1.clone() - op1_base_op0_tmp_e6fd8_21.clone())),
         );
-        let res_op1_tmp_62f3c_22 = eval.add_intermediate(
+        let res_op1_tmp_e6fd8_22 = eval.add_intermediate(
             (((M31_1.clone() - res_add_col8.clone()) - res_mul_col9.clone())
                 - pc_update_jnz_col12.clone()),
         );
         // res_logic is 0, 1, or 2.
         eval.add_constraint(
-            (res_op1_tmp_62f3c_22.clone() * (M31_1.clone() - res_op1_tmp_62f3c_22.clone())),
+            (res_op1_tmp_e6fd8_22.clone() * (M31_1.clone() - res_op1_tmp_e6fd8_22.clone())),
         );
-        let pc_update_regular_tmp_62f3c_23 = eval.add_intermediate(
+        let pc_update_regular_tmp_e6fd8_23 = eval.add_intermediate(
             (((M31_1.clone() - pc_update_jump_col10.clone()) - pc_update_jump_rel_col11.clone())
                 - pc_update_jnz_col12.clone()),
         );
         // pc_update is 0, 1, 2, or 4.
         eval.add_constraint(
-            (pc_update_regular_tmp_62f3c_23.clone()
-                * (M31_1.clone() - pc_update_regular_tmp_62f3c_23.clone())),
+            (pc_update_regular_tmp_e6fd8_23.clone()
+                * (M31_1.clone() - pc_update_regular_tmp_e6fd8_23.clone())),
         );
-        let ap_update_regular_tmp_62f3c_24 = eval.add_intermediate(
+        let ap_update_regular_tmp_e6fd8_24 = eval.add_intermediate(
             (((M31_1.clone() - ap_update_add_col13.clone()) - ap_update_add_1_col14.clone())
                 - opcode_call_col15.clone()),
         );
         // ap_update is 0, 1, 2, or 4.
         eval.add_constraint(
-            (ap_update_regular_tmp_62f3c_24.clone()
-                * (M31_1.clone() - ap_update_regular_tmp_62f3c_24.clone())),
+            (ap_update_regular_tmp_e6fd8_24.clone()
+                * (M31_1.clone() - ap_update_regular_tmp_e6fd8_24.clone())),
         );
-        let fp_update_regular_tmp_62f3c_25 = eval.add_intermediate(
+        let fp_update_regular_tmp_e6fd8_25 = eval.add_intermediate(
             ((M31_1.clone() - opcode_call_col15.clone()) - opcode_ret_col16.clone()),
         );
         // opcode is 0, 1, 2, or 4.
         eval.add_constraint(
-            (fp_update_regular_tmp_62f3c_25.clone()
-                * (M31_1.clone() - fp_update_regular_tmp_62f3c_25.clone())),
+            (fp_update_regular_tmp_e6fd8_25.clone()
+                * (M31_1.clone() - fp_update_regular_tmp_e6fd8_25.clone())),
         );
         [
-            op1_base_op0_tmp_62f3c_21.clone(),
-            res_op1_tmp_62f3c_22.clone(),
-            pc_update_regular_tmp_62f3c_23.clone(),
-            fp_update_regular_tmp_62f3c_25.clone(),
+            op1_base_op0_tmp_e6fd8_21.clone(),
+            res_op1_tmp_e6fd8_22.clone(),
+            pc_update_regular_tmp_e6fd8_23.clone(),
+            fp_update_regular_tmp_e6fd8_25.clone(),
             (M31_1.clone() + op1_imm_col5.clone()),
-            decode_instruction_df7a6_output_tmp_62f3c_20_offset0.clone(),
-            decode_instruction_df7a6_output_tmp_62f3c_20_offset1.clone(),
-            decode_instruction_df7a6_output_tmp_62f3c_20_offset2.clone(),
+            decode_instruction_a1c8b_output_tmp_e6fd8_20_offset0.clone(),
+            decode_instruction_a1c8b_output_tmp_e6fd8_20_offset1.clone(),
+            decode_instruction_a1c8b_output_tmp_e6fd8_20_offset2.clone(),
         ]
     }
 }

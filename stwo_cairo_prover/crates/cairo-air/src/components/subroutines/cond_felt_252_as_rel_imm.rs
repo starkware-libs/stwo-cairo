@@ -28,7 +28,7 @@ impl CondFelt252AsRelImm {
         let M31_512 = E::F::from(M31::from(512));
         let M31_536870912 = E::F::from(M31::from(536870912));
 
-        let [decode_small_sign_output_tmp_1e9bf_2_limb3_7_high_bits, decode_small_sign_output_tmp_1e9bf_2_limbs4_to_20, decode_small_sign_output_tmp_1e9bf_2_limb21, decode_small_sign_output_tmp_1e9bf_2_limb27] =
+        let [decode_small_sign_output_tmp_37f57_2_limb3_7_high_bits, decode_small_sign_output_tmp_37f57_2_limbs4_to_20, decode_small_sign_output_tmp_37f57_2_limb21, decode_small_sign_output_tmp_37f57_2_limb27] =
             DecodeSmallSign::evaluate(
                 [],
                 msb_col0.clone(),
@@ -36,13 +36,13 @@ impl CondFelt252AsRelImm {
                 common_lookup_elements,
                 eval,
             );
-        let remainder_bits_tmp_1e9bf_3 = eval.add_intermediate(
+        let remainder_bits_tmp_37f57_3 = eval.add_intermediate(
             (cond_felt_252_as_rel_imm_input_limb_3.clone()
-                - decode_small_sign_output_tmp_1e9bf_2_limb3_7_high_bits.clone()),
+                - decode_small_sign_output_tmp_37f57_2_limb3_7_high_bits.clone()),
         );
         CondRangeCheck2::evaluate(
             [
-                remainder_bits_tmp_1e9bf_3.clone(),
+                remainder_bits_tmp_37f57_3.clone(),
                 cond_felt_252_as_rel_imm_input_limb_28.clone(),
             ],
             partial_limb_msb_col2.clone(),
@@ -69,14 +69,14 @@ impl CondFelt252AsRelImm {
                     + cond_felt_252_as_rel_imm_input_limb_18.clone())
                     + cond_felt_252_as_rel_imm_input_limb_19.clone())
                     + cond_felt_252_as_rel_imm_input_limb_20.clone())
-                    - (decode_small_sign_output_tmp_1e9bf_2_limbs4_to_20.clone()
+                    - (decode_small_sign_output_tmp_37f57_2_limbs4_to_20.clone()
                         * M31_17.clone()))),
         );
         // When the condition holds, limb 21 must be 0x0, 0x88 or 0x87.
         eval.add_constraint(
             (cond_felt_252_as_rel_imm_input_limb_28.clone()
                 * (cond_felt_252_as_rel_imm_input_limb_21.clone()
-                    - decode_small_sign_output_tmp_1e9bf_2_limb21.clone())),
+                    - decode_small_sign_output_tmp_37f57_2_limb21.clone())),
         );
         // When the condition holds, limbs 22-26 must be zero.
         eval.add_constraint(
@@ -91,12 +91,12 @@ impl CondFelt252AsRelImm {
         eval.add_constraint(
             (cond_felt_252_as_rel_imm_input_limb_28.clone()
                 * (cond_felt_252_as_rel_imm_input_limb_27.clone()
-                    - decode_small_sign_output_tmp_1e9bf_2_limb27.clone())),
+                    - decode_small_sign_output_tmp_37f57_2_limb27.clone())),
         );
         [(((((cond_felt_252_as_rel_imm_input_limb_0.clone()
             + (cond_felt_252_as_rel_imm_input_limb_1.clone() * M31_512.clone()))
             + (cond_felt_252_as_rel_imm_input_limb_2.clone() * M31_262144.clone()))
-            + (remainder_bits_tmp_1e9bf_3.clone() * M31_134217728.clone()))
+            + (remainder_bits_tmp_37f57_3.clone() * M31_134217728.clone()))
             - msb_col0.clone())
             - (M31_536870912.clone() * mid_limbs_set_col1.clone()))]
     }

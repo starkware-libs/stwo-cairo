@@ -445,7 +445,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_12: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_12: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_0_col1 + op1_limb_0_col30) - xor_col58));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_1_col2, op1_limb_1_col31],
@@ -456,7 +456,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_15: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_15: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_1_col2 + op1_limb_1_col31) - xor_col59));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_2_col3, op1_limb_2_col32],
@@ -467,7 +467,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_18: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_18: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_2_col3 + op1_limb_2_col32) - xor_col60));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_3_col4, op1_limb_3_col33],
@@ -478,7 +478,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_21: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_21: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_3_col4 + op1_limb_3_col33) - xor_col61));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_4_col5, op1_limb_4_col34],
@@ -489,7 +489,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_24: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_24: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_4_col5 + op1_limb_4_col34) - xor_col62));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_5_col6, op1_limb_5_col35],
@@ -500,7 +500,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_27: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_27: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_5_col6 + op1_limb_5_col35) - xor_col63));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_6_col7, op1_limb_6_col36],
@@ -511,7 +511,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_30: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_30: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_6_col7 + op1_limb_6_col36) - xor_col64));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_7_col8, op1_limb_7_col37],
@@ -522,7 +522,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_33: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_33: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_7_col8 + op1_limb_7_col37) - xor_col65));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_8_col9, op1_limb_8_col38],
@@ -533,7 +533,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_36: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_36: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_8_col9 + op1_limb_8_col38) - xor_col66));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_9_col10, op1_limb_9_col39],
@@ -544,7 +544,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_39: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_39: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_9_col10 + op1_limb_9_col39) - xor_col67));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_10_col11, op1_limb_10_col40],
@@ -555,7 +555,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_42: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_42: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_10_col11 + op1_limb_10_col40) - xor_col68));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_11_col12, op1_limb_11_col41],
@@ -566,7 +566,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_45: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_45: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_11_col12 + op1_limb_11_col41) - xor_col69));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_12_col13, op1_limb_12_col42],
@@ -577,7 +577,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_48: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_48: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_12_col13 + op1_limb_12_col42) - xor_col70));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_13_col14, op1_limb_13_col43],
@@ -588,7 +588,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_51: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_51: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_13_col14 + op1_limb_13_col43) - xor_col71));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_14_col15, op1_limb_14_col44],
@@ -599,7 +599,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_54: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_54: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_14_col15 + op1_limb_14_col44) - xor_col72));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_15_col16, op1_limb_15_col45],
@@ -610,7 +610,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_57: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_57: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_15_col16 + op1_limb_15_col45) - xor_col73));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_16_col17, op1_limb_16_col46],
@@ -621,7 +621,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_60: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_60: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_16_col17 + op1_limb_16_col46) - xor_col74));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_17_col18, op1_limb_17_col47],
@@ -632,7 +632,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_63: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_63: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_17_col18 + op1_limb_17_col47) - xor_col75));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_18_col19, op1_limb_18_col48],
@@ -643,7 +643,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_66: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_66: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_18_col19 + op1_limb_18_col48) - xor_col76));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_19_col20, op1_limb_19_col49],
@@ -654,7 +654,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_69: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_69: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_19_col20 + op1_limb_19_col49) - xor_col77));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_20_col21, op1_limb_20_col50],
@@ -665,7 +665,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_72: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_72: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_20_col21 + op1_limb_20_col50) - xor_col78));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_21_col22, op1_limb_21_col51],
@@ -676,7 +676,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_75: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_75: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_21_col22 + op1_limb_21_col51) - xor_col79));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_22_col23, op1_limb_22_col52],
@@ -687,7 +687,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_78: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_78: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_22_col23 + op1_limb_22_col52) - xor_col80));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_23_col24, op1_limb_23_col53],
@@ -698,7 +698,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_81: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_81: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_23_col24 + op1_limb_23_col53) - xor_col81));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_24_col25, op1_limb_24_col54],
@@ -709,7 +709,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_84: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_84: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_24_col25 + op1_limb_24_col54) - xor_col82));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_25_col26, op1_limb_25_col55],
@@ -720,7 +720,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_87: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_87: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_25_col26 + op1_limb_25_col55) - xor_col83));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_26_col27, op1_limb_26_col56],
@@ -731,7 +731,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_90: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_90: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_26_col27 + op1_limb_26_col56) - xor_col84));
         bitwise_xor_num_bits_8_evaluate(
             [op0_limb_27_col28, op1_limb_27_col57],
@@ -742,19 +742,19 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let and_tmp_efb2a_93: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_b8fb8_93: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_27_col28 + op1_limb_27_col57) - xor_col85));
         mem_verify_evaluate(
             [
                 ((bitwise_builtin_segment_start + (seq * qm31_const::<5, 0, 0, 0>()))
                     + qm31_const::<2, 0, 0, 0>()),
-                and_tmp_efb2a_12, and_tmp_efb2a_15, and_tmp_efb2a_18, and_tmp_efb2a_21,
-                and_tmp_efb2a_24, and_tmp_efb2a_27, and_tmp_efb2a_30, and_tmp_efb2a_33,
-                and_tmp_efb2a_36, and_tmp_efb2a_39, and_tmp_efb2a_42, and_tmp_efb2a_45,
-                and_tmp_efb2a_48, and_tmp_efb2a_51, and_tmp_efb2a_54, and_tmp_efb2a_57,
-                and_tmp_efb2a_60, and_tmp_efb2a_63, and_tmp_efb2a_66, and_tmp_efb2a_69,
-                and_tmp_efb2a_72, and_tmp_efb2a_75, and_tmp_efb2a_78, and_tmp_efb2a_81,
-                and_tmp_efb2a_84, and_tmp_efb2a_87, and_tmp_efb2a_90, and_tmp_efb2a_93,
+                and_tmp_b8fb8_12, and_tmp_b8fb8_15, and_tmp_b8fb8_18, and_tmp_b8fb8_21,
+                and_tmp_b8fb8_24, and_tmp_b8fb8_27, and_tmp_b8fb8_30, and_tmp_b8fb8_33,
+                and_tmp_b8fb8_36, and_tmp_b8fb8_39, and_tmp_b8fb8_42, and_tmp_b8fb8_45,
+                and_tmp_b8fb8_48, and_tmp_b8fb8_51, and_tmp_b8fb8_54, and_tmp_b8fb8_57,
+                and_tmp_b8fb8_60, and_tmp_b8fb8_63, and_tmp_b8fb8_66, and_tmp_b8fb8_69,
+                and_tmp_b8fb8_72, and_tmp_b8fb8_75, and_tmp_b8fb8_78, and_tmp_b8fb8_81,
+                and_tmp_b8fb8_84, and_tmp_b8fb8_87, and_tmp_b8fb8_90, and_tmp_b8fb8_93,
             ],
             and_id_col86,
             self.common_lookup_elements,
@@ -787,20 +787,20 @@ pub impl AirComponentImpl of AirComponent<Component> {
             [
                 ((bitwise_builtin_segment_start + (seq * qm31_const::<5, 0, 0, 0>()))
                     + qm31_const::<4, 0, 0, 0>()),
-                (and_tmp_efb2a_12 + xor_col58), (and_tmp_efb2a_15 + xor_col59),
-                (and_tmp_efb2a_18 + xor_col60), (and_tmp_efb2a_21 + xor_col61),
-                (and_tmp_efb2a_24 + xor_col62), (and_tmp_efb2a_27 + xor_col63),
-                (and_tmp_efb2a_30 + xor_col64), (and_tmp_efb2a_33 + xor_col65),
-                (and_tmp_efb2a_36 + xor_col66), (and_tmp_efb2a_39 + xor_col67),
-                (and_tmp_efb2a_42 + xor_col68), (and_tmp_efb2a_45 + xor_col69),
-                (and_tmp_efb2a_48 + xor_col70), (and_tmp_efb2a_51 + xor_col71),
-                (and_tmp_efb2a_54 + xor_col72), (and_tmp_efb2a_57 + xor_col73),
-                (and_tmp_efb2a_60 + xor_col74), (and_tmp_efb2a_63 + xor_col75),
-                (and_tmp_efb2a_66 + xor_col76), (and_tmp_efb2a_69 + xor_col77),
-                (and_tmp_efb2a_72 + xor_col78), (and_tmp_efb2a_75 + xor_col79),
-                (and_tmp_efb2a_78 + xor_col80), (and_tmp_efb2a_81 + xor_col81),
-                (and_tmp_efb2a_84 + xor_col82), (and_tmp_efb2a_87 + xor_col83),
-                (and_tmp_efb2a_90 + xor_col84), (and_tmp_efb2a_93 + xor_col85),
+                (and_tmp_b8fb8_12 + xor_col58), (and_tmp_b8fb8_15 + xor_col59),
+                (and_tmp_b8fb8_18 + xor_col60), (and_tmp_b8fb8_21 + xor_col61),
+                (and_tmp_b8fb8_24 + xor_col62), (and_tmp_b8fb8_27 + xor_col63),
+                (and_tmp_b8fb8_30 + xor_col64), (and_tmp_b8fb8_33 + xor_col65),
+                (and_tmp_b8fb8_36 + xor_col66), (and_tmp_b8fb8_39 + xor_col67),
+                (and_tmp_b8fb8_42 + xor_col68), (and_tmp_b8fb8_45 + xor_col69),
+                (and_tmp_b8fb8_48 + xor_col70), (and_tmp_b8fb8_51 + xor_col71),
+                (and_tmp_b8fb8_54 + xor_col72), (and_tmp_b8fb8_57 + xor_col73),
+                (and_tmp_b8fb8_60 + xor_col74), (and_tmp_b8fb8_63 + xor_col75),
+                (and_tmp_b8fb8_66 + xor_col76), (and_tmp_b8fb8_69 + xor_col77),
+                (and_tmp_b8fb8_72 + xor_col78), (and_tmp_b8fb8_75 + xor_col79),
+                (and_tmp_b8fb8_78 + xor_col80), (and_tmp_b8fb8_81 + xor_col81),
+                (and_tmp_b8fb8_84 + xor_col82), (and_tmp_b8fb8_87 + xor_col83),
+                (and_tmp_b8fb8_90 + xor_col84), (and_tmp_b8fb8_93 + xor_col85),
             ],
             or_id_col88,
             self.common_lookup_elements,
