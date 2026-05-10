@@ -1,14 +1,20 @@
 use stwo_constraint_framework::claim::ClaimTrait;
-use stwo_constraint_framework::{LookupElementsImpl, RelationUsesDict, tree_array_concat_cols};
+use stwo_constraint_framework::{
+    CommonLookupElements, LookupElementsImpl, RelationUsesDict, tree_array_concat_cols,
+};
 use stwo_verifier_core::TreeArray;
 use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Serde};
+use stwo_verifier_core::fields::qm31::{QM31, QM31Serde, QM31Trait};
 use stwo_verifier_core::utils::pack_into_qm31s;
+use stwo_verifier_utils::zip_eq::zip_eq;
+use crate::blake2s_consts::blake2s_initial_state;
 use crate::components::{
     blake_g, blake_gate, blake_output, blake_round, blake_round_sigma, eq, m_31_to_u_32, qm31_ops,
     range_check_15, range_check_16, triple_xor_32, verify_bitwise_xor_12, verify_bitwise_xor_4,
     verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9,
 };
+use crate::prelude::{Invertible, M31, Zero, m31};
+use crate::relations::{BLAKE_STATE_RELATION_ID, GATE_RELATION_ID};
 
 /// Number of components in the circuit AIR.
 pub const N_CIRCUIT_COMPONENTS: u32 = 16;
@@ -109,4 +115,87 @@ pub impl CircuitInteractionClaimImpl of CircuitInteractionClaimTrait {
     fn mix_into(self: @CircuitInteractionClaim, ref channel: Channel) {
         channel.mix_felts(self.claimed_sums.span());
     }
+}
+
+/// Public logup sum determined by the public statement.
+///
+/// Ports `stwo-circuits/crates/circuit_verifier/src/circuit_claim.rs::lookup_sum`:
+///   `component_sum + output_sum − blake_iv_sum`
+/// where:
+///   - `component_sum` is the sum of all components' `claimed_sums`;
+///   - `output_sum` is the sum of `1 / combine(GATE_RELATION_ID, addr, a, b, c, d)` over each
+///     `(output_address, output_value)` pair (QM31 decomposed into its four M31 limbs
+///     `(a, b, c, d)`);
+///   - `blake_iv_sum` is subtracted because the Blake IV state is USED by the Blake gates
+///     but never YIELDED by any gate; it must be cancelled out of the public sum.
+///
+/// A proof is valid only when this value equals zero.
+pub fn lookup_sum(
+    claim: @CircuitClaim,
+    common_lookup_elements: @CommonLookupElements,
+    interaction_claim: @CircuitInteractionClaim,
+    output_addresses: Array<u32>,
+    n_blake_gates: u32,
+) -> QM31 {
+    // component_sum = Σ claimed_sums[i]
+    let mut component_sum: QM31 = Zero::zero();
+    for s in interaction_claim.claimed_sums.span() {
+        component_sum = component_sum + *s;
+    }
+
+    // Compute the public logup sum from output gates.
+    // The prover yields each output value at the output gate. Each contributes
+    // 1 / combine([GATE_RELATION_ID, addr, a, b, c, d]).
+    let mut output_sum: QM31 = Zero::zero();
+    let gate_relation_id = GATE_RELATION_ID;
+    for (addr, value) in zip_eq(output_addresses.span(), claim.public_data.output_values.span()) {
+        let addr_m31: M31 = m31(*addr);
+        let [a, b, c, d] = QM31Trait::to_fixed_array(*value);
+        let denom = common_lookup_elements.combine([gate_relation_id, addr_m31, a, b, c, d].span());
+        output_sum = output_sum + denom.inverse();
+    }
+
+    // Subtract the Blake IV public logup sum (Blake IV state is used but never yielded).
+    let blake_iv_sum = blake_iv_public_logup_sum(n_blake_gates, common_lookup_elements);
+
+    component_sum + output_sum - blake_iv_sum
+}
+
+/// Each Blake gate uses the initial state once and creates one row in `blake_output`. Then
+/// `blake_output` is padded to a power of two, and each padding row uses the initial state
+/// once — total `next_power_of_two(n_blake_gates)` uses.
+fn blake_iv_public_logup_sum(
+    n_blake_gates: u32, common_lookup_elements: @CommonLookupElements,
+) -> QM31 {
+    let initial_state_uses: u32 = next_power_of_two(n_blake_gates);
+
+    let [w0, w1, w2, w3, w4, w5, w6, w7] = blake2s_initial_state();
+    let denom = common_lookup_elements
+        .combine(
+            [
+                BLAKE_STATE_RELATION_ID, m31(0),
+                m31(w0 & 0xffff), m31((w0 / 0x10000) & 0xffff),
+                m31(w1 & 0xffff), m31((w1 / 0x10000) & 0xffff),
+                m31(w2 & 0xffff), m31((w2 / 0x10000) & 0xffff),
+                m31(w3 & 0xffff), m31((w3 / 0x10000) & 0xffff),
+                m31(w4 & 0xffff), m31((w4 / 0x10000) & 0xffff),
+                m31(w5 & 0xffff), m31((w5 / 0x10000) & 0xffff),
+                m31(w6 & 0xffff), m31((w6 / 0x10000) & 0xffff),
+                m31(w7 & 0xffff), m31((w7 / 0x10000) & 0xffff),
+            ]
+                .span(),
+        );
+    denom.inverse() * m31(initial_state_uses).into()
+}
+
+/// Smallest power of two >= `x`, with `next_power_of_two(0) = 1`.
+fn next_power_of_two(x: u32) -> u32 {
+    if x <= 1 {
+        return 1;
+    }
+    let mut p: u32 = 1;
+    while p < x {
+        p = p * 2;
+    }
+    p
 }
