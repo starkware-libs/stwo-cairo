@@ -1,9 +1,10 @@
 // This file was created by the AIR team.
 
+use subroutines::linear_combination_n_4_coefs_1_1_m2_1::LinearCombinationN4Coefs11M21;
+use subroutines::linear_combination_n_4_coefs_1_m1_1_1::LinearCombinationN4Coefs1M111;
+use subroutines::linear_combination_n_4_coefs_3_1_1_1::LinearCombinationN4Coefs3111;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::linear_combination_n_4_coefs_1_1_m2_1::LinearCombinationN4Coefs11M21;
-use crate::components::subroutines::linear_combination_n_4_coefs_1_m1_1_1::LinearCombinationN4Coefs1M111;
-use crate::components::subroutines::linear_combination_n_4_coefs_3_1_1_1::LinearCombinationN4Coefs3111;
 
 pub const N_TRACE_COLUMNS: usize = 126;
 pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
@@ -585,7 +586,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::POSEIDON_FULL_ROUND_CHAIN;
 
     #[test]
     fn poseidon_full_round_chain_constraints_regression() {
@@ -599,9 +599,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        POSEIDON_FULL_ROUND_CHAIN.assert_debug_eq(&sum);
+        constraints_regression_test_values::POSEIDON_FULL_ROUND_CHAIN.assert_debug_eq(&sum);
     }
 }

@@ -1,9 +1,10 @@
 // This file was created by the AIR team.
 
+use subroutines::felt_252_unpack_from_27::Felt252UnpackFrom27;
+use subroutines::poseidon_hades_permutation::PoseidonHadesPermutation;
+use subroutines::read_positive_known_id_num_bits_252::ReadPositiveKnownIdNumBits252;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::felt_252_unpack_from_27::Felt252UnpackFrom27;
-use crate::components::subroutines::poseidon_hades_permutation::PoseidonHadesPermutation;
-use crate::components::subroutines::read_positive_known_id_num_bits_252::ReadPositiveKnownIdNumBits252;
 
 pub const N_TRACE_COLUMNS: usize = 342;
 pub const RELATION_USES_PER_ROW: [RelationUse; 8] = [
@@ -1118,7 +1119,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::POSEIDON_AGGREGATOR;
 
     #[test]
     fn poseidon_aggregator_constraints_regression() {
@@ -1132,9 +1132,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        POSEIDON_AGGREGATOR.assert_debug_eq(&sum);
+        constraints_regression_test_values::POSEIDON_AGGREGATOR.assert_debug_eq(&sum);
     }
 }

@@ -1,12 +1,13 @@
 // This file was created by the AIR team.
 
-use crate::components::prelude::*;
-use crate::components::subroutines::mem_cond_verify_equal_known_id::MemCondVerifyEqualKnownId;
-use crate::components::subroutines::read_positive_num_bits_29::ReadPositiveNumBits29;
-use crate::components::subroutines::read_positive_num_bits_99::ReadPositiveNumBits99;
-use crate::components::subroutines::read_small::ReadSmall;
+use subroutines::mem_cond_verify_equal_known_id::MemCondVerifyEqualKnownId;
+use subroutines::read_positive_num_bits_29::ReadPositiveNumBits29;
+use subroutines::read_positive_num_bits_99::ReadPositiveNumBits99;
+use subroutines::read_small::ReadSmall;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+use crate::components::prelude::*;
+
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct ModUtils {}
 
 impl ModUtils {

@@ -1,10 +1,11 @@
 // This file was created by the AIR team.
 
-use crate::components::prelude::*;
-use crate::components::subroutines::linear_combination_n_1_coefs_2::LinearCombinationN1Coefs2;
-use crate::components::subroutines::linear_combination_n_6_coefs_4_2_3_1_m1_1::LinearCombinationN6Coefs4231M11;
+use subroutines::linear_combination_n_1_coefs_2::LinearCombinationN1Coefs2;
+use subroutines::linear_combination_n_6_coefs_4_2_3_1_m1_1::LinearCombinationN6Coefs4231M11;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+use crate::components::prelude::*;
+
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct PoseidonPartialRound {}
 
 impl PoseidonPartialRound {

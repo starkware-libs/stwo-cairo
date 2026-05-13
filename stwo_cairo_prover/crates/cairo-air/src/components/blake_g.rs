@@ -1,11 +1,12 @@
 // This file was created by the AIR team.
 
+use subroutines::triple_sum_32::TripleSum32;
+use subroutines::xor_rot_32_r_12::XorRot32R12;
+use subroutines::xor_rot_32_r_16::XorRot32R16;
+use subroutines::xor_rot_32_r_7::XorRot32R7;
+use subroutines::xor_rot_32_r_8::XorRot32R8;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::triple_sum_32::TripleSum32;
-use crate::components::subroutines::xor_rot_32_r_12::XorRot32R12;
-use crate::components::subroutines::xor_rot_32_r_16::XorRot32R16;
-use crate::components::subroutines::xor_rot_32_r_7::XorRot32R7;
-use crate::components::subroutines::xor_rot_32_r_8::XorRot32R8;
 
 pub const N_TRACE_COLUMNS: usize = 53;
 pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
@@ -314,7 +315,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::BLAKE_G;
 
     #[test]
     fn blake_g_constraints_regression() {
@@ -328,9 +328,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        BLAKE_G.assert_debug_eq(&sum);
+        constraints_regression_test_values::BLAKE_G.assert_debug_eq(&sum);
     }
 }

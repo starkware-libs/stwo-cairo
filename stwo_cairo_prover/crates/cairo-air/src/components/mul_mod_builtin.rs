@@ -1,9 +1,10 @@
 // This file was created by the AIR team.
 
+use subroutines::double_karatsuba_9cdb9::DoubleKaratsuba9Cdb9;
+use subroutines::mod_utils::ModUtils;
+use subroutines::mod_words_to_12_bit_array::ModWordsTo12BitArray;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::double_karatsuba_9cdb9::DoubleKaratsuba9Cdb9;
-use crate::components::subroutines::mod_utils::ModUtils;
-use crate::components::subroutines::mod_words_to_12_bit_array::ModWordsTo12BitArray;
 
 pub const N_TRACE_COLUMNS: usize = 426;
 pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
@@ -2629,7 +2630,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::MUL_MOD_BUILTIN;
 
     #[test]
     fn mul_mod_builtin_constraints_regression() {
@@ -2637,7 +2637,7 @@ mod tests {
         let eval = Eval {
             claim: Claim {
                 log_size: 4,
-                mul_mod_builtin_segment_start: rng.gen::<u32>(),
+                mul_mod_builtin_segment_start: rng.r#gen::<u32>(),
             },
             common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
@@ -2646,9 +2646,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        MUL_MOD_BUILTIN.assert_debug_eq(&sum);
+        constraints_regression_test_values::MUL_MOD_BUILTIN.assert_debug_eq(&sum);
     }
 }

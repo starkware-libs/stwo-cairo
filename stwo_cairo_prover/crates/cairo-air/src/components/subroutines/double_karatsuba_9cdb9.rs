@@ -1,9 +1,10 @@
 // This file was created by the AIR team.
 
-use crate::components::prelude::*;
-use crate::components::subroutines::single_karatsuba_n_8::SingleKaratsubaN8;
+use subroutines::single_karatsuba_n_8::SingleKaratsubaN8;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+use crate::components::prelude::*;
+
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct DoubleKaratsuba9Cdb9 {}
 
 impl DoubleKaratsuba9Cdb9 {

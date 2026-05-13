@@ -1,7 +1,8 @@
 // This file was created by the AIR team.
 
+use subroutines::ec_add::EcAdd;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::ec_add::EcAdd;
 
 pub const N_TRACE_COLUMNS: usize = 297;
 pub const RELATION_USES_PER_ROW: [RelationUse; 18] = [
@@ -948,7 +949,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::PARTIAL_EC_MUL_WINDOW_BITS_18;
 
     #[test]
     fn partial_ec_mul_window_bits_18_constraints_regression() {
@@ -962,9 +962,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        PARTIAL_EC_MUL_WINDOW_BITS_18.assert_debug_eq(&sum);
+        constraints_regression_test_values::PARTIAL_EC_MUL_WINDOW_BITS_18.assert_debug_eq(&sum);
     }
 }
