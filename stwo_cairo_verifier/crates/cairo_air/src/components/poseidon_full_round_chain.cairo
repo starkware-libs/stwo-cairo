@@ -6,6 +6,7 @@ use crate::components::subroutines::linear_combination_n_4_coefs_3_1_1_1::linear
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 126;
+pub const N_INTERACTION_COLUMNS: usize = 24;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
     ('Cube252', 3), ('PoseidonRoundKeys', 1), ('RangeCheck_3_3_3_3_3', 6),
     ('PoseidonFullRoundChain', 1),
@@ -21,7 +22,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; 24].span();
+        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 

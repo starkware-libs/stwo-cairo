@@ -4,6 +4,7 @@ use crate::components::subroutines::mod_utils::mod_utils_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 267;
+pub const N_INTERACTION_COLUMNS: usize = 108;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 2] = [
     ('MemoryAddressToId', 29), ('MemoryIdToBig', 24),
 ];
@@ -19,7 +20,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; 108].span();
+        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 

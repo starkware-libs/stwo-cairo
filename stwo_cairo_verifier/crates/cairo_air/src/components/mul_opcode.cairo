@@ -6,6 +6,7 @@ use crate::components::subroutines::verify_mul_252::verify_mul_252_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 130;
+pub const N_INTERACTION_COLUMNS: usize = 76;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 12] = [
     ('VerifyInstruction', 1), ('MemoryAddressToId', 3), ('MemoryIdToBig', 3), ('RangeCheck_20', 4),
     ('RangeCheck_20_B', 4), ('RangeCheck_20_C', 4), ('RangeCheck_20_D', 4), ('RangeCheck_20_E', 3),
@@ -22,7 +23,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; 76].span();
+        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 

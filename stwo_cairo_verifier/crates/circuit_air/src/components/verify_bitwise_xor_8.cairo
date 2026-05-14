@@ -3,6 +3,7 @@
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 2;
+pub const N_INTERACTION_COLUMNS: usize = 4;
 pub const LOG_SIZE: u32 = 16;
 
 #[derive(Drop, Serde, Copy)]
@@ -13,7 +14,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = LOG_SIZE;
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; 4].span();
+        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
