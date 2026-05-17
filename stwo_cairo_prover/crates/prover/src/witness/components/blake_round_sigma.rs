@@ -156,6 +156,8 @@ fn write_trace_simd(
             let blake_sigma_13 = blake_sigma_13.packed_at(row_index);
             let blake_sigma_14 = blake_sigma_14.packed_at(row_index);
             let blake_sigma_15 = blake_sigma_15.packed_at(row_index);
+            let multiplicity_0_col0 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
+            *row[0] = multiplicity_0_col0;
             *lookup_data.blake_round_sigma_0 = [
                 M31_1805967942,
                 seq_4,
@@ -178,7 +180,6 @@ fn write_trace_simd(
             ];
             let mult = &mults[0];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
-            *row[0] = mult_at_row;
             *lookup_data.mults_0 = mult_at_row;
         });
 

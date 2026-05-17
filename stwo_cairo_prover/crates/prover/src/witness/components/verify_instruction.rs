@@ -55,7 +55,7 @@ impl ClaimGenerator {
 
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
             packed_inputs,
-            packed_mults,
+            vec![packed_mults],
             range_check_7_2_5_state,
             range_check_4_3_state,
             memory_address_to_id_state,
@@ -138,7 +138,7 @@ struct SubComponentInputs {
 #[allow(non_snake_case)]
 fn write_trace_simd(
     inputs: Vec<PackedInputType>,
-    mults: Vec<PackedM31>,
+    mults: Vec<Vec<PackedM31>>,
     range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
     range_check_4_3_state: &range_check_4_3::ClaimGenerator,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
@@ -300,6 +300,8 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
+                let multiplicity_0_col16 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
+                *row[16] = multiplicity_0_col16;
                 *lookup_data.verify_instruction_0 = [
                     M31_1719106205,
                     input_pc_col0,
@@ -310,8 +312,7 @@ fn write_trace_simd(
                     input_inst_felt6_col5,
                     input_opcode_extension_col6,
                 ];
-                let mult_at_row = *mults.get(row_index).unwrap_or(&PackedM31::zero());
-                *row[16] = mult_at_row;
+                let mult_at_row = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
                 *lookup_data.mults_0 = mult_at_row;
             },
         );

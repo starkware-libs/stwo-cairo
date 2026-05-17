@@ -321,6 +321,8 @@ fn write_trace_simd(
                     ((xor_col13) + ((xor_col15) * (M31_256))),
                     ((xor_col17) + ((xor_col19) * (M31_256))),
                 ]);
+                let enabler_col20 = enabler_col.packed_at(row_index);
+                *row[20] = enabler_col20;
                 *lookup_data.triple_xor_32_0 = [
                     M31_990559919,
                     input_limb_0_col0,
@@ -332,7 +334,6 @@ fn write_trace_simd(
                     triple_xor32_output_tmp_6e2d1_28.low().as_m31(),
                     triple_xor32_output_tmp_6e2d1_28.high().as_m31(),
                 ];
-                *row[20] = enabler_col.packed_at(row_index);
             },
         );
 

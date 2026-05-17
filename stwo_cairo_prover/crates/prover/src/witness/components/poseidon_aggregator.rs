@@ -60,7 +60,7 @@ impl ClaimGenerator {
 
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
             packed_inputs,
-            packed_mults,
+            vec![packed_mults],
             memory_id_to_big_state,
             poseidon_full_round_chain_state,
             range_check_252_width_27_state,
@@ -183,7 +183,7 @@ struct SubComponentInputs {
 #[allow(non_snake_case)]
 fn write_trace_simd(
     inputs: Vec<PackedInputType>,
-    mults: Vec<PackedM31>,
+    mults: Vec<Vec<PackedM31>>,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
     poseidon_full_round_chain_state: &poseidon_full_round_chain::ClaimGenerator,
     range_check_252_width_27_state: &range_check_252_width_27::ClaimGenerator,
@@ -909,8 +909,8 @@ fn write_trace_simd(
 
             *sub_component_inputs.memory_id_to_big[5] =
                 input_limb_5_col5;
-            *lookup_data.memory_id_to_big_5 = [M31_1662111297, input_limb_5_col5, unpacked_limb_0_col323, unpacked_limb_1_col324, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(2), unpacked_limb_3_col325, unpacked_limb_4_col326, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(5), unpacked_limb_6_col327, unpacked_limb_7_col328, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(8), unpacked_limb_9_col329, unpacked_limb_10_col330, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(11), unpacked_limb_12_col331, unpacked_limb_13_col332, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(14), unpacked_limb_15_col333, unpacked_limb_16_col334, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(17), unpacked_limb_18_col335, unpacked_limb_19_col336, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(20), unpacked_limb_21_col337, unpacked_limb_22_col338, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(23), unpacked_limb_24_col339, unpacked_limb_25_col340, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(26), poseidon_full_round_chain_output_limb_29_col286];*lookup_data.poseidon_aggregator_0 = [M31_1551892206, input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5];let mult_at_row = *mults.get(row_index).unwrap_or(&PackedM31::zero());
-            *row[341] = mult_at_row;
+            *lookup_data.memory_id_to_big_5 = [M31_1662111297, input_limb_5_col5, unpacked_limb_0_col323, unpacked_limb_1_col324, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(2), unpacked_limb_3_col325, unpacked_limb_4_col326, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(5), unpacked_limb_6_col327, unpacked_limb_7_col328, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(8), unpacked_limb_9_col329, unpacked_limb_10_col330, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(11), unpacked_limb_12_col331, unpacked_limb_13_col332, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(14), unpacked_limb_15_col333, unpacked_limb_16_col334, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(17), unpacked_limb_18_col335, unpacked_limb_19_col336, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(20), unpacked_limb_21_col337, unpacked_limb_22_col338, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(23), unpacked_limb_24_col339, unpacked_limb_25_col340, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(26), poseidon_full_round_chain_output_limb_29_col286];let multiplicity_0_col341 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
+            *row[341] = multiplicity_0_col341;*lookup_data.poseidon_aggregator_0 = [M31_1551892206, input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5];let mult_at_row = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
             *lookup_data.mults_0 = mult_at_row;
         });
 
