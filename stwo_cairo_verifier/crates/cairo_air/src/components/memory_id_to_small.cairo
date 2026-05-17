@@ -4,6 +4,7 @@ use crate::components::subroutines::range_check_mem_value_n_8::range_check_mem_v
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 9;
+pub const N_INTERACTION_COLUMNS: usize = 12;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
     ('RangeCheck_9_9', 1), ('RangeCheck_9_9_B', 1), ('RangeCheck_9_9_C', 1),
     ('RangeCheck_9_9_D', 1),
@@ -19,7 +20,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; 12].span();
+        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 

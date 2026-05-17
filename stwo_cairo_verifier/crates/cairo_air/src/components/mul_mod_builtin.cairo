@@ -6,6 +6,7 @@ use crate::components::subroutines::mod_words_to_12_bit_array::mod_words_to_12_b
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 426;
+pub const N_INTERACTION_COLUMNS: usize = 376;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 5] = [
     ('MemoryAddressToId', 29), ('MemoryIdToBig', 24), ('RangeCheck_12', 32),
     ('RangeCheck_3_6_6_3', 40), ('RangeCheck_18', 62),
@@ -22,7 +23,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; 376].span();
+        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 

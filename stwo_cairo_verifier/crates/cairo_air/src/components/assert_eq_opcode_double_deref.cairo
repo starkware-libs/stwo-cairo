@@ -6,6 +6,7 @@ use crate::components::subroutines::read_positive_num_bits_29::read_positive_num
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 19;
+pub const N_INTERACTION_COLUMNS: usize = 16;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
     ('VerifyInstruction', 1), ('MemoryAddressToId', 3), ('MemoryIdToBig', 1), ('Opcodes', 1),
 ];
@@ -20,7 +21,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; 16].span();
+        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 

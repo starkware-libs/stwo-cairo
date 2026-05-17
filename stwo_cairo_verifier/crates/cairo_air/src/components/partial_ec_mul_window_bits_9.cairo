@@ -4,6 +4,7 @@ use crate::components::subroutines::ec_add::ec_add_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 311;
+pub const N_INTERACTION_COLUMNS: usize = 260;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 18] = [
     ('PedersenPointsTableWindowBits9', 1), ('RangeCheck_9_9', 6), ('RangeCheck_9_9_B', 6),
     ('RangeCheck_9_9_C', 6), ('RangeCheck_9_9_D', 6), ('RangeCheck_9_9_E', 6),
@@ -23,7 +24,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; 260].span();
+        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 

@@ -15,6 +15,7 @@ pub const LIMB_BITS: u32 = ELEM_BITS - EXPAND_BITS; // = 10
 pub const LOG_SIZE: u32 = (ELEM_BITS - EXPAND_BITS) * 2; // = 20
 pub const N_MULT_COLUMNS: usize = 16; // = 1 << (EXPAND_BITS * 2)
 pub const N_TRACE_COLUMNS: usize = N_MULT_COLUMNS;
+pub const N_INTERACTION_COLUMNS: usize = 32;
 
 /// `1 << LIMB_BITS = 1024`. Used as the offset shift between expansion bands.
 const LIMB_OFFSET: u32 = 1024;
@@ -28,7 +29,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
         // 8 pairs × QM31 (4 base columns each) = 32 interaction columns.
-        let interaction_log_sizes = [log_size; 32].span();
+        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 

@@ -7,6 +7,7 @@ use crate::components::subroutines::verify_u_32::verify_u_32_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 174;
+pub const N_INTERACTION_COLUMNS: usize = 148;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 8] = [
     ('VerifyInstruction', 1), ('MemoryAddressToId', 20), ('MemoryIdToBig', 20),
     ('RangeCheck_7_2_5', 17), ('VerifyBitwiseXor_8', 4), ('BlakeRound', 1), ('TripleXor32', 8),
@@ -23,7 +24,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; 148].span();
+        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
