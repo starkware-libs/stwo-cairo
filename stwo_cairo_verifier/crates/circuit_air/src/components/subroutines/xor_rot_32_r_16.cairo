@@ -35,26 +35,26 @@ pub fn xor_rot_32_r_16_evaluate(
         xor_rot_32_r_16_input_limb_3,
     ] =
         input;
-    let split_16_low_part_size_8_output_tmp_813a9_1_limb_0: QM31 =
+    let split_16_low_part_size_8_output_tmp_6b1a8_1_limb_0: QM31 =
         split_16_low_part_size_8_evaluate(
         xor_rot_32_r_16_input_limb_0, ms_8_bits_col0, common_lookup_elements, ref sum, random_coeff,
     );
-    let split_16_low_part_size_8_output_tmp_813a9_3_limb_0: QM31 =
+    let split_16_low_part_size_8_output_tmp_6b1a8_3_limb_0: QM31 =
         split_16_low_part_size_8_evaluate(
         xor_rot_32_r_16_input_limb_1, ms_8_bits_col1, common_lookup_elements, ref sum, random_coeff,
     );
-    let split_16_low_part_size_8_output_tmp_813a9_5_limb_0: QM31 =
+    let split_16_low_part_size_8_output_tmp_6b1a8_5_limb_0: QM31 =
         split_16_low_part_size_8_evaluate(
         xor_rot_32_r_16_input_limb_2, ms_8_bits_col2, common_lookup_elements, ref sum, random_coeff,
     );
-    let split_16_low_part_size_8_output_tmp_813a9_7_limb_0: QM31 =
+    let split_16_low_part_size_8_output_tmp_6b1a8_7_limb_0: QM31 =
         split_16_low_part_size_8_evaluate(
         xor_rot_32_r_16_input_limb_3, ms_8_bits_col3, common_lookup_elements, ref sum, random_coeff,
     );
     bitwise_xor_num_bits_8_evaluate(
         [
-            split_16_low_part_size_8_output_tmp_813a9_1_limb_0,
-            split_16_low_part_size_8_output_tmp_813a9_5_limb_0,
+            split_16_low_part_size_8_output_tmp_6b1a8_1_limb_0,
+            split_16_low_part_size_8_output_tmp_6b1a8_5_limb_0,
         ],
         xor_col4,
         common_lookup_elements,
@@ -74,8 +74,8 @@ pub fn xor_rot_32_r_16_evaluate(
     );
     bitwise_xor_num_bits_8_b_evaluate(
         [
-            split_16_low_part_size_8_output_tmp_813a9_3_limb_0,
-            split_16_low_part_size_8_output_tmp_813a9_7_limb_0,
+            split_16_low_part_size_8_output_tmp_6b1a8_3_limb_0,
+            split_16_low_part_size_8_output_tmp_6b1a8_7_limb_0,
         ],
         xor_col6,
         common_lookup_elements,
@@ -93,10 +93,10 @@ pub fn xor_rot_32_r_16_evaluate(
         ref sum,
         random_coeff,
     );
-    let xor_rot_16_output_tmp_813a9_16_limb_0: QM31 = (xor_col6
+    let xor_rot_16_output_tmp_6b1a8_16_limb_0: QM31 = (xor_col6
         + (xor_col7 * qm31_const::<256, 0, 0, 0>()));
-    let xor_rot_16_output_tmp_813a9_16_limb_1: QM31 = (xor_col4
+    let xor_rot_16_output_tmp_6b1a8_16_limb_1: QM31 = (xor_col4
         + (xor_col5 * qm31_const::<256, 0, 0, 0>()));
 
-    [xor_rot_16_output_tmp_813a9_16_limb_0, xor_rot_16_output_tmp_813a9_16_limb_1]
+    [xor_rot_16_output_tmp_6b1a8_16_limb_0, xor_rot_16_output_tmp_6b1a8_16_limb_1]
 }

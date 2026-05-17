@@ -1,8 +1,12 @@
-// AIR version d77a2b2c
+// AIR version bd0c7c1a
 use stwo_verifier_core::fields::m31::M31;
 pub const BLAKE_GATE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 611602902 }, M31 { inner: 896180632 }, M31 { inner: 1988834866 },
     M31 { inner: 287144248 },
+];
+pub const BLAKE_G_GATE_SAMPLE_EVAL_RESULT: [M31; 4] = [
+    M31 { inner: 29058099 }, M31 { inner: 2109881126 }, M31 { inner: 476797340 },
+    M31 { inner: 793415792 },
 ];
 pub const BLAKE_G_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 424172291 }, M31 { inner: 576701425 }, M31 { inner: 1526275269 },
@@ -39,6 +43,10 @@ pub const RANGE_CHECK_16_SAMPLE_EVAL_RESULT: [M31; 4] = [
 pub const TRIPLE_XOR_32_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 917465117 }, M31 { inner: 259127702 }, M31 { inner: 1030270084 },
     M31 { inner: 454952547 },
+];
+pub const TRIPLE_XOR_SAMPLE_EVAL_RESULT: [M31; 4] = [
+    M31 { inner: 731346899 }, M31 { inner: 1577065601 }, M31 { inner: 629243848 },
+    M31 { inner: 388337013 },
 ];
 pub const VERIFY_BITWISE_XOR_12_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1164619324 }, M31 { inner: 1195346952 }, M31 { inner: 540051247 },

@@ -1,14 +1,11 @@
 // This file was created by the AIR team.
 
 use crate::components::subroutines::bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate;
-use crate::components::subroutines::bitwise_xor_num_bits_8_b::bitwise_xor_num_bits_8_b_evaluate;
 use crate::components::subroutines::split_16_low_part_size_8::split_16_low_part_size_8_evaluate;
 use crate::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 21;
-pub const RELATION_USES_PER_ROW: [(felt252, u32); 2] = [
-    ('VerifyBitwiseXor_8', 4), ('VerifyBitwiseXor_8_B', 4),
-];
+pub const N_TRACE_COLUMNS: usize = 20;
+pub const RELATION_USES_PER_ROW: [(felt252, u32); 2] = [('VerifyBitwiseXor_8', 8), ('Gate', 3)];
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
@@ -20,7 +17,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; 20].span();
+        let interaction_log_sizes = [log_size; 24].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -90,98 +87,150 @@ pub impl AirComponentImpl of AirComponent<Component> {
         let mut numerator_2: QM31 = Zero::zero();
         let mut verify_bitwise_xor_8_sum_3: QM31 = Zero::zero();
         let mut numerator_3: QM31 = Zero::zero();
-        let mut verify_bitwise_xor_8_b_sum_4: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_8_sum_4: QM31 = Zero::zero();
         let mut numerator_4: QM31 = Zero::zero();
-        let mut verify_bitwise_xor_8_b_sum_5: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_8_sum_5: QM31 = Zero::zero();
         let mut numerator_5: QM31 = Zero::zero();
-        let mut verify_bitwise_xor_8_b_sum_6: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_8_sum_6: QM31 = Zero::zero();
         let mut numerator_6: QM31 = Zero::zero();
-        let mut verify_bitwise_xor_8_b_sum_7: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_8_sum_7: QM31 = Zero::zero();
         let mut numerator_7: QM31 = Zero::zero();
-        let mut triple_xor_32_sum_8: QM31 = Zero::zero();
+        let mut gate_sum_8: QM31 = Zero::zero();
         let mut numerator_8: QM31 = Zero::zero();
+        let mut gate_sum_9: QM31 = Zero::zero();
+        let mut numerator_9: QM31 = Zero::zero();
+        let mut gate_sum_10: QM31 = Zero::zero();
+        let mut numerator_10: QM31 = Zero::zero();
+        let mut gate_sum_11: QM31 = Zero::zero();
+        let mut numerator_11: QM31 = Zero::zero();
+        let triple_xor_input_addr_0 = preprocessed_mask_values
+            .get_and_mark_used(TRIPLE_XOR_INPUT_ADDR_0_IDX);
+        let triple_xor_input_addr_1 = preprocessed_mask_values
+            .get_and_mark_used(TRIPLE_XOR_INPUT_ADDR_1_IDX);
+        let triple_xor_input_addr_2 = preprocessed_mask_values
+            .get_and_mark_used(TRIPLE_XOR_INPUT_ADDR_2_IDX);
+        let triple_xor_output_addr = preprocessed_mask_values
+            .get_and_mark_used(TRIPLE_XOR_OUTPUT_ADDR_IDX);
+        let triple_xor_multiplicity = preprocessed_mask_values
+            .get_and_mark_used(TRIPLE_XOR_MULTIPLICITY_IDX);
 
         let [
-            input_limb_0_col0,
-            input_limb_1_col1,
-            input_limb_2_col2,
-            input_limb_3_col3,
-            input_limb_4_col4,
-            input_limb_5_col5,
-            ms_8_bits_col6,
-            ms_8_bits_col7,
+            input_a_limb_0_col0,
+            input_a_limb_1_col1,
+            input_b_limb_0_col2,
+            input_b_limb_1_col3,
+            input_c_limb_0_col4,
+            input_c_limb_1_col5,
+            input_a_xor_b_xor_c_limb_0_col6,
+            input_a_xor_b_xor_c_limb_1_col7,
             ms_8_bits_col8,
             ms_8_bits_col9,
             ms_8_bits_col10,
             ms_8_bits_col11,
-            xor_col12,
-            xor_col13,
-            xor_col14,
-            xor_col15,
+            ms_8_bits_col12,
+            ms_8_bits_col13,
+            ms_8_bits_col14,
+            ms_8_bits_col15,
             xor_col16,
             xor_col17,
             xor_col18,
             xor_col19,
-            enabler_col20,
-        ]: [Span<QM31>; 21] =
+        ]: [Span<QM31>; 20] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
             .unbox();
-        let [input_limb_0_col0]: [QM31; 1] = (*input_limb_0_col0.try_into().unwrap()).unbox();
-        let [input_limb_1_col1]: [QM31; 1] = (*input_limb_1_col1.try_into().unwrap()).unbox();
-        let [input_limb_2_col2]: [QM31; 1] = (*input_limb_2_col2.try_into().unwrap()).unbox();
-        let [input_limb_3_col3]: [QM31; 1] = (*input_limb_3_col3.try_into().unwrap()).unbox();
-        let [input_limb_4_col4]: [QM31; 1] = (*input_limb_4_col4.try_into().unwrap()).unbox();
-        let [input_limb_5_col5]: [QM31; 1] = (*input_limb_5_col5.try_into().unwrap()).unbox();
-        let [ms_8_bits_col6]: [QM31; 1] = (*ms_8_bits_col6.try_into().unwrap()).unbox();
-        let [ms_8_bits_col7]: [QM31; 1] = (*ms_8_bits_col7.try_into().unwrap()).unbox();
+        let [input_a_limb_0_col0]: [QM31; 1] = (*input_a_limb_0_col0.try_into().unwrap()).unbox();
+        let [input_a_limb_1_col1]: [QM31; 1] = (*input_a_limb_1_col1.try_into().unwrap()).unbox();
+        let [input_b_limb_0_col2]: [QM31; 1] = (*input_b_limb_0_col2.try_into().unwrap()).unbox();
+        let [input_b_limb_1_col3]: [QM31; 1] = (*input_b_limb_1_col3.try_into().unwrap()).unbox();
+        let [input_c_limb_0_col4]: [QM31; 1] = (*input_c_limb_0_col4.try_into().unwrap()).unbox();
+        let [input_c_limb_1_col5]: [QM31; 1] = (*input_c_limb_1_col5.try_into().unwrap()).unbox();
+        let [input_a_xor_b_xor_c_limb_0_col6]: [QM31; 1] = (*input_a_xor_b_xor_c_limb_0_col6
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [input_a_xor_b_xor_c_limb_1_col7]: [QM31; 1] = (*input_a_xor_b_xor_c_limb_1_col7
+            .try_into()
+            .unwrap())
+            .unbox();
         let [ms_8_bits_col8]: [QM31; 1] = (*ms_8_bits_col8.try_into().unwrap()).unbox();
         let [ms_8_bits_col9]: [QM31; 1] = (*ms_8_bits_col9.try_into().unwrap()).unbox();
         let [ms_8_bits_col10]: [QM31; 1] = (*ms_8_bits_col10.try_into().unwrap()).unbox();
         let [ms_8_bits_col11]: [QM31; 1] = (*ms_8_bits_col11.try_into().unwrap()).unbox();
-        let [xor_col12]: [QM31; 1] = (*xor_col12.try_into().unwrap()).unbox();
-        let [xor_col13]: [QM31; 1] = (*xor_col13.try_into().unwrap()).unbox();
-        let [xor_col14]: [QM31; 1] = (*xor_col14.try_into().unwrap()).unbox();
-        let [xor_col15]: [QM31; 1] = (*xor_col15.try_into().unwrap()).unbox();
+        let [ms_8_bits_col12]: [QM31; 1] = (*ms_8_bits_col12.try_into().unwrap()).unbox();
+        let [ms_8_bits_col13]: [QM31; 1] = (*ms_8_bits_col13.try_into().unwrap()).unbox();
+        let [ms_8_bits_col14]: [QM31; 1] = (*ms_8_bits_col14.try_into().unwrap()).unbox();
+        let [ms_8_bits_col15]: [QM31; 1] = (*ms_8_bits_col15.try_into().unwrap()).unbox();
         let [xor_col16]: [QM31; 1] = (*xor_col16.try_into().unwrap()).unbox();
         let [xor_col17]: [QM31; 1] = (*xor_col17.try_into().unwrap()).unbox();
         let [xor_col18]: [QM31; 1] = (*xor_col18.try_into().unwrap()).unbox();
         let [xor_col19]: [QM31; 1] = (*xor_col19.try_into().unwrap()).unbox();
-        let [enabler_col20]: [QM31; 1] = (*enabler_col20.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
-        let split_16_low_part_size_8_output_tmp_6e2d1_1_limb_0: QM31 =
+        let split_16_low_part_size_8_output_tmp_4ec2c_1_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
-            input_limb_0_col0, ms_8_bits_col6, self.common_lookup_elements, ref sum, random_coeff,
+            input_a_limb_0_col0, ms_8_bits_col8, self.common_lookup_elements, ref sum, random_coeff,
         );
-        let split_16_low_part_size_8_output_tmp_6e2d1_3_limb_0: QM31 =
+        let split_16_low_part_size_8_output_tmp_4ec2c_3_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
-            input_limb_1_col1, ms_8_bits_col7, self.common_lookup_elements, ref sum, random_coeff,
+            input_a_limb_1_col1, ms_8_bits_col9, self.common_lookup_elements, ref sum, random_coeff,
         );
-        let split_16_low_part_size_8_output_tmp_6e2d1_5_limb_0: QM31 =
+        let split_16_low_part_size_8_output_tmp_4ec2c_5_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
-            input_limb_2_col2, ms_8_bits_col8, self.common_lookup_elements, ref sum, random_coeff,
+            input_b_limb_0_col2,
+            ms_8_bits_col10,
+            self.common_lookup_elements,
+            ref sum,
+            random_coeff,
         );
-        let split_16_low_part_size_8_output_tmp_6e2d1_7_limb_0: QM31 =
+        let split_16_low_part_size_8_output_tmp_4ec2c_7_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
-            input_limb_3_col3, ms_8_bits_col9, self.common_lookup_elements, ref sum, random_coeff,
+            input_b_limb_1_col3,
+            ms_8_bits_col11,
+            self.common_lookup_elements,
+            ref sum,
+            random_coeff,
         );
-        let split_16_low_part_size_8_output_tmp_6e2d1_9_limb_0: QM31 =
+        let split_16_low_part_size_8_output_tmp_4ec2c_9_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
-            input_limb_4_col4, ms_8_bits_col10, self.common_lookup_elements, ref sum, random_coeff,
+            input_c_limb_0_col4,
+            ms_8_bits_col12,
+            self.common_lookup_elements,
+            ref sum,
+            random_coeff,
         );
-        let split_16_low_part_size_8_output_tmp_6e2d1_11_limb_0: QM31 =
+        let split_16_low_part_size_8_output_tmp_4ec2c_11_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
-            input_limb_5_col5, ms_8_bits_col11, self.common_lookup_elements, ref sum, random_coeff,
+            input_c_limb_1_col5,
+            ms_8_bits_col13,
+            self.common_lookup_elements,
+            ref sum,
+            random_coeff,
+        );
+        let split_16_low_part_size_8_output_tmp_4ec2c_13_limb_0: QM31 =
+            split_16_low_part_size_8_evaluate(
+            input_a_xor_b_xor_c_limb_0_col6,
+            ms_8_bits_col14,
+            self.common_lookup_elements,
+            ref sum,
+            random_coeff,
+        );
+        let split_16_low_part_size_8_output_tmp_4ec2c_15_limb_0: QM31 =
+            split_16_low_part_size_8_evaluate(
+            input_a_xor_b_xor_c_limb_1_col7,
+            ms_8_bits_col15,
+            self.common_lookup_elements,
+            ref sum,
+            random_coeff,
         );
         bitwise_xor_num_bits_8_evaluate(
             [
-                split_16_low_part_size_8_output_tmp_6e2d1_1_limb_0,
-                split_16_low_part_size_8_output_tmp_6e2d1_5_limb_0,
+                split_16_low_part_size_8_output_tmp_4ec2c_1_limb_0,
+                split_16_low_part_size_8_output_tmp_4ec2c_5_limb_0,
             ],
-            xor_col12,
+            xor_col16,
             self.common_lookup_elements,
             ref verify_bitwise_xor_8_sum_0,
             ref numerator_0,
@@ -189,8 +238,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         bitwise_xor_num_bits_8_evaluate(
-            [xor_col12, split_16_low_part_size_8_output_tmp_6e2d1_9_limb_0],
-            xor_col13,
+            [ms_8_bits_col8, ms_8_bits_col10],
+            xor_col17,
             self.common_lookup_elements,
             ref verify_bitwise_xor_8_sum_1,
             ref numerator_1,
@@ -198,8 +247,11 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         bitwise_xor_num_bits_8_evaluate(
-            [ms_8_bits_col6, ms_8_bits_col8],
-            xor_col14,
+            [
+                split_16_low_part_size_8_output_tmp_4ec2c_3_limb_0,
+                split_16_low_part_size_8_output_tmp_4ec2c_7_limb_0,
+            ],
+            xor_col18,
             self.common_lookup_elements,
             ref verify_bitwise_xor_8_sum_2,
             ref numerator_2,
@@ -207,74 +259,98 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         bitwise_xor_num_bits_8_evaluate(
-            [xor_col14, ms_8_bits_col10],
-            xor_col15,
+            [ms_8_bits_col9, ms_8_bits_col11],
+            xor_col19,
             self.common_lookup_elements,
             ref verify_bitwise_xor_8_sum_3,
             ref numerator_3,
             ref sum,
             random_coeff,
         );
-        bitwise_xor_num_bits_8_b_evaluate(
-            [
-                split_16_low_part_size_8_output_tmp_6e2d1_3_limb_0,
-                split_16_low_part_size_8_output_tmp_6e2d1_7_limb_0,
-            ],
-            xor_col16,
-            self.common_lookup_elements,
-            ref verify_bitwise_xor_8_b_sum_4,
-            ref numerator_4,
-            ref sum,
-            random_coeff,
-        );
-        bitwise_xor_num_bits_8_b_evaluate(
-            [xor_col16, split_16_low_part_size_8_output_tmp_6e2d1_11_limb_0],
-            xor_col17,
-            self.common_lookup_elements,
-            ref verify_bitwise_xor_8_b_sum_5,
-            ref numerator_5,
-            ref sum,
-            random_coeff,
-        );
-        bitwise_xor_num_bits_8_b_evaluate(
-            [ms_8_bits_col7, ms_8_bits_col9],
-            xor_col18,
-            self.common_lookup_elements,
-            ref verify_bitwise_xor_8_b_sum_6,
-            ref numerator_6,
-            ref sum,
-            random_coeff,
-        );
-        bitwise_xor_num_bits_8_b_evaluate(
-            [xor_col18, ms_8_bits_col11],
-            xor_col19,
-            self.common_lookup_elements,
-            ref verify_bitwise_xor_8_b_sum_7,
-            ref numerator_7,
-            ref sum,
-            random_coeff,
-        );
-        let triple_xor32_output_tmp_6e2d1_28_limb_0: QM31 = (xor_col13
-            + (xor_col15 * qm31_const::<256, 0, 0, 0>()));
-        let triple_xor32_output_tmp_6e2d1_28_limb_1: QM31 = (xor_col17
-            + (xor_col19 * qm31_const::<256, 0, 0, 0>()));
 
-        // Constraint - Enabler is a bit
-        let constraint_quotient = (((enabler_col20 * enabler_col20) - enabler_col20));
-        sum = sum * random_coeff + constraint_quotient;
-
-        triple_xor_32_sum_8 = self
+        verify_bitwise_xor_8_sum_4 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<990559919, 0, 0, 0>(), input_limb_0_col0, input_limb_1_col1,
-                    input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5,
-                    triple_xor32_output_tmp_6e2d1_28_limb_0,
-                    triple_xor32_output_tmp_6e2d1_28_limb_1,
+                    qm31_const::<112558620, 0, 0, 0>(), xor_col16,
+                    split_16_low_part_size_8_output_tmp_4ec2c_9_limb_0,
+                    split_16_low_part_size_8_output_tmp_4ec2c_13_limb_0,
                 ]
                     .span(),
             );
-        numerator_8 = enabler_col20;
+        numerator_4 = qm31_const::<1, 0, 0, 0>();
+
+        verify_bitwise_xor_8_sum_5 = self
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<112558620, 0, 0, 0>(), xor_col17, ms_8_bits_col12, ms_8_bits_col14]
+                    .span(),
+            );
+        numerator_5 = qm31_const::<1, 0, 0, 0>();
+
+        verify_bitwise_xor_8_sum_6 = self
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<112558620, 0, 0, 0>(), xor_col18,
+                    split_16_low_part_size_8_output_tmp_4ec2c_11_limb_0,
+                    split_16_low_part_size_8_output_tmp_4ec2c_15_limb_0,
+                ]
+                    .span(),
+            );
+        numerator_6 = qm31_const::<1, 0, 0, 0>();
+
+        verify_bitwise_xor_8_sum_7 = self
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<112558620, 0, 0, 0>(), xor_col19, ms_8_bits_col13, ms_8_bits_col15]
+                    .span(),
+            );
+        numerator_7 = qm31_const::<1, 0, 0, 0>();
+
+        gate_sum_8 = self
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<378353459, 0, 0, 0>(), triple_xor_input_addr_0,
+                    input_a_limb_0_col0, input_a_limb_1_col1,
+                ]
+                    .span(),
+            );
+        numerator_8 = qm31_const::<1, 0, 0, 0>();
+
+        gate_sum_9 = self
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<378353459, 0, 0, 0>(), triple_xor_input_addr_1,
+                    input_b_limb_0_col2, input_b_limb_1_col3,
+                ]
+                    .span(),
+            );
+        numerator_9 = qm31_const::<1, 0, 0, 0>();
+
+        gate_sum_10 = self
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<378353459, 0, 0, 0>(), triple_xor_input_addr_2,
+                    input_c_limb_0_col4, input_c_limb_1_col5,
+                ]
+                    .span(),
+            );
+        numerator_10 = qm31_const::<1, 0, 0, 0>();
+
+        gate_sum_11 = self
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<378353459, 0, 0, 0>(), triple_xor_output_addr,
+                    input_a_xor_b_xor_c_limb_0_col6, input_a_xor_b_xor_c_limb_1_col7,
+                ]
+                    .span(),
+            );
+        numerator_11 = triple_xor_multiplicity;
 
         lookup_constraints(
             ref sum,
@@ -289,17 +365,23 @@ pub impl AirComponentImpl of AirComponent<Component> {
             numerator_6,
             numerator_7,
             numerator_8,
+            numerator_9,
+            numerator_10,
+            numerator_11,
             column_size,
             ref interaction_trace_mask_values,
             verify_bitwise_xor_8_sum_0,
             verify_bitwise_xor_8_sum_1,
             verify_bitwise_xor_8_sum_2,
             verify_bitwise_xor_8_sum_3,
-            verify_bitwise_xor_8_b_sum_4,
-            verify_bitwise_xor_8_b_sum_5,
-            verify_bitwise_xor_8_b_sum_6,
-            verify_bitwise_xor_8_b_sum_7,
-            triple_xor_32_sum_8,
+            verify_bitwise_xor_8_sum_4,
+            verify_bitwise_xor_8_sum_5,
+            verify_bitwise_xor_8_sum_6,
+            verify_bitwise_xor_8_sum_7,
+            gate_sum_8,
+            gate_sum_9,
+            gate_sum_10,
+            gate_sum_11,
         );
     }
 }
@@ -318,17 +400,23 @@ fn lookup_constraints(
     numerator_6: QM31,
     numerator_7: QM31,
     numerator_8: QM31,
+    numerator_9: QM31,
+    numerator_10: QM31,
+    numerator_11: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     verify_bitwise_xor_8_sum_0: QM31,
     verify_bitwise_xor_8_sum_1: QM31,
     verify_bitwise_xor_8_sum_2: QM31,
     verify_bitwise_xor_8_sum_3: QM31,
-    verify_bitwise_xor_8_b_sum_4: QM31,
-    verify_bitwise_xor_8_b_sum_5: QM31,
-    verify_bitwise_xor_8_b_sum_6: QM31,
-    verify_bitwise_xor_8_b_sum_7: QM31,
-    triple_xor_32_sum_8: QM31,
+    verify_bitwise_xor_8_sum_4: QM31,
+    verify_bitwise_xor_8_sum_5: QM31,
+    verify_bitwise_xor_8_sum_6: QM31,
+    verify_bitwise_xor_8_sum_7: QM31,
+    gate_sum_8: QM31,
+    gate_sum_9: QM31,
+    gate_sum_10: QM31,
+    gate_sum_11: QM31,
 ) {
     let [
         trace_2_col0,
@@ -351,7 +439,11 @@ fn lookup_constraints(
         trace_2_col17,
         trace_2_col18,
         trace_2_col19,
-    ]: [Span<QM31>; 20] =
+        trace_2_col20,
+        trace_2_col21,
+        trace_2_col22,
+        trace_2_col23,
+    ]: [Span<QM31>; 24] =
         (*interaction_trace_mask_values
         .multi_pop_front()
         .unwrap())
@@ -373,13 +465,17 @@ fn lookup_constraints(
     let [trace_2_col13]: [QM31; 1] = (*trace_2_col13.try_into().unwrap()).unbox();
     let [trace_2_col14]: [QM31; 1] = (*trace_2_col14.try_into().unwrap()).unbox();
     let [trace_2_col15]: [QM31; 1] = (*trace_2_col15.try_into().unwrap()).unbox();
-    let [trace_2_col16_neg1, trace_2_col16]: [QM31; 2] = (*trace_2_col16.try_into().unwrap())
+    let [trace_2_col16]: [QM31; 1] = (*trace_2_col16.try_into().unwrap()).unbox();
+    let [trace_2_col17]: [QM31; 1] = (*trace_2_col17.try_into().unwrap()).unbox();
+    let [trace_2_col18]: [QM31; 1] = (*trace_2_col18.try_into().unwrap()).unbox();
+    let [trace_2_col19]: [QM31; 1] = (*trace_2_col19.try_into().unwrap()).unbox();
+    let [trace_2_col20_neg1, trace_2_col20]: [QM31; 2] = (*trace_2_col20.try_into().unwrap())
         .unbox();
-    let [trace_2_col17_neg1, trace_2_col17]: [QM31; 2] = (*trace_2_col17.try_into().unwrap())
+    let [trace_2_col21_neg1, trace_2_col21]: [QM31; 2] = (*trace_2_col21.try_into().unwrap())
         .unbox();
-    let [trace_2_col18_neg1, trace_2_col18]: [QM31; 2] = (*trace_2_col18.try_into().unwrap())
+    let [trace_2_col22_neg1, trace_2_col22]: [QM31; 2] = (*trace_2_col22.try_into().unwrap())
         .unbox();
-    let [trace_2_col19_neg1, trace_2_col19]: [QM31; 2] = (*trace_2_col19.try_into().unwrap())
+    let [trace_2_col23_neg1, trace_2_col23]: [QM31; 2] = (*trace_2_col23.try_into().unwrap())
         .unbox();
 
     core::internal::revoke_ap_tracking();
@@ -407,32 +503,46 @@ fn lookup_constraints(
         [trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11],
     )
         - QM31Impl::from_partial_evals([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7]))
-        * verify_bitwise_xor_8_b_sum_4
-        * verify_bitwise_xor_8_b_sum_5)
-        - (verify_bitwise_xor_8_b_sum_4 * numerator_5)
-        - (verify_bitwise_xor_8_b_sum_5 * numerator_4));
+        * verify_bitwise_xor_8_sum_4
+        * verify_bitwise_xor_8_sum_5)
+        - (verify_bitwise_xor_8_sum_4 * numerator_5)
+        - (verify_bitwise_xor_8_sum_5 * numerator_4));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
         [trace_2_col12, trace_2_col13, trace_2_col14, trace_2_col15],
     )
         - QM31Impl::from_partial_evals([trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11]))
-        * verify_bitwise_xor_8_b_sum_6
-        * verify_bitwise_xor_8_b_sum_7)
-        - (verify_bitwise_xor_8_b_sum_6 * numerator_7)
-        - (verify_bitwise_xor_8_b_sum_7 * numerator_6));
+        * verify_bitwise_xor_8_sum_6
+        * verify_bitwise_xor_8_sum_7)
+        - (verify_bitwise_xor_8_sum_6 * numerator_7)
+        - (verify_bitwise_xor_8_sum_7 * numerator_6));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
         [trace_2_col16, trace_2_col17, trace_2_col18, trace_2_col19],
     )
-        - QM31Impl::from_partial_evals([trace_2_col12, trace_2_col13, trace_2_col14, trace_2_col15])
         - QM31Impl::from_partial_evals(
-            [trace_2_col16_neg1, trace_2_col17_neg1, trace_2_col18_neg1, trace_2_col19_neg1],
+            [trace_2_col12, trace_2_col13, trace_2_col14, trace_2_col15],
+        ))
+        * gate_sum_8
+        * gate_sum_9)
+        - (gate_sum_8 * numerator_9)
+        - (gate_sum_9 * numerator_8));
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col20, trace_2_col21, trace_2_col22, trace_2_col23],
+    )
+        - QM31Impl::from_partial_evals([trace_2_col16, trace_2_col17, trace_2_col18, trace_2_col19])
+        - QM31Impl::from_partial_evals(
+            [trace_2_col20_neg1, trace_2_col21_neg1, trace_2_col22_neg1, trace_2_col23_neg1],
         )
         + (claimed_sum * (column_size.inverse().into())))
-        * triple_xor_32_sum_8)
-        + numerator_8);
+        * gate_sum_10
+        * gate_sum_11)
+        + (gate_sum_10 * numerator_11)
+        - (gate_sum_11 * numerator_10));
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]
@@ -468,6 +578,31 @@ mod tests {
         let mut sum: QM31 = Zero::zero();
 
         let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            TRIPLE_XOR_INPUT_ADDR_0_IDX,
+            qm31_const::<609298445, 1319370969, 1526988810, 301130926>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            TRIPLE_XOR_INPUT_ADDR_1_IDX,
+            qm31_const::<542189266, 1185153241, 1459879946, 301130926>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            TRIPLE_XOR_INPUT_ADDR_2_IDX,
+            qm31_const::<475080087, 1050935513, 1392771082, 301130926>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            TRIPLE_XOR_OUTPUT_ADDR_IDX,
+            qm31_const::<2078058264, 1287289382, 1925271066, 560922030>(),
+        );
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            TRIPLE_XOR_MULTIPLICITY_IDX,
+            qm31_const::<576605629, 937297661, 250894038, 1499736593>(),
+        );
 
         let mut trace_columns = [
             [qm31_const::<1659099300, 905558730, 651199673, 1375009625>()].span(),
@@ -490,7 +625,6 @@ mod tests {
             [qm31_const::<1785226588, 510860387, 1992127319, 343880121>()].span(),
             [qm31_const::<1315462335, 1718819938, 1522365270, 343880121>()].span(),
             [qm31_const::<1382571514, 1853037666, 1589474134, 343880121>()].span(),
-            [qm31_const::<1986820986, 913513739, 45970432, 343880178>()].span(),
         ]
             .span();
         let interaction_values = array![
@@ -499,6 +633,7 @@ mod tests {
             qm31_const::<1139386390, 348416452, 1982105829, 1941984119>(),
             qm31_const::<1206495569, 482634180, 2049214693, 1941984119>(),
             qm31_const::<736731316, 1690593731, 1579452644, 1941984119>(),
+            qm31_const::<803840495, 1824811459, 1646561508, 1941984119>(),
         ];
         let mut interaction_columns = make_interaction_trace(
             interaction_values, qm31_const::<1115374022, 1127856551, 489657863, 643630026>(),
@@ -512,6 +647,6 @@ mod tests {
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
             );
         preprocessed_trace.validate_usage();
-        assert_eq!(sum, QM31Trait::from_fixed_array(TRIPLE_XOR_32_SAMPLE_EVAL_RESULT))
+        assert_eq!(sum, QM31Trait::from_fixed_array(TRIPLE_XOR_SAMPLE_EVAL_RESULT))
     }
 }
