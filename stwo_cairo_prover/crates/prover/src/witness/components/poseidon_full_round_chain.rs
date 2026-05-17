@@ -70,7 +70,6 @@ impl ClaimGenerator {
             trace,
             Claim { log_size },
             InteractionClaimGenerator {
-                n_rows,
                 log_size,
                 lookup_data,
             },
@@ -448,7 +447,7 @@ fn write_trace_simd(
                 let poseidon_round_keys_output_limb_29_col91 =
                     poseidon_round_keys_output_tmp_1400f_3[2].get_m31(9);
                 *row[91] = poseidon_round_keys_output_limb_29_col91;
-                *lookup_data.poseidon_round_keys_0 = [
+                *lookup_data.poseidon_round_keys_3 = [
                     M31_1024310512,
                     input_limb_1_col1,
                     poseidon_round_keys_output_limb_0_col62,
@@ -606,7 +605,7 @@ fn write_trace_simd(
                     ((carry_2_tmp_1400f_8) + (M31_1)),
                     ((carry_3_tmp_1400f_9) + (M31_1)),
                 ];
-                *lookup_data.range_check_3_3_3_3_3_0 = [
+                *lookup_data.range_check_3_3_3_3_3_4 = [
                     M31_502259093,
                     ((p_coef_col102) + (M31_1)),
                     ((carry_0_tmp_1400f_6) + (M31_1)),
@@ -621,7 +620,7 @@ fn write_trace_simd(
                     ((carry_7_tmp_1400f_13) + (M31_1)),
                     ((carry_8_tmp_1400f_14) + (M31_1)),
                 ];
-                *lookup_data.range_check_3_3_3_3_3_1 = [
+                *lookup_data.range_check_3_3_3_3_3_5 = [
                     M31_502259093,
                     ((carry_4_tmp_1400f_10) + (M31_1)),
                     ((carry_5_tmp_1400f_11) + (M31_1)),
@@ -754,7 +753,7 @@ fn write_trace_simd(
                     ((carry_2_tmp_1400f_20) + (M31_2)),
                     ((carry_3_tmp_1400f_21) + (M31_2)),
                 ];
-                *lookup_data.range_check_3_3_3_3_3_2 = [
+                *lookup_data.range_check_3_3_3_3_3_6 = [
                     M31_502259093,
                     ((p_coef_col113) + (M31_2)),
                     ((carry_0_tmp_1400f_18) + (M31_2)),
@@ -769,7 +768,7 @@ fn write_trace_simd(
                     ((carry_7_tmp_1400f_25) + (M31_2)),
                     ((carry_8_tmp_1400f_26) + (M31_2)),
                 ];
-                *lookup_data.range_check_3_3_3_3_3_3 = [
+                *lookup_data.range_check_3_3_3_3_3_7 = [
                     M31_502259093,
                     ((carry_4_tmp_1400f_22) + (M31_2)),
                     ((carry_5_tmp_1400f_23) + (M31_2)),
@@ -902,7 +901,7 @@ fn write_trace_simd(
                     ((carry_2_tmp_1400f_32) + (M31_3)),
                     ((carry_3_tmp_1400f_33) + (M31_3)),
                 ];
-                *lookup_data.range_check_3_3_3_3_3_4 = [
+                *lookup_data.range_check_3_3_3_3_3_8 = [
                     M31_502259093,
                     ((p_coef_col124) + (M31_3)),
                     ((carry_0_tmp_1400f_30) + (M31_3)),
@@ -917,7 +916,7 @@ fn write_trace_simd(
                     ((carry_7_tmp_1400f_37) + (M31_3)),
                     ((carry_8_tmp_1400f_38) + (M31_3)),
                 ];
-                *lookup_data.range_check_3_3_3_3_3_5 = [
+                *lookup_data.range_check_3_3_3_3_3_9 = [
                     M31_502259093,
                     ((carry_4_tmp_1400f_34) + (M31_3)),
                     ((carry_5_tmp_1400f_35) + (M31_3)),
@@ -930,7 +929,7 @@ fn write_trace_simd(
 
                 let enabler_col125 = enabler_col.packed_at(row_index);
                 *row[125] = enabler_col125;
-                *lookup_data.poseidon_full_round_chain_0 = [
+                *lookup_data.poseidon_full_round_chain_10 = [
                     M31_1480369132,
                     input_limb_0_col0,
                     input_limb_1_col1,
@@ -965,7 +964,7 @@ fn write_trace_simd(
                     input_limb_30_col30,
                     input_limb_31_col31,
                 ];
-                *lookup_data.poseidon_full_round_chain_1 = [
+                *lookup_data.poseidon_full_round_chain_11 = [
                     M31_1480369132,
                     input_limb_0_col0,
                     ((input_limb_1_col1) + (M31_1)),
@@ -1000,6 +999,8 @@ fn write_trace_simd(
                     combination_limb_8_col122,
                     combination_limb_9_col123,
                 ];
+                *lookup_data.mults_0 = M31_1;
+                *lookup_data.mults_1 = enabler_col125;
             },
         );
 
@@ -1011,19 +1012,20 @@ struct LookupData {
     cube_252_0: Vec<[PackedM31; 21]>,
     cube_252_1: Vec<[PackedM31; 21]>,
     cube_252_2: Vec<[PackedM31; 21]>,
-    poseidon_full_round_chain_0: Vec<[PackedM31; 33]>,
-    poseidon_full_round_chain_1: Vec<[PackedM31; 33]>,
-    poseidon_round_keys_0: Vec<[PackedM31; 32]>,
-    range_check_3_3_3_3_3_0: Vec<[PackedM31; 6]>,
-    range_check_3_3_3_3_3_1: Vec<[PackedM31; 6]>,
-    range_check_3_3_3_3_3_2: Vec<[PackedM31; 6]>,
-    range_check_3_3_3_3_3_3: Vec<[PackedM31; 6]>,
+    poseidon_round_keys_3: Vec<[PackedM31; 32]>,
     range_check_3_3_3_3_3_4: Vec<[PackedM31; 6]>,
     range_check_3_3_3_3_3_5: Vec<[PackedM31; 6]>,
+    range_check_3_3_3_3_3_6: Vec<[PackedM31; 6]>,
+    range_check_3_3_3_3_3_7: Vec<[PackedM31; 6]>,
+    range_check_3_3_3_3_3_8: Vec<[PackedM31; 6]>,
+    range_check_3_3_3_3_3_9: Vec<[PackedM31; 6]>,
+    poseidon_full_round_chain_10: Vec<[PackedM31; 33]>,
+    poseidon_full_round_chain_11: Vec<[PackedM31; 33]>,
+    mults_0: Vec<PackedM31>,
+    mults_1: Vec<PackedM31>,
 }
 
 pub struct InteractionClaimGenerator {
-    n_rows: usize,
     log_size: u32,
     lookup_data: LookupData,
 }
@@ -1035,7 +1037,6 @@ impl InteractionClaimGenerator {
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
         InteractionClaim,
     ) {
-        let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
 
         // Sum logup terms in pairs.
@@ -1044,12 +1045,14 @@ impl InteractionClaimGenerator {
             col_gen.par_iter_mut(),
             &self.lookup_data.cube_252_0,
             &self.lookup_data.cube_252_1,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
             });
         col_gen.finalize_col();
 
@@ -1057,41 +1060,15 @@ impl InteractionClaimGenerator {
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.cube_252_2,
-            &self.lookup_data.poseidon_round_keys_0,
+            &self.lookup_data.poseidon_round_keys_3,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
-
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_3_3_3_3_3_0,
-            &self.lookup_data.range_check_3_3_3_3_3_1,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
-
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_3_3_3_3_3_2,
-            &self.lookup_data.range_check_3_3_3_3_3_3,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
             });
         col_gen.finalize_col();
 
@@ -1100,30 +1077,62 @@ impl InteractionClaimGenerator {
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_3_3_3_3_3_4,
             &self.lookup_data.range_check_3_3_3_3_3_5,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.poseidon_full_round_chain_0,
-            &self.lookup_data.poseidon_full_round_chain_1,
+            &self.lookup_data.range_check_3_3_3_3_3_6,
+            &self.lookup_data.range_check_3_3_3_3_3_7,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .enumerate()
-            .for_each(|(i, (writer, values0, values1))| {
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(
-                    denom1 * enabler_col.packed_at(i) - denom0 * enabler_col.packed_at(i),
-                    denom0 * denom1,
-                );
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.range_check_3_3_3_3_3_8,
+            &self.lookup_data.range_check_3_3_3_3_3_9,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.poseidon_full_round_chain_10,
+            &self.lookup_data.poseidon_full_round_chain_11,
+            &self.lookup_data.mults_1,
+            &self.lookup_data.mults_1,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom1 * *mult0 - denom0 * *mult1, denom0 * denom1);
             });
         col_gen.finalize_col();
 

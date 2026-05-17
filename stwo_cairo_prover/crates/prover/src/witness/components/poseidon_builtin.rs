@@ -210,7 +210,7 @@ fn write_trace_simd(
                     output_state_2_id_col5,
                 ],
             );
-            *lookup_data.poseidon_aggregator_0 = [
+            *lookup_data.poseidon_aggregator_6 = [
                 M31_1551892206,
                 input_state_0_id_col0,
                 input_state_1_id_col1,
@@ -219,6 +219,7 @@ fn write_trace_simd(
                 output_state_1_id_col4,
                 output_state_2_id_col5,
             ];
+            *lookup_data.mults_0 = M31_1;
         });
 
     (trace, lookup_data, sub_component_inputs)
@@ -232,7 +233,8 @@ struct LookupData {
     memory_address_to_id_3: Vec<[PackedM31; 3]>,
     memory_address_to_id_4: Vec<[PackedM31; 3]>,
     memory_address_to_id_5: Vec<[PackedM31; 3]>,
-    poseidon_aggregator_0: Vec<[PackedM31; 7]>,
+    poseidon_aggregator_6: Vec<[PackedM31; 7]>,
+    mults_0: Vec<PackedM31>,
 }
 
 pub struct InteractionClaimGenerator {
@@ -255,12 +257,14 @@ impl InteractionClaimGenerator {
             col_gen.par_iter_mut(),
             &self.lookup_data.memory_address_to_id_0,
             &self.lookup_data.memory_address_to_id_1,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
             });
         col_gen.finalize_col();
 
@@ -269,12 +273,14 @@ impl InteractionClaimGenerator {
             col_gen.par_iter_mut(),
             &self.lookup_data.memory_address_to_id_2,
             &self.lookup_data.memory_address_to_id_3,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
             });
         col_gen.finalize_col();
 
@@ -283,12 +289,14 @@ impl InteractionClaimGenerator {
             col_gen.par_iter_mut(),
             &self.lookup_data.memory_address_to_id_4,
             &self.lookup_data.memory_address_to_id_5,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
             });
         col_gen.finalize_col();
 
@@ -296,12 +304,13 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.poseidon_aggregator_0,
+            &self.lookup_data.poseidon_aggregator_6,
+            self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values)| {
+            .for_each(|(writer, values, mult)| {
                 let denom = common_lookup_elements.combine(values);
-                writer.write_frac(PackedQM31::one(), denom);
+                writer.write_frac((mult).into(), denom);
             });
         col_gen.finalize_col();
 
