@@ -131,6 +131,7 @@ pub impl PedersenComponentsImpl of PedersenComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .partial_ec_mul
@@ -140,6 +141,7 @@ pub impl PedersenComponentsImpl of PedersenComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .pedersen_points_table
@@ -149,6 +151,7 @@ pub impl PedersenComponentsImpl of PedersenComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
     }
 }

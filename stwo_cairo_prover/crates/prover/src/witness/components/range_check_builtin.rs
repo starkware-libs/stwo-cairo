@@ -52,10 +52,7 @@ impl ClaimGenerator {
 
         (
             trace,
-            Claim {
-                log_size,
-                range_check_builtin_segment_start: self.range_check_builtin_segment_start,
-            },
+            Claim { log_size },
             InteractionClaimGenerator {
                 log_size,
                 lookup_data,

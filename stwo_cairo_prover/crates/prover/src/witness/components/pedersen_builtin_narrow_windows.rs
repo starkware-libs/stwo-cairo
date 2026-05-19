@@ -59,10 +59,7 @@ impl ClaimGenerator {
 
         (
             trace,
-            Claim {
-                log_size,
-                pedersen_builtin_segment_start: self.pedersen_builtin_segment_start,
-            },
+            Claim { log_size },
             InteractionClaimGenerator {
                 log_size,
                 lookup_data,

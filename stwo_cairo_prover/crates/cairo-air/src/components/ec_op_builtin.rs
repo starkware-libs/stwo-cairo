@@ -28,12 +28,12 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
 pub struct Eval {
     pub claim: Claim,
     pub common_lookup_elements: relations::CommonLookupElements,
+    pub ec_op_builtin_segment_start: u32,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Claim {
     pub log_size: u32,
-    pub ec_op_builtin_segment_start: u32,
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
@@ -353,7 +353,7 @@ impl FrameworkEval for Eval {
 
         let instance_addr_tmp_1b73f_0 = eval.add_intermediate(
             ((seq.clone() * M31_7.clone())
-                + E::F::from(M31::from(self.claim.ec_op_builtin_segment_start))),
+                + E::F::from(M31::from(self.ec_op_builtin_segment_start))),
         );
         ReadPositiveNumBits252::evaluate(
             [instance_addr_tmp_1b73f_0.clone()],
@@ -931,11 +931,9 @@ mod tests {
     fn ec_op_builtin_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
-            claim: Claim {
-                log_size: 4,
-                ec_op_builtin_segment_start: rng.gen::<u32>(),
-            },
+            claim: Claim { log_size: 4 },
             common_lookup_elements: relations::CommonLookupElements::dummy(),
+            ec_op_builtin_segment_start: rng.gen::<u32>(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

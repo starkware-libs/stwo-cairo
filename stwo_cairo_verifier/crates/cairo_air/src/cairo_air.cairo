@@ -106,6 +106,7 @@ pub struct CairoAir {
     verify_bitwise_xor_7: components::verify_bitwise_xor_7::Component,
     verify_bitwise_xor_8: components::verify_bitwise_xor_8::Component,
     verify_bitwise_xor_9: components::verify_bitwise_xor_9::Component,
+    public_data: stwo_cairo_air::PublicData,
 }
 
 #[generate_trait]
@@ -239,6 +240,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             verify_bitwise_xor_7: verify_bitwise_xor_7_component,
             verify_bitwise_xor_8: verify_bitwise_xor_8_component,
             verify_bitwise_xor_9: verify_bitwise_xor_9_component,
+            public_data: cairo_claim.public_data.clone(),
         }
     }
 }
@@ -283,6 +285,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
             verify_bitwise_xor_9,
+            public_data,
         } = self;
 
         opcodes
@@ -300,6 +303,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         blake_context
             .evaluate_constraints_at_point(
@@ -316,6 +320,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                public_data,
             );
         if let Option::Some(component) = partial_ec_mul_generic.as_snap() {
             component
@@ -325,6 +330,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
+                    [].span(),
                 );
         }
         pedersen_context
@@ -350,6 +356,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
 
         for memory_id_to_value_big_component in memory_id_to_big.span() {
@@ -360,6 +367,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
+                    [].span(),
                 );
         }
         memory_id_to_small
@@ -369,6 +377,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
 
         range_checks
@@ -386,6 +395,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         verify_bitwise_xor_7
             .evaluate_constraints_at_point(
@@ -394,6 +404,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         verify_bitwise_xor_8
             .evaluate_constraints_at_point(
@@ -402,6 +413,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         verify_bitwise_xor_9
             .evaluate_constraints_at_point(
@@ -410,6 +422,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
 
         validate_mask_usage(
@@ -434,6 +447,7 @@ pub struct CairoAir {
     verify_bitwise_xor_7: components::verify_bitwise_xor_7::Component,
     verify_bitwise_xor_8: components::verify_bitwise_xor_8::Component,
     verify_bitwise_xor_9: components::verify_bitwise_xor_9::Component,
+    public_data: stwo_cairo_air::PublicData,
 }
 
 #[generate_trait]
@@ -558,6 +572,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             verify_bitwise_xor_7: verify_bitwise_xor_7_component,
             verify_bitwise_xor_8: verify_bitwise_xor_8_component,
             verify_bitwise_xor_9: verify_bitwise_xor_9_component,
+            public_data: cairo_claim.public_data.clone(),
         }
     }
 }
@@ -600,6 +615,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
             verify_bitwise_xor_9,
+            public_data,
         } = self;
 
         opcodes
@@ -617,6 +633,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         blake_context
             .evaluate_constraints_at_point(
@@ -633,6 +650,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                public_data,
             );
         memory_address_to_id
             .evaluate_constraints_at_point(
@@ -641,6 +659,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         for memory_id_to_value_big_component in memory_id_to_big.span() {
             memory_id_to_value_big_component
@@ -650,6 +669,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
+                    [].span(),
                 );
         }
         memory_id_to_small
@@ -659,6 +679,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         range_checks
             .evaluate_constraints_at_point(
@@ -675,6 +696,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         verify_bitwise_xor_7
             .evaluate_constraints_at_point(
@@ -683,6 +705,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         verify_bitwise_xor_8
             .evaluate_constraints_at_point(
@@ -691,6 +714,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         verify_bitwise_xor_9
             .evaluate_constraints_at_point(
@@ -699,6 +723,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
 
         validate_mask_usage(
@@ -725,6 +750,7 @@ pub struct CairoAir {
     verify_bitwise_xor_7: components::verify_bitwise_xor_7::Component,
     verify_bitwise_xor_8: components::verify_bitwise_xor_8::Component,
     verify_bitwise_xor_9: components::verify_bitwise_xor_9::Component,
+    public_data: stwo_cairo_air::PublicData,
 }
 
 #[generate_trait]
@@ -854,6 +880,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             verify_bitwise_xor_7: verify_bitwise_xor_7_component,
             verify_bitwise_xor_8: verify_bitwise_xor_8_component,
             verify_bitwise_xor_9: verify_bitwise_xor_9_component,
+            public_data: cairo_claim.public_data.clone(),
         }
     }
 }
@@ -897,6 +924,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
             verify_bitwise_xor_9,
+            public_data,
         } = self;
 
         opcodes
@@ -914,6 +942,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         blake_context
             .evaluate_constraints_at_point(
@@ -930,6 +959,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                public_data,
             );
         poseidon_context
             .evaluate_constraints_at_point(
@@ -946,6 +976,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         for memory_id_to_value_big_component in memory_id_to_big.span() {
             memory_id_to_value_big_component
@@ -955,6 +986,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
+                    [].span(),
                 );
         }
         memory_id_to_small
@@ -964,6 +996,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         range_checks
             .evaluate_constraints_at_point(
@@ -980,6 +1013,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         verify_bitwise_xor_7
             .evaluate_constraints_at_point(
@@ -988,6 +1022,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         verify_bitwise_xor_8
             .evaluate_constraints_at_point(
@@ -996,6 +1031,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         verify_bitwise_xor_9
             .evaluate_constraints_at_point(
@@ -1004,6 +1040,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
 
         validate_mask_usage(
