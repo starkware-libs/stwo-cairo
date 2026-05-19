@@ -138,6 +138,7 @@ pub impl BlakeComponentsImpl of BlakeComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .blake_g
@@ -147,6 +148,7 @@ pub impl BlakeComponentsImpl of BlakeComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .blake_round_sigma
@@ -156,6 +158,7 @@ pub impl BlakeComponentsImpl of BlakeComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .triple_xor_32
@@ -165,6 +168,7 @@ pub impl BlakeComponentsImpl of BlakeComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .verify_bitwise_xor_12
@@ -174,6 +178,7 @@ pub impl BlakeComponentsImpl of BlakeComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
     }
 }

@@ -141,6 +141,7 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .rc_8
@@ -150,6 +151,7 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .rc_11
@@ -159,6 +161,7 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .rc_12
@@ -168,6 +171,7 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .rc_18
@@ -177,6 +181,7 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .rc_20
@@ -186,6 +191,7 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .rc_4_3
@@ -195,6 +201,7 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .rc_4_4
@@ -204,6 +211,7 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .rc_9_9
@@ -213,6 +221,7 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .rc_7_2_5
@@ -222,6 +231,7 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .rc_3_6_6_3
@@ -231,6 +241,7 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .rc_4_4_4_4
@@ -240,6 +251,7 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .rc_3_3_3_3_3
@@ -249,6 +261,7 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
     }
 }
