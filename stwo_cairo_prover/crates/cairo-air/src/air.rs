@@ -461,6 +461,25 @@ impl PublicSegmentRanges {
         .flatten()
         .collect_vec()
     }
+
+    /// Returns the segment range for the given builtin name.
+    pub fn get_segment_range_by_name(&self, name: &str) -> Option<SegmentRange> {
+        match name {
+            "add_mod_builtin" => self.add_mod,
+            "bitwise_builtin" => self.bitwise,
+            "output" => Some(self.output),
+            "mul_mod_builtin" => self.mul_mod,
+            "pedersen_builtin" => self.pedersen,
+            "pedersen_builtin_narrow_windows" => self.pedersen,
+            "poseidon_builtin" => self.poseidon,
+            "range_check96_builtin" => self.range_check_96,
+            "range_check_builtin" => self.range_check_128,
+            "ec_op_builtin" => self.ec_op,
+            "ecdsa_builtin" => self.ecdsa,
+            "keccak_builtin" => self.keccak,
+            _ => panic!("Invalid builtin name: {name}"),
+        }
+    }
 }
 
 pub type MemorySection = Vec<PubMemoryValue>;

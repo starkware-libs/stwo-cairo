@@ -74,10 +74,7 @@ impl ClaimGenerator {
 
         (
             trace,
-            Claim {
-                log_size,
-                mul_mod_builtin_segment_start: self.mul_mod_builtin_segment_start,
-            },
+            Claim { log_size },
             InteractionClaimGenerator {
                 log_size,
                 lookup_data,

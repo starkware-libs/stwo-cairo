@@ -126,6 +126,7 @@ pub impl CairoBigComponentImpl of AirComponent<BigComponent> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
+        public_params: Span<u32>,
     ) {
         let params = constraints_big::ConstraintParams {
             column_size: pow2(*self.log_n_rows).try_into().unwrap(),

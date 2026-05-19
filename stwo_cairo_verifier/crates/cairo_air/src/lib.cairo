@@ -390,128 +390,49 @@ fn verify_builtins(
 
     // All other supported builtins.
     check_builtin(
-        range_check_128_builtin
-            .map(
-                |
-                    claim,
-                | BuiltinClaim {
-                    segment_start: claim.range_check_builtin_segment_start,
-                    log_size: claim.log_size,
-                },
-            ),
+        range_check_128_builtin.map(|c| c.log_size),
         *range_check_128_segment_range,
         RANGE_CHECK_MEMORY_CELLS,
     );
     check_builtin(
-        range_check_96_builtin
-            .map(
-                |
-                    claim,
-                | BuiltinClaim {
-                    segment_start: claim.range_check96_builtin_segment_start,
-                    log_size: claim.log_size,
-                },
-            ),
+        range_check_96_builtin.map(|c| c.log_size),
         *range_check_96_segment_range,
         RANGE_CHECK_MEMORY_CELLS,
     );
     check_builtin(
-        bitwise_builtin
-            .map(
-                |
-                    claim,
-                | BuiltinClaim {
-                    segment_start: claim.bitwise_builtin_segment_start, log_size: claim.log_size,
-                },
-            ),
-        *bitwise_segment_range,
-        BITWISE_MEMORY_CELLS,
+        bitwise_builtin.map(|c| c.log_size), *bitwise_segment_range, BITWISE_MEMORY_CELLS,
     );
     check_builtin(
-        add_mod_builtin
-            .map(
-                |
-                    claim,
-                | BuiltinClaim {
-                    segment_start: claim.add_mod_builtin_segment_start, log_size: claim.log_size,
-                },
-            ),
-        *add_mod_segment_range,
-        ADD_MOD_MEMORY_CELLS,
+        add_mod_builtin.map(|c| c.log_size), *add_mod_segment_range, ADD_MOD_MEMORY_CELLS,
     );
     check_builtin(
-        mul_mod_builtin
-            .map(
-                |
-                    claim,
-                | BuiltinClaim {
-                    segment_start: claim.mul_mod_builtin_segment_start, log_size: claim.log_size,
-                },
-            ),
-        *mul_mod_segment_range,
-        MUL_MOD_MEMORY_CELLS,
+        mul_mod_builtin.map(|c| c.log_size), *mul_mod_segment_range, MUL_MOD_MEMORY_CELLS,
     );
     check_builtin(
-        pedersen_builtin
-            .map(
-                |
-                    claim,
-                | BuiltinClaim {
-                    segment_start: claim.pedersen_builtin_segment_start, log_size: claim.log_size,
-                },
-            ),
-        *pedersen_segment_range,
-        PEDERSEN_MEMORY_CELLS,
+        pedersen_builtin.map(|c| c.log_size), *pedersen_segment_range, PEDERSEN_MEMORY_CELLS,
     );
     check_builtin(
-        poseidon_builtin
-            .map(
-                |
-                    claim,
-                | BuiltinClaim {
-                    segment_start: claim.poseidon_builtin_segment_start, log_size: claim.log_size,
-                },
-            ),
-        *poseidon_segment_range,
-        POSEIDON_MEMORY_CELLS,
+        poseidon_builtin.map(|c| c.log_size), *poseidon_segment_range, POSEIDON_MEMORY_CELLS,
     );
-    check_builtin(
-        ec_op_builtin
-            .map(
-                |
-                    claim,
-                | BuiltinClaim {
-                    segment_start: claim.ec_op_builtin_segment_start, log_size: claim.log_size,
-                },
-            ),
-        *ec_op_segment_range,
-        EC_OP_MEMORY_CELLS,
-    );
+    check_builtin(ec_op_builtin.map(|c| c.log_size), *ec_op_segment_range, EC_OP_MEMORY_CELLS);
 }
 
-fn check_builtin(builtin_claim: Option<BuiltinClaim>, segment_range: SegmentRange, n_cells: usize) {
-    let Some(BuiltinClaim { segment_start, log_size }) = builtin_claim else {
+fn check_builtin(log_size: Option<u32>, segment_range: SegmentRange, n_cells: usize) {
+    let Some(log_size) = log_size else {
         // If the builtin is disabled it can't be used by the program.
         assert!(segment_range.is_empty());
         return;
     };
 
-    let segment_end = segment_start + pow2(log_size) * n_cells;
     let start_ptr = segment_range.start_ptr.value;
     let stop_ptr = segment_range.stop_ptr.value;
+    let segment_end = start_ptr + pow2(log_size) * n_cells;
     assert!((stop_ptr - start_ptr) % n_cells == 0);
 
-    // Check that segment_start == start_ptr <= stop_ptr <= segment_end <= 2**31.
-    assert!(start_ptr == segment_start);
+    // Check that start_ptr <= stop_ptr <= segment_end <= 2**31.
     assert!(start_ptr <= stop_ptr);
     assert!(stop_ptr <= segment_end);
     assert!(segment_end <= pow2(31));
-}
-
-#[derive(Drop)]
-struct BuiltinClaim {
-    segment_start: u32,
-    log_size: u32,
 }
 
 /// Check the program memory section is of the expected format.

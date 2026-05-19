@@ -8,7 +8,7 @@ use components::range_check_builtin::InteractionClaimImpl as RangeCheckBuiltinBi
 use core::array::Span;
 use core::box::BoxImpl;
 use stwo_cairo_air::claims::{CairoClaim, CairoInteractionClaim};
-use stwo_cairo_air::components;
+use stwo_cairo_air::{PublicData, components};
 use stwo_constraint_framework::{
     AirComponent, CommonLookupElements, LookupElementsImpl, PreprocessedMaskValues,
     PreprocessedMaskValuesImpl,
@@ -120,6 +120,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
+        public_data: @PublicData,
     ) {
         let BuiltinComponents {
             add_mod_builtin,
@@ -140,6 +141,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
+                    [*public_data.public_memory.public_segments.add_mod.start_ptr.value].span(),
                 );
         }
 
@@ -151,6 +153,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
+                    [*public_data.public_memory.public_segments.bitwise.start_ptr.value].span(),
                 );
         }
 
@@ -162,6 +165,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
+                    [*public_data.public_memory.public_segments.mul_mod.start_ptr.value].span(),
                 );
         }
 
@@ -173,6 +177,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
+                    [*public_data.public_memory.public_segments.pedersen.start_ptr.value].span(),
                 );
         }
 
@@ -184,6 +189,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
+                    [*public_data.public_memory.public_segments.poseidon.start_ptr.value].span(),
                 );
         }
 
@@ -195,6 +201,8 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
+                    [*public_data.public_memory.public_segments.range_check_96.start_ptr.value]
+                        .span(),
                 );
         }
 
@@ -206,6 +214,8 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
+                    [*public_data.public_memory.public_segments.range_check_128.start_ptr.value]
+                        .span(),
                 );
         }
 
@@ -217,6 +227,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
+                    [*public_data.public_memory.public_segments.ec_op.start_ptr.value].span(),
                 );
         }
     }
@@ -276,6 +287,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
+        public_data: @PublicData,
     ) {
         let BuiltinComponents { bitwise_builtin, range_check_128_builtin } = self;
 
@@ -287,6 +299,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
+                    [*public_data.public_memory.public_segments.bitwise.start_ptr.value].span(),
                 );
         }
 
@@ -298,6 +311,8 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
+                    [*public_data.public_memory.public_segments.range_check_128.start_ptr.value]
+                        .span(),
                 );
         }
     }
@@ -361,6 +376,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
+        public_data: @PublicData,
     ) {
         let BuiltinComponents { bitwise_builtin, poseidon_builtin, range_check_128_builtin } = self;
 
@@ -372,6 +388,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
+                    [*public_data.public_memory.public_segments.bitwise.start_ptr.value].span(),
                 );
         }
 
@@ -383,6 +400,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
+                    [*public_data.public_memory.public_segments.poseidon.start_ptr.value].span(),
                 );
         }
 
@@ -394,6 +412,8 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
+                    [*public_data.public_memory.public_segments.range_check_128.start_ptr.value]
+                        .span(),
                 );
         }
     }
