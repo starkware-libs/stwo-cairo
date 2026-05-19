@@ -29,12 +29,12 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
 pub struct Eval {
     pub claim: Claim,
     pub common_lookup_elements: relations::CommonLookupElements,
+    pub bitwise_builtin_segment_start: u32,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Claim {
     pub log_size: u32,
-    pub bitwise_builtin_segment_start: u32,
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
@@ -162,10 +162,8 @@ impl FrameworkEval for Eval {
         let or_id_col88 = eval.next_trace_mask();
 
         ReadPositiveNumBits252::evaluate(
-            [
-                (E::F::from(M31::from(self.claim.bitwise_builtin_segment_start))
-                    + (seq.clone() * M31_5.clone())),
-            ],
+            [(E::F::from(M31::from(self.bitwise_builtin_segment_start))
+                + (seq.clone() * M31_5.clone()))],
             op0_id_col0.clone(),
             op0_limb_0_col1.clone(),
             op0_limb_1_col2.clone(),
@@ -199,11 +197,9 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         ReadPositiveNumBits252::evaluate(
-            [
-                ((E::F::from(M31::from(self.claim.bitwise_builtin_segment_start))
-                    + (seq.clone() * M31_5.clone()))
-                    + M31_1.clone()),
-            ],
+            [((E::F::from(M31::from(self.bitwise_builtin_segment_start))
+                + (seq.clone() * M31_5.clone()))
+                + M31_1.clone())],
             op1_id_col29.clone(),
             op1_limb_0_col30.clone(),
             op1_limb_1_col31.clone(),
@@ -518,7 +514,7 @@ impl FrameworkEval for Eval {
         );
         MemVerify::evaluate(
             [
-                ((E::F::from(M31::from(self.claim.bitwise_builtin_segment_start))
+                ((E::F::from(M31::from(self.bitwise_builtin_segment_start))
                     + (seq.clone() * M31_5.clone()))
                     + M31_2.clone()),
                 and_tmp_b8fb8_12.clone(),
@@ -556,7 +552,7 @@ impl FrameworkEval for Eval {
         );
         MemVerify::evaluate(
             [
-                ((E::F::from(M31::from(self.claim.bitwise_builtin_segment_start))
+                ((E::F::from(M31::from(self.bitwise_builtin_segment_start))
                     + (seq.clone() * M31_5.clone()))
                     + M31_3.clone()),
                 xor_col58.clone(),
@@ -594,7 +590,7 @@ impl FrameworkEval for Eval {
         );
         MemVerify::evaluate(
             [
-                ((E::F::from(M31::from(self.claim.bitwise_builtin_segment_start))
+                ((E::F::from(M31::from(self.bitwise_builtin_segment_start))
                     + (seq.clone() * M31_5.clone()))
                     + M31_4.clone()),
                 (and_tmp_b8fb8_12.clone() + xor_col58.clone()),
@@ -650,11 +646,9 @@ mod tests {
     fn bitwise_builtin_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
-            claim: Claim {
-                log_size: 4,
-                bitwise_builtin_segment_start: rng.gen::<u32>(),
-            },
+            claim: Claim { log_size: 4 },
             common_lookup_elements: relations::CommonLookupElements::dummy(),
+            bitwise_builtin_segment_start: rng.gen::<u32>(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

@@ -12,7 +12,6 @@ pub const RELATION_USES_PER_ROW: [(felt252, u32); 3] = [
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
     pub log_size: u32,
-    pub range_check96_builtin_segment_start: u32,
 }
 
 pub impl ClaimImpl of ClaimTrait<Claim> {
@@ -26,7 +25,6 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
 
     fn mix_into(self: @Claim, ref channel: Channel) {
         channel.mix_u64((*(self.log_size)).into());
-        channel.mix_u64((*self.range_check96_builtin_segment_start).into());
     }
 
     fn accumulate_relation_uses(self: @Claim, ref relation_uses: RelationUsesDict) {
@@ -79,13 +77,14 @@ pub impl AirComponentImpl of AirComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
+        public_params: Span<u32>,
     ) {
         let log_size = *(self.claim.log_size);
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let range_check96_builtin_segment_start: QM31 = (TryInto::<
             u32, M31,
-        >::try_into((*(self.claim.range_check96_builtin_segment_start)))
+        >::try_into((*public_params[0]))
             .unwrap())
             .into();
         let mut memory_address_to_id_sum_0: QM31 = Zero::zero();
@@ -253,7 +252,7 @@ mod tests {
     #[test]
     fn test_evaluation_result() {
         let component = Component {
-            claim: Claim { log_size: 15, range_check96_builtin_segment_start: 939053492 },
+            claim: Claim { log_size: 15 },
             interaction_claim: InteractionClaim {
                 claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
             },
@@ -262,6 +261,7 @@ mod tests {
                 qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
+        let public_params = [939053492,].span();
         let mut sum: QM31 = Zero::zero();
 
         let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
@@ -300,6 +300,7 @@ mod tests {
                 ref trace_columns,
                 ref interaction_columns,
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
+                public_params,
             );
         preprocessed_trace.validate_usage();
         assert_eq!(sum, QM31Trait::from_fixed_array(RANGE_CHECK_96_BUILTIN_SAMPLE_EVAL_RESULT))

@@ -167,6 +167,7 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .poseidon_3_partial_rounds_chain
@@ -176,6 +177,7 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .poseidon_full_round_chain
@@ -185,6 +187,7 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .cube_252
@@ -194,6 +197,7 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .poseidon_round_keys
@@ -203,6 +207,7 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
         self
             .range_check_252_width_27
@@ -212,6 +217,7 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
+                [].span(),
             );
     }
 }
