@@ -8,6 +8,10 @@ pub const EXPAND_BITS: u32 = 2;
 
 pub const LOG_SIZE: u32 = (ELEM_BITS - EXPAND_BITS) * 2;
 
+pub const N_TRACE_COLUMNS: usize = 16;
+
+pub const N_INTERACTION_COLUMNS: usize = QM31_EXTENSION_DEGREE * 8;
+
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {}

@@ -27,6 +27,9 @@ pub const BIG_MULTIPLICITY_COLUMN_OFFSET: usize = N_M31_IN_FELT252;
 
 pub const BIG_N_COLUMNS: usize = N_M31_IN_FELT252 + N_MULTIPLICITY_COLUMNS;
 
+pub const BIG_N_INTERACTION_COLUMNS: usize =
+    QM31_EXTENSION_DEGREE * ((N_M31_IN_FELT252.div_ceil(2) + 1).div_ceil(2));
+
 pub const RELATION_USES_PER_ROW_BIG: [(felt252, u32); 8] = [
     ('RangeCheck_9_9', 2), ('RangeCheck_9_9_B', 2), ('RangeCheck_9_9_C', 2),
     ('RangeCheck_9_9_D', 2), ('RangeCheck_9_9_E', 2), ('RangeCheck_9_9_F', 2),
@@ -56,7 +59,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
 
         // A lookup for every pair of limbs, and a yield of the value.
         for big_log_size in big_log_sizes.span() {
-            for _ in 0..(QM31_EXTENSION_DEGREE * ((N_M31_IN_FELT252.div_ceil(2) + 1).div_ceil(2))) {
+            for _ in 0..BIG_N_INTERACTION_COLUMNS {
                 interaction_log_sizes.append(*big_log_size);
             }
         }

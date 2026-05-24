@@ -4,6 +4,7 @@ use crate::components::subroutines::read_positive_known_id_num_bits_252::read_po
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 342;
+pub const N_INTERACTION_COLUMNS: usize = 56;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 8] = [
     ('MemoryIdToBig', 6), ('PoseidonFullRoundChain', 2), ('RangeCheck252Width27', 2),
     ('Cube252', 2), ('RangeCheck_3_3_3_3_3', 2), ('RangeCheck_4_4_4_4', 6), ('RangeCheck_4_4', 3),
