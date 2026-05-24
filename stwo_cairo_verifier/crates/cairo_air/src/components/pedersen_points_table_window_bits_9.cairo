@@ -3,6 +3,7 @@
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
+pub const N_INTERACTION_COLUMNS: usize = 4;
 pub const LOG_SIZE: u32 = 15;
 
 #[derive(Drop, Serde, Copy)]

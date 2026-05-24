@@ -3,6 +3,7 @@ use crate::components::subroutines::mul_252::mul_252_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 141;
+pub const N_INTERACTION_COLUMNS: usize = 200;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 16] = [
     ('RangeCheck_9_9', 6), ('RangeCheck_9_9_B', 6), ('RangeCheck_9_9_C', 6),
     ('RangeCheck_9_9_D', 6), ('RangeCheck_9_9_E', 6), ('RangeCheck_9_9_F', 6),
