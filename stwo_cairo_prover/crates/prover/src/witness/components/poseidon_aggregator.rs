@@ -545,7 +545,7 @@ fn write_trace_simd(
             *row[121] = combination_limb_9_col121;let biased_limb_accumulator_u32_tmp_3806f_52 = PackedUInt32::from_m31(((((((packed_input_state_2_tmp_3806f_8.get_m31(0)) + (M31_4883209))) - (combination_limb_0_col112))) + (M31_134217729)));let p_coef_col122 = ((biased_limb_accumulator_u32_tmp_3806f_52.low().as_m31()) - (M31_1));
             *row[122] = p_coef_col122;let carry_0_tmp_3806f_53 = ((((((((packed_input_state_2_tmp_3806f_8.get_m31(0)) + (M31_4883209))) - (combination_limb_0_col112))) - (p_coef_col122))) * (M31_16));let carry_1_tmp_3806f_54 = ((((((((carry_0_tmp_3806f_53) + (packed_input_state_2_tmp_3806f_8.get_m31(1)))) + (M31_28820206))) - (combination_limb_1_col113))) * (M31_16));let carry_2_tmp_3806f_55 = ((((((((carry_1_tmp_3806f_54) + (packed_input_state_2_tmp_3806f_8.get_m31(2)))) + (M31_79012328))) - (combination_limb_2_col114))) * (M31_16));let carry_3_tmp_3806f_56 = ((((((((carry_2_tmp_3806f_55) + (packed_input_state_2_tmp_3806f_8.get_m31(3)))) + (M31_49157069))) - (combination_limb_3_col115))) * (M31_16));let carry_4_tmp_3806f_57 = ((((((((carry_3_tmp_3806f_56) + (packed_input_state_2_tmp_3806f_8.get_m31(4)))) + (M31_78826183))) - (combination_limb_4_col116))) * (M31_16));let carry_5_tmp_3806f_58 = ((((((((carry_4_tmp_3806f_57) + (packed_input_state_2_tmp_3806f_8.get_m31(5)))) + (M31_72285071))) - (combination_limb_5_col117))) * (M31_16));let carry_6_tmp_3806f_59 = ((((((((carry_5_tmp_3806f_58) + (packed_input_state_2_tmp_3806f_8.get_m31(6)))) + (M31_33413160))) - (combination_limb_6_col118))) * (M31_16));let carry_7_tmp_3806f_60 = ((((((((((carry_6_tmp_3806f_59) + (packed_input_state_2_tmp_3806f_8.get_m31(7)))) + (M31_90842759))) - (combination_limb_7_col119))) - (((p_coef_col122) * (M31_136))))) * (M31_16));let carry_8_tmp_3806f_61 = ((((((((carry_7_tmp_3806f_60) + (packed_input_state_2_tmp_3806f_8.get_m31(8)))) + (M31_60124463))) - (combination_limb_8_col120))) * (M31_16));let linear_combination_n_2_coefs_1_1_output_tmp_3806f_71 = combination_tmp_3806f_51;
 
-            let poseidon_full_round_chain_chain_tmp_tmp_3806f_72 = ((seq) * (M31_2));*lookup_data.poseidon_full_round_chain_0 = [M31_1480369132, poseidon_full_round_chain_chain_tmp_tmp_3806f_72, M31_0, combination_limb_0_col90, combination_limb_1_col91, combination_limb_2_col92, combination_limb_3_col93, combination_limb_4_col94, combination_limb_5_col95, combination_limb_6_col96, combination_limb_7_col97, combination_limb_8_col98, combination_limb_9_col99, combination_limb_0_col101, combination_limb_1_col102, combination_limb_2_col103, combination_limb_3_col104, combination_limb_4_col105, combination_limb_5_col106, combination_limb_6_col107, combination_limb_7_col108, combination_limb_8_col109, combination_limb_9_col110, combination_limb_0_col112, combination_limb_1_col113, combination_limb_2_col114, combination_limb_3_col115, combination_limb_4_col116, combination_limb_5_col117, combination_limb_6_col118, combination_limb_7_col119, combination_limb_8_col120, combination_limb_9_col121];*sub_component_inputs.poseidon_full_round_chain[0] =
+            let poseidon_full_round_chain_chain_tmp_tmp_3806f_72 = ((seq) * (M31_2));*lookup_data.poseidon_full_round_chain_3 = [M31_1480369132, poseidon_full_round_chain_chain_tmp_tmp_3806f_72, M31_0, combination_limb_0_col90, combination_limb_1_col91, combination_limb_2_col92, combination_limb_3_col93, combination_limb_4_col94, combination_limb_5_col95, combination_limb_6_col96, combination_limb_7_col97, combination_limb_8_col98, combination_limb_9_col99, combination_limb_0_col101, combination_limb_1_col102, combination_limb_2_col103, combination_limb_3_col104, combination_limb_4_col105, combination_limb_5_col106, combination_limb_6_col107, combination_limb_7_col108, combination_limb_8_col109, combination_limb_9_col110, combination_limb_0_col112, combination_limb_1_col113, combination_limb_2_col114, combination_limb_3_col115, combination_limb_4_col116, combination_limb_5_col117, combination_limb_6_col118, combination_limb_7_col119, combination_limb_8_col120, combination_limb_9_col121];*sub_component_inputs.poseidon_full_round_chain[0] =
                 (poseidon_full_round_chain_chain_tmp_tmp_3806f_72, M31_0, [linear_combination_n_2_coefs_1_1_output_tmp_3806f_29, linear_combination_n_2_coefs_1_1_output_tmp_3806f_50, linear_combination_n_2_coefs_1_1_output_tmp_3806f_71]);
             let poseidon_full_round_chain_output_round_0_tmp_3806f_73 = PackedPoseidonFullRoundChain::deduce_output((poseidon_full_round_chain_chain_tmp_tmp_3806f_72, M31_0, [linear_combination_n_2_coefs_1_1_output_tmp_3806f_29, linear_combination_n_2_coefs_1_1_output_tmp_3806f_50, linear_combination_n_2_coefs_1_1_output_tmp_3806f_71]));*sub_component_inputs.poseidon_full_round_chain[1] =
                 (poseidon_full_round_chain_chain_tmp_tmp_3806f_72, M31_1, [poseidon_full_round_chain_output_round_0_tmp_3806f_73.2[0], poseidon_full_round_chain_output_round_0_tmp_3806f_73.2[1], poseidon_full_round_chain_output_round_0_tmp_3806f_73.2[2]]);
@@ -583,11 +583,11 @@ fn write_trace_simd(
             *row[149] = poseidon_full_round_chain_output_limb_26_col149;let poseidon_full_round_chain_output_limb_27_col150 = poseidon_full_round_chain_output_round_3_tmp_3806f_76.2[2].get_m31(7);
             *row[150] = poseidon_full_round_chain_output_limb_27_col150;let poseidon_full_round_chain_output_limb_28_col151 = poseidon_full_round_chain_output_round_3_tmp_3806f_76.2[2].get_m31(8);
             *row[151] = poseidon_full_round_chain_output_limb_28_col151;let poseidon_full_round_chain_output_limb_29_col152 = poseidon_full_round_chain_output_round_3_tmp_3806f_76.2[2].get_m31(9);
-            *row[152] = poseidon_full_round_chain_output_limb_29_col152;*lookup_data.poseidon_full_round_chain_1 = [M31_1480369132, poseidon_full_round_chain_chain_tmp_tmp_3806f_72, M31_4, poseidon_full_round_chain_output_limb_0_col123, poseidon_full_round_chain_output_limb_1_col124, poseidon_full_round_chain_output_limb_2_col125, poseidon_full_round_chain_output_limb_3_col126, poseidon_full_round_chain_output_limb_4_col127, poseidon_full_round_chain_output_limb_5_col128, poseidon_full_round_chain_output_limb_6_col129, poseidon_full_round_chain_output_limb_7_col130, poseidon_full_round_chain_output_limb_8_col131, poseidon_full_round_chain_output_limb_9_col132, poseidon_full_round_chain_output_limb_10_col133, poseidon_full_round_chain_output_limb_11_col134, poseidon_full_round_chain_output_limb_12_col135, poseidon_full_round_chain_output_limb_13_col136, poseidon_full_round_chain_output_limb_14_col137, poseidon_full_round_chain_output_limb_15_col138, poseidon_full_round_chain_output_limb_16_col139, poseidon_full_round_chain_output_limb_17_col140, poseidon_full_round_chain_output_limb_18_col141, poseidon_full_round_chain_output_limb_19_col142, poseidon_full_round_chain_output_limb_20_col143, poseidon_full_round_chain_output_limb_21_col144, poseidon_full_round_chain_output_limb_22_col145, poseidon_full_round_chain_output_limb_23_col146, poseidon_full_round_chain_output_limb_24_col147, poseidon_full_round_chain_output_limb_25_col148, poseidon_full_round_chain_output_limb_26_col149, poseidon_full_round_chain_output_limb_27_col150, poseidon_full_round_chain_output_limb_28_col151, poseidon_full_round_chain_output_limb_29_col152];*sub_component_inputs.range_check_252_width_27[0] =
+            *row[152] = poseidon_full_round_chain_output_limb_29_col152;*lookup_data.poseidon_full_round_chain_4 = [M31_1480369132, poseidon_full_round_chain_chain_tmp_tmp_3806f_72, M31_4, poseidon_full_round_chain_output_limb_0_col123, poseidon_full_round_chain_output_limb_1_col124, poseidon_full_round_chain_output_limb_2_col125, poseidon_full_round_chain_output_limb_3_col126, poseidon_full_round_chain_output_limb_4_col127, poseidon_full_round_chain_output_limb_5_col128, poseidon_full_round_chain_output_limb_6_col129, poseidon_full_round_chain_output_limb_7_col130, poseidon_full_round_chain_output_limb_8_col131, poseidon_full_round_chain_output_limb_9_col132, poseidon_full_round_chain_output_limb_10_col133, poseidon_full_round_chain_output_limb_11_col134, poseidon_full_round_chain_output_limb_12_col135, poseidon_full_round_chain_output_limb_13_col136, poseidon_full_round_chain_output_limb_14_col137, poseidon_full_round_chain_output_limb_15_col138, poseidon_full_round_chain_output_limb_16_col139, poseidon_full_round_chain_output_limb_17_col140, poseidon_full_round_chain_output_limb_18_col141, poseidon_full_round_chain_output_limb_19_col142, poseidon_full_round_chain_output_limb_20_col143, poseidon_full_round_chain_output_limb_21_col144, poseidon_full_round_chain_output_limb_22_col145, poseidon_full_round_chain_output_limb_23_col146, poseidon_full_round_chain_output_limb_24_col147, poseidon_full_round_chain_output_limb_25_col148, poseidon_full_round_chain_output_limb_26_col149, poseidon_full_round_chain_output_limb_27_col150, poseidon_full_round_chain_output_limb_28_col151, poseidon_full_round_chain_output_limb_29_col152];*sub_component_inputs.range_check_252_width_27[0] =
                 poseidon_full_round_chain_output_round_3_tmp_3806f_76.2[0];
-            *lookup_data.range_check_252_width_27_0 = [M31_1090315331, poseidon_full_round_chain_output_limb_0_col123, poseidon_full_round_chain_output_limb_1_col124, poseidon_full_round_chain_output_limb_2_col125, poseidon_full_round_chain_output_limb_3_col126, poseidon_full_round_chain_output_limb_4_col127, poseidon_full_round_chain_output_limb_5_col128, poseidon_full_round_chain_output_limb_6_col129, poseidon_full_round_chain_output_limb_7_col130, poseidon_full_round_chain_output_limb_8_col131, poseidon_full_round_chain_output_limb_9_col132];*sub_component_inputs.range_check_252_width_27[1] =
+            *lookup_data.range_check_252_width_27_5 = [M31_1090315331, poseidon_full_round_chain_output_limb_0_col123, poseidon_full_round_chain_output_limb_1_col124, poseidon_full_round_chain_output_limb_2_col125, poseidon_full_round_chain_output_limb_3_col126, poseidon_full_round_chain_output_limb_4_col127, poseidon_full_round_chain_output_limb_5_col128, poseidon_full_round_chain_output_limb_6_col129, poseidon_full_round_chain_output_limb_7_col130, poseidon_full_round_chain_output_limb_8_col131, poseidon_full_round_chain_output_limb_9_col132];*sub_component_inputs.range_check_252_width_27[1] =
                 poseidon_full_round_chain_output_round_3_tmp_3806f_76.2[1];
-            *lookup_data.range_check_252_width_27_1 = [M31_1090315331, poseidon_full_round_chain_output_limb_10_col133, poseidon_full_round_chain_output_limb_11_col134, poseidon_full_round_chain_output_limb_12_col135, poseidon_full_round_chain_output_limb_13_col136, poseidon_full_round_chain_output_limb_14_col137, poseidon_full_round_chain_output_limb_15_col138, poseidon_full_round_chain_output_limb_16_col139, poseidon_full_round_chain_output_limb_17_col140, poseidon_full_round_chain_output_limb_18_col141, poseidon_full_round_chain_output_limb_19_col142];*sub_component_inputs.cube_252[0] =
+            *lookup_data.range_check_252_width_27_6 = [M31_1090315331, poseidon_full_round_chain_output_limb_10_col133, poseidon_full_round_chain_output_limb_11_col134, poseidon_full_round_chain_output_limb_12_col135, poseidon_full_round_chain_output_limb_13_col136, poseidon_full_round_chain_output_limb_14_col137, poseidon_full_round_chain_output_limb_15_col138, poseidon_full_round_chain_output_limb_16_col139, poseidon_full_round_chain_output_limb_17_col140, poseidon_full_round_chain_output_limb_18_col141, poseidon_full_round_chain_output_limb_19_col142];*sub_component_inputs.cube_252[0] =
                 poseidon_full_round_chain_output_round_3_tmp_3806f_76.2[2];
             let cube_252_output_tmp_3806f_77 = PackedCube252::deduce_output(poseidon_full_round_chain_output_round_3_tmp_3806f_76.2[2]);let cube_252_output_limb_0_col153 = cube_252_output_tmp_3806f_77.get_m31(0);
             *row[153] = cube_252_output_limb_0_col153;let cube_252_output_limb_1_col154 = cube_252_output_tmp_3806f_77.get_m31(1);
@@ -599,7 +599,7 @@ fn write_trace_simd(
             *row[159] = cube_252_output_limb_6_col159;let cube_252_output_limb_7_col160 = cube_252_output_tmp_3806f_77.get_m31(7);
             *row[160] = cube_252_output_limb_7_col160;let cube_252_output_limb_8_col161 = cube_252_output_tmp_3806f_77.get_m31(8);
             *row[161] = cube_252_output_limb_8_col161;let cube_252_output_limb_9_col162 = cube_252_output_tmp_3806f_77.get_m31(9);
-            *row[162] = cube_252_output_limb_9_col162;*lookup_data.cube_252_0 = [M31_1987997202, poseidon_full_round_chain_output_limb_20_col143, poseidon_full_round_chain_output_limb_21_col144, poseidon_full_round_chain_output_limb_22_col145, poseidon_full_round_chain_output_limb_23_col146, poseidon_full_round_chain_output_limb_24_col147, poseidon_full_round_chain_output_limb_25_col148, poseidon_full_round_chain_output_limb_26_col149, poseidon_full_round_chain_output_limb_27_col150, poseidon_full_round_chain_output_limb_28_col151, poseidon_full_round_chain_output_limb_29_col152, cube_252_output_limb_0_col153, cube_252_output_limb_1_col154, cube_252_output_limb_2_col155, cube_252_output_limb_3_col156, cube_252_output_limb_4_col157, cube_252_output_limb_5_col158, cube_252_output_limb_6_col159, cube_252_output_limb_7_col160, cube_252_output_limb_8_col161, cube_252_output_limb_9_col162];
+            *row[162] = cube_252_output_limb_9_col162;*lookup_data.cube_252_7 = [M31_1987997202, poseidon_full_round_chain_output_limb_20_col143, poseidon_full_round_chain_output_limb_21_col144, poseidon_full_round_chain_output_limb_22_col145, poseidon_full_round_chain_output_limb_23_col146, poseidon_full_round_chain_output_limb_24_col147, poseidon_full_round_chain_output_limb_25_col148, poseidon_full_round_chain_output_limb_26_col149, poseidon_full_round_chain_output_limb_27_col150, poseidon_full_round_chain_output_limb_28_col151, poseidon_full_round_chain_output_limb_29_col152, cube_252_output_limb_0_col153, cube_252_output_limb_1_col154, cube_252_output_limb_2_col155, cube_252_output_limb_3_col156, cube_252_output_limb_4_col157, cube_252_output_limb_5_col158, cube_252_output_limb_6_col159, cube_252_output_limb_7_col160, cube_252_output_limb_8_col161, cube_252_output_limb_9_col162];
 
             // Linear Combination N 4 Coefs 1 1 M 2 1.
 
@@ -616,9 +616,9 @@ fn write_trace_simd(
             *row[172] = combination_limb_9_col172;let biased_limb_accumulator_u32_tmp_3806f_79 = PackedUInt32::from_m31(((((((((((poseidon_full_round_chain_output_limb_0_col123) + (poseidon_full_round_chain_output_limb_10_col133))) - (((M31_2) * (cube_252_output_limb_0_col153))))) + (M31_103094260))) - (combination_limb_0_col163))) + (M31_402653187)));let p_coef_col173 = ((biased_limb_accumulator_u32_tmp_3806f_79.low().as_m31()) - (M31_3));
             *row[173] = p_coef_col173;let carry_0_tmp_3806f_80 = ((((((((((((poseidon_full_round_chain_output_limb_0_col123) + (poseidon_full_round_chain_output_limb_10_col133))) - (((M31_2) * (cube_252_output_limb_0_col153))))) + (M31_103094260))) - (combination_limb_0_col163))) - (p_coef_col173))) * (M31_16));let carry_1_tmp_3806f_81 = ((((((((((((carry_0_tmp_3806f_80) + (poseidon_full_round_chain_output_limb_1_col124))) + (poseidon_full_round_chain_output_limb_11_col134))) - (((M31_2) * (cube_252_output_limb_1_col154))))) + (M31_121146754))) - (combination_limb_1_col164))) * (M31_16));let carry_2_tmp_3806f_82 = ((((((((((((carry_1_tmp_3806f_81) + (poseidon_full_round_chain_output_limb_2_col125))) + (poseidon_full_round_chain_output_limb_12_col135))) - (((M31_2) * (cube_252_output_limb_2_col155))))) + (M31_95050340))) - (combination_limb_2_col165))) * (M31_16));let carry_3_tmp_3806f_83 = ((((((((((((carry_2_tmp_3806f_82) + (poseidon_full_round_chain_output_limb_3_col126))) + (poseidon_full_round_chain_output_limb_13_col136))) - (((M31_2) * (cube_252_output_limb_3_col156))))) + (M31_16173996))) - (combination_limb_3_col166))) * (M31_16));let carry_4_tmp_3806f_84 = ((((((((((((carry_3_tmp_3806f_83) + (poseidon_full_round_chain_output_limb_4_col127))) + (poseidon_full_round_chain_output_limb_14_col137))) - (((M31_2) * (cube_252_output_limb_4_col157))))) + (M31_50758155))) - (combination_limb_4_col167))) * (M31_16));let carry_5_tmp_3806f_85 = ((((((((((((carry_4_tmp_3806f_84) + (poseidon_full_round_chain_output_limb_5_col128))) + (poseidon_full_round_chain_output_limb_15_col138))) - (((M31_2) * (cube_252_output_limb_5_col158))))) + (M31_54415179))) - (combination_limb_5_col168))) * (M31_16));let carry_6_tmp_3806f_86 = ((((((((((((carry_5_tmp_3806f_85) + (poseidon_full_round_chain_output_limb_6_col129))) + (poseidon_full_round_chain_output_limb_16_col139))) - (((M31_2) * (cube_252_output_limb_6_col159))))) + (M31_19292069))) - (combination_limb_6_col169))) * (M31_16));let carry_7_tmp_3806f_87 = ((((((((((((((carry_6_tmp_3806f_86) + (poseidon_full_round_chain_output_limb_7_col130))) + (poseidon_full_round_chain_output_limb_17_col140))) - (((M31_2) * (cube_252_output_limb_7_col160))))) + (M31_45351266))) - (combination_limb_7_col170))) - (((p_coef_col173) * (M31_136))))) * (M31_16));let carry_8_tmp_3806f_88 = ((((((((((((carry_7_tmp_3806f_87) + (poseidon_full_round_chain_output_limb_8_col131))) + (poseidon_full_round_chain_output_limb_18_col141))) - (((M31_2) * (cube_252_output_limb_8_col161))))) + (M31_122233508))) - (combination_limb_8_col171))) * (M31_16));*sub_component_inputs.range_check_3_3_3_3_3[0] =
                 [((p_coef_col173) + (M31_3)), ((carry_0_tmp_3806f_80) + (M31_3)), ((carry_1_tmp_3806f_81) + (M31_3)), ((carry_2_tmp_3806f_82) + (M31_3)), ((carry_3_tmp_3806f_83) + (M31_3))];
-            *lookup_data.range_check_3_3_3_3_3_0 = [M31_502259093, ((p_coef_col173) + (M31_3)), ((carry_0_tmp_3806f_80) + (M31_3)), ((carry_1_tmp_3806f_81) + (M31_3)), ((carry_2_tmp_3806f_82) + (M31_3)), ((carry_3_tmp_3806f_83) + (M31_3))];*sub_component_inputs.range_check_3_3_3_3_3[1] =
+            *lookup_data.range_check_3_3_3_3_3_8 = [M31_502259093, ((p_coef_col173) + (M31_3)), ((carry_0_tmp_3806f_80) + (M31_3)), ((carry_1_tmp_3806f_81) + (M31_3)), ((carry_2_tmp_3806f_82) + (M31_3)), ((carry_3_tmp_3806f_83) + (M31_3))];*sub_component_inputs.range_check_3_3_3_3_3[1] =
                 [((carry_4_tmp_3806f_84) + (M31_3)), ((carry_5_tmp_3806f_85) + (M31_3)), ((carry_6_tmp_3806f_86) + (M31_3)), ((carry_7_tmp_3806f_87) + (M31_3)), ((carry_8_tmp_3806f_88) + (M31_3))];
-            *lookup_data.range_check_3_3_3_3_3_1 = [M31_502259093, ((carry_4_tmp_3806f_84) + (M31_3)), ((carry_5_tmp_3806f_85) + (M31_3)), ((carry_6_tmp_3806f_86) + (M31_3)), ((carry_7_tmp_3806f_87) + (M31_3)), ((carry_8_tmp_3806f_88) + (M31_3))];let linear_combination_n_4_coefs_1_1_m2_1_output_tmp_3806f_89 = combination_tmp_3806f_78;
+            *lookup_data.range_check_3_3_3_3_3_9 = [M31_502259093, ((carry_4_tmp_3806f_84) + (M31_3)), ((carry_5_tmp_3806f_85) + (M31_3)), ((carry_6_tmp_3806f_86) + (M31_3)), ((carry_7_tmp_3806f_87) + (M31_3)), ((carry_8_tmp_3806f_88) + (M31_3))];let linear_combination_n_4_coefs_1_1_m2_1_output_tmp_3806f_89 = combination_tmp_3806f_78;
 
             *sub_component_inputs.cube_252[1] =
                 linear_combination_n_4_coefs_1_1_m2_1_output_tmp_3806f_89;
@@ -632,7 +632,7 @@ fn write_trace_simd(
             *row[180] = cube_252_output_limb_6_col180;let cube_252_output_limb_7_col181 = cube_252_output_tmp_3806f_90.get_m31(7);
             *row[181] = cube_252_output_limb_7_col181;let cube_252_output_limb_8_col182 = cube_252_output_tmp_3806f_90.get_m31(8);
             *row[182] = cube_252_output_limb_8_col182;let cube_252_output_limb_9_col183 = cube_252_output_tmp_3806f_90.get_m31(9);
-            *row[183] = cube_252_output_limb_9_col183;*lookup_data.cube_252_1 = [M31_1987997202, combination_limb_0_col163, combination_limb_1_col164, combination_limb_2_col165, combination_limb_3_col166, combination_limb_4_col167, combination_limb_5_col168, combination_limb_6_col169, combination_limb_7_col170, combination_limb_8_col171, combination_limb_9_col172, cube_252_output_limb_0_col174, cube_252_output_limb_1_col175, cube_252_output_limb_2_col176, cube_252_output_limb_3_col177, cube_252_output_limb_4_col178, cube_252_output_limb_5_col179, cube_252_output_limb_6_col180, cube_252_output_limb_7_col181, cube_252_output_limb_8_col182, cube_252_output_limb_9_col183];
+            *row[183] = cube_252_output_limb_9_col183;*lookup_data.cube_252_10 = [M31_1987997202, combination_limb_0_col163, combination_limb_1_col164, combination_limb_2_col165, combination_limb_3_col166, combination_limb_4_col167, combination_limb_5_col168, combination_limb_6_col169, combination_limb_7_col170, combination_limb_8_col171, combination_limb_9_col172, cube_252_output_limb_0_col174, cube_252_output_limb_1_col175, cube_252_output_limb_2_col176, cube_252_output_limb_3_col177, cube_252_output_limb_4_col178, cube_252_output_limb_5_col179, cube_252_output_limb_6_col180, cube_252_output_limb_7_col181, cube_252_output_limb_8_col182, cube_252_output_limb_9_col183];
 
             // Linear Combination N 4 Coefs 4 2 M 2 1.
 
@@ -649,13 +649,13 @@ fn write_trace_simd(
             *row[193] = combination_limb_9_col193;let biased_limb_accumulator_u32_tmp_3806f_92 = PackedUInt32::from_m31(((((((((((((M31_4) * (poseidon_full_round_chain_output_limb_0_col123))) + (((M31_2) * (cube_252_output_limb_0_col153))))) - (((M31_2) * (cube_252_output_limb_0_col174))))) + (M31_121657377))) - (combination_limb_0_col184))) + (M31_402653187)));let p_coef_col194 = ((biased_limb_accumulator_u32_tmp_3806f_92.low().as_m31()) - (M31_3));
             *row[194] = p_coef_col194;let carry_0_tmp_3806f_93 = ((((((((((((((M31_4) * (poseidon_full_round_chain_output_limb_0_col123))) + (((M31_2) * (cube_252_output_limb_0_col153))))) - (((M31_2) * (cube_252_output_limb_0_col174))))) + (M31_121657377))) - (combination_limb_0_col184))) - (p_coef_col194))) * (M31_16));let carry_1_tmp_3806f_94 = ((((((((((((carry_0_tmp_3806f_93) + (((M31_4) * (poseidon_full_round_chain_output_limb_1_col124))))) + (((M31_2) * (cube_252_output_limb_1_col154))))) - (((M31_2) * (cube_252_output_limb_1_col175))))) + (M31_112479959))) - (combination_limb_1_col185))) * (M31_16));let carry_2_tmp_3806f_95 = ((((((((((((carry_1_tmp_3806f_94) + (((M31_4) * (poseidon_full_round_chain_output_limb_2_col125))))) + (((M31_2) * (cube_252_output_limb_2_col155))))) - (((M31_2) * (cube_252_output_limb_2_col176))))) + (M31_130418270))) - (combination_limb_2_col186))) * (M31_16));let carry_3_tmp_3806f_96 = ((((((((((((carry_2_tmp_3806f_95) + (((M31_4) * (poseidon_full_round_chain_output_limb_3_col126))))) + (((M31_2) * (cube_252_output_limb_3_col156))))) - (((M31_2) * (cube_252_output_limb_3_col177))))) + (M31_4974792))) - (combination_limb_3_col187))) * (M31_16));let carry_4_tmp_3806f_97 = ((((((((((((carry_3_tmp_3806f_96) + (((M31_4) * (poseidon_full_round_chain_output_limb_4_col127))))) + (((M31_2) * (cube_252_output_limb_4_col157))))) - (((M31_2) * (cube_252_output_limb_4_col178))))) + (M31_59852719))) - (combination_limb_4_col188))) * (M31_16));let carry_5_tmp_3806f_98 = ((((((((((((carry_4_tmp_3806f_97) + (((M31_4) * (poseidon_full_round_chain_output_limb_5_col128))))) + (((M31_2) * (cube_252_output_limb_5_col158))))) - (((M31_2) * (cube_252_output_limb_5_col179))))) + (M31_120369218))) - (combination_limb_5_col189))) * (M31_16));let carry_6_tmp_3806f_99 = ((((((((((((carry_5_tmp_3806f_98) + (((M31_4) * (poseidon_full_round_chain_output_limb_6_col129))))) + (((M31_2) * (cube_252_output_limb_6_col159))))) - (((M31_2) * (cube_252_output_limb_6_col180))))) + (M31_62439890))) - (combination_limb_6_col190))) * (M31_16));let carry_7_tmp_3806f_100 = ((((((((((((((carry_6_tmp_3806f_99) + (((M31_4) * (poseidon_full_round_chain_output_limb_7_col130))))) + (((M31_2) * (cube_252_output_limb_7_col160))))) - (((M31_2) * (cube_252_output_limb_7_col181))))) + (M31_50468641))) - (combination_limb_7_col191))) - (((p_coef_col194) * (M31_136))))) * (M31_16));let carry_8_tmp_3806f_101 = ((((((((((((carry_7_tmp_3806f_100) + (((M31_4) * (poseidon_full_round_chain_output_limb_8_col131))))) + (((M31_2) * (cube_252_output_limb_8_col161))))) - (((M31_2) * (cube_252_output_limb_8_col182))))) + (M31_86573645))) - (combination_limb_8_col192))) * (M31_16));*sub_component_inputs.range_check_4_4_4_4[0] =
                 [((p_coef_col194) + (M31_3)), ((carry_0_tmp_3806f_93) + (M31_3)), ((carry_1_tmp_3806f_94) + (M31_3)), ((carry_2_tmp_3806f_95) + (M31_3))];
-            *lookup_data.range_check_4_4_4_4_0 = [M31_1027333874, ((p_coef_col194) + (M31_3)), ((carry_0_tmp_3806f_93) + (M31_3)), ((carry_1_tmp_3806f_94) + (M31_3)), ((carry_2_tmp_3806f_95) + (M31_3))];*sub_component_inputs.range_check_4_4_4_4[1] =
+            *lookup_data.range_check_4_4_4_4_11 = [M31_1027333874, ((p_coef_col194) + (M31_3)), ((carry_0_tmp_3806f_93) + (M31_3)), ((carry_1_tmp_3806f_94) + (M31_3)), ((carry_2_tmp_3806f_95) + (M31_3))];*sub_component_inputs.range_check_4_4_4_4[1] =
                 [((carry_3_tmp_3806f_96) + (M31_3)), ((carry_4_tmp_3806f_97) + (M31_3)), ((carry_5_tmp_3806f_98) + (M31_3)), ((carry_6_tmp_3806f_99) + (M31_3))];
-            *lookup_data.range_check_4_4_4_4_1 = [M31_1027333874, ((carry_3_tmp_3806f_96) + (M31_3)), ((carry_4_tmp_3806f_97) + (M31_3)), ((carry_5_tmp_3806f_98) + (M31_3)), ((carry_6_tmp_3806f_99) + (M31_3))];*sub_component_inputs.range_check_4_4[0] =
+            *lookup_data.range_check_4_4_4_4_12 = [M31_1027333874, ((carry_3_tmp_3806f_96) + (M31_3)), ((carry_4_tmp_3806f_97) + (M31_3)), ((carry_5_tmp_3806f_98) + (M31_3)), ((carry_6_tmp_3806f_99) + (M31_3))];*sub_component_inputs.range_check_4_4[0] =
                 [((carry_7_tmp_3806f_100) + (M31_3)), ((carry_8_tmp_3806f_101) + (M31_3))];
-            *lookup_data.range_check_4_4_0 = [M31_1651211826, ((carry_7_tmp_3806f_100) + (M31_3)), ((carry_8_tmp_3806f_101) + (M31_3))];let linear_combination_n_4_coefs_4_2_m2_1_output_tmp_3806f_102 = combination_tmp_3806f_91;
+            *lookup_data.range_check_4_4_13 = [M31_1651211826, ((carry_7_tmp_3806f_100) + (M31_3)), ((carry_8_tmp_3806f_101) + (M31_3))];let linear_combination_n_4_coefs_4_2_m2_1_output_tmp_3806f_102 = combination_tmp_3806f_91;
 
-            *lookup_data.poseidon_3_partial_rounds_chain_0 = [M31_1343313504, seq, M31_4, cube_252_output_limb_0_col153, cube_252_output_limb_1_col154, cube_252_output_limb_2_col155, cube_252_output_limb_3_col156, cube_252_output_limb_4_col157, cube_252_output_limb_5_col158, cube_252_output_limb_6_col159, cube_252_output_limb_7_col160, cube_252_output_limb_8_col161, cube_252_output_limb_9_col162, combination_limb_0_col163, combination_limb_1_col164, combination_limb_2_col165, combination_limb_3_col166, combination_limb_4_col167, combination_limb_5_col168, combination_limb_6_col169, combination_limb_7_col170, combination_limb_8_col171, combination_limb_9_col172, cube_252_output_limb_0_col174, cube_252_output_limb_1_col175, cube_252_output_limb_2_col176, cube_252_output_limb_3_col177, cube_252_output_limb_4_col178, cube_252_output_limb_5_col179, cube_252_output_limb_6_col180, cube_252_output_limb_7_col181, cube_252_output_limb_8_col182, cube_252_output_limb_9_col183, combination_limb_0_col184, combination_limb_1_col185, combination_limb_2_col186, combination_limb_3_col187, combination_limb_4_col188, combination_limb_5_col189, combination_limb_6_col190, combination_limb_7_col191, combination_limb_8_col192, combination_limb_9_col193];*sub_component_inputs.poseidon_3_partial_rounds_chain[0] =
+            *lookup_data.poseidon_3_partial_rounds_chain_14 = [M31_1343313504, seq, M31_4, cube_252_output_limb_0_col153, cube_252_output_limb_1_col154, cube_252_output_limb_2_col155, cube_252_output_limb_3_col156, cube_252_output_limb_4_col157, cube_252_output_limb_5_col158, cube_252_output_limb_6_col159, cube_252_output_limb_7_col160, cube_252_output_limb_8_col161, cube_252_output_limb_9_col162, combination_limb_0_col163, combination_limb_1_col164, combination_limb_2_col165, combination_limb_3_col166, combination_limb_4_col167, combination_limb_5_col168, combination_limb_6_col169, combination_limb_7_col170, combination_limb_8_col171, combination_limb_9_col172, cube_252_output_limb_0_col174, cube_252_output_limb_1_col175, cube_252_output_limb_2_col176, cube_252_output_limb_3_col177, cube_252_output_limb_4_col178, cube_252_output_limb_5_col179, cube_252_output_limb_6_col180, cube_252_output_limb_7_col181, cube_252_output_limb_8_col182, cube_252_output_limb_9_col183, combination_limb_0_col184, combination_limb_1_col185, combination_limb_2_col186, combination_limb_3_col187, combination_limb_4_col188, combination_limb_5_col189, combination_limb_6_col190, combination_limb_7_col191, combination_limb_8_col192, combination_limb_9_col193];*sub_component_inputs.poseidon_3_partial_rounds_chain[0] =
                 (seq, M31_4, [cube_252_output_tmp_3806f_77, linear_combination_n_4_coefs_1_1_m2_1_output_tmp_3806f_89, cube_252_output_tmp_3806f_90, linear_combination_n_4_coefs_4_2_m2_1_output_tmp_3806f_102]);
             let poseidon_3_partial_rounds_chain_output_round_4_tmp_3806f_104 = PackedPoseidon3PartialRoundsChain::deduce_output((seq, M31_4, [cube_252_output_tmp_3806f_77, linear_combination_n_4_coefs_1_1_m2_1_output_tmp_3806f_89, cube_252_output_tmp_3806f_90, linear_combination_n_4_coefs_4_2_m2_1_output_tmp_3806f_102]));*sub_component_inputs.poseidon_3_partial_rounds_chain[1] =
                 (seq, M31_5, [poseidon_3_partial_rounds_chain_output_round_4_tmp_3806f_104.2[0], poseidon_3_partial_rounds_chain_output_round_4_tmp_3806f_104.2[1], poseidon_3_partial_rounds_chain_output_round_4_tmp_3806f_104.2[2], poseidon_3_partial_rounds_chain_output_round_4_tmp_3806f_104.2[3]]);
@@ -749,7 +749,7 @@ fn write_trace_simd(
             *row[231] = poseidon_3_partial_rounds_chain_output_limb_36_col231;let poseidon_3_partial_rounds_chain_output_limb_37_col232 = poseidon_3_partial_rounds_chain_output_round_30_tmp_3806f_130.2[3].get_m31(7);
             *row[232] = poseidon_3_partial_rounds_chain_output_limb_37_col232;let poseidon_3_partial_rounds_chain_output_limb_38_col233 = poseidon_3_partial_rounds_chain_output_round_30_tmp_3806f_130.2[3].get_m31(8);
             *row[233] = poseidon_3_partial_rounds_chain_output_limb_38_col233;let poseidon_3_partial_rounds_chain_output_limb_39_col234 = poseidon_3_partial_rounds_chain_output_round_30_tmp_3806f_130.2[3].get_m31(9);
-            *row[234] = poseidon_3_partial_rounds_chain_output_limb_39_col234;*lookup_data.poseidon_3_partial_rounds_chain_1 = [M31_1343313504, seq, M31_31, poseidon_3_partial_rounds_chain_output_limb_0_col195, poseidon_3_partial_rounds_chain_output_limb_1_col196, poseidon_3_partial_rounds_chain_output_limb_2_col197, poseidon_3_partial_rounds_chain_output_limb_3_col198, poseidon_3_partial_rounds_chain_output_limb_4_col199, poseidon_3_partial_rounds_chain_output_limb_5_col200, poseidon_3_partial_rounds_chain_output_limb_6_col201, poseidon_3_partial_rounds_chain_output_limb_7_col202, poseidon_3_partial_rounds_chain_output_limb_8_col203, poseidon_3_partial_rounds_chain_output_limb_9_col204, poseidon_3_partial_rounds_chain_output_limb_10_col205, poseidon_3_partial_rounds_chain_output_limb_11_col206, poseidon_3_partial_rounds_chain_output_limb_12_col207, poseidon_3_partial_rounds_chain_output_limb_13_col208, poseidon_3_partial_rounds_chain_output_limb_14_col209, poseidon_3_partial_rounds_chain_output_limb_15_col210, poseidon_3_partial_rounds_chain_output_limb_16_col211, poseidon_3_partial_rounds_chain_output_limb_17_col212, poseidon_3_partial_rounds_chain_output_limb_18_col213, poseidon_3_partial_rounds_chain_output_limb_19_col214, poseidon_3_partial_rounds_chain_output_limb_20_col215, poseidon_3_partial_rounds_chain_output_limb_21_col216, poseidon_3_partial_rounds_chain_output_limb_22_col217, poseidon_3_partial_rounds_chain_output_limb_23_col218, poseidon_3_partial_rounds_chain_output_limb_24_col219, poseidon_3_partial_rounds_chain_output_limb_25_col220, poseidon_3_partial_rounds_chain_output_limb_26_col221, poseidon_3_partial_rounds_chain_output_limb_27_col222, poseidon_3_partial_rounds_chain_output_limb_28_col223, poseidon_3_partial_rounds_chain_output_limb_29_col224, poseidon_3_partial_rounds_chain_output_limb_30_col225, poseidon_3_partial_rounds_chain_output_limb_31_col226, poseidon_3_partial_rounds_chain_output_limb_32_col227, poseidon_3_partial_rounds_chain_output_limb_33_col228, poseidon_3_partial_rounds_chain_output_limb_34_col229, poseidon_3_partial_rounds_chain_output_limb_35_col230, poseidon_3_partial_rounds_chain_output_limb_36_col231, poseidon_3_partial_rounds_chain_output_limb_37_col232, poseidon_3_partial_rounds_chain_output_limb_38_col233, poseidon_3_partial_rounds_chain_output_limb_39_col234];
+            *row[234] = poseidon_3_partial_rounds_chain_output_limb_39_col234;*lookup_data.poseidon_3_partial_rounds_chain_15 = [M31_1343313504, seq, M31_31, poseidon_3_partial_rounds_chain_output_limb_0_col195, poseidon_3_partial_rounds_chain_output_limb_1_col196, poseidon_3_partial_rounds_chain_output_limb_2_col197, poseidon_3_partial_rounds_chain_output_limb_3_col198, poseidon_3_partial_rounds_chain_output_limb_4_col199, poseidon_3_partial_rounds_chain_output_limb_5_col200, poseidon_3_partial_rounds_chain_output_limb_6_col201, poseidon_3_partial_rounds_chain_output_limb_7_col202, poseidon_3_partial_rounds_chain_output_limb_8_col203, poseidon_3_partial_rounds_chain_output_limb_9_col204, poseidon_3_partial_rounds_chain_output_limb_10_col205, poseidon_3_partial_rounds_chain_output_limb_11_col206, poseidon_3_partial_rounds_chain_output_limb_12_col207, poseidon_3_partial_rounds_chain_output_limb_13_col208, poseidon_3_partial_rounds_chain_output_limb_14_col209, poseidon_3_partial_rounds_chain_output_limb_15_col210, poseidon_3_partial_rounds_chain_output_limb_16_col211, poseidon_3_partial_rounds_chain_output_limb_17_col212, poseidon_3_partial_rounds_chain_output_limb_18_col213, poseidon_3_partial_rounds_chain_output_limb_19_col214, poseidon_3_partial_rounds_chain_output_limb_20_col215, poseidon_3_partial_rounds_chain_output_limb_21_col216, poseidon_3_partial_rounds_chain_output_limb_22_col217, poseidon_3_partial_rounds_chain_output_limb_23_col218, poseidon_3_partial_rounds_chain_output_limb_24_col219, poseidon_3_partial_rounds_chain_output_limb_25_col220, poseidon_3_partial_rounds_chain_output_limb_26_col221, poseidon_3_partial_rounds_chain_output_limb_27_col222, poseidon_3_partial_rounds_chain_output_limb_28_col223, poseidon_3_partial_rounds_chain_output_limb_29_col224, poseidon_3_partial_rounds_chain_output_limb_30_col225, poseidon_3_partial_rounds_chain_output_limb_31_col226, poseidon_3_partial_rounds_chain_output_limb_32_col227, poseidon_3_partial_rounds_chain_output_limb_33_col228, poseidon_3_partial_rounds_chain_output_limb_34_col229, poseidon_3_partial_rounds_chain_output_limb_35_col230, poseidon_3_partial_rounds_chain_output_limb_36_col231, poseidon_3_partial_rounds_chain_output_limb_37_col232, poseidon_3_partial_rounds_chain_output_limb_38_col233, poseidon_3_partial_rounds_chain_output_limb_39_col234];
 
             // Linear Combination N 4 Coefs 4 2 1 1.
 
@@ -766,11 +766,11 @@ fn write_trace_simd(
             *row[244] = combination_limb_9_col244;let biased_limb_accumulator_u32_tmp_3806f_132 = PackedUInt32::from_m31(((((((((((((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_0_col195))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_10_col205))))) + (poseidon_3_partial_rounds_chain_output_limb_20_col215))) + (M31_40454143))) - (combination_limb_0_col235))) + (M31_134217729)));let p_coef_col245 = ((biased_limb_accumulator_u32_tmp_3806f_132.low().as_m31()) - (M31_1));
             *row[245] = p_coef_col245;let carry_0_tmp_3806f_133 = ((((((((((((((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_0_col195))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_10_col205))))) + (poseidon_3_partial_rounds_chain_output_limb_20_col215))) + (M31_40454143))) - (combination_limb_0_col235))) - (p_coef_col245))) * (M31_16));let carry_1_tmp_3806f_134 = ((((((((((((carry_0_tmp_3806f_133) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_1_col196))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_11_col206))))) + (poseidon_3_partial_rounds_chain_output_limb_21_col216))) + (M31_49554771))) - (combination_limb_1_col236))) * (M31_16));let carry_2_tmp_3806f_135 = ((((((((((((carry_1_tmp_3806f_134) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_2_col197))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_12_col207))))) + (poseidon_3_partial_rounds_chain_output_limb_22_col217))) + (M31_55508188))) - (combination_limb_2_col237))) * (M31_16));let carry_3_tmp_3806f_136 = ((((((((((((carry_2_tmp_3806f_135) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_3_col198))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_13_col208))))) + (poseidon_3_partial_rounds_chain_output_limb_23_col218))) + (M31_116986206))) - (combination_limb_3_col238))) * (M31_16));let carry_4_tmp_3806f_137 = ((((((((((((carry_3_tmp_3806f_136) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_4_col199))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_14_col209))))) + (poseidon_3_partial_rounds_chain_output_limb_24_col219))) + (M31_88680813))) - (combination_limb_4_col239))) * (M31_16));let carry_5_tmp_3806f_138 = ((((((((((((carry_4_tmp_3806f_137) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_5_col200))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_15_col210))))) + (poseidon_3_partial_rounds_chain_output_limb_25_col220))) + (M31_45553283))) - (combination_limb_5_col240))) * (M31_16));let carry_6_tmp_3806f_139 = ((((((((((((carry_5_tmp_3806f_138) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_6_col201))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_16_col211))))) + (poseidon_3_partial_rounds_chain_output_limb_26_col221))) + (M31_62360091))) - (combination_limb_6_col241))) * (M31_16));let carry_7_tmp_3806f_140 = ((((((((((((((carry_6_tmp_3806f_139) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_7_col202))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_17_col212))))) + (poseidon_3_partial_rounds_chain_output_limb_27_col222))) + (M31_77099918))) - (combination_limb_7_col242))) - (((p_coef_col245) * (M31_136))))) * (M31_16));let carry_8_tmp_3806f_141 = ((((((((((((carry_7_tmp_3806f_140) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_8_col203))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_18_col213))))) + (poseidon_3_partial_rounds_chain_output_limb_28_col223))) + (M31_22899501))) - (combination_limb_8_col243))) * (M31_16));*sub_component_inputs.range_check_4_4_4_4[2] =
                 [((p_coef_col245) + (M31_1)), ((carry_0_tmp_3806f_133) + (M31_1)), ((carry_1_tmp_3806f_134) + (M31_1)), ((carry_2_tmp_3806f_135) + (M31_1))];
-            *lookup_data.range_check_4_4_4_4_2 = [M31_1027333874, ((p_coef_col245) + (M31_1)), ((carry_0_tmp_3806f_133) + (M31_1)), ((carry_1_tmp_3806f_134) + (M31_1)), ((carry_2_tmp_3806f_135) + (M31_1))];*sub_component_inputs.range_check_4_4_4_4[3] =
+            *lookup_data.range_check_4_4_4_4_16 = [M31_1027333874, ((p_coef_col245) + (M31_1)), ((carry_0_tmp_3806f_133) + (M31_1)), ((carry_1_tmp_3806f_134) + (M31_1)), ((carry_2_tmp_3806f_135) + (M31_1))];*sub_component_inputs.range_check_4_4_4_4[3] =
                 [((carry_3_tmp_3806f_136) + (M31_1)), ((carry_4_tmp_3806f_137) + (M31_1)), ((carry_5_tmp_3806f_138) + (M31_1)), ((carry_6_tmp_3806f_139) + (M31_1))];
-            *lookup_data.range_check_4_4_4_4_3 = [M31_1027333874, ((carry_3_tmp_3806f_136) + (M31_1)), ((carry_4_tmp_3806f_137) + (M31_1)), ((carry_5_tmp_3806f_138) + (M31_1)), ((carry_6_tmp_3806f_139) + (M31_1))];*sub_component_inputs.range_check_4_4[1] =
+            *lookup_data.range_check_4_4_4_4_17 = [M31_1027333874, ((carry_3_tmp_3806f_136) + (M31_1)), ((carry_4_tmp_3806f_137) + (M31_1)), ((carry_5_tmp_3806f_138) + (M31_1)), ((carry_6_tmp_3806f_139) + (M31_1))];*sub_component_inputs.range_check_4_4[1] =
                 [((carry_7_tmp_3806f_140) + (M31_1)), ((carry_8_tmp_3806f_141) + (M31_1))];
-            *lookup_data.range_check_4_4_1 = [M31_1651211826, ((carry_7_tmp_3806f_140) + (M31_1)), ((carry_8_tmp_3806f_141) + (M31_1))];let linear_combination_n_4_coefs_4_2_1_1_output_tmp_3806f_142 = combination_tmp_3806f_131;
+            *lookup_data.range_check_4_4_18 = [M31_1651211826, ((carry_7_tmp_3806f_140) + (M31_1)), ((carry_8_tmp_3806f_141) + (M31_1))];let linear_combination_n_4_coefs_4_2_1_1_output_tmp_3806f_142 = combination_tmp_3806f_131;
 
             // Linear Combination N 4 Coefs 4 2 1 1.
 
@@ -787,13 +787,13 @@ fn write_trace_simd(
             *row[255] = combination_limb_9_col255;let biased_limb_accumulator_u32_tmp_3806f_144 = PackedUInt32::from_m31(((((((((((((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_20_col215))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_30_col225))))) + (combination_limb_0_col235))) + (M31_48383197))) - (combination_limb_0_col246))) + (M31_134217729)));let p_coef_col256 = ((biased_limb_accumulator_u32_tmp_3806f_144.low().as_m31()) - (M31_1));
             *row[256] = p_coef_col256;let carry_0_tmp_3806f_145 = ((((((((((((((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_20_col215))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_30_col225))))) + (combination_limb_0_col235))) + (M31_48383197))) - (combination_limb_0_col246))) - (p_coef_col256))) * (M31_16));let carry_1_tmp_3806f_146 = ((((((((((((carry_0_tmp_3806f_145) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_21_col216))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_31_col226))))) + (combination_limb_1_col236))) + (M31_48193339))) - (combination_limb_1_col247))) * (M31_16));let carry_2_tmp_3806f_147 = ((((((((((((carry_1_tmp_3806f_146) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_22_col217))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_32_col227))))) + (combination_limb_2_col237))) + (M31_55955004))) - (combination_limb_2_col248))) * (M31_16));let carry_3_tmp_3806f_148 = ((((((((((((carry_2_tmp_3806f_147) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_23_col218))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_33_col228))))) + (combination_limb_3_col238))) + (M31_65659846))) - (combination_limb_3_col249))) * (M31_16));let carry_4_tmp_3806f_149 = ((((((((((((carry_3_tmp_3806f_148) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_24_col219))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_34_col229))))) + (combination_limb_4_col239))) + (M31_68491350))) - (combination_limb_4_col250))) * (M31_16));let carry_5_tmp_3806f_150 = ((((((((((((carry_4_tmp_3806f_149) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_25_col220))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_35_col230))))) + (combination_limb_5_col240))) + (M31_119023582))) - (combination_limb_5_col251))) * (M31_16));let carry_6_tmp_3806f_151 = ((((((((((((carry_5_tmp_3806f_150) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_26_col221))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_36_col231))))) + (combination_limb_6_col241))) + (M31_33439011))) - (combination_limb_6_col252))) * (M31_16));let carry_7_tmp_3806f_152 = ((((((((((((((carry_6_tmp_3806f_151) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_27_col222))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_37_col232))))) + (combination_limb_7_col242))) + (M31_58475513))) - (combination_limb_7_col253))) - (((p_coef_col256) * (M31_136))))) * (M31_16));let carry_8_tmp_3806f_153 = ((((((((((((carry_7_tmp_3806f_152) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_28_col223))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_38_col233))))) + (combination_limb_8_col243))) + (M31_18765944))) - (combination_limb_8_col254))) * (M31_16));*sub_component_inputs.range_check_4_4_4_4[4] =
                 [((p_coef_col256) + (M31_1)), ((carry_0_tmp_3806f_145) + (M31_1)), ((carry_1_tmp_3806f_146) + (M31_1)), ((carry_2_tmp_3806f_147) + (M31_1))];
-            *lookup_data.range_check_4_4_4_4_4 = [M31_1027333874, ((p_coef_col256) + (M31_1)), ((carry_0_tmp_3806f_145) + (M31_1)), ((carry_1_tmp_3806f_146) + (M31_1)), ((carry_2_tmp_3806f_147) + (M31_1))];*sub_component_inputs.range_check_4_4_4_4[5] =
+            *lookup_data.range_check_4_4_4_4_19 = [M31_1027333874, ((p_coef_col256) + (M31_1)), ((carry_0_tmp_3806f_145) + (M31_1)), ((carry_1_tmp_3806f_146) + (M31_1)), ((carry_2_tmp_3806f_147) + (M31_1))];*sub_component_inputs.range_check_4_4_4_4[5] =
                 [((carry_3_tmp_3806f_148) + (M31_1)), ((carry_4_tmp_3806f_149) + (M31_1)), ((carry_5_tmp_3806f_150) + (M31_1)), ((carry_6_tmp_3806f_151) + (M31_1))];
-            *lookup_data.range_check_4_4_4_4_5 = [M31_1027333874, ((carry_3_tmp_3806f_148) + (M31_1)), ((carry_4_tmp_3806f_149) + (M31_1)), ((carry_5_tmp_3806f_150) + (M31_1)), ((carry_6_tmp_3806f_151) + (M31_1))];*sub_component_inputs.range_check_4_4[2] =
+            *lookup_data.range_check_4_4_4_4_20 = [M31_1027333874, ((carry_3_tmp_3806f_148) + (M31_1)), ((carry_4_tmp_3806f_149) + (M31_1)), ((carry_5_tmp_3806f_150) + (M31_1)), ((carry_6_tmp_3806f_151) + (M31_1))];*sub_component_inputs.range_check_4_4[2] =
                 [((carry_7_tmp_3806f_152) + (M31_1)), ((carry_8_tmp_3806f_153) + (M31_1))];
-            *lookup_data.range_check_4_4_2 = [M31_1651211826, ((carry_7_tmp_3806f_152) + (M31_1)), ((carry_8_tmp_3806f_153) + (M31_1))];let linear_combination_n_4_coefs_4_2_1_1_output_tmp_3806f_154 = combination_tmp_3806f_143;
+            *lookup_data.range_check_4_4_21 = [M31_1651211826, ((carry_7_tmp_3806f_152) + (M31_1)), ((carry_8_tmp_3806f_153) + (M31_1))];let linear_combination_n_4_coefs_4_2_1_1_output_tmp_3806f_154 = combination_tmp_3806f_143;
 
-            let poseidon_full_round_chain_chain_id_tmp_3806f_155 = ((poseidon_full_round_chain_chain_tmp_tmp_3806f_72) + (M31_1));*lookup_data.poseidon_full_round_chain_2 = [M31_1480369132, poseidon_full_round_chain_chain_id_tmp_3806f_155, M31_31, combination_limb_0_col246, combination_limb_1_col247, combination_limb_2_col248, combination_limb_3_col249, combination_limb_4_col250, combination_limb_5_col251, combination_limb_6_col252, combination_limb_7_col253, combination_limb_8_col254, combination_limb_9_col255, combination_limb_0_col235, combination_limb_1_col236, combination_limb_2_col237, combination_limb_3_col238, combination_limb_4_col239, combination_limb_5_col240, combination_limb_6_col241, combination_limb_7_col242, combination_limb_8_col243, combination_limb_9_col244, poseidon_3_partial_rounds_chain_output_limb_30_col225, poseidon_3_partial_rounds_chain_output_limb_31_col226, poseidon_3_partial_rounds_chain_output_limb_32_col227, poseidon_3_partial_rounds_chain_output_limb_33_col228, poseidon_3_partial_rounds_chain_output_limb_34_col229, poseidon_3_partial_rounds_chain_output_limb_35_col230, poseidon_3_partial_rounds_chain_output_limb_36_col231, poseidon_3_partial_rounds_chain_output_limb_37_col232, poseidon_3_partial_rounds_chain_output_limb_38_col233, poseidon_3_partial_rounds_chain_output_limb_39_col234];*sub_component_inputs.poseidon_full_round_chain[4] =
+            let poseidon_full_round_chain_chain_id_tmp_3806f_155 = ((poseidon_full_round_chain_chain_tmp_tmp_3806f_72) + (M31_1));*lookup_data.poseidon_full_round_chain_22 = [M31_1480369132, poseidon_full_round_chain_chain_id_tmp_3806f_155, M31_31, combination_limb_0_col246, combination_limb_1_col247, combination_limb_2_col248, combination_limb_3_col249, combination_limb_4_col250, combination_limb_5_col251, combination_limb_6_col252, combination_limb_7_col253, combination_limb_8_col254, combination_limb_9_col255, combination_limb_0_col235, combination_limb_1_col236, combination_limb_2_col237, combination_limb_3_col238, combination_limb_4_col239, combination_limb_5_col240, combination_limb_6_col241, combination_limb_7_col242, combination_limb_8_col243, combination_limb_9_col244, poseidon_3_partial_rounds_chain_output_limb_30_col225, poseidon_3_partial_rounds_chain_output_limb_31_col226, poseidon_3_partial_rounds_chain_output_limb_32_col227, poseidon_3_partial_rounds_chain_output_limb_33_col228, poseidon_3_partial_rounds_chain_output_limb_34_col229, poseidon_3_partial_rounds_chain_output_limb_35_col230, poseidon_3_partial_rounds_chain_output_limb_36_col231, poseidon_3_partial_rounds_chain_output_limb_37_col232, poseidon_3_partial_rounds_chain_output_limb_38_col233, poseidon_3_partial_rounds_chain_output_limb_39_col234];*sub_component_inputs.poseidon_full_round_chain[4] =
                 (poseidon_full_round_chain_chain_id_tmp_3806f_155, M31_31, [linear_combination_n_4_coefs_4_2_1_1_output_tmp_3806f_154, linear_combination_n_4_coefs_4_2_1_1_output_tmp_3806f_142, poseidon_3_partial_rounds_chain_output_round_30_tmp_3806f_130.2[3]]);
             let poseidon_full_round_chain_output_round_31_tmp_3806f_156 = PackedPoseidonFullRoundChain::deduce_output((poseidon_full_round_chain_chain_id_tmp_3806f_155, M31_31, [linear_combination_n_4_coefs_4_2_1_1_output_tmp_3806f_154, linear_combination_n_4_coefs_4_2_1_1_output_tmp_3806f_142, poseidon_3_partial_rounds_chain_output_round_30_tmp_3806f_130.2[3]]));*sub_component_inputs.poseidon_full_round_chain[5] =
                 (poseidon_full_round_chain_chain_id_tmp_3806f_155, M31_32, [poseidon_full_round_chain_output_round_31_tmp_3806f_156.2[0], poseidon_full_round_chain_output_round_31_tmp_3806f_156.2[1], poseidon_full_round_chain_output_round_31_tmp_3806f_156.2[2]]);
@@ -831,7 +831,7 @@ fn write_trace_simd(
             *row[283] = poseidon_full_round_chain_output_limb_26_col283;let poseidon_full_round_chain_output_limb_27_col284 = poseidon_full_round_chain_output_round_34_tmp_3806f_159.2[2].get_m31(7);
             *row[284] = poseidon_full_round_chain_output_limb_27_col284;let poseidon_full_round_chain_output_limb_28_col285 = poseidon_full_round_chain_output_round_34_tmp_3806f_159.2[2].get_m31(8);
             *row[285] = poseidon_full_round_chain_output_limb_28_col285;let poseidon_full_round_chain_output_limb_29_col286 = poseidon_full_round_chain_output_round_34_tmp_3806f_159.2[2].get_m31(9);
-            *row[286] = poseidon_full_round_chain_output_limb_29_col286;*lookup_data.poseidon_full_round_chain_3 = [M31_1480369132, poseidon_full_round_chain_chain_id_tmp_3806f_155, M31_35, poseidon_full_round_chain_output_limb_0_col257, poseidon_full_round_chain_output_limb_1_col258, poseidon_full_round_chain_output_limb_2_col259, poseidon_full_round_chain_output_limb_3_col260, poseidon_full_round_chain_output_limb_4_col261, poseidon_full_round_chain_output_limb_5_col262, poseidon_full_round_chain_output_limb_6_col263, poseidon_full_round_chain_output_limb_7_col264, poseidon_full_round_chain_output_limb_8_col265, poseidon_full_round_chain_output_limb_9_col266, poseidon_full_round_chain_output_limb_10_col267, poseidon_full_round_chain_output_limb_11_col268, poseidon_full_round_chain_output_limb_12_col269, poseidon_full_round_chain_output_limb_13_col270, poseidon_full_round_chain_output_limb_14_col271, poseidon_full_round_chain_output_limb_15_col272, poseidon_full_round_chain_output_limb_16_col273, poseidon_full_round_chain_output_limb_17_col274, poseidon_full_round_chain_output_limb_18_col275, poseidon_full_round_chain_output_limb_19_col276, poseidon_full_round_chain_output_limb_20_col277, poseidon_full_round_chain_output_limb_21_col278, poseidon_full_round_chain_output_limb_22_col279, poseidon_full_round_chain_output_limb_23_col280, poseidon_full_round_chain_output_limb_24_col281, poseidon_full_round_chain_output_limb_25_col282, poseidon_full_round_chain_output_limb_26_col283, poseidon_full_round_chain_output_limb_27_col284, poseidon_full_round_chain_output_limb_28_col285, poseidon_full_round_chain_output_limb_29_col286];let poseidon_hades_permutation_output_tmp_3806f_160 = [poseidon_full_round_chain_output_round_34_tmp_3806f_159.2[0], poseidon_full_round_chain_output_round_34_tmp_3806f_159.2[1], poseidon_full_round_chain_output_round_34_tmp_3806f_159.2[2]];
+            *row[286] = poseidon_full_round_chain_output_limb_29_col286;*lookup_data.poseidon_full_round_chain_23 = [M31_1480369132, poseidon_full_round_chain_chain_id_tmp_3806f_155, M31_35, poseidon_full_round_chain_output_limb_0_col257, poseidon_full_round_chain_output_limb_1_col258, poseidon_full_round_chain_output_limb_2_col259, poseidon_full_round_chain_output_limb_3_col260, poseidon_full_round_chain_output_limb_4_col261, poseidon_full_round_chain_output_limb_5_col262, poseidon_full_round_chain_output_limb_6_col263, poseidon_full_round_chain_output_limb_7_col264, poseidon_full_round_chain_output_limb_8_col265, poseidon_full_round_chain_output_limb_9_col266, poseidon_full_round_chain_output_limb_10_col267, poseidon_full_round_chain_output_limb_11_col268, poseidon_full_round_chain_output_limb_12_col269, poseidon_full_round_chain_output_limb_13_col270, poseidon_full_round_chain_output_limb_14_col271, poseidon_full_round_chain_output_limb_15_col272, poseidon_full_round_chain_output_limb_16_col273, poseidon_full_round_chain_output_limb_17_col274, poseidon_full_round_chain_output_limb_18_col275, poseidon_full_round_chain_output_limb_19_col276, poseidon_full_round_chain_output_limb_20_col277, poseidon_full_round_chain_output_limb_21_col278, poseidon_full_round_chain_output_limb_22_col279, poseidon_full_round_chain_output_limb_23_col280, poseidon_full_round_chain_output_limb_24_col281, poseidon_full_round_chain_output_limb_25_col282, poseidon_full_round_chain_output_limb_26_col283, poseidon_full_round_chain_output_limb_27_col284, poseidon_full_round_chain_output_limb_28_col285, poseidon_full_round_chain_output_limb_29_col286];let poseidon_hades_permutation_output_tmp_3806f_160 = [poseidon_full_round_chain_output_round_34_tmp_3806f_159.2[0], poseidon_full_round_chain_output_round_34_tmp_3806f_159.2[1], poseidon_full_round_chain_output_round_34_tmp_3806f_159.2[2]];
 
             // Felt 252 Unpack From 27.
 
@@ -857,7 +857,7 @@ fn write_trace_simd(
 
             *sub_component_inputs.memory_id_to_big[3] =
                 input_limb_3_col3;
-            *lookup_data.memory_id_to_big_3 = [M31_1662111297, input_limb_3_col3, unpacked_limb_0_col287, unpacked_limb_1_col288, felt_252_unpack_from_27_output_tmp_3806f_162.get_m31(2), unpacked_limb_3_col289, unpacked_limb_4_col290, felt_252_unpack_from_27_output_tmp_3806f_162.get_m31(5), unpacked_limb_6_col291, unpacked_limb_7_col292, felt_252_unpack_from_27_output_tmp_3806f_162.get_m31(8), unpacked_limb_9_col293, unpacked_limb_10_col294, felt_252_unpack_from_27_output_tmp_3806f_162.get_m31(11), unpacked_limb_12_col295, unpacked_limb_13_col296, felt_252_unpack_from_27_output_tmp_3806f_162.get_m31(14), unpacked_limb_15_col297, unpacked_limb_16_col298, felt_252_unpack_from_27_output_tmp_3806f_162.get_m31(17), unpacked_limb_18_col299, unpacked_limb_19_col300, felt_252_unpack_from_27_output_tmp_3806f_162.get_m31(20), unpacked_limb_21_col301, unpacked_limb_22_col302, felt_252_unpack_from_27_output_tmp_3806f_162.get_m31(23), unpacked_limb_24_col303, unpacked_limb_25_col304, felt_252_unpack_from_27_output_tmp_3806f_162.get_m31(26), poseidon_full_round_chain_output_limb_9_col266];
+            *lookup_data.memory_id_to_big_24 = [M31_1662111297, input_limb_3_col3, unpacked_limb_0_col287, unpacked_limb_1_col288, felt_252_unpack_from_27_output_tmp_3806f_162.get_m31(2), unpacked_limb_3_col289, unpacked_limb_4_col290, felt_252_unpack_from_27_output_tmp_3806f_162.get_m31(5), unpacked_limb_6_col291, unpacked_limb_7_col292, felt_252_unpack_from_27_output_tmp_3806f_162.get_m31(8), unpacked_limb_9_col293, unpacked_limb_10_col294, felt_252_unpack_from_27_output_tmp_3806f_162.get_m31(11), unpacked_limb_12_col295, unpacked_limb_13_col296, felt_252_unpack_from_27_output_tmp_3806f_162.get_m31(14), unpacked_limb_15_col297, unpacked_limb_16_col298, felt_252_unpack_from_27_output_tmp_3806f_162.get_m31(17), unpacked_limb_18_col299, unpacked_limb_19_col300, felt_252_unpack_from_27_output_tmp_3806f_162.get_m31(20), unpacked_limb_21_col301, unpacked_limb_22_col302, felt_252_unpack_from_27_output_tmp_3806f_162.get_m31(23), unpacked_limb_24_col303, unpacked_limb_25_col304, felt_252_unpack_from_27_output_tmp_3806f_162.get_m31(26), poseidon_full_round_chain_output_limb_9_col266];
 
             // Felt 252 Unpack From 27.
 
@@ -883,7 +883,7 @@ fn write_trace_simd(
 
             *sub_component_inputs.memory_id_to_big[4] =
                 input_limb_4_col4;
-            *lookup_data.memory_id_to_big_4 = [M31_1662111297, input_limb_4_col4, unpacked_limb_0_col305, unpacked_limb_1_col306, felt_252_unpack_from_27_output_tmp_3806f_164.get_m31(2), unpacked_limb_3_col307, unpacked_limb_4_col308, felt_252_unpack_from_27_output_tmp_3806f_164.get_m31(5), unpacked_limb_6_col309, unpacked_limb_7_col310, felt_252_unpack_from_27_output_tmp_3806f_164.get_m31(8), unpacked_limb_9_col311, unpacked_limb_10_col312, felt_252_unpack_from_27_output_tmp_3806f_164.get_m31(11), unpacked_limb_12_col313, unpacked_limb_13_col314, felt_252_unpack_from_27_output_tmp_3806f_164.get_m31(14), unpacked_limb_15_col315, unpacked_limb_16_col316, felt_252_unpack_from_27_output_tmp_3806f_164.get_m31(17), unpacked_limb_18_col317, unpacked_limb_19_col318, felt_252_unpack_from_27_output_tmp_3806f_164.get_m31(20), unpacked_limb_21_col319, unpacked_limb_22_col320, felt_252_unpack_from_27_output_tmp_3806f_164.get_m31(23), unpacked_limb_24_col321, unpacked_limb_25_col322, felt_252_unpack_from_27_output_tmp_3806f_164.get_m31(26), poseidon_full_round_chain_output_limb_19_col276];
+            *lookup_data.memory_id_to_big_25 = [M31_1662111297, input_limb_4_col4, unpacked_limb_0_col305, unpacked_limb_1_col306, felt_252_unpack_from_27_output_tmp_3806f_164.get_m31(2), unpacked_limb_3_col307, unpacked_limb_4_col308, felt_252_unpack_from_27_output_tmp_3806f_164.get_m31(5), unpacked_limb_6_col309, unpacked_limb_7_col310, felt_252_unpack_from_27_output_tmp_3806f_164.get_m31(8), unpacked_limb_9_col311, unpacked_limb_10_col312, felt_252_unpack_from_27_output_tmp_3806f_164.get_m31(11), unpacked_limb_12_col313, unpacked_limb_13_col314, felt_252_unpack_from_27_output_tmp_3806f_164.get_m31(14), unpacked_limb_15_col315, unpacked_limb_16_col316, felt_252_unpack_from_27_output_tmp_3806f_164.get_m31(17), unpacked_limb_18_col317, unpacked_limb_19_col318, felt_252_unpack_from_27_output_tmp_3806f_164.get_m31(20), unpacked_limb_21_col319, unpacked_limb_22_col320, felt_252_unpack_from_27_output_tmp_3806f_164.get_m31(23), unpacked_limb_24_col321, unpacked_limb_25_col322, felt_252_unpack_from_27_output_tmp_3806f_164.get_m31(26), poseidon_full_round_chain_output_limb_19_col276];
 
             // Felt 252 Unpack From 27.
 
@@ -909,9 +909,8 @@ fn write_trace_simd(
 
             *sub_component_inputs.memory_id_to_big[5] =
                 input_limb_5_col5;
-            *lookup_data.memory_id_to_big_5 = [M31_1662111297, input_limb_5_col5, unpacked_limb_0_col323, unpacked_limb_1_col324, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(2), unpacked_limb_3_col325, unpacked_limb_4_col326, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(5), unpacked_limb_6_col327, unpacked_limb_7_col328, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(8), unpacked_limb_9_col329, unpacked_limb_10_col330, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(11), unpacked_limb_12_col331, unpacked_limb_13_col332, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(14), unpacked_limb_15_col333, unpacked_limb_16_col334, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(17), unpacked_limb_18_col335, unpacked_limb_19_col336, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(20), unpacked_limb_21_col337, unpacked_limb_22_col338, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(23), unpacked_limb_24_col339, unpacked_limb_25_col340, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(26), poseidon_full_round_chain_output_limb_29_col286];let multiplicity_0_col341 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
-            *row[341] = multiplicity_0_col341;*lookup_data.poseidon_aggregator_0 = [M31_1551892206, input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5];let mult_at_row = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
-            *lookup_data.mults_0 = mult_at_row;
+            *lookup_data.memory_id_to_big_26 = [M31_1662111297, input_limb_5_col5, unpacked_limb_0_col323, unpacked_limb_1_col324, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(2), unpacked_limb_3_col325, unpacked_limb_4_col326, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(5), unpacked_limb_6_col327, unpacked_limb_7_col328, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(8), unpacked_limb_9_col329, unpacked_limb_10_col330, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(11), unpacked_limb_12_col331, unpacked_limb_13_col332, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(14), unpacked_limb_15_col333, unpacked_limb_16_col334, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(17), unpacked_limb_18_col335, unpacked_limb_19_col336, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(20), unpacked_limb_21_col337, unpacked_limb_22_col338, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(23), unpacked_limb_24_col339, unpacked_limb_25_col340, felt_252_unpack_from_27_output_tmp_3806f_166.get_m31(26), poseidon_full_round_chain_output_limb_29_col286];let multiplicity_0_col341 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
+            *row[341] = multiplicity_0_col341;*lookup_data.poseidon_aggregator_27 = [M31_1551892206, input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5];*lookup_data.mults_0 = M31_1;*lookup_data.mults_1 = multiplicity_0_col341;
         });
 
     (trace, lookup_data, sub_component_inputs)
@@ -919,35 +918,36 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    cube_252_0: Vec<[PackedM31; 21]>,
-    cube_252_1: Vec<[PackedM31; 21]>,
     memory_id_to_big_0: Vec<[PackedM31; 30]>,
     memory_id_to_big_1: Vec<[PackedM31; 30]>,
     memory_id_to_big_2: Vec<[PackedM31; 30]>,
-    memory_id_to_big_3: Vec<[PackedM31; 30]>,
-    memory_id_to_big_4: Vec<[PackedM31; 30]>,
-    memory_id_to_big_5: Vec<[PackedM31; 30]>,
-    poseidon_3_partial_rounds_chain_0: Vec<[PackedM31; 43]>,
-    poseidon_3_partial_rounds_chain_1: Vec<[PackedM31; 43]>,
-    poseidon_aggregator_0: Vec<[PackedM31; 7]>,
-    poseidon_full_round_chain_0: Vec<[PackedM31; 33]>,
-    poseidon_full_round_chain_1: Vec<[PackedM31; 33]>,
-    poseidon_full_round_chain_2: Vec<[PackedM31; 33]>,
     poseidon_full_round_chain_3: Vec<[PackedM31; 33]>,
-    range_check_252_width_27_0: Vec<[PackedM31; 11]>,
-    range_check_252_width_27_1: Vec<[PackedM31; 11]>,
-    range_check_3_3_3_3_3_0: Vec<[PackedM31; 6]>,
-    range_check_3_3_3_3_3_1: Vec<[PackedM31; 6]>,
-    range_check_4_4_0: Vec<[PackedM31; 3]>,
-    range_check_4_4_1: Vec<[PackedM31; 3]>,
-    range_check_4_4_2: Vec<[PackedM31; 3]>,
-    range_check_4_4_4_4_0: Vec<[PackedM31; 5]>,
-    range_check_4_4_4_4_1: Vec<[PackedM31; 5]>,
-    range_check_4_4_4_4_2: Vec<[PackedM31; 5]>,
-    range_check_4_4_4_4_3: Vec<[PackedM31; 5]>,
-    range_check_4_4_4_4_4: Vec<[PackedM31; 5]>,
-    range_check_4_4_4_4_5: Vec<[PackedM31; 5]>,
+    poseidon_full_round_chain_4: Vec<[PackedM31; 33]>,
+    range_check_252_width_27_5: Vec<[PackedM31; 11]>,
+    range_check_252_width_27_6: Vec<[PackedM31; 11]>,
+    cube_252_7: Vec<[PackedM31; 21]>,
+    range_check_3_3_3_3_3_8: Vec<[PackedM31; 6]>,
+    range_check_3_3_3_3_3_9: Vec<[PackedM31; 6]>,
+    cube_252_10: Vec<[PackedM31; 21]>,
+    range_check_4_4_4_4_11: Vec<[PackedM31; 5]>,
+    range_check_4_4_4_4_12: Vec<[PackedM31; 5]>,
+    range_check_4_4_13: Vec<[PackedM31; 3]>,
+    poseidon_3_partial_rounds_chain_14: Vec<[PackedM31; 43]>,
+    poseidon_3_partial_rounds_chain_15: Vec<[PackedM31; 43]>,
+    range_check_4_4_4_4_16: Vec<[PackedM31; 5]>,
+    range_check_4_4_4_4_17: Vec<[PackedM31; 5]>,
+    range_check_4_4_18: Vec<[PackedM31; 3]>,
+    range_check_4_4_4_4_19: Vec<[PackedM31; 5]>,
+    range_check_4_4_4_4_20: Vec<[PackedM31; 5]>,
+    range_check_4_4_21: Vec<[PackedM31; 3]>,
+    poseidon_full_round_chain_22: Vec<[PackedM31; 33]>,
+    poseidon_full_round_chain_23: Vec<[PackedM31; 33]>,
+    memory_id_to_big_24: Vec<[PackedM31; 30]>,
+    memory_id_to_big_25: Vec<[PackedM31; 30]>,
+    memory_id_to_big_26: Vec<[PackedM31; 30]>,
+    poseidon_aggregator_27: Vec<[PackedM31; 7]>,
     mults_0: Vec<PackedM31>,
+    mults_1: Vec<PackedM31>,
 }
 
 pub struct InteractionClaimGenerator {
@@ -970,12 +970,14 @@ impl InteractionClaimGenerator {
             col_gen.par_iter_mut(),
             &self.lookup_data.memory_id_to_big_0,
             &self.lookup_data.memory_id_to_big_1,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
             });
         col_gen.finalize_col();
 
@@ -983,182 +985,207 @@ impl InteractionClaimGenerator {
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.memory_id_to_big_2,
-            &self.lookup_data.poseidon_full_round_chain_0,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom1 - denom0, denom0 * denom1);
-            });
-        col_gen.finalize_col();
-
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.poseidon_full_round_chain_1,
-            &self.lookup_data.range_check_252_width_27_0,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
-
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_252_width_27_1,
-            &self.lookup_data.cube_252_0,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
-
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_3_3_3_3_3_0,
-            &self.lookup_data.range_check_3_3_3_3_3_1,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
-
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.cube_252_1,
-            &self.lookup_data.range_check_4_4_4_4_0,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
-
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_4_4_4_4_1,
-            &self.lookup_data.range_check_4_4_0,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
-
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.poseidon_3_partial_rounds_chain_0,
-            &self.lookup_data.poseidon_3_partial_rounds_chain_1,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 - denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
-
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_4_4_4_4_2,
-            &self.lookup_data.range_check_4_4_4_4_3,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
-
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_4_4_1,
-            &self.lookup_data.range_check_4_4_4_4_4,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
-
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_4_4_4_4_5,
-            &self.lookup_data.range_check_4_4_2,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
-
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.poseidon_full_round_chain_2,
             &self.lookup_data.poseidon_full_round_chain_3,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 - denom1, denom0 * denom1);
+                writer.write_frac(denom1 * *mult0 - denom0 * *mult1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_3,
-            &self.lookup_data.memory_id_to_big_4,
+            &self.lookup_data.poseidon_full_round_chain_4,
+            &self.lookup_data.range_check_252_width_27_5,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_5,
-            &self.lookup_data.poseidon_aggregator_0,
-            self.lookup_data.mults_0,
+            &self.lookup_data.range_check_252_width_27_6,
+            &self.lookup_data.cube_252_7,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1, mults_0)| {
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom1 - denom0 * mults_0, denom0 * denom1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.range_check_3_3_3_3_3_8,
+            &self.lookup_data.range_check_3_3_3_3_3_9,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.cube_252_10,
+            &self.lookup_data.range_check_4_4_4_4_11,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.range_check_4_4_4_4_12,
+            &self.lookup_data.range_check_4_4_13,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.poseidon_3_partial_rounds_chain_14,
+            &self.lookup_data.poseidon_3_partial_rounds_chain_15,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 * *mult1 - denom1 * *mult0, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.range_check_4_4_4_4_16,
+            &self.lookup_data.range_check_4_4_4_4_17,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.range_check_4_4_18,
+            &self.lookup_data.range_check_4_4_4_4_19,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.range_check_4_4_4_4_20,
+            &self.lookup_data.range_check_4_4_21,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.poseidon_full_round_chain_22,
+            &self.lookup_data.poseidon_full_round_chain_23,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 * *mult1 - denom1 * *mult0, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.memory_id_to_big_24,
+            &self.lookup_data.memory_id_to_big_25,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.memory_id_to_big_26,
+            &self.lookup_data.poseidon_aggregator_27,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_1,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom1 * *mult0 - denom0 * *mult1, denom0 * denom1);
             });
         col_gen.finalize_col();
 

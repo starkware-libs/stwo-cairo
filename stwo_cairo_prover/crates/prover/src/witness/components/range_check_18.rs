@@ -89,13 +89,9 @@ fn write_trace_simd(
             let multiplicity_1_col1 = *mults[1].get(row_index).unwrap_or(&PackedM31::zero());
             *row[1] = multiplicity_1_col1;
             *lookup_data.range_check_18_0 = [M31_1109051422, seq_18];
-            *lookup_data.range_check_18_b_0 = [M31_1424798916, seq_18];
-            let mult = &mults[0];
-            let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
-            *lookup_data.mults_0 = mult_at_row;
-            let mult = &mults[1];
-            let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
-            *lookup_data.mults_1 = mult_at_row;
+            *lookup_data.range_check_18_b_1 = [M31_1424798916, seq_18];
+            *lookup_data.mults_0 = multiplicity_0_col0;
+            *lookup_data.mults_1 = multiplicity_1_col1;
         });
 
     (trace, lookup_data)
@@ -104,7 +100,7 @@ fn write_trace_simd(
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
     range_check_18_0: Vec<[PackedM31; 2]>,
-    range_check_18_b_0: Vec<[PackedM31; 2]>,
+    range_check_18_b_1: Vec<[PackedM31; 2]>,
     mults_0: Vec<PackedM31>,
     mults_1: Vec<PackedM31>,
 }
@@ -127,15 +123,15 @@ impl InteractionClaimGenerator {
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_18_0,
-            &self.lookup_data.range_check_18_b_0,
-            self.lookup_data.mults_0,
-            self.lookup_data.mults_1,
+            &self.lookup_data.range_check_18_b_1,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_1,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1, mults_0, mults_1)| {
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(-(denom0 * mults_1 + denom1 * mults_0), denom0 * denom1);
+                writer.write_frac(-(denom0 * *mult1 + denom1 * *mult0), denom0 * denom1);
             });
         col_gen.finalize_col();
 

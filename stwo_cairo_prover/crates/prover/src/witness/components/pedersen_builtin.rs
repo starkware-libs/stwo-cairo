@@ -161,12 +161,13 @@ fn write_trace_simd(
                 [input_state_0_id_col0, input_state_1_id_col1],
                 output_state_id_col2,
             );
-            *lookup_data.pedersen_aggregator_window_bits_18_0 = [
+            *lookup_data.pedersen_aggregator_window_bits_18_3 = [
                 M31_520578465,
                 input_state_0_id_col0,
                 input_state_1_id_col1,
                 output_state_id_col2,
             ];
+            *lookup_data.mults_0 = M31_1;
         });
 
     (trace, lookup_data, sub_component_inputs)
@@ -177,7 +178,8 @@ struct LookupData {
     memory_address_to_id_0: Vec<[PackedM31; 3]>,
     memory_address_to_id_1: Vec<[PackedM31; 3]>,
     memory_address_to_id_2: Vec<[PackedM31; 3]>,
-    pedersen_aggregator_window_bits_18_0: Vec<[PackedM31; 4]>,
+    pedersen_aggregator_window_bits_18_3: Vec<[PackedM31; 4]>,
+    mults_0: Vec<PackedM31>,
 }
 
 pub struct InteractionClaimGenerator {
@@ -200,12 +202,14 @@ impl InteractionClaimGenerator {
             col_gen.par_iter_mut(),
             &self.lookup_data.memory_address_to_id_0,
             &self.lookup_data.memory_address_to_id_1,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
             });
         col_gen.finalize_col();
 
@@ -213,13 +217,15 @@ impl InteractionClaimGenerator {
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.memory_address_to_id_2,
-            &self.lookup_data.pedersen_aggregator_window_bits_18_0,
+            &self.lookup_data.pedersen_aggregator_window_bits_18_3,
+            &self.lookup_data.mults_0,
+            &self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
+            .for_each(|(writer, values0, values1, mult0, mult1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
+                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
             });
         col_gen.finalize_col();
 
