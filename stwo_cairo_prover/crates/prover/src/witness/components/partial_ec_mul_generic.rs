@@ -2,7 +2,7 @@
 
 #![allow(unused_parens)]#![cfg_attr(rustfmt, rustfmt_skip)]
 use crate::witness::prelude::*;
-use cairo_air::components::partial_ec_mul_generic::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use cairo_air::components::partial_ec_mul_generic::N_TRACE_COLUMNS;
 use crate::witness::components::range_check_8;use crate::witness::components::range_check_9_9;use crate::witness::components::range_check_20;
 
 pub type InputType = (M31, M31, (Felt252Width27, [Felt252; 2], [Felt252; 2], M31));
@@ -27,7 +27,7 @@ impl ClaimGenerator {
 range_check_9_9_state: &range_check_9_9::ClaimGenerator,
 range_check_20_state: &range_check_20::ClaimGenerator,
 
-    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator)
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, u32, InteractionClaimGenerator)
     {
         let mut packed_inputs = self.packed_inputs.into_inner().unwrap();
         assert!(!packed_inputs.is_empty());
@@ -43,9 +43,7 @@ range_check_20_state: &range_check_20::ClaimGenerator,
         for inputs in sub_component_inputs.range_check_8 {add_inputs(range_check_8_state, &inputs, inputs.len() * N_LANES, 0);};for inputs in sub_component_inputs.range_check_9_9 {add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 0);};for inputs in sub_component_inputs.range_check_9_9_b {add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 1);};for inputs in sub_component_inputs.range_check_9_9_c {add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 2);};for inputs in sub_component_inputs.range_check_9_9_d {add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 3);};for inputs in sub_component_inputs.range_check_9_9_e {add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 4);};for inputs in sub_component_inputs.range_check_9_9_f {add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 5);};for inputs in sub_component_inputs.range_check_9_9_g {add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 6);};for inputs in sub_component_inputs.range_check_9_9_h {add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 7);};for inputs in sub_component_inputs.range_check_20 {add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 0);};for inputs in sub_component_inputs.range_check_20_b {add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 1);};for inputs in sub_component_inputs.range_check_20_c {add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 2);};for inputs in sub_component_inputs.range_check_20_d {add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 3);};for inputs in sub_component_inputs.range_check_20_e {add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 4);};for inputs in sub_component_inputs.range_check_20_f {add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 5);};for inputs in sub_component_inputs.range_check_20_g {add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 6);};for inputs in sub_component_inputs.range_check_20_h {add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 7);};
 
         (trace,
-        Claim {
-            log_size,
-        },
+        log_size,
         InteractionClaimGenerator {
             log_size,
             lookup_data,
@@ -1696,7 +1694,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements
-    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim)
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, SecureField)
     {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
 
@@ -4372,8 +4370,6 @@ let mut col_gen = logup_gen.new_col();
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
 
-        (trace, InteractionClaim {
-            claimed_sum,
-        },)
+        (trace, claimed_sum)
     }
 }

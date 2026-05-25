@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 #![allow(unused_parens)]
-use cairo_air::components::mul_mod_builtin::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use cairo_air::components::mul_mod_builtin::N_TRACE_COLUMNS;
 
 use crate::witness::components::{
     memory_address_to_id, memory_id_to_big, range_check_12, range_check_18, range_check_3_6_6_3,
@@ -32,7 +32,7 @@ impl ClaimGenerator {
         range_check_18_state: &range_check_18::ClaimGenerator,
     ) -> (
         ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
+        u32,
         InteractionClaimGenerator,
     ) {
         let log_size = self.log_size;
@@ -74,7 +74,7 @@ impl ClaimGenerator {
 
         (
             trace,
-            Claim { log_size },
+            log_size,
             InteractionClaimGenerator {
                 log_size,
                 lookup_data,
@@ -7449,7 +7449,7 @@ impl InteractionClaimGenerator {
         common_lookup_elements: &relations::CommonLookupElements,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
+        SecureField,
     ) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
 
@@ -8958,6 +8958,6 @@ impl InteractionClaimGenerator {
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
 
-        (trace, InteractionClaim { claimed_sum })
+        (trace, claimed_sum)
     }
 }

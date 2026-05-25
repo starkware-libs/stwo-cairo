@@ -1,8 +1,8 @@
 pub mod air;
 pub mod cairo_components;
 pub mod claims;
+pub mod component_indices;
 pub mod components;
-pub mod flat_claims;
 pub mod relations;
 pub mod serde_utils;
 pub mod utils;

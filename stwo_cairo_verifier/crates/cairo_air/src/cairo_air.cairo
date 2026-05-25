@@ -1,18 +1,7 @@
-use components::memory_address_to_id::InteractionClaimImpl as MemoryAddressToIdInteractionClaimImpl;
-use components::memory_id_to_big::{
-    InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl, LARGE_MEMORY_VALUE_ID_BASE,
-};
-use components::triple_xor_32::InteractionClaimImpl as TripleXor32InteractionClaimImpl;
-use components::verify_bitwise_xor_12::InteractionClaimImpl as VerifyBitwiseXor12InteractionClaimImpl;
-use components::verify_bitwise_xor_4::InteractionClaimImpl as VerifyBitwiseXor4InteractionClaimImpl;
-use components::verify_bitwise_xor_7::InteractionClaimImpl as VerifyBitwiseXor7InteractionClaimImpl;
-use components::verify_bitwise_xor_8::InteractionClaimImpl as VerifyBitwiseXor8InteractionClaimImpl;
-use components::verify_bitwise_xor_9::InteractionClaimImpl as VerifyBitwiseXor9InteractionClaimImpl;
-use components::verify_instruction::InteractionClaimImpl as VerifyInstructionInteractionClaimImpl;
+use components::memory_id_to_big::LARGE_MEMORY_VALUE_ID_BASE;
 use core::array::Span;
 use core::box::BoxImpl;
 use core::num::traits::Zero;
-use core::traits::TryInto;
 use stwo_cairo_air::blake::{BlakeContextComponents, BlakeContextComponentsImpl};
 use stwo_cairo_air::builtins::{BuiltinComponents, BuiltinComponentsImpl};
 use stwo_cairo_air::opcodes::{OpcodeComponents, OpcodeComponentsImpl};
@@ -31,6 +20,7 @@ pub mod poseidon_context_imports {
 }
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use poseidon_context_imports::*;
+use stwo_cairo_air::component_indices::*;
 use stwo_cairo_air::preprocessed_columns::PREPROCESSED_COLUMN_LOG_SIZE;
 use stwo_cairo_air::range_checks::{RangeChecksComponents, RangeChecksComponentsImpl};
 use stwo_cairo_air::{PublicDataImpl, components};
@@ -117,112 +107,112 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
         common_lookup_elements: @crate::CommonLookupElements,
         interaction_claim: @CairoInteractionClaim,
     ) -> CairoAir {
+        let log_size_per_component = cairo_claim.component_log_sizes.span();
+        let claimed_sum_per_component = interaction_claim.component_claimed_sums.span();
+
         let opcode_components = OpcodeComponentsImpl::new(
-            cairo_claim, common_lookup_elements, interaction_claim,
+            log_size_per_component, claimed_sum_per_component, common_lookup_elements,
         );
 
         let blake_context_component = BlakeContextComponentsImpl::new(
-            cairo_claim, common_lookup_elements, interaction_claim,
+            log_size_per_component, claimed_sum_per_component, common_lookup_elements,
         );
 
         let builtins_components = BuiltinComponentsImpl::new(
-            cairo_claim, common_lookup_elements, interaction_claim,
+            log_size_per_component, claimed_sum_per_component, common_lookup_elements,
         );
 
         let partial_ec_mul_generic_component =
             components::partial_ec_mul_generic::NewComponentImpl::try_new(
-            cairo_claim.partial_ec_mul_generic,
-            interaction_claim.partial_ec_mul_generic,
+            log_size_per_component.at(PARTIAL_EC_MUL_GENERIC_COMPONENT_IDX),
+            claimed_sum_per_component.at(PARTIAL_EC_MUL_GENERIC_COMPONENT_IDX),
             common_lookup_elements,
         );
 
         let pedersen_context_components = PedersenContextComponentsImpl::new(
-            cairo_claim, common_lookup_elements, interaction_claim,
+            log_size_per_component, claimed_sum_per_component, common_lookup_elements,
         );
 
         let poseidon_context_components = PoseidonContextComponentsImpl::new(
-            cairo_claim, common_lookup_elements, interaction_claim,
+            log_size_per_component, claimed_sum_per_component, common_lookup_elements,
         );
 
-        let verifyinstruction_component = components::verify_instruction::NewComponentImpl::new(
-            cairo_claim.verify_instruction.as_snap().unwrap(),
-            interaction_claim.verify_instruction.as_snap().unwrap(),
+        let verifyinstruction_component = components::verify_instruction::NewComponentImpl::try_new(
+            log_size_per_component.at(VERIFY_INSTRUCTION_COMPONENT_IDX),
+            claimed_sum_per_component.at(VERIFY_INSTRUCTION_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .expect('verify_instruction is required');
 
         let memory_address_to_id_component =
-            components::memory_address_to_id::NewComponentImpl::new(
-            cairo_claim.memory_address_to_id.as_snap().unwrap(),
-            interaction_claim.memory_address_to_id.as_snap().unwrap(),
+            components::memory_address_to_id::NewComponentImpl::try_new(
+            log_size_per_component.at(MEMORY_ADDRESS_TO_ID_COMPONENT_IDX),
+            claimed_sum_per_component.at(MEMORY_ADDRESS_TO_ID_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .expect('memory_address_to_id required');
 
-        let claim_memory_id_to_big = cairo_claim.memory_id_to_big.as_snap().unwrap();
-        let interaction_claim_memory_id_to_big = interaction_claim
-            .memory_id_to_big
-            .as_snap()
-            .unwrap();
-        assert!(
-            claim_memory_id_to_big
-                .big_log_sizes
-                .len() == interaction_claim_memory_id_to_big
-                .big_claimed_sums
-                .len(),
-        );
         let mut memory_id_to_value_components = array![];
         let mut offset: u32 = LARGE_MEMORY_VALUE_ID_BASE;
-        for i in 0..claim_memory_id_to_big.big_log_sizes.len() {
-            let log_size = claim_memory_id_to_big.big_log_sizes[i];
-            let claimed_sum = interaction_claim_memory_id_to_big.big_claimed_sums[i];
-            memory_id_to_value_components
-                .append(
-                    components::memory_id_to_big::NewBigComponentImpl::new(
-                        *log_size, offset, *claimed_sum, common_lookup_elements,
-                    ),
-                );
-            offset = offset + pow2(*log_size);
+        for i in 0..components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT {
+            let component_idx = MEMORY_ID_TO_BIG_BASE_COMPONENT_IDX + i;
+            if let Option::Some(log_size) = *log_size_per_component.at(component_idx) {
+                let claimed_sum = (*claimed_sum_per_component.at(component_idx)).unwrap();
+                memory_id_to_value_components
+                    .append(
+                        components::memory_id_to_big::NewBigComponentImpl::new(
+                            log_size, offset, claimed_sum, common_lookup_elements,
+                        ),
+                    );
+                offset = offset + pow2(log_size);
+            }
         }
         // Check that IDs in (ID -> Value) do not overflow P.
         assert!(offset <= P_U32);
 
         let small_memory_id_to_value_component =
-            components::memory_id_to_small::NewComponentImpl::new(
-            cairo_claim.memory_id_to_small.as_snap().unwrap(),
-            interaction_claim.memory_id_to_small.as_snap().unwrap(),
+            components::memory_id_to_small::NewComponentImpl::try_new(
+            log_size_per_component.at(MEMORY_ID_TO_SMALL_COMPONENT_IDX),
+            claimed_sum_per_component.at(MEMORY_ID_TO_SMALL_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .expect('memory_id_to_small is required');
 
         let range_checks_components = RangeChecksComponentsImpl::new(
-            cairo_claim, common_lookup_elements, interaction_claim,
+            log_size_per_component, claimed_sum_per_component, common_lookup_elements,
         );
 
         let verify_bitwise_xor_4_component =
-            components::verify_bitwise_xor_4::NewComponentImpl::new(
-            cairo_claim.verify_bitwise_xor_4.as_snap().unwrap(),
-            interaction_claim.verify_bitwise_xor_4.as_snap().unwrap(),
+            components::verify_bitwise_xor_4::NewComponentImpl::try_new(
+            log_size_per_component.at(VERIFY_BITWISE_XOR_4_COMPONENT_IDX),
+            claimed_sum_per_component.at(VERIFY_BITWISE_XOR_4_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
         let verify_bitwise_xor_7_component =
-            components::verify_bitwise_xor_7::NewComponentImpl::new(
-            cairo_claim.verify_bitwise_xor_7.as_snap().unwrap(),
-            interaction_claim.verify_bitwise_xor_7.as_snap().unwrap(),
+            components::verify_bitwise_xor_7::NewComponentImpl::try_new(
+            log_size_per_component.at(VERIFY_BITWISE_XOR_7_COMPONENT_IDX),
+            claimed_sum_per_component.at(VERIFY_BITWISE_XOR_7_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
         let verify_bitwise_xor_8_component =
-            components::verify_bitwise_xor_8::NewComponentImpl::new(
-            cairo_claim.verify_bitwise_xor_8.as_snap().unwrap(),
-            interaction_claim.verify_bitwise_xor_8.as_snap().unwrap(),
+            components::verify_bitwise_xor_8::NewComponentImpl::try_new(
+            log_size_per_component.at(VERIFY_BITWISE_XOR_8_COMPONENT_IDX),
+            claimed_sum_per_component.at(VERIFY_BITWISE_XOR_8_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
         let verify_bitwise_xor_9_component =
-            components::verify_bitwise_xor_9::NewComponentImpl::new(
-            cairo_claim.verify_bitwise_xor_9.as_snap().unwrap(),
-            interaction_claim.verify_bitwise_xor_9.as_snap().unwrap(),
+            components::verify_bitwise_xor_9::NewComponentImpl::try_new(
+            log_size_per_component.at(VERIFY_BITWISE_XOR_9_COMPONENT_IDX),
+            claimed_sum_per_component.at(VERIFY_BITWISE_XOR_9_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
         CairoAir {
             opcodes: opcode_components,
@@ -458,106 +448,102 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
         common_lookup_elements: @crate::CommonLookupElements,
         interaction_claim: @CairoInteractionClaim,
     ) -> CairoAir {
+        let log_size_per_component = cairo_claim.component_log_sizes.span();
+        let claimed_sum_per_component = interaction_claim.component_claimed_sums.span();
+
         assert!(
-            cairo_claim.partial_ec_mul_generic.is_none(),
-            "Partial EC Mul Generic is not supported.",
-        );
-        assert!(
-            interaction_claim.partial_ec_mul_generic.is_none(),
+            (*log_size_per_component.at(PARTIAL_EC_MUL_GENERIC_COMPONENT_IDX)).is_none(),
             "Partial EC Mul Generic is not supported.",
         );
 
         let opcode_components = OpcodeComponentsImpl::new(
-            cairo_claim, common_lookup_elements, interaction_claim,
+            log_size_per_component, claimed_sum_per_component, common_lookup_elements,
         );
 
         let blake_context_component = BlakeContextComponentsImpl::new(
-            cairo_claim, common_lookup_elements, interaction_claim,
+            log_size_per_component, claimed_sum_per_component, common_lookup_elements,
         );
 
         let builtins_components = BuiltinComponentsImpl::new(
-            cairo_claim, common_lookup_elements, interaction_claim,
+            log_size_per_component, claimed_sum_per_component, common_lookup_elements,
         );
 
-        let verifyinstruction_component = components::verify_instruction::NewComponentImpl::new(
-            cairo_claim.verify_instruction.as_snap().unwrap(),
-            interaction_claim.verify_instruction.as_snap().unwrap(),
+        let verifyinstruction_component = components::verify_instruction::NewComponentImpl::try_new(
+            log_size_per_component.at(VERIFY_INSTRUCTION_COMPONENT_IDX),
+            claimed_sum_per_component.at(VERIFY_INSTRUCTION_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .expect('verify_instruction is required');
 
         let memory_address_to_id_component =
-            components::memory_address_to_id::NewComponentImpl::new(
-            cairo_claim.memory_address_to_id.as_snap().unwrap(),
-            interaction_claim.memory_address_to_id.as_snap().unwrap(),
+            components::memory_address_to_id::NewComponentImpl::try_new(
+            log_size_per_component.at(MEMORY_ADDRESS_TO_ID_COMPONENT_IDX),
+            claimed_sum_per_component.at(MEMORY_ADDRESS_TO_ID_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .expect('memory_address_to_id required');
 
-        let claim_memory_id_to_big = cairo_claim.memory_id_to_big.as_snap().unwrap();
-        let interaction_claim_memory_id_to_big = interaction_claim
-            .memory_id_to_big
-            .as_snap()
-            .unwrap();
-        assert!(
-            claim_memory_id_to_big
-                .big_log_sizes
-                .len() == interaction_claim_memory_id_to_big
-                .big_claimed_sums
-                .len(),
-        );
         let mut memory_id_to_value_components = array![];
         let mut offset: u32 = LARGE_MEMORY_VALUE_ID_BASE;
-        for i in 0..claim_memory_id_to_big.big_log_sizes.len() {
-            let log_size = claim_memory_id_to_big.big_log_sizes[i];
-            let claimed_sum = interaction_claim_memory_id_to_big.big_claimed_sums[i];
-            memory_id_to_value_components
-                .append(
-                    components::memory_id_to_big::NewBigComponentImpl::new(
-                        *log_size, offset, *claimed_sum, common_lookup_elements,
-                    ),
-                );
-            offset = offset + pow2(*log_size);
+        for i in 0..components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT {
+            let component_idx = MEMORY_ID_TO_BIG_BASE_COMPONENT_IDX + i;
+            if let Option::Some(log_size) = *log_size_per_component.at(component_idx) {
+                let claimed_sum = (*claimed_sum_per_component.at(component_idx)).unwrap();
+                memory_id_to_value_components
+                    .append(
+                        components::memory_id_to_big::NewBigComponentImpl::new(
+                            log_size, offset, claimed_sum, common_lookup_elements,
+                        ),
+                    );
+                offset = offset + pow2(log_size);
+            }
         }
         // Check that IDs in (ID -> Value) do not overflow P.
         assert!(offset <= P_U32);
 
         let small_memory_id_to_value_component =
-            components::memory_id_to_small::NewComponentImpl::new(
-            cairo_claim.memory_id_to_small.as_snap().unwrap(),
-            interaction_claim.memory_id_to_small.as_snap().unwrap(),
+            components::memory_id_to_small::NewComponentImpl::try_new(
+            log_size_per_component.at(MEMORY_ID_TO_SMALL_COMPONENT_IDX),
+            claimed_sum_per_component.at(MEMORY_ID_TO_SMALL_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .expect('memory_id_to_small is required');
 
         let range_checks_components = RangeChecksComponentsImpl::new(
-            cairo_claim, common_lookup_elements, interaction_claim,
+            log_size_per_component, claimed_sum_per_component, common_lookup_elements,
         );
 
         let verify_bitwise_xor_4_component =
-            components::verify_bitwise_xor_4::NewComponentImpl::new(
-            cairo_claim.verify_bitwise_xor_4.as_snap().unwrap(),
-            interaction_claim.verify_bitwise_xor_4.as_snap().unwrap(),
+            components::verify_bitwise_xor_4::NewComponentImpl::try_new(
+            log_size_per_component.at(VERIFY_BITWISE_XOR_4_COMPONENT_IDX),
+            claimed_sum_per_component.at(VERIFY_BITWISE_XOR_4_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
         let verify_bitwise_xor_7_component =
-            components::verify_bitwise_xor_7::NewComponentImpl::new(
-            cairo_claim.verify_bitwise_xor_7.as_snap().unwrap(),
-            interaction_claim.verify_bitwise_xor_7.as_snap().unwrap(),
+            components::verify_bitwise_xor_7::NewComponentImpl::try_new(
+            log_size_per_component.at(VERIFY_BITWISE_XOR_7_COMPONENT_IDX),
+            claimed_sum_per_component.at(VERIFY_BITWISE_XOR_7_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
         let verify_bitwise_xor_8_component =
-            components::verify_bitwise_xor_8::NewComponentImpl::new(
-            cairo_claim.verify_bitwise_xor_8.as_snap().unwrap(),
-            interaction_claim.verify_bitwise_xor_8.as_snap().unwrap(),
+            components::verify_bitwise_xor_8::NewComponentImpl::try_new(
+            log_size_per_component.at(VERIFY_BITWISE_XOR_8_COMPONENT_IDX),
+            claimed_sum_per_component.at(VERIFY_BITWISE_XOR_8_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
         let verify_bitwise_xor_9_component =
-            components::verify_bitwise_xor_9::NewComponentImpl::new(
-            cairo_claim.verify_bitwise_xor_9.as_snap().unwrap(),
-            interaction_claim.verify_bitwise_xor_9.as_snap().unwrap(),
+            components::verify_bitwise_xor_9::NewComponentImpl::try_new(
+            log_size_per_component.at(VERIFY_BITWISE_XOR_9_COMPONENT_IDX),
+            claimed_sum_per_component.at(VERIFY_BITWISE_XOR_9_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
         CairoAir {
             opcodes: opcode_components,
@@ -761,110 +747,106 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
         common_lookup_elements: @crate::CommonLookupElements,
         interaction_claim: @CairoInteractionClaim,
     ) -> CairoAir {
+        let log_size_per_component = cairo_claim.component_log_sizes.span();
+        let claimed_sum_per_component = interaction_claim.component_claimed_sums.span();
+
         assert!(
-            cairo_claim.partial_ec_mul_generic.is_none(),
-            "Partial EC Mul Generic is not supported.",
-        );
-        assert!(
-            interaction_claim.partial_ec_mul_generic.is_none(),
+            (*log_size_per_component.at(PARTIAL_EC_MUL_GENERIC_COMPONENT_IDX)).is_none(),
             "Partial EC Mul Generic is not supported.",
         );
 
         let opcode_components = OpcodeComponentsImpl::new(
-            cairo_claim, common_lookup_elements, interaction_claim,
+            log_size_per_component, claimed_sum_per_component, common_lookup_elements,
         );
 
         let blake_context_component = BlakeContextComponentsImpl::new(
-            cairo_claim, common_lookup_elements, interaction_claim,
+            log_size_per_component, claimed_sum_per_component, common_lookup_elements,
         );
 
         let builtins_components = BuiltinComponentsImpl::new(
-            cairo_claim, common_lookup_elements, interaction_claim,
+            log_size_per_component, claimed_sum_per_component, common_lookup_elements,
         );
 
         let poseidon_context_components = PoseidonContextComponentsImpl::new(
-            cairo_claim, common_lookup_elements, interaction_claim,
+            log_size_per_component, claimed_sum_per_component, common_lookup_elements,
         );
 
-        let verifyinstruction_component = components::verify_instruction::NewComponentImpl::new(
-            cairo_claim.verify_instruction.as_snap().unwrap(),
-            interaction_claim.verify_instruction.as_snap().unwrap(),
+        let verifyinstruction_component = components::verify_instruction::NewComponentImpl::try_new(
+            log_size_per_component.at(VERIFY_INSTRUCTION_COMPONENT_IDX),
+            claimed_sum_per_component.at(VERIFY_INSTRUCTION_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .expect('verify_instruction is required');
 
         let memory_address_to_id_component =
-            components::memory_address_to_id::NewComponentImpl::new(
-            cairo_claim.memory_address_to_id.as_snap().unwrap(),
-            interaction_claim.memory_address_to_id.as_snap().unwrap(),
+            components::memory_address_to_id::NewComponentImpl::try_new(
+            log_size_per_component.at(MEMORY_ADDRESS_TO_ID_COMPONENT_IDX),
+            claimed_sum_per_component.at(MEMORY_ADDRESS_TO_ID_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .expect('memory_address_to_id required');
 
-        let claim_memory_id_to_big = cairo_claim.memory_id_to_big.as_snap().unwrap();
-        let interaction_claim_memory_id_to_big = interaction_claim
-            .memory_id_to_big
-            .as_snap()
-            .unwrap();
-        assert!(
-            claim_memory_id_to_big
-                .big_log_sizes
-                .len() == interaction_claim_memory_id_to_big
-                .big_claimed_sums
-                .len(),
-        );
         let mut memory_id_to_value_components = array![];
         let mut offset: u32 = LARGE_MEMORY_VALUE_ID_BASE;
-        for i in 0..claim_memory_id_to_big.big_log_sizes.len() {
-            let log_size = claim_memory_id_to_big.big_log_sizes[i];
-            let claimed_sum = interaction_claim_memory_id_to_big.big_claimed_sums[i];
-            memory_id_to_value_components
-                .append(
-                    components::memory_id_to_big::NewBigComponentImpl::new(
-                        *log_size, offset, *claimed_sum, common_lookup_elements,
-                    ),
-                );
-            offset = offset + pow2(*log_size);
+        for i in 0..components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT {
+            let component_idx = MEMORY_ID_TO_BIG_BASE_COMPONENT_IDX + i;
+            if let Option::Some(log_size) = *log_size_per_component.at(component_idx) {
+                let claimed_sum = (*claimed_sum_per_component.at(component_idx)).unwrap();
+                memory_id_to_value_components
+                    .append(
+                        components::memory_id_to_big::NewBigComponentImpl::new(
+                            log_size, offset, claimed_sum, common_lookup_elements,
+                        ),
+                    );
+                offset = offset + pow2(log_size);
+            }
         }
         // Check that IDs in (ID -> Value) do not overflow P.
         assert!(offset <= P_U32);
 
         let small_memory_id_to_value_component =
-            components::memory_id_to_small::NewComponentImpl::new(
-            cairo_claim.memory_id_to_small.as_snap().unwrap(),
-            interaction_claim.memory_id_to_small.as_snap().unwrap(),
+            components::memory_id_to_small::NewComponentImpl::try_new(
+            log_size_per_component.at(MEMORY_ID_TO_SMALL_COMPONENT_IDX),
+            claimed_sum_per_component.at(MEMORY_ID_TO_SMALL_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .expect('memory_id_to_small is required');
 
         let range_checks_components = RangeChecksComponentsImpl::new(
-            cairo_claim, common_lookup_elements, interaction_claim,
+            log_size_per_component, claimed_sum_per_component, common_lookup_elements,
         );
 
         let verify_bitwise_xor_4_component =
-            components::verify_bitwise_xor_4::NewComponentImpl::new(
-            cairo_claim.verify_bitwise_xor_4.as_snap().unwrap(),
-            interaction_claim.verify_bitwise_xor_4.as_snap().unwrap(),
+            components::verify_bitwise_xor_4::NewComponentImpl::try_new(
+            log_size_per_component.at(VERIFY_BITWISE_XOR_4_COMPONENT_IDX),
+            claimed_sum_per_component.at(VERIFY_BITWISE_XOR_4_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
         let verify_bitwise_xor_7_component =
-            components::verify_bitwise_xor_7::NewComponentImpl::new(
-            cairo_claim.verify_bitwise_xor_7.as_snap().unwrap(),
-            interaction_claim.verify_bitwise_xor_7.as_snap().unwrap(),
+            components::verify_bitwise_xor_7::NewComponentImpl::try_new(
+            log_size_per_component.at(VERIFY_BITWISE_XOR_7_COMPONENT_IDX),
+            claimed_sum_per_component.at(VERIFY_BITWISE_XOR_7_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
         let verify_bitwise_xor_8_component =
-            components::verify_bitwise_xor_8::NewComponentImpl::new(
-            cairo_claim.verify_bitwise_xor_8.as_snap().unwrap(),
-            interaction_claim.verify_bitwise_xor_8.as_snap().unwrap(),
+            components::verify_bitwise_xor_8::NewComponentImpl::try_new(
+            log_size_per_component.at(VERIFY_BITWISE_XOR_8_COMPONENT_IDX),
+            claimed_sum_per_component.at(VERIFY_BITWISE_XOR_8_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
         let verify_bitwise_xor_9_component =
-            components::verify_bitwise_xor_9::NewComponentImpl::new(
-            cairo_claim.verify_bitwise_xor_9.as_snap().unwrap(),
-            interaction_claim.verify_bitwise_xor_9.as_snap().unwrap(),
+            components::verify_bitwise_xor_9::NewComponentImpl::try_new(
+            log_size_per_component.at(VERIFY_BITWISE_XOR_9_COMPONENT_IDX),
+            claimed_sum_per_component.at(VERIFY_BITWISE_XOR_9_COMPONENT_IDX),
             common_lookup_elements,
-        );
+        )
+            .unwrap();
 
         CairoAir {
             opcodes: opcode_components,

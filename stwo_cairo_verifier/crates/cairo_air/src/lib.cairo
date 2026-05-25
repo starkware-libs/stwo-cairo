@@ -1,7 +1,4 @@
-use components::memory_address_to_id::{
-    InteractionClaimImpl as MemoryAddressToIdInteractionClaimImpl, LOG_MEMORY_ADDRESS_TO_ID_SPLIT,
-};
-use components::memory_id_to_big::InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl;
+use components::memory_address_to_id::LOG_MEMORY_ADDRESS_TO_ID_SPLIT;
 use stwo_verifier_core::Hash;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::vcs::blake2s_hasher::hash_small_vals;
@@ -47,6 +44,7 @@ use stwo_verifier_core::pcs::verifier::{CommitmentSchemeVerifierImpl, get_trace_
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pack_into_qm31s, pow2};
 use stwo_verifier_core::verifier::{StarkProof, verify};
 use stwo_verifier_utils::{MemorySection, PubMemoryValue, construct_f252};
+use crate::component_indices::*;
 use crate::components::memory_address_to_id::*;
 use crate::components::memory_id_to_big::*;
 use crate::utils::split;
@@ -73,6 +71,7 @@ use claims::{
 };
 pub mod cairo_air;
 use cairo_air::*;
+pub mod component_indices;
 
 pub mod components;
 
@@ -112,8 +111,6 @@ pub mod poseidon;
 pub mod preprocessed_columns;
 pub mod range_checks;
 use preprocessed_columns::preprocessed_root;
-
-pub mod claim;
 
 // TODO(az-starkware): Once we upgrade Cairo version, move these to preprocessed_column.cairo
 // using #[path = "..."]
@@ -278,18 +275,9 @@ fn verify_claim(claim: @CairoClaim) {
         },
     } = claim.public_data;
 
-    verify_builtins(
-        claim.range_check_builtin,
-        claim.range_check96_builtin,
-        claim.bitwise_builtin,
-        claim.add_mod_builtin,
-        claim.mul_mod_builtin,
-        claim.pedersen_builtin,
-        claim.pedersen_builtin_narrow_windows,
-        claim.poseidon_builtin,
-        claim.ec_op_builtin,
-        public_segments,
-    );
+    let log_size_per_component = claim.component_log_sizes.span();
+
+    verify_builtins(log_size_per_component, public_segments);
     verify_program(*program, public_segments);
 
     let initial_pc: u32 = (*initial_pc).into();
@@ -310,7 +298,9 @@ fn verify_claim(claim: @CairoClaim) {
     // 29-bit address space (i.e., is less than 2**29).
     // Higher addresses are not supported by components that assume 29-bit addresses.
     assert!(
-        (*claim.memory_address_to_id).unwrap().log_size <= 29_u32 - LOG_MEMORY_ADDRESS_TO_ID_SPLIT,
+        (*log_size_per_component.at(MEMORY_ADDRESS_TO_ID_COMPONENT_IDX))
+            .expect('memory_address_to_id required') <= 29_u32
+            - LOG_MEMORY_ADDRESS_TO_ID_SPLIT,
     );
 
     // Count the number of uses of each relation.
@@ -351,20 +341,9 @@ fn verify_claim(claim: @CairoClaim) {
 /// The builtins keccak, ec_op, and ecdsa, are not supported, and therefore it's checked that their
 /// segments are empty.
 fn verify_builtins(
-    range_check_128_builtin: @Option<crate::components::range_check_builtin::Claim>,
-    range_check_96_builtin: @Option<crate::components::range_check96_builtin::Claim>,
-    bitwise_builtin: @Option<crate::components::bitwise_builtin::Claim>,
-    add_mod_builtin: @Option<crate::components::add_mod_builtin::Claim>,
-    mul_mod_builtin: @Option<crate::components::mul_mod_builtin::Claim>,
-    pedersen_builtin: @Option<crate::components::pedersen_builtin::Claim>,
-    pedersen_builtin_narrow_windows: @Option<
-        crate::components::pedersen_builtin_narrow_windows::Claim,
-    >,
-    poseidon_builtin: @Option<crate::components::poseidon_builtin::Claim>,
-    ec_op_builtin: @Option<crate::components::ec_op_builtin::Claim>,
-    segment_ranges: @PublicSegmentRanges,
+    log_size_per_component: Span<Option<u32>>, segment_ranges: @PublicSegmentRanges,
 ) {
-    assert!(pedersen_builtin_narrow_windows.is_none());
+    assert!((*log_size_per_component.at(PEDERSEN_BUILTIN_NARROW_WINDOWS_COMPONENT_IDX)).is_none());
 
     let PublicSegmentRanges {
         ec_op: ec_op_segment_range,
@@ -390,31 +369,45 @@ fn verify_builtins(
 
     // All other supported builtins.
     check_builtin(
-        range_check_128_builtin.map(|c| c.log_size),
+        *log_size_per_component.at(RANGE_CHECK_BUILTIN_COMPONENT_IDX),
         *range_check_128_segment_range,
         RANGE_CHECK_MEMORY_CELLS,
     );
     check_builtin(
-        range_check_96_builtin.map(|c| c.log_size),
+        *log_size_per_component.at(RANGE_CHECK96_BUILTIN_COMPONENT_IDX),
         *range_check_96_segment_range,
         RANGE_CHECK_MEMORY_CELLS,
     );
     check_builtin(
-        bitwise_builtin.map(|c| c.log_size), *bitwise_segment_range, BITWISE_MEMORY_CELLS,
+        *log_size_per_component.at(BITWISE_BUILTIN_COMPONENT_IDX),
+        *bitwise_segment_range,
+        BITWISE_MEMORY_CELLS,
     );
     check_builtin(
-        add_mod_builtin.map(|c| c.log_size), *add_mod_segment_range, ADD_MOD_MEMORY_CELLS,
+        *log_size_per_component.at(ADD_MOD_BUILTIN_COMPONENT_IDX),
+        *add_mod_segment_range,
+        ADD_MOD_MEMORY_CELLS,
     );
     check_builtin(
-        mul_mod_builtin.map(|c| c.log_size), *mul_mod_segment_range, MUL_MOD_MEMORY_CELLS,
+        *log_size_per_component.at(MUL_MOD_BUILTIN_COMPONENT_IDX),
+        *mul_mod_segment_range,
+        MUL_MOD_MEMORY_CELLS,
     );
     check_builtin(
-        pedersen_builtin.map(|c| c.log_size), *pedersen_segment_range, PEDERSEN_MEMORY_CELLS,
+        *log_size_per_component.at(PEDERSEN_BUILTIN_COMPONENT_IDX),
+        *pedersen_segment_range,
+        PEDERSEN_MEMORY_CELLS,
     );
     check_builtin(
-        poseidon_builtin.map(|c| c.log_size), *poseidon_segment_range, POSEIDON_MEMORY_CELLS,
+        *log_size_per_component.at(POSEIDON_BUILTIN_COMPONENT_IDX),
+        *poseidon_segment_range,
+        POSEIDON_MEMORY_CELLS,
     );
-    check_builtin(ec_op_builtin.map(|c| c.log_size), *ec_op_segment_range, EC_OP_MEMORY_CELLS);
+    check_builtin(
+        *log_size_per_component.at(EC_OP_BUILTIN_COMPONENT_IDX),
+        *ec_op_segment_range,
+        EC_OP_MEMORY_CELLS,
+    );
 }
 
 fn check_builtin(log_size: Option<u32>, segment_range: SegmentRange, n_cells: usize) {

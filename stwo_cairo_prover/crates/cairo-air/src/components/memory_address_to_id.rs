@@ -1,13 +1,8 @@
-use serde::{Deserialize, Serialize};
-use stwo::core::channel::Channel;
 use stwo::core::fields::m31::M31;
-use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
-use stwo::core::pcs::TreeVec;
 use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
     PreProcessedColumn, Seq, MAX_SEQUENCE_LOG_SIZE,
 };
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry};
 
 use crate::relations::{self, MEMORY_ADDRESS_TO_ID_RELATION_ID};
@@ -30,20 +25,21 @@ pub const MEMORY_ADDRESS_TO_ID_SPLIT: usize =
     1 << (LOG_MEMORY_ADDRESS_BOUND - MAX_SEQUENCE_LOG_SIZE);
 pub const N_ID_AND_MULT_COLUMNS_PER_CHUNK: usize = 2;
 pub const N_TRACE_COLUMNS: usize = MEMORY_ADDRESS_TO_ID_SPLIT * N_ID_AND_MULT_COLUMNS_PER_CHUNK;
+pub const N_INTERACTION_COLUMNS: usize =
+    stwo::core::fields::qm31::SECURE_EXTENSION_DEGREE * MEMORY_ADDRESS_TO_ID_SPLIT.div_ceil(2);
 
 pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 pub type Component = FrameworkComponent<Eval>;
 
 #[derive(Clone)]
 pub struct Eval {
-    // The log size of the component after split.
-    pub claim: Claim,
+    pub log_size: u32,
     pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
-        self.claim.log_size
+        self.log_size
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
@@ -71,33 +67,6 @@ impl FrameworkEval for Eval {
     }
 }
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct Claim {
-    pub log_size: u32,
-}
-impl Claim {
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes =
-            vec![self.log_size; SECURE_EXTENSION_DEGREE * MEMORY_ADDRESS_TO_ID_SPLIT.div_ceil(2)];
-        TreeVec::new(vec![trace_log_sizes, interaction_log_sizes])
-    }
-
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_u64(self.log_size as u64);
-    }
-}
-
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct InteractionClaim {
-    pub claimed_sum: SecureField,
-}
-impl InteractionClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_felts(&[self.claimed_sum]);
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use num_traits::Zero;
@@ -113,7 +82,7 @@ mod tests {
     fn memory_address_to_id_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
-            claim: Claim { log_size: 4 },
+            log_size: 4,
             common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
 

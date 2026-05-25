@@ -3,27 +3,12 @@
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 8;
+pub const N_INTERACTION_COLUMNS: usize = 16;
 pub const LOG_SIZE: u32 = 20;
 pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
-    pub claim: Claim,
     pub common_lookup_elements: relations::CommonLookupElements,
-}
-
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct Claim {}
-impl Claim {
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![LOG_SIZE; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![LOG_SIZE; SECURE_EXTENSION_DEGREE * 4];
-        TreeVec::new(vec![trace_log_sizes, interaction_log_sizes])
-    }
-}
-
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct InteractionClaim {
-    pub claimed_sum: SecureField,
 }
 
 pub type Component = FrameworkComponent<Eval>;
@@ -129,7 +114,6 @@ mod tests {
     fn range_check_20_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
-            claim: Claim {},
             common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());

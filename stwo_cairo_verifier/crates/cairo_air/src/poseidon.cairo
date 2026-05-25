@@ -1,14 +1,8 @@
-use components::cube_252::InteractionClaimImpl as Cube252InteractionClaimImpl;
-use components::poseidon_3_partial_rounds_chain::InteractionClaimImpl as Poseidon3PartialRoundsChainInteractionClaimImpl;
-use components::poseidon_aggregator::InteractionClaimImpl as PoseidonAggregatorInteractionClaimImpl;
-use components::poseidon_builtin::InteractionClaimImpl as PoseidonBuiltinInteractionClaimImpl;
-use components::poseidon_full_round_chain::InteractionClaimImpl as PoseidonFullRoundChainInteractionClaimImpl;
-use components::poseidon_round_keys::InteractionClaimImpl as PoseidonRoundKeysInteractionClaimImpl;
-use components::range_check_252_width_27::InteractionClaimImpl as RangeCheckFelt252Width27InteractionClaimImpl;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use core::array::Span;
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
-use stwo_cairo_air::claims::{CairoClaim, CairoInteractionClaim};
+use stwo_cairo_air::component_indices::*;
+#[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use stwo_cairo_air::components;
 use stwo_constraint_framework::PreprocessedMaskValuesImpl;
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
@@ -28,30 +22,42 @@ pub struct PoseidonContextComponents {
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 pub impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
     fn new(
-        cairo_claim: @CairoClaim,
+        log_size_per_component: Span<Option<u32>>,
+        claimed_sum_per_component: Span<Option<QM31>>,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @CairoInteractionClaim,
     ) -> PoseidonContextComponents {
-        if let Some(_) = cairo_claim.poseidon_aggregator {
+        if (*log_size_per_component.at(POSEIDON_AGGREGATOR_COMPONENT_IDX)).is_some() {
             PoseidonContextComponents {
                 components: Some(
                     PoseidonComponentsImpl::new(
-                        cairo_claim, common_lookup_elements, interaction_claim,
+                        log_size_per_component, claimed_sum_per_component, common_lookup_elements,
                     ),
                 ),
             }
         } else {
-            assert!(cairo_claim.poseidon_3_partial_rounds_chain.is_none());
-            assert!(cairo_claim.poseidon_full_round_chain.is_none());
-            assert!(cairo_claim.cube_252.is_none());
-            assert!(cairo_claim.poseidon_round_keys.is_none());
-            assert!(cairo_claim.range_check_252_width_27.is_none());
-            assert!(interaction_claim.poseidon_aggregator.is_none());
-            assert!(interaction_claim.poseidon_3_partial_rounds_chain.is_none());
-            assert!(interaction_claim.poseidon_full_round_chain.is_none());
-            assert!(interaction_claim.cube_252.is_none());
-            assert!(interaction_claim.poseidon_round_keys.is_none());
-            assert!(interaction_claim.range_check_252_width_27.is_none());
+            assert!(
+                (*log_size_per_component.at(POSEIDON_3_PARTIAL_ROUNDS_CHAIN_COMPONENT_IDX))
+                    .is_none(),
+            );
+            assert!(
+                (*log_size_per_component.at(POSEIDON_FULL_ROUND_CHAIN_COMPONENT_IDX)).is_none(),
+            );
+            assert!((*log_size_per_component.at(CUBE_252_COMPONENT_IDX)).is_none());
+            assert!((*log_size_per_component.at(POSEIDON_ROUND_KEYS_COMPONENT_IDX)).is_none());
+            assert!((*log_size_per_component.at(RANGE_CHECK_252_WIDTH_27_COMPONENT_IDX)).is_none());
+            assert!((*claimed_sum_per_component.at(POSEIDON_AGGREGATOR_COMPONENT_IDX)).is_none());
+            assert!(
+                (*claimed_sum_per_component.at(POSEIDON_3_PARTIAL_ROUNDS_CHAIN_COMPONENT_IDX))
+                    .is_none(),
+            );
+            assert!(
+                (*claimed_sum_per_component.at(POSEIDON_FULL_ROUND_CHAIN_COMPONENT_IDX)).is_none(),
+            );
+            assert!((*claimed_sum_per_component.at(CUBE_252_COMPONENT_IDX)).is_none());
+            assert!((*claimed_sum_per_component.at(POSEIDON_ROUND_KEYS_COMPONENT_IDX)).is_none());
+            assert!(
+                (*claimed_sum_per_component.at(RANGE_CHECK_252_WIDTH_27_COMPONENT_IDX)).is_none(),
+            );
             PoseidonContextComponents { components: None }
         }
     }
@@ -92,62 +98,47 @@ pub struct PoseidonComponents {
 #[generate_trait]
 pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
     fn new(
-        cairo_claim: @CairoClaim,
+        log_size_per_component: Span<Option<u32>>,
+        claimed_sum_per_component: Span<Option<QM31>>,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @CairoInteractionClaim,
     ) -> PoseidonComponents {
-        let poseidon_aggregator_component =
-            components::poseidon_aggregator::NewComponentImpl::try_new(
-            cairo_claim.poseidon_aggregator,
-            interaction_claim.poseidon_aggregator,
-            common_lookup_elements,
-        )
-            .unwrap();
-
-        let poseidon_3_partial_rounds_chain_component =
-            components::poseidon_3_partial_rounds_chain::NewComponentImpl::try_new(
-            cairo_claim.poseidon_3_partial_rounds_chain,
-            interaction_claim.poseidon_3_partial_rounds_chain,
-            common_lookup_elements,
-        )
-            .unwrap();
-
-        let poseidon_full_round_chain_component =
-            components::poseidon_full_round_chain::NewComponentImpl::try_new(
-            cairo_claim.poseidon_full_round_chain,
-            interaction_claim.poseidon_full_round_chain,
-            common_lookup_elements,
-        )
-            .unwrap();
-
-        let cube_252_component = components::cube_252::NewComponentImpl::try_new(
-            cairo_claim.cube_252, interaction_claim.cube_252, common_lookup_elements,
-        )
-            .unwrap();
-
-        let poseidon_round_keys_component =
-            components::poseidon_round_keys::NewComponentImpl::try_new(
-            cairo_claim.poseidon_round_keys,
-            interaction_claim.poseidon_round_keys,
-            common_lookup_elements,
-        )
-            .unwrap();
-
-        let range_check_felt_252_width_27_component =
-            components::range_check_252_width_27::NewComponentImpl::try_new(
-            cairo_claim.range_check_252_width_27,
-            interaction_claim.range_check_252_width_27,
-            common_lookup_elements,
-        )
-            .unwrap();
-
         PoseidonComponents {
-            poseidon_aggregator: poseidon_aggregator_component,
-            poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_component,
-            poseidon_full_round_chain: poseidon_full_round_chain_component,
-            cube_252: cube_252_component,
-            poseidon_round_keys: poseidon_round_keys_component,
-            range_check_252_width_27: range_check_felt_252_width_27_component,
+            poseidon_aggregator: components::poseidon_aggregator::NewComponentImpl::try_new(
+                log_size_per_component.at(POSEIDON_AGGREGATOR_COMPONENT_IDX),
+                claimed_sum_per_component.at(POSEIDON_AGGREGATOR_COMPONENT_IDX),
+                common_lookup_elements,
+            )
+                .unwrap(),
+            poseidon_3_partial_rounds_chain: components::poseidon_3_partial_rounds_chain::NewComponentImpl::try_new(
+                log_size_per_component.at(POSEIDON_3_PARTIAL_ROUNDS_CHAIN_COMPONENT_IDX),
+                claimed_sum_per_component.at(POSEIDON_3_PARTIAL_ROUNDS_CHAIN_COMPONENT_IDX),
+                common_lookup_elements,
+            )
+                .unwrap(),
+            poseidon_full_round_chain: components::poseidon_full_round_chain::NewComponentImpl::try_new(
+                log_size_per_component.at(POSEIDON_FULL_ROUND_CHAIN_COMPONENT_IDX),
+                claimed_sum_per_component.at(POSEIDON_FULL_ROUND_CHAIN_COMPONENT_IDX),
+                common_lookup_elements,
+            )
+                .unwrap(),
+            cube_252: components::cube_252::NewComponentImpl::try_new(
+                log_size_per_component.at(CUBE_252_COMPONENT_IDX),
+                claimed_sum_per_component.at(CUBE_252_COMPONENT_IDX),
+                common_lookup_elements,
+            )
+                .unwrap(),
+            poseidon_round_keys: components::poseidon_round_keys::NewComponentImpl::try_new(
+                log_size_per_component.at(POSEIDON_ROUND_KEYS_COMPONENT_IDX),
+                claimed_sum_per_component.at(POSEIDON_ROUND_KEYS_COMPONENT_IDX),
+                common_lookup_elements,
+            )
+                .unwrap(),
+            range_check_252_width_27: components::range_check_252_width_27::NewComponentImpl::try_new(
+                log_size_per_component.at(RANGE_CHECK_252_WIDTH_27_COMPONENT_IDX),
+                claimed_sum_per_component.at(RANGE_CHECK_252_WIDTH_27_COMPONENT_IDX),
+                common_lookup_elements,
+            )
+                .unwrap(),
         }
     }
 

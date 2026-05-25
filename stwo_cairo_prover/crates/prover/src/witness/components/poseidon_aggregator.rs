@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 #![allow(unused_parens)]
-use cairo_air::components::poseidon_aggregator::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use cairo_air::components::poseidon_aggregator::N_TRACE_COLUMNS;
 
 use crate::witness::components::{
     cube_252, memory_id_to_big, poseidon_3_partial_rounds_chain, poseidon_full_round_chain,
@@ -34,7 +34,7 @@ impl ClaimGenerator {
         poseidon_3_partial_rounds_chain_state: &poseidon_3_partial_rounds_chain::ClaimGenerator,
     ) -> (
         ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
+        u32,
         InteractionClaimGenerator,
     ) {
         let mut inputs_mults = self
@@ -122,7 +122,7 @@ impl ClaimGenerator {
 
         (
             trace,
-            Claim { log_size },
+            log_size,
             InteractionClaimGenerator {
                 log_size,
                 lookup_data,
@@ -960,7 +960,7 @@ impl InteractionClaimGenerator {
         common_lookup_elements: &relations::CommonLookupElements,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
+        SecureField,
     ) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
 
@@ -1191,6 +1191,6 @@ impl InteractionClaimGenerator {
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
 
-        (trace, InteractionClaim { claimed_sum })
+        (trace, claimed_sum)
     }
 }

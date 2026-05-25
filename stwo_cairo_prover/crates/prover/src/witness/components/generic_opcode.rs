@@ -2,7 +2,7 @@
 
 #![allow(unused_parens)]#![cfg_attr(rustfmt, rustfmt_skip)]
 use crate::witness::prelude::*;
-use cairo_air::components::generic_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use cairo_air::components::generic_opcode::N_TRACE_COLUMNS;
 use crate::witness::components::memory_address_to_id;use crate::witness::components::memory_id_to_big;use crate::witness::components::verify_instruction;use crate::witness::components::range_check_9_9;use crate::witness::components::range_check_20;use crate::witness::components::range_check_18;use crate::witness::components::range_check_11;
 
 pub type InputType = CasmState;
@@ -30,7 +30,7 @@ range_check_20_state: &range_check_20::ClaimGenerator,
 range_check_18_state: &range_check_18::ClaimGenerator,
 range_check_11_state: &range_check_11::ClaimGenerator,
 
-    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator)
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, u32, InteractionClaimGenerator)
     {
         let n_rows = self.inputs.len();
         assert_ne!(n_rows, 0);
@@ -44,9 +44,7 @@ range_check_11_state: &range_check_11::ClaimGenerator,
         for inputs in sub_component_inputs.verify_instruction {add_inputs(verify_instruction_state, &inputs, inputs.len() * N_LANES, 0);};for inputs in sub_component_inputs.memory_address_to_id {add_inputs(memory_address_to_id_state, &inputs, inputs.len() * N_LANES, 0);};for inputs in sub_component_inputs.memory_id_to_big {add_inputs(memory_id_to_big_state, &inputs, inputs.len() * N_LANES, 0);};for inputs in sub_component_inputs.range_check_9_9 {add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 0);};for inputs in sub_component_inputs.range_check_9_9_b {add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 1);};for inputs in sub_component_inputs.range_check_9_9_c {add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 2);};for inputs in sub_component_inputs.range_check_9_9_d {add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 3);};for inputs in sub_component_inputs.range_check_9_9_e {add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 4);};for inputs in sub_component_inputs.range_check_9_9_f {add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 5);};for inputs in sub_component_inputs.range_check_9_9_g {add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 6);};for inputs in sub_component_inputs.range_check_9_9_h {add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 7);};for inputs in sub_component_inputs.range_check_20 {add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 0);};for inputs in sub_component_inputs.range_check_20_b {add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 1);};for inputs in sub_component_inputs.range_check_20_c {add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 2);};for inputs in sub_component_inputs.range_check_20_d {add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 3);};for inputs in sub_component_inputs.range_check_20_e {add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 4);};for inputs in sub_component_inputs.range_check_20_f {add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 5);};for inputs in sub_component_inputs.range_check_20_g {add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 6);};for inputs in sub_component_inputs.range_check_20_h {add_inputs(range_check_20_state, &inputs, inputs.len() * N_LANES, 7);};for inputs in sub_component_inputs.range_check_18 {add_inputs(range_check_18_state, &inputs, inputs.len() * N_LANES, 0);};for inputs in sub_component_inputs.range_check_11 {add_inputs(range_check_11_state, &inputs, inputs.len() * N_LANES, 0);};
 
         (trace,
-        Claim {
-            log_size,
-        },
+        log_size,
         InteractionClaimGenerator {
             log_size,
             lookup_data,
@@ -792,7 +790,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements
-    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim)
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, SecureField)
     {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
 
@@ -1377,8 +1375,6 @@ let mut col_gen = logup_gen.new_col();
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
 
-        (trace, InteractionClaim {
-            claimed_sum,
-        },)
+        (trace, claimed_sum)
     }
 }

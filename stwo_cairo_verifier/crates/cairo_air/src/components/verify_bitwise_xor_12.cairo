@@ -13,55 +13,18 @@ pub const N_TRACE_COLUMNS: usize = 16;
 pub const N_INTERACTION_COLUMNS: usize = QM31_EXTENSION_DEGREE * 8;
 
 
-#[derive(Drop, Serde, Copy)]
-pub struct Claim {}
-
-pub impl ClaimImpl of ClaimTrait<Claim> {
-    fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
-        let preprocessed_log_sizes = array![LOG_SIZE].span();
-        let trace_log_sizes = [LOG_SIZE; 16].span();
-        let interaction_log_sizes = [LOG_SIZE; QM31_EXTENSION_DEGREE * 8].span();
-        array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
-    }
-
-    fn mix_into(self: @Claim, ref channel: Channel) {}
-
-    fn accumulate_relation_uses(self: @Claim, ref relation_uses: RelationUsesDict) {}
-}
-
-#[derive(Drop, Serde, Copy)]
-pub struct InteractionClaim {
-    pub claimed_sum: QM31,
-}
-
-#[generate_trait]
-pub impl InteractionClaimImpl of InteractionClaimTrait {
-    fn mix_into(self: @InteractionClaim, ref channel: Channel) {
-        channel.mix_felts([*self.claimed_sum].span());
-    }
-}
-
-
 #[derive(Drop)]
 pub struct Component {
-    pub claim: Claim,
-    pub interaction_claim: InteractionClaim,
+    pub claimed_sum: QM31,
     pub common_lookup_elements: CommonLookupElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
-    type Claim = Claim;
-    type InteractionClaim = InteractionClaim;
-
     fn new(
-        claim: @Claim,
-        interaction_claim: @InteractionClaim,
-        common_lookup_elements: @CommonLookupElements,
+        log_size: @u32, claimed_sum: @QM31, common_lookup_elements: @CommonLookupElements,
     ) -> Component {
         Component {
-            claim: *claim,
-            interaction_claim: *interaction_claim,
-            common_lookup_elements: common_lookup_elements.clone(),
+            claimed_sum: *claimed_sum, common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -76,7 +39,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         random_coeff: QM31,
         public_params: Span<u32>,
     ) {
-        let claimed_sum = *self.interaction_claim.claimed_sum;
+        let claimed_sum = *self.claimed_sum;
 
         let params = constraints::ConstraintParams {
             lookup_elements: self.common_lookup_elements,

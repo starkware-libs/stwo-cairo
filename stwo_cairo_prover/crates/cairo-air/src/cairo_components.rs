@@ -3,10 +3,13 @@
 use std::fmt::Display;
 
 use stwo::core::air::Component;
+use stwo::core::fields::qm31::SecureField;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_constraint_framework::TraceLocationAllocator;
 
 use crate::claims::{CairoClaim, CairoInteractionClaim};
+use crate::component_indices::*;
+use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
 use crate::components::{
     add_ap_opcode, add_mod_builtin, add_opcode, add_opcode_small, assert_eq_opcode,
     assert_eq_opcode_double_deref, assert_eq_opcode_imm, bitwise_builtin, blake_compress_opcode,
@@ -112,374 +115,399 @@ impl CairoComponents {
         let tree_span_provider =
             &mut TraceLocationAllocator::new_with_preprocessed_columns(preprocessed_column_ids);
 
-        let add_opcode_component = cairo_claim.add_opcode.map(|add_opcode| {
-            add_opcode::Component::new(
-                tree_span_provider,
-                add_opcode::Eval {
-                    claim: add_opcode,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.add_opcode.unwrap().claimed_sum,
-            )
-        });
-        let add_opcode_small_component = cairo_claim.add_opcode_small.map(|add_opcode_small| {
-            add_opcode_small::Component::new(
-                tree_span_provider,
-                add_opcode_small::Eval {
-                    claim: add_opcode_small,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.add_opcode_small.unwrap().claimed_sum,
-            )
-        });
-        let add_ap_opcode_component = cairo_claim.add_ap_opcode.map(|add_ap_opcode| {
-            add_ap_opcode::Component::new(
-                tree_span_provider,
-                add_ap_opcode::Eval {
-                    claim: add_ap_opcode,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.add_ap_opcode.unwrap().claimed_sum,
-            )
-        });
-        let assert_eq_opcode_component = cairo_claim.assert_eq_opcode.map(|assert_eq_opcode| {
-            assert_eq_opcode::Component::new(
-                tree_span_provider,
-                assert_eq_opcode::Eval {
-                    claim: assert_eq_opcode,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.assert_eq_opcode.unwrap().claimed_sum,
-            )
-        });
+        let add_opcode_component =
+            cairo_claim.component_log_sizes[ADD_OPCODE_COMPONENT_IDX].map(|log_size| {
+                add_opcode::Component::new(
+                    tree_span_provider,
+                    add_opcode::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[ADD_OPCODE_COMPONENT_IDX].unwrap(),
+                )
+            });
+        let add_opcode_small_component =
+            cairo_claim.component_log_sizes[ADD_OPCODE_SMALL_COMPONENT_IDX].map(|log_size| {
+                add_opcode_small::Component::new(
+                    tree_span_provider,
+                    add_opcode_small::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[ADD_OPCODE_SMALL_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let add_ap_opcode_component = cairo_claim.component_log_sizes[ADD_AP_OPCODE_COMPONENT_IDX]
+            .map(|log_size| {
+                add_ap_opcode::Component::new(
+                    tree_span_provider,
+                    add_ap_opcode::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[ADD_AP_OPCODE_COMPONENT_IDX].unwrap(),
+                )
+            });
+        let assert_eq_opcode_component =
+            cairo_claim.component_log_sizes[ASSERT_EQ_OPCODE_COMPONENT_IDX].map(|log_size| {
+                assert_eq_opcode::Component::new(
+                    tree_span_provider,
+                    assert_eq_opcode::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[ASSERT_EQ_OPCODE_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
         let assert_eq_opcode_imm_component =
-            cairo_claim
-                .assert_eq_opcode_imm
-                .map(|assert_eq_opcode_imm| {
-                    assert_eq_opcode_imm::Component::new(
-                        tree_span_provider,
-                        assert_eq_opcode_imm::Eval {
-                            claim: assert_eq_opcode_imm,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.assert_eq_opcode_imm.unwrap().claimed_sum,
-                    )
-                });
-        let assert_eq_opcode_double_deref_component = cairo_claim
-            .assert_eq_opcode_double_deref
-            .map(|assert_eq_opcode_double_deref| {
+            cairo_claim.component_log_sizes[ASSERT_EQ_OPCODE_IMM_COMPONENT_IDX].map(|log_size| {
+                assert_eq_opcode_imm::Component::new(
+                    tree_span_provider,
+                    assert_eq_opcode_imm::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[ASSERT_EQ_OPCODE_IMM_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let assert_eq_opcode_double_deref_component = cairo_claim.component_log_sizes
+            [ASSERT_EQ_OPCODE_DOUBLE_DEREF_COMPONENT_IDX]
+            .map(|log_size| {
                 assert_eq_opcode_double_deref::Component::new(
                     tree_span_provider,
                     assert_eq_opcode_double_deref::Eval {
-                        claim: assert_eq_opcode_double_deref,
+                        log_size,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim
-                        .assert_eq_opcode_double_deref
-                        .unwrap()
-                        .claimed_sum,
+                    interaction_claim.component_claimed_sums
+                        [ASSERT_EQ_OPCODE_DOUBLE_DEREF_COMPONENT_IDX]
+                        .unwrap(),
                 )
             });
         let blake_compress_opcode_component =
-            cairo_claim
-                .blake_compress_opcode
-                .map(|blake_compress_opcode| {
-                    blake_compress_opcode::Component::new(
-                        tree_span_provider,
-                        blake_compress_opcode::Eval {
-                            claim: blake_compress_opcode,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.blake_compress_opcode.unwrap().claimed_sum,
-                    )
-                });
-        let call_opcode_abs_component = cairo_claim.call_opcode_abs.map(|call_opcode_abs| {
-            call_opcode_abs::Component::new(
-                tree_span_provider,
-                call_opcode_abs::Eval {
-                    claim: call_opcode_abs,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.call_opcode_abs.unwrap().claimed_sum,
-            )
-        });
+            cairo_claim.component_log_sizes[BLAKE_COMPRESS_OPCODE_COMPONENT_IDX].map(|log_size| {
+                blake_compress_opcode::Component::new(
+                    tree_span_provider,
+                    blake_compress_opcode::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[BLAKE_COMPRESS_OPCODE_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let call_opcode_abs_component =
+            cairo_claim.component_log_sizes[CALL_OPCODE_ABS_COMPONENT_IDX].map(|log_size| {
+                call_opcode_abs::Component::new(
+                    tree_span_provider,
+                    call_opcode_abs::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[CALL_OPCODE_ABS_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
         let call_opcode_rel_imm_component =
-            cairo_claim.call_opcode_rel_imm.map(|call_opcode_rel_imm| {
+            cairo_claim.component_log_sizes[CALL_OPCODE_REL_IMM_COMPONENT_IDX].map(|log_size| {
                 call_opcode_rel_imm::Component::new(
                     tree_span_provider,
                     call_opcode_rel_imm::Eval {
-                        claim: call_opcode_rel_imm,
+                        log_size,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim.call_opcode_rel_imm.unwrap().claimed_sum,
+                    interaction_claim.component_claimed_sums[CALL_OPCODE_REL_IMM_COMPONENT_IDX]
+                        .unwrap(),
                 )
             });
-        let generic_opcode_component = cairo_claim.generic_opcode.map(|generic_opcode| {
-            generic_opcode::Component::new(
-                tree_span_provider,
-                generic_opcode::Eval {
-                    claim: generic_opcode,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.generic_opcode.unwrap().claimed_sum,
-            )
-        });
+        let generic_opcode_component =
+            cairo_claim.component_log_sizes[GENERIC_OPCODE_COMPONENT_IDX].map(|log_size| {
+                generic_opcode::Component::new(
+                    tree_span_provider,
+                    generic_opcode::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[GENERIC_OPCODE_COMPONENT_IDX].unwrap(),
+                )
+            });
         let jnz_opcode_non_taken_component =
-            cairo_claim
-                .jnz_opcode_non_taken
-                .map(|jnz_opcode_non_taken| {
-                    jnz_opcode_non_taken::Component::new(
-                        tree_span_provider,
-                        jnz_opcode_non_taken::Eval {
-                            claim: jnz_opcode_non_taken,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.jnz_opcode_non_taken.unwrap().claimed_sum,
-                    )
-                });
-        let jnz_opcode_taken_component = cairo_claim.jnz_opcode_taken.map(|jnz_opcode_taken| {
-            jnz_opcode_taken::Component::new(
-                tree_span_provider,
-                jnz_opcode_taken::Eval {
-                    claim: jnz_opcode_taken,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.jnz_opcode_taken.unwrap().claimed_sum,
-            )
-        });
-        let jump_opcode_abs_component = cairo_claim.jump_opcode_abs.map(|jump_opcode_abs| {
-            jump_opcode_abs::Component::new(
-                tree_span_provider,
-                jump_opcode_abs::Eval {
-                    claim: jump_opcode_abs,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.jump_opcode_abs.unwrap().claimed_sum,
-            )
-        });
-        let jump_opcode_double_deref_component =
-            cairo_claim
-                .jump_opcode_double_deref
-                .map(|jump_opcode_double_deref| {
-                    jump_opcode_double_deref::Component::new(
-                        tree_span_provider,
-                        jump_opcode_double_deref::Eval {
-                            claim: jump_opcode_double_deref,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim
-                            .jump_opcode_double_deref
-                            .unwrap()
-                            .claimed_sum,
-                    )
-                });
-        let jump_opcode_rel_component = cairo_claim.jump_opcode_rel.map(|jump_opcode_rel| {
-            jump_opcode_rel::Component::new(
-                tree_span_provider,
-                jump_opcode_rel::Eval {
-                    claim: jump_opcode_rel,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.jump_opcode_rel.unwrap().claimed_sum,
-            )
-        });
+            cairo_claim.component_log_sizes[JNZ_OPCODE_NON_TAKEN_COMPONENT_IDX].map(|log_size| {
+                jnz_opcode_non_taken::Component::new(
+                    tree_span_provider,
+                    jnz_opcode_non_taken::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[JNZ_OPCODE_NON_TAKEN_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let jnz_opcode_taken_component =
+            cairo_claim.component_log_sizes[JNZ_OPCODE_TAKEN_COMPONENT_IDX].map(|log_size| {
+                jnz_opcode_taken::Component::new(
+                    tree_span_provider,
+                    jnz_opcode_taken::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[JNZ_OPCODE_TAKEN_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let jump_opcode_abs_component =
+            cairo_claim.component_log_sizes[JUMP_OPCODE_ABS_COMPONENT_IDX].map(|log_size| {
+                jump_opcode_abs::Component::new(
+                    tree_span_provider,
+                    jump_opcode_abs::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[JUMP_OPCODE_ABS_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let jump_opcode_double_deref_component = cairo_claim.component_log_sizes
+            [JUMP_OPCODE_DOUBLE_DEREF_COMPONENT_IDX]
+            .map(|log_size| {
+                jump_opcode_double_deref::Component::new(
+                    tree_span_provider,
+                    jump_opcode_double_deref::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums
+                        [JUMP_OPCODE_DOUBLE_DEREF_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let jump_opcode_rel_component =
+            cairo_claim.component_log_sizes[JUMP_OPCODE_REL_COMPONENT_IDX].map(|log_size| {
+                jump_opcode_rel::Component::new(
+                    tree_span_provider,
+                    jump_opcode_rel::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[JUMP_OPCODE_REL_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
         let jump_opcode_rel_imm_component =
-            cairo_claim.jump_opcode_rel_imm.map(|jump_opcode_rel_imm| {
+            cairo_claim.component_log_sizes[JUMP_OPCODE_REL_IMM_COMPONENT_IDX].map(|log_size| {
                 jump_opcode_rel_imm::Component::new(
                     tree_span_provider,
                     jump_opcode_rel_imm::Eval {
-                        claim: jump_opcode_rel_imm,
+                        log_size,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim.jump_opcode_rel_imm.unwrap().claimed_sum,
+                    interaction_claim.component_claimed_sums[JUMP_OPCODE_REL_IMM_COMPONENT_IDX]
+                        .unwrap(),
                 )
             });
-        let mul_opcode_component = cairo_claim.mul_opcode.map(|mul_opcode| {
-            mul_opcode::Component::new(
-                tree_span_provider,
-                mul_opcode::Eval {
-                    claim: mul_opcode,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.mul_opcode.unwrap().claimed_sum,
-            )
-        });
-        let mul_opcode_small_component = cairo_claim.mul_opcode_small.map(|mul_opcode_small| {
-            mul_opcode_small::Component::new(
-                tree_span_provider,
-                mul_opcode_small::Eval {
-                    claim: mul_opcode_small,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.mul_opcode_small.unwrap().claimed_sum,
-            )
-        });
+        let mul_opcode_component =
+            cairo_claim.component_log_sizes[MUL_OPCODE_COMPONENT_IDX].map(|log_size| {
+                mul_opcode::Component::new(
+                    tree_span_provider,
+                    mul_opcode::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[MUL_OPCODE_COMPONENT_IDX].unwrap(),
+                )
+            });
+        let mul_opcode_small_component =
+            cairo_claim.component_log_sizes[MUL_OPCODE_SMALL_COMPONENT_IDX].map(|log_size| {
+                mul_opcode_small::Component::new(
+                    tree_span_provider,
+                    mul_opcode_small::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[MUL_OPCODE_SMALL_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
         let qm_31_add_mul_opcode_component =
-            cairo_claim
-                .qm_31_add_mul_opcode
-                .map(|qm_31_add_mul_opcode| {
-                    qm_31_add_mul_opcode::Component::new(
-                        tree_span_provider,
-                        qm_31_add_mul_opcode::Eval {
-                            claim: qm_31_add_mul_opcode,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.qm_31_add_mul_opcode.unwrap().claimed_sum,
-                    )
-                });
-        let ret_opcode_component = cairo_claim.ret_opcode.map(|ret_opcode| {
-            ret_opcode::Component::new(
-                tree_span_provider,
-                ret_opcode::Eval {
-                    claim: ret_opcode,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.ret_opcode.unwrap().claimed_sum,
-            )
-        });
+            cairo_claim.component_log_sizes[QM_31_ADD_MUL_OPCODE_COMPONENT_IDX].map(|log_size| {
+                qm_31_add_mul_opcode::Component::new(
+                    tree_span_provider,
+                    qm_31_add_mul_opcode::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[QM_31_ADD_MUL_OPCODE_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let ret_opcode_component =
+            cairo_claim.component_log_sizes[RET_OPCODE_COMPONENT_IDX].map(|log_size| {
+                ret_opcode::Component::new(
+                    tree_span_provider,
+                    ret_opcode::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[RET_OPCODE_COMPONENT_IDX].unwrap(),
+                )
+            });
         let verify_instruction_component =
-            cairo_claim.verify_instruction.map(|verify_instruction| {
+            cairo_claim.component_log_sizes[VERIFY_INSTRUCTION_COMPONENT_IDX].map(|log_size| {
                 verify_instruction::Component::new(
                     tree_span_provider,
                     verify_instruction::Eval {
-                        claim: verify_instruction,
+                        log_size,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim.verify_instruction.unwrap().claimed_sum,
+                    interaction_claim.component_claimed_sums[VERIFY_INSTRUCTION_COMPONENT_IDX]
+                        .unwrap(),
                 )
             });
-        let blake_round_component = cairo_claim.blake_round.map(|blake_round| {
-            blake_round::Component::new(
-                tree_span_provider,
-                blake_round::Eval {
-                    claim: blake_round,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.blake_round.unwrap().claimed_sum,
-            )
-        });
-        let blake_g_component = cairo_claim.blake_g.map(|blake_g| {
-            blake_g::Component::new(
-                tree_span_provider,
-                blake_g::Eval {
-                    claim: blake_g,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.blake_g.unwrap().claimed_sum,
-            )
-        });
-        let blake_round_sigma_component = cairo_claim.blake_round_sigma.map(|blake_round_sigma| {
-            blake_round_sigma::Component::new(
-                tree_span_provider,
-                blake_round_sigma::Eval {
-                    claim: blake_round_sigma,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.blake_round_sigma.unwrap().claimed_sum,
-            )
-        });
-        let triple_xor_32_component = cairo_claim.triple_xor_32.map(|triple_xor_32| {
-            triple_xor_32::Component::new(
-                tree_span_provider,
-                triple_xor_32::Eval {
-                    claim: triple_xor_32,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.triple_xor_32.unwrap().claimed_sum,
-            )
-        });
+        let blake_round_component =
+            cairo_claim.component_log_sizes[BLAKE_ROUND_COMPONENT_IDX].map(|log_size| {
+                blake_round::Component::new(
+                    tree_span_provider,
+                    blake_round::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[BLAKE_ROUND_COMPONENT_IDX].unwrap(),
+                )
+            });
+        let blake_g_component =
+            cairo_claim.component_log_sizes[BLAKE_G_COMPONENT_IDX].map(|log_size| {
+                blake_g::Component::new(
+                    tree_span_provider,
+                    blake_g::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[BLAKE_G_COMPONENT_IDX].unwrap(),
+                )
+            });
+        let blake_round_sigma_component =
+            cairo_claim.component_log_sizes[BLAKE_ROUND_SIGMA_COMPONENT_IDX].map(|_log_size| {
+                blake_round_sigma::Component::new(
+                    tree_span_provider,
+                    blake_round_sigma::Eval {
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[BLAKE_ROUND_SIGMA_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let triple_xor_32_component = cairo_claim.component_log_sizes[TRIPLE_XOR_32_COMPONENT_IDX]
+            .map(|log_size| {
+                triple_xor_32::Component::new(
+                    tree_span_provider,
+                    triple_xor_32::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[TRIPLE_XOR_32_COMPONENT_IDX].unwrap(),
+                )
+            });
         let verify_bitwise_xor_12_component =
-            cairo_claim
-                .verify_bitwise_xor_12
-                .map(|verify_bitwise_xor_12| {
-                    verify_bitwise_xor_12::Component::new(
-                        tree_span_provider,
-                        verify_bitwise_xor_12::Eval {
-                            claim: verify_bitwise_xor_12,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.verify_bitwise_xor_12.unwrap().claimed_sum,
-                    )
-                });
-        let add_mod_builtin_component = cairo_claim.add_mod_builtin.map(|add_mod_builtin| {
-            add_mod_builtin::Component::new(
-                tree_span_provider,
-                add_mod_builtin::Eval {
-                    claim: add_mod_builtin,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                    add_mod_builtin_segment_start: cairo_claim
-                        .public_data
-                        .public_memory
-                        .public_segments
-                        .get_segment_range_by_name("add_mod_builtin")
-                        .unwrap()
-                        .start_ptr
-                        .value,
-                },
-                interaction_claim.add_mod_builtin.unwrap().claimed_sum,
-            )
-        });
-        let bitwise_builtin_component = cairo_claim.bitwise_builtin.map(|bitwise_builtin| {
-            bitwise_builtin::Component::new(
-                tree_span_provider,
-                bitwise_builtin::Eval {
-                    claim: bitwise_builtin,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                    bitwise_builtin_segment_start: cairo_claim
-                        .public_data
-                        .public_memory
-                        .public_segments
-                        .get_segment_range_by_name("bitwise_builtin")
-                        .unwrap()
-                        .start_ptr
-                        .value,
-                },
-                interaction_claim.bitwise_builtin.unwrap().claimed_sum,
-            )
-        });
-        let mul_mod_builtin_component = cairo_claim.mul_mod_builtin.map(|mul_mod_builtin| {
-            mul_mod_builtin::Component::new(
-                tree_span_provider,
-                mul_mod_builtin::Eval {
-                    claim: mul_mod_builtin,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                    mul_mod_builtin_segment_start: cairo_claim
-                        .public_data
-                        .public_memory
-                        .public_segments
-                        .get_segment_range_by_name("mul_mod_builtin")
-                        .unwrap()
-                        .start_ptr
-                        .value,
-                },
-                interaction_claim.mul_mod_builtin.unwrap().claimed_sum,
-            )
-        });
-        let pedersen_builtin_component = cairo_claim.pedersen_builtin.map(|pedersen_builtin| {
-            pedersen_builtin::Component::new(
-                tree_span_provider,
-                pedersen_builtin::Eval {
-                    claim: pedersen_builtin,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                    pedersen_builtin_segment_start: cairo_claim
-                        .public_data
-                        .public_memory
-                        .public_segments
-                        .get_segment_range_by_name("pedersen_builtin")
-                        .unwrap()
-                        .start_ptr
-                        .value,
-                },
-                interaction_claim.pedersen_builtin.unwrap().claimed_sum,
-            )
-        });
-        let pedersen_builtin_narrow_windows_component = cairo_claim
-            .pedersen_builtin_narrow_windows
-            .map(|pedersen_builtin_narrow_windows| {
+            cairo_claim.component_log_sizes[VERIFY_BITWISE_XOR_12_COMPONENT_IDX].map(|_log_size| {
+                verify_bitwise_xor_12::Component::new(
+                    tree_span_provider,
+                    verify_bitwise_xor_12::Eval {
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[VERIFY_BITWISE_XOR_12_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let add_mod_builtin_component =
+            cairo_claim.component_log_sizes[ADD_MOD_BUILTIN_COMPONENT_IDX].map(|log_size| {
+                add_mod_builtin::Component::new(
+                    tree_span_provider,
+                    add_mod_builtin::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                        add_mod_builtin_segment_start: cairo_claim
+                            .public_data
+                            .public_memory
+                            .public_segments
+                            .get_segment_range_by_name("add_mod_builtin")
+                            .unwrap()
+                            .start_ptr
+                            .value,
+                    },
+                    interaction_claim.component_claimed_sums[ADD_MOD_BUILTIN_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let bitwise_builtin_component =
+            cairo_claim.component_log_sizes[BITWISE_BUILTIN_COMPONENT_IDX].map(|log_size| {
+                bitwise_builtin::Component::new(
+                    tree_span_provider,
+                    bitwise_builtin::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                        bitwise_builtin_segment_start: cairo_claim
+                            .public_data
+                            .public_memory
+                            .public_segments
+                            .get_segment_range_by_name("bitwise_builtin")
+                            .unwrap()
+                            .start_ptr
+                            .value,
+                    },
+                    interaction_claim.component_claimed_sums[BITWISE_BUILTIN_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let mul_mod_builtin_component =
+            cairo_claim.component_log_sizes[MUL_MOD_BUILTIN_COMPONENT_IDX].map(|log_size| {
+                mul_mod_builtin::Component::new(
+                    tree_span_provider,
+                    mul_mod_builtin::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                        mul_mod_builtin_segment_start: cairo_claim
+                            .public_data
+                            .public_memory
+                            .public_segments
+                            .get_segment_range_by_name("mul_mod_builtin")
+                            .unwrap()
+                            .start_ptr
+                            .value,
+                    },
+                    interaction_claim.component_claimed_sums[MUL_MOD_BUILTIN_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let pedersen_builtin_component =
+            cairo_claim.component_log_sizes[PEDERSEN_BUILTIN_COMPONENT_IDX].map(|log_size| {
+                pedersen_builtin::Component::new(
+                    tree_span_provider,
+                    pedersen_builtin::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                        pedersen_builtin_segment_start: cairo_claim
+                            .public_data
+                            .public_memory
+                            .public_segments
+                            .get_segment_range_by_name("pedersen_builtin")
+                            .unwrap()
+                            .start_ptr
+                            .value,
+                    },
+                    interaction_claim.component_claimed_sums[PEDERSEN_BUILTIN_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let pedersen_builtin_narrow_windows_component = cairo_claim.component_log_sizes
+            [PEDERSEN_BUILTIN_NARROW_WINDOWS_COMPONENT_IDX]
+            .map(|log_size| {
                 pedersen_builtin_narrow_windows::Component::new(
                     tree_span_provider,
                     pedersen_builtin_narrow_windows::Eval {
-                        claim: pedersen_builtin_narrow_windows,
+                        log_size,
                         common_lookup_elements: common_lookup_elements.clone(),
                         pedersen_builtin_segment_start: cairo_claim
                             .public_data
@@ -490,57 +518,57 @@ impl CairoComponents {
                             .start_ptr
                             .value,
                     },
-                    interaction_claim
-                        .pedersen_builtin_narrow_windows
-                        .unwrap()
-                        .claimed_sum,
+                    interaction_claim.component_claimed_sums
+                        [PEDERSEN_BUILTIN_NARROW_WINDOWS_COMPONENT_IDX]
+                        .unwrap(),
                 )
             });
-        let poseidon_builtin_component = cairo_claim.poseidon_builtin.map(|poseidon_builtin| {
-            poseidon_builtin::Component::new(
-                tree_span_provider,
-                poseidon_builtin::Eval {
-                    claim: poseidon_builtin,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                    poseidon_builtin_segment_start: cairo_claim
-                        .public_data
-                        .public_memory
-                        .public_segments
-                        .get_segment_range_by_name("poseidon_builtin")
-                        .unwrap()
-                        .start_ptr
-                        .value,
-                },
-                interaction_claim.poseidon_builtin.unwrap().claimed_sum,
-            )
-        });
+        let poseidon_builtin_component =
+            cairo_claim.component_log_sizes[POSEIDON_BUILTIN_COMPONENT_IDX].map(|log_size| {
+                poseidon_builtin::Component::new(
+                    tree_span_provider,
+                    poseidon_builtin::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                        poseidon_builtin_segment_start: cairo_claim
+                            .public_data
+                            .public_memory
+                            .public_segments
+                            .get_segment_range_by_name("poseidon_builtin")
+                            .unwrap()
+                            .start_ptr
+                            .value,
+                    },
+                    interaction_claim.component_claimed_sums[POSEIDON_BUILTIN_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
         let range_check96_builtin_component =
-            cairo_claim
-                .range_check96_builtin
-                .map(|range_check96_builtin| {
-                    range_check96_builtin::Component::new(
-                        tree_span_provider,
-                        range_check96_builtin::Eval {
-                            claim: range_check96_builtin,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                            range_check96_builtin_segment_start: cairo_claim
-                                .public_data
-                                .public_memory
-                                .public_segments
-                                .get_segment_range_by_name("range_check96_builtin")
-                                .unwrap()
-                                .start_ptr
-                                .value,
-                        },
-                        interaction_claim.range_check96_builtin.unwrap().claimed_sum,
-                    )
-                });
+            cairo_claim.component_log_sizes[RANGE_CHECK96_BUILTIN_COMPONENT_IDX].map(|log_size| {
+                range_check96_builtin::Component::new(
+                    tree_span_provider,
+                    range_check96_builtin::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                        range_check96_builtin_segment_start: cairo_claim
+                            .public_data
+                            .public_memory
+                            .public_segments
+                            .get_segment_range_by_name("range_check96_builtin")
+                            .unwrap()
+                            .start_ptr
+                            .value,
+                    },
+                    interaction_claim.component_claimed_sums[RANGE_CHECK96_BUILTIN_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
         let range_check_builtin_component =
-            cairo_claim.range_check_builtin.map(|range_check_builtin| {
+            cairo_claim.component_log_sizes[RANGE_CHECK_BUILTIN_COMPONENT_IDX].map(|log_size| {
                 range_check_builtin::Component::new(
                     tree_span_provider,
                     range_check_builtin::Eval {
-                        claim: range_check_builtin,
+                        log_size,
                         common_lookup_elements: common_lookup_elements.clone(),
                         range_check_builtin_segment_start: cairo_claim
                             .public_data
@@ -551,434 +579,420 @@ impl CairoComponents {
                             .start_ptr
                             .value,
                     },
-                    interaction_claim.range_check_builtin.unwrap().claimed_sum,
+                    interaction_claim.component_claimed_sums[RANGE_CHECK_BUILTIN_COMPONENT_IDX]
+                        .unwrap(),
                 )
             });
-        let ec_op_builtin_component = cairo_claim.ec_op_builtin.map(|ec_op_builtin| {
-            ec_op_builtin::Component::new(
-                tree_span_provider,
-                ec_op_builtin::Eval {
-                    claim: ec_op_builtin,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                    ec_op_builtin_segment_start: cairo_claim
-                        .public_data
-                        .public_memory
-                        .public_segments
-                        .get_segment_range_by_name("ec_op_builtin")
-                        .unwrap()
-                        .start_ptr
-                        .value,
-                },
-                interaction_claim.ec_op_builtin.unwrap().claimed_sum,
-            )
-        });
-        let partial_ec_mul_generic_component =
-            cairo_claim
-                .partial_ec_mul_generic
-                .map(|partial_ec_mul_generic| {
-                    partial_ec_mul_generic::Component::new(
-                        tree_span_provider,
-                        partial_ec_mul_generic::Eval {
-                            claim: partial_ec_mul_generic,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim
-                            .partial_ec_mul_generic
+        let ec_op_builtin_component = cairo_claim.component_log_sizes[EC_OP_BUILTIN_COMPONENT_IDX]
+            .map(|log_size| {
+                ec_op_builtin::Component::new(
+                    tree_span_provider,
+                    ec_op_builtin::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                        ec_op_builtin_segment_start: cairo_claim
+                            .public_data
+                            .public_memory
+                            .public_segments
+                            .get_segment_range_by_name("ec_op_builtin")
                             .unwrap()
-                            .claimed_sum,
-                    )
-                });
-        let pedersen_aggregator_window_bits_18_component = cairo_claim
-            .pedersen_aggregator_window_bits_18
-            .map(|pedersen_aggregator_window_bits_18| {
+                            .start_ptr
+                            .value,
+                    },
+                    interaction_claim.component_claimed_sums[EC_OP_BUILTIN_COMPONENT_IDX].unwrap(),
+                )
+            });
+        let partial_ec_mul_generic_component =
+            cairo_claim.component_log_sizes[PARTIAL_EC_MUL_GENERIC_COMPONENT_IDX].map(|log_size| {
+                partial_ec_mul_generic::Component::new(
+                    tree_span_provider,
+                    partial_ec_mul_generic::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[PARTIAL_EC_MUL_GENERIC_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let pedersen_aggregator_window_bits_18_component = cairo_claim.component_log_sizes
+            [PEDERSEN_AGGREGATOR_WINDOW_BITS_18_COMPONENT_IDX]
+            .map(|log_size| {
                 pedersen_aggregator_window_bits_18::Component::new(
                     tree_span_provider,
                     pedersen_aggregator_window_bits_18::Eval {
-                        claim: pedersen_aggregator_window_bits_18,
+                        log_size,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim
-                        .pedersen_aggregator_window_bits_18
-                        .unwrap()
-                        .claimed_sum,
+                    interaction_claim.component_claimed_sums
+                        [PEDERSEN_AGGREGATOR_WINDOW_BITS_18_COMPONENT_IDX]
+                        .unwrap(),
                 )
             });
-        let partial_ec_mul_window_bits_18_component = cairo_claim
-            .partial_ec_mul_window_bits_18
-            .map(|partial_ec_mul_window_bits_18| {
+        let partial_ec_mul_window_bits_18_component = cairo_claim.component_log_sizes
+            [PARTIAL_EC_MUL_WINDOW_BITS_18_COMPONENT_IDX]
+            .map(|log_size| {
                 partial_ec_mul_window_bits_18::Component::new(
                     tree_span_provider,
                     partial_ec_mul_window_bits_18::Eval {
-                        claim: partial_ec_mul_window_bits_18,
+                        log_size,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim
-                        .partial_ec_mul_window_bits_18
-                        .unwrap()
-                        .claimed_sum,
+                    interaction_claim.component_claimed_sums
+                        [PARTIAL_EC_MUL_WINDOW_BITS_18_COMPONENT_IDX]
+                        .unwrap(),
                 )
             });
-        let pedersen_points_table_window_bits_18_component = cairo_claim
-            .pedersen_points_table_window_bits_18
-            .map(|pedersen_points_table_window_bits_18| {
+        let pedersen_points_table_window_bits_18_component = cairo_claim.component_log_sizes
+            [PEDERSEN_POINTS_TABLE_WINDOW_BITS_18_COMPONENT_IDX]
+            .map(|_log_size| {
                 pedersen_points_table_window_bits_18::Component::new(
                     tree_span_provider,
                     pedersen_points_table_window_bits_18::Eval {
-                        claim: pedersen_points_table_window_bits_18,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim
-                        .pedersen_points_table_window_bits_18
-                        .unwrap()
-                        .claimed_sum,
+                    interaction_claim.component_claimed_sums
+                        [PEDERSEN_POINTS_TABLE_WINDOW_BITS_18_COMPONENT_IDX]
+                        .unwrap(),
                 )
             });
-        let pedersen_aggregator_window_bits_9_component = cairo_claim
-            .pedersen_aggregator_window_bits_9
-            .map(|pedersen_aggregator_window_bits_9| {
+        let pedersen_aggregator_window_bits_9_component = cairo_claim.component_log_sizes
+            [PEDERSEN_AGGREGATOR_WINDOW_BITS_9_COMPONENT_IDX]
+            .map(|log_size| {
                 pedersen_aggregator_window_bits_9::Component::new(
                     tree_span_provider,
                     pedersen_aggregator_window_bits_9::Eval {
-                        claim: pedersen_aggregator_window_bits_9,
+                        log_size,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim
-                        .pedersen_aggregator_window_bits_9
-                        .unwrap()
-                        .claimed_sum,
+                    interaction_claim.component_claimed_sums
+                        [PEDERSEN_AGGREGATOR_WINDOW_BITS_9_COMPONENT_IDX]
+                        .unwrap(),
                 )
             });
-        let partial_ec_mul_window_bits_9_component =
-            cairo_claim
-                .partial_ec_mul_window_bits_9
-                .map(|partial_ec_mul_window_bits_9| {
-                    partial_ec_mul_window_bits_9::Component::new(
-                        tree_span_provider,
-                        partial_ec_mul_window_bits_9::Eval {
-                            claim: partial_ec_mul_window_bits_9,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim
-                            .partial_ec_mul_window_bits_9
-                            .unwrap()
-                            .claimed_sum,
-                    )
-                });
-        let pedersen_points_table_window_bits_9_component = cairo_claim
-            .pedersen_points_table_window_bits_9
-            .map(|pedersen_points_table_window_bits_9| {
+        let partial_ec_mul_window_bits_9_component = cairo_claim.component_log_sizes
+            [PARTIAL_EC_MUL_WINDOW_BITS_9_COMPONENT_IDX]
+            .map(|log_size| {
+                partial_ec_mul_window_bits_9::Component::new(
+                    tree_span_provider,
+                    partial_ec_mul_window_bits_9::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums
+                        [PARTIAL_EC_MUL_WINDOW_BITS_9_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let pedersen_points_table_window_bits_9_component = cairo_claim.component_log_sizes
+            [PEDERSEN_POINTS_TABLE_WINDOW_BITS_9_COMPONENT_IDX]
+            .map(|_log_size| {
                 pedersen_points_table_window_bits_9::Component::new(
                     tree_span_provider,
                     pedersen_points_table_window_bits_9::Eval {
-                        claim: pedersen_points_table_window_bits_9,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim
-                        .pedersen_points_table_window_bits_9
-                        .unwrap()
-                        .claimed_sum,
+                    interaction_claim.component_claimed_sums
+                        [PEDERSEN_POINTS_TABLE_WINDOW_BITS_9_COMPONENT_IDX]
+                        .unwrap(),
                 )
             });
         let poseidon_aggregator_component =
-            cairo_claim.poseidon_aggregator.map(|poseidon_aggregator| {
+            cairo_claim.component_log_sizes[POSEIDON_AGGREGATOR_COMPONENT_IDX].map(|log_size| {
                 poseidon_aggregator::Component::new(
                     tree_span_provider,
                     poseidon_aggregator::Eval {
-                        claim: poseidon_aggregator,
+                        log_size,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim.poseidon_aggregator.unwrap().claimed_sum,
+                    interaction_claim.component_claimed_sums[POSEIDON_AGGREGATOR_COMPONENT_IDX]
+                        .unwrap(),
                 )
             });
-        let poseidon_3_partial_rounds_chain_component = cairo_claim
-            .poseidon_3_partial_rounds_chain
-            .map(|poseidon_3_partial_rounds_chain| {
+        let poseidon_3_partial_rounds_chain_component = cairo_claim.component_log_sizes
+            [POSEIDON_3_PARTIAL_ROUNDS_CHAIN_COMPONENT_IDX]
+            .map(|log_size| {
                 poseidon_3_partial_rounds_chain::Component::new(
                     tree_span_provider,
                     poseidon_3_partial_rounds_chain::Eval {
-                        claim: poseidon_3_partial_rounds_chain,
+                        log_size,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim
-                        .poseidon_3_partial_rounds_chain
-                        .unwrap()
-                        .claimed_sum,
+                    interaction_claim.component_claimed_sums
+                        [POSEIDON_3_PARTIAL_ROUNDS_CHAIN_COMPONENT_IDX]
+                        .unwrap(),
                 )
             });
-        let poseidon_full_round_chain_component =
-            cairo_claim
-                .poseidon_full_round_chain
-                .map(|poseidon_full_round_chain| {
-                    poseidon_full_round_chain::Component::new(
-                        tree_span_provider,
-                        poseidon_full_round_chain::Eval {
-                            claim: poseidon_full_round_chain,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim
-                            .poseidon_full_round_chain
-                            .unwrap()
-                            .claimed_sum,
-                    )
-                });
-        let cube_252_component = cairo_claim.cube_252.map(|cube_252| {
-            cube_252::Component::new(
-                tree_span_provider,
-                cube_252::Eval {
-                    claim: cube_252,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.cube_252.unwrap().claimed_sum,
-            )
-        });
+        let poseidon_full_round_chain_component = cairo_claim.component_log_sizes
+            [POSEIDON_FULL_ROUND_CHAIN_COMPONENT_IDX]
+            .map(|log_size| {
+                poseidon_full_round_chain::Component::new(
+                    tree_span_provider,
+                    poseidon_full_round_chain::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums
+                        [POSEIDON_FULL_ROUND_CHAIN_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let cube_252_component =
+            cairo_claim.component_log_sizes[CUBE_252_COMPONENT_IDX].map(|log_size| {
+                cube_252::Component::new(
+                    tree_span_provider,
+                    cube_252::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[CUBE_252_COMPONENT_IDX].unwrap(),
+                )
+            });
         let poseidon_round_keys_component =
-            cairo_claim.poseidon_round_keys.map(|poseidon_round_keys| {
+            cairo_claim.component_log_sizes[POSEIDON_ROUND_KEYS_COMPONENT_IDX].map(|_log_size| {
                 poseidon_round_keys::Component::new(
                     tree_span_provider,
                     poseidon_round_keys::Eval {
-                        claim: poseidon_round_keys,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim.poseidon_round_keys.unwrap().claimed_sum,
+                    interaction_claim.component_claimed_sums[POSEIDON_ROUND_KEYS_COMPONENT_IDX]
+                        .unwrap(),
                 )
             });
-        let range_check_252_width_27_component =
-            cairo_claim
-                .range_check_252_width_27
-                .map(|range_check_252_width_27| {
-                    range_check_252_width_27::Component::new(
-                        tree_span_provider,
-                        range_check_252_width_27::Eval {
-                            claim: range_check_252_width_27,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim
-                            .range_check_252_width_27
-                            .unwrap()
-                            .claimed_sum,
-                    )
-                });
+        let range_check_252_width_27_component = cairo_claim.component_log_sizes
+            [RANGE_CHECK_252_WIDTH_27_COMPONENT_IDX]
+            .map(|log_size| {
+                range_check_252_width_27::Component::new(
+                    tree_span_provider,
+                    range_check_252_width_27::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums
+                        [RANGE_CHECK_252_WIDTH_27_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
         let memory_address_to_id_component =
-            cairo_claim
-                .memory_address_to_id
-                .map(|memory_address_to_id| {
-                    memory_address_to_id::Component::new(
-                        tree_span_provider,
-                        memory_address_to_id::Eval {
-                            claim: memory_address_to_id,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.memory_address_to_id.unwrap().claimed_sum,
-                    )
-                });
+            cairo_claim.component_log_sizes[MEMORY_ADDRESS_TO_ID_COMPONENT_IDX].map(|log_size| {
+                memory_address_to_id::Component::new(
+                    tree_span_provider,
+                    memory_address_to_id::Eval {
+                        log_size,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[MEMORY_ADDRESS_TO_ID_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let big_log_sizes: Vec<u32> = (0..MEMORY_ADDRESS_TO_ID_SPLIT)
+            .filter_map(|i| {
+                cairo_claim.component_log_sizes[MEMORY_ID_TO_BIG_BASE_COMPONENT_IDX + i]
+            })
+            .collect();
+        let big_claimed_sums: Vec<SecureField> = (0..MEMORY_ADDRESS_TO_ID_SPLIT)
+            .filter_map(|i| {
+                interaction_claim.component_claimed_sums[MEMORY_ID_TO_BIG_BASE_COMPONENT_IDX + i]
+            })
+            .collect();
         let memory_id_to_big_component = memory_id_to_big::big_components_from_claim(
-            &cairo_claim.memory_id_to_big.as_ref().unwrap().big_log_sizes,
-            &interaction_claim
-                .memory_id_to_big
-                .as_ref()
-                .unwrap()
-                .big_claimed_sums,
+            &big_log_sizes,
+            &big_claimed_sums,
             &common_lookup_elements.clone(),
             tree_span_provider,
         );
         let memory_id_to_small_component =
-            cairo_claim.memory_id_to_small.map(|memory_id_to_small| {
+            cairo_claim.component_log_sizes[MEMORY_ID_TO_SMALL_COMPONENT_IDX].map(|log_size| {
                 memory_id_to_small::Component::new(
                     tree_span_provider,
                     memory_id_to_small::Eval {
-                        claim: memory_id_to_small,
+                        log_size,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim.memory_id_to_small.unwrap().claimed_sum,
+                    interaction_claim.component_claimed_sums[MEMORY_ID_TO_SMALL_COMPONENT_IDX]
+                        .unwrap(),
                 )
             });
-        let range_check_6_component = cairo_claim.range_check_6.map(|range_check_6| {
-            range_check_6::Component::new(
-                tree_span_provider,
-                range_check_6::Eval {
-                    claim: range_check_6,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.range_check_6.unwrap().claimed_sum,
-            )
-        });
-        let range_check_8_component = cairo_claim.range_check_8.map(|range_check_8| {
-            range_check_8::Component::new(
-                tree_span_provider,
-                range_check_8::Eval {
-                    claim: range_check_8,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.range_check_8.unwrap().claimed_sum,
-            )
-        });
-        let range_check_11_component = cairo_claim.range_check_11.map(|range_check_11| {
-            range_check_11::Component::new(
-                tree_span_provider,
-                range_check_11::Eval {
-                    claim: range_check_11,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.range_check_11.unwrap().claimed_sum,
-            )
-        });
-        let range_check_12_component = cairo_claim.range_check_12.map(|range_check_12| {
-            range_check_12::Component::new(
-                tree_span_provider,
-                range_check_12::Eval {
-                    claim: range_check_12,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.range_check_12.unwrap().claimed_sum,
-            )
-        });
-        let range_check_18_component = cairo_claim.range_check_18.map(|range_check_18| {
-            range_check_18::Component::new(
-                tree_span_provider,
-                range_check_18::Eval {
-                    claim: range_check_18,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.range_check_18.unwrap().claimed_sum,
-            )
-        });
-        let range_check_20_component = cairo_claim.range_check_20.map(|range_check_20| {
-            range_check_20::Component::new(
-                tree_span_provider,
-                range_check_20::Eval {
-                    claim: range_check_20,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.range_check_20.unwrap().claimed_sum,
-            )
-        });
-        let range_check_4_3_component = cairo_claim.range_check_4_3.map(|range_check_4_3| {
-            range_check_4_3::Component::new(
-                tree_span_provider,
-                range_check_4_3::Eval {
-                    claim: range_check_4_3,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.range_check_4_3.unwrap().claimed_sum,
-            )
-        });
-        let range_check_4_4_component = cairo_claim.range_check_4_4.map(|range_check_4_4| {
-            range_check_4_4::Component::new(
-                tree_span_provider,
-                range_check_4_4::Eval {
-                    claim: range_check_4_4,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.range_check_4_4.unwrap().claimed_sum,
-            )
-        });
-        let range_check_9_9_component = cairo_claim.range_check_9_9.map(|range_check_9_9| {
-            range_check_9_9::Component::new(
-                tree_span_provider,
-                range_check_9_9::Eval {
-                    claim: range_check_9_9,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.range_check_9_9.unwrap().claimed_sum,
-            )
-        });
-        let range_check_7_2_5_component = cairo_claim.range_check_7_2_5.map(|range_check_7_2_5| {
-            range_check_7_2_5::Component::new(
-                tree_span_provider,
-                range_check_7_2_5::Eval {
-                    claim: range_check_7_2_5,
-                    common_lookup_elements: common_lookup_elements.clone(),
-                },
-                interaction_claim.range_check_7_2_5.unwrap().claimed_sum,
-            )
-        });
+        let range_check_6_component = cairo_claim.component_log_sizes[RANGE_CHECK_6_COMPONENT_IDX]
+            .map(|_log_size| {
+                range_check_6::Component::new(
+                    tree_span_provider,
+                    range_check_6::Eval {
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[RANGE_CHECK_6_COMPONENT_IDX].unwrap(),
+                )
+            });
+        let range_check_8_component = cairo_claim.component_log_sizes[RANGE_CHECK_8_COMPONENT_IDX]
+            .map(|_log_size| {
+                range_check_8::Component::new(
+                    tree_span_provider,
+                    range_check_8::Eval {
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[RANGE_CHECK_8_COMPONENT_IDX].unwrap(),
+                )
+            });
+        let range_check_11_component =
+            cairo_claim.component_log_sizes[RANGE_CHECK_11_COMPONENT_IDX].map(|_log_size| {
+                range_check_11::Component::new(
+                    tree_span_provider,
+                    range_check_11::Eval {
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[RANGE_CHECK_11_COMPONENT_IDX].unwrap(),
+                )
+            });
+        let range_check_12_component =
+            cairo_claim.component_log_sizes[RANGE_CHECK_12_COMPONENT_IDX].map(|_log_size| {
+                range_check_12::Component::new(
+                    tree_span_provider,
+                    range_check_12::Eval {
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[RANGE_CHECK_12_COMPONENT_IDX].unwrap(),
+                )
+            });
+        let range_check_18_component =
+            cairo_claim.component_log_sizes[RANGE_CHECK_18_COMPONENT_IDX].map(|_log_size| {
+                range_check_18::Component::new(
+                    tree_span_provider,
+                    range_check_18::Eval {
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[RANGE_CHECK_18_COMPONENT_IDX].unwrap(),
+                )
+            });
+        let range_check_20_component =
+            cairo_claim.component_log_sizes[RANGE_CHECK_20_COMPONENT_IDX].map(|_log_size| {
+                range_check_20::Component::new(
+                    tree_span_provider,
+                    range_check_20::Eval {
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[RANGE_CHECK_20_COMPONENT_IDX].unwrap(),
+                )
+            });
+        let range_check_4_3_component =
+            cairo_claim.component_log_sizes[RANGE_CHECK_4_3_COMPONENT_IDX].map(|_log_size| {
+                range_check_4_3::Component::new(
+                    tree_span_provider,
+                    range_check_4_3::Eval {
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[RANGE_CHECK_4_3_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let range_check_4_4_component =
+            cairo_claim.component_log_sizes[RANGE_CHECK_4_4_COMPONENT_IDX].map(|_log_size| {
+                range_check_4_4::Component::new(
+                    tree_span_provider,
+                    range_check_4_4::Eval {
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[RANGE_CHECK_4_4_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let range_check_9_9_component =
+            cairo_claim.component_log_sizes[RANGE_CHECK_9_9_COMPONENT_IDX].map(|_log_size| {
+                range_check_9_9::Component::new(
+                    tree_span_provider,
+                    range_check_9_9::Eval {
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[RANGE_CHECK_9_9_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
+        let range_check_7_2_5_component =
+            cairo_claim.component_log_sizes[RANGE_CHECK_7_2_5_COMPONENT_IDX].map(|_log_size| {
+                range_check_7_2_5::Component::new(
+                    tree_span_provider,
+                    range_check_7_2_5::Eval {
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[RANGE_CHECK_7_2_5_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
         let range_check_3_6_6_3_component =
-            cairo_claim.range_check_3_6_6_3.map(|range_check_3_6_6_3| {
+            cairo_claim.component_log_sizes[RANGE_CHECK_3_6_6_3_COMPONENT_IDX].map(|_log_size| {
                 range_check_3_6_6_3::Component::new(
                     tree_span_provider,
                     range_check_3_6_6_3::Eval {
-                        claim: range_check_3_6_6_3,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim.range_check_3_6_6_3.unwrap().claimed_sum,
+                    interaction_claim.component_claimed_sums[RANGE_CHECK_3_6_6_3_COMPONENT_IDX]
+                        .unwrap(),
                 )
             });
         let range_check_4_4_4_4_component =
-            cairo_claim.range_check_4_4_4_4.map(|range_check_4_4_4_4| {
+            cairo_claim.component_log_sizes[RANGE_CHECK_4_4_4_4_COMPONENT_IDX].map(|_log_size| {
                 range_check_4_4_4_4::Component::new(
                     tree_span_provider,
                     range_check_4_4_4_4::Eval {
-                        claim: range_check_4_4_4_4,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim.range_check_4_4_4_4.unwrap().claimed_sum,
+                    interaction_claim.component_claimed_sums[RANGE_CHECK_4_4_4_4_COMPONENT_IDX]
+                        .unwrap(),
                 )
             });
         let range_check_3_3_3_3_3_component =
-            cairo_claim
-                .range_check_3_3_3_3_3
-                .map(|range_check_3_3_3_3_3| {
-                    range_check_3_3_3_3_3::Component::new(
-                        tree_span_provider,
-                        range_check_3_3_3_3_3::Eval {
-                            claim: range_check_3_3_3_3_3,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.range_check_3_3_3_3_3.unwrap().claimed_sum,
-                    )
-                });
+            cairo_claim.component_log_sizes[RANGE_CHECK_3_3_3_3_3_COMPONENT_IDX].map(|_log_size| {
+                range_check_3_3_3_3_3::Component::new(
+                    tree_span_provider,
+                    range_check_3_3_3_3_3::Eval {
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[RANGE_CHECK_3_3_3_3_3_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
         let verify_bitwise_xor_4_component =
-            cairo_claim
-                .verify_bitwise_xor_4
-                .map(|verify_bitwise_xor_4| {
-                    verify_bitwise_xor_4::Component::new(
-                        tree_span_provider,
-                        verify_bitwise_xor_4::Eval {
-                            claim: verify_bitwise_xor_4,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.verify_bitwise_xor_4.unwrap().claimed_sum,
-                    )
-                });
+            cairo_claim.component_log_sizes[VERIFY_BITWISE_XOR_4_COMPONENT_IDX].map(|_log_size| {
+                verify_bitwise_xor_4::Component::new(
+                    tree_span_provider,
+                    verify_bitwise_xor_4::Eval {
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[VERIFY_BITWISE_XOR_4_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
         let verify_bitwise_xor_7_component =
-            cairo_claim
-                .verify_bitwise_xor_7
-                .map(|verify_bitwise_xor_7| {
-                    verify_bitwise_xor_7::Component::new(
-                        tree_span_provider,
-                        verify_bitwise_xor_7::Eval {
-                            claim: verify_bitwise_xor_7,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.verify_bitwise_xor_7.unwrap().claimed_sum,
-                    )
-                });
+            cairo_claim.component_log_sizes[VERIFY_BITWISE_XOR_7_COMPONENT_IDX].map(|_log_size| {
+                verify_bitwise_xor_7::Component::new(
+                    tree_span_provider,
+                    verify_bitwise_xor_7::Eval {
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[VERIFY_BITWISE_XOR_7_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
         let verify_bitwise_xor_8_component =
-            cairo_claim
-                .verify_bitwise_xor_8
-                .map(|verify_bitwise_xor_8| {
-                    verify_bitwise_xor_8::Component::new(
-                        tree_span_provider,
-                        verify_bitwise_xor_8::Eval {
-                            claim: verify_bitwise_xor_8,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.verify_bitwise_xor_8.unwrap().claimed_sum,
-                    )
-                });
+            cairo_claim.component_log_sizes[VERIFY_BITWISE_XOR_8_COMPONENT_IDX].map(|_log_size| {
+                verify_bitwise_xor_8::Component::new(
+                    tree_span_provider,
+                    verify_bitwise_xor_8::Eval {
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[VERIFY_BITWISE_XOR_8_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
         let verify_bitwise_xor_9_component =
-            cairo_claim
-                .verify_bitwise_xor_9
-                .map(|verify_bitwise_xor_9| {
-                    verify_bitwise_xor_9::Component::new(
-                        tree_span_provider,
-                        verify_bitwise_xor_9::Eval {
-                            claim: verify_bitwise_xor_9,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.verify_bitwise_xor_9.unwrap().claimed_sum,
-                    )
-                });
+            cairo_claim.component_log_sizes[VERIFY_BITWISE_XOR_9_COMPONENT_IDX].map(|_log_size| {
+                verify_bitwise_xor_9::Component::new(
+                    tree_span_provider,
+                    verify_bitwise_xor_9::Eval {
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.component_claimed_sums[VERIFY_BITWISE_XOR_9_COMPONENT_IDX]
+                        .unwrap(),
+                )
+            });
 
         Self {
             add_opcode: add_opcode_component,

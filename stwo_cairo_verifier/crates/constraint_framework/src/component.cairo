@@ -17,28 +17,21 @@ pub trait AirComponent<T> {
 
 /// A trait for creating a new component.
 pub trait NewComponent<T> {
-    type Claim;
-    type InteractionClaim;
-
-    fn new(
-        claim: @Self::Claim,
-        interaction_claim: @Self::InteractionClaim,
-        common_lookup_elements: @CommonLookupElements,
-    ) -> T;
+    fn new(log_size: @u32, claimed_sum: @QM31, common_lookup_elements: @CommonLookupElements) -> T;
 
     fn try_new(
-        claim: @Option<Self::Claim>,
-        interaction_claim: @Option<Self::InteractionClaim>,
+        log_size: @Option<u32>,
+        claimed_sum: @Option<QM31>,
         interaction_elements: @CommonLookupElements,
     ) -> Option<
         T,
     > {
-        match (claim, interaction_claim) {
+        match (log_size, claimed_sum) {
             (
-                Some(claim), Some(interaction_claim),
-            ) => Some(Self::new(claim, interaction_claim, interaction_elements)),
+                Some(log_size), Some(claimed_sum),
+            ) => Some(Self::new(log_size, claimed_sum, interaction_elements)),
             (None, None) => None,
-            _ => panic!("inconsistent claim and interaction claim"),
+            _ => panic!("inconsistent log_size and claimed_sum"),
         }
     }
 }
