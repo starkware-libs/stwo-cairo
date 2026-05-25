@@ -1,27 +1,7 @@
-use components::add_ap_opcode::InteractionClaimImpl as AddApOpcodeInteractionClaimImpl;
-use components::add_opcode::InteractionClaimImpl as AddOpcodeInteractionClaimImpl;
-use components::add_opcode_small::InteractionClaimImpl as AddOpcodeSmallInteractionClaimImpl;
-use components::assert_eq_opcode::InteractionClaimImpl as AssertEqOpcodeInteractionClaimImpl;
-use components::assert_eq_opcode_double_deref::InteractionClaimImpl as AssertEqOpcodeDoubleDerefInteractionClaimImpl;
-use components::assert_eq_opcode_imm::InteractionClaimImpl as AssertEqOpcodeImmInteractionClaimImpl;
-use components::blake_compress_opcode::InteractionClaimImpl as BlakeCompressOpcodeInteractionClaimImpl;
-use components::call_opcode_abs::InteractionClaimImpl as CallOpcodeInteractionClaimImpl;
-use components::call_opcode_rel_imm::InteractionClaimImpl as CallOpcodeRelInteractionClaimImpl;
-use components::generic_opcode::InteractionClaimImpl as GenericOpcodeInteractionClaimImpl;
-use components::jnz_opcode_non_taken::InteractionClaimImpl as JnzOpcodeInteractionClaimImpl;
-use components::jnz_opcode_taken::InteractionClaimImpl as JnzOpcodeTakenInteractionClaimImpl;
-use components::jump_opcode_abs::InteractionClaimImpl as JumpOpcodeInteractionClaimImpl;
-use components::jump_opcode_double_deref::InteractionClaimImpl as JumpOpcodeDoubleDerefInteractionClaimImpl;
-use components::jump_opcode_rel::InteractionClaimImpl as JumpOpcodeRelInteractionClaimImpl;
-use components::jump_opcode_rel_imm::InteractionClaimImpl as JumpOpcodeRelImmInteractionClaimImpl;
-use components::mul_opcode::InteractionClaimImpl as MulOpcodeInteractionClaimImpl;
-use components::mul_opcode_small::InteractionClaimImpl as MulOpcodeSmallInteractionClaimImpl;
-use components::qm_31_add_mul_opcode::InteractionClaimImpl as Qm31AddMulOpcodeInteractionClaimImpl;
-use components::ret_opcode::InteractionClaimImpl as RetOpcodeInteractionClaimImpl;
 use core::array::Span;
 use core::box::BoxImpl;
 use core::iter::{IntoIterator, Iterator};
-use stwo_cairo_air::claims::{CairoClaim, CairoInteractionClaim};
+use stwo_cairo_air::component_indices::*;
 use stwo_cairo_air::components;
 use stwo_constraint_framework::{
     AirComponent, CommonLookupElements, LookupElementsImpl, PreprocessedMaskValues,
@@ -84,132 +64,110 @@ pub struct OpcodeComponents {
 #[generate_trait]
 pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
     fn new(
-        cairo_claim: @CairoClaim,
+        log_size_per_component: Span<Option<u32>>,
+        claimed_sum_per_component: Span<Option<QM31>>,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @CairoInteractionClaim,
     ) -> OpcodeComponents {
-        // Add components
         let add = components::add_opcode::NewComponentImpl::try_new(
-            cairo_claim.add_opcode, interaction_claim.add_opcode, common_lookup_elements,
+            log_size_per_component.at(ADD_OPCODE_COMPONENT_IDX),
+            claimed_sum_per_component.at(ADD_OPCODE_COMPONENT_IDX),
+            common_lookup_elements,
         );
-
-        // Add Small components
         let add_small = components::add_opcode_small::NewComponentImpl::try_new(
-            cairo_claim.add_opcode_small,
-            interaction_claim.add_opcode_small,
+            log_size_per_component.at(ADD_OPCODE_SMALL_COMPONENT_IDX),
+            claimed_sum_per_component.at(ADD_OPCODE_SMALL_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Add AP components
         let add_ap = components::add_ap_opcode::NewComponentImpl::try_new(
-            cairo_claim.add_ap_opcode, interaction_claim.add_ap_opcode, common_lookup_elements,
+            log_size_per_component.at(ADD_AP_OPCODE_COMPONENT_IDX),
+            claimed_sum_per_component.at(ADD_AP_OPCODE_COMPONENT_IDX),
+            common_lookup_elements,
         );
-
-        // Assert Eq components
         let assert_eq = components::assert_eq_opcode::NewComponentImpl::try_new(
-            cairo_claim.assert_eq_opcode,
-            interaction_claim.assert_eq_opcode,
+            log_size_per_component.at(ASSERT_EQ_OPCODE_COMPONENT_IDX),
+            claimed_sum_per_component.at(ASSERT_EQ_OPCODE_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Assert Eq Imm components
         let assert_eq_imm = components::assert_eq_opcode_imm::NewComponentImpl::try_new(
-            cairo_claim.assert_eq_opcode_imm,
-            interaction_claim.assert_eq_opcode_imm,
+            log_size_per_component.at(ASSERT_EQ_OPCODE_IMM_COMPONENT_IDX),
+            claimed_sum_per_component.at(ASSERT_EQ_OPCODE_IMM_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Assert Eq Double Deref components
         let assert_eq_double_deref =
             components::assert_eq_opcode_double_deref::NewComponentImpl::try_new(
-            cairo_claim.assert_eq_opcode_double_deref,
-            interaction_claim.assert_eq_opcode_double_deref,
+            log_size_per_component.at(ASSERT_EQ_OPCODE_DOUBLE_DEREF_COMPONENT_IDX),
+            claimed_sum_per_component.at(ASSERT_EQ_OPCODE_DOUBLE_DEREF_COMPONENT_IDX),
             common_lookup_elements,
         );
-
         let blake = components::blake_compress_opcode::NewComponentImpl::try_new(
-            cairo_claim.blake_compress_opcode,
-            interaction_claim.blake_compress_opcode,
+            log_size_per_component.at(BLAKE_COMPRESS_OPCODE_COMPONENT_IDX),
+            claimed_sum_per_component.at(BLAKE_COMPRESS_OPCODE_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Call components
         let call = components::call_opcode_abs::NewComponentImpl::try_new(
-            cairo_claim.call_opcode_abs, interaction_claim.call_opcode_abs, common_lookup_elements,
+            log_size_per_component.at(CALL_OPCODE_ABS_COMPONENT_IDX),
+            claimed_sum_per_component.at(CALL_OPCODE_ABS_COMPONENT_IDX),
+            common_lookup_elements,
         );
-
-        // Call Rel_imm components
         let call_rel_imm = components::call_opcode_rel_imm::NewComponentImpl::try_new(
-            cairo_claim.call_opcode_rel_imm,
-            interaction_claim.call_opcode_rel_imm,
+            log_size_per_component.at(CALL_OPCODE_REL_IMM_COMPONENT_IDX),
+            claimed_sum_per_component.at(CALL_OPCODE_REL_IMM_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Generic components
         let generic = components::generic_opcode::NewComponentImpl::try_new(
-            cairo_claim.generic_opcode, interaction_claim.generic_opcode, common_lookup_elements,
+            log_size_per_component.at(GENERIC_OPCODE_COMPONENT_IDX),
+            claimed_sum_per_component.at(GENERIC_OPCODE_COMPONENT_IDX),
+            common_lookup_elements,
         );
-
-        // Jnz components
         let jnz = components::jnz_opcode_non_taken::NewComponentImpl::try_new(
-            cairo_claim.jnz_opcode_non_taken,
-            interaction_claim.jnz_opcode_non_taken,
+            log_size_per_component.at(JNZ_OPCODE_NON_TAKEN_COMPONENT_IDX),
+            claimed_sum_per_component.at(JNZ_OPCODE_NON_TAKEN_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Jnz Taken components
         let jnz_taken = components::jnz_opcode_taken::NewComponentImpl::try_new(
-            cairo_claim.jnz_opcode_taken,
-            interaction_claim.jnz_opcode_taken,
+            log_size_per_component.at(JNZ_OPCODE_TAKEN_COMPONENT_IDX),
+            claimed_sum_per_component.at(JNZ_OPCODE_TAKEN_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Jump components
         let jump = components::jump_opcode_abs::NewComponentImpl::try_new(
-            cairo_claim.jump_opcode_abs, interaction_claim.jump_opcode_abs, common_lookup_elements,
+            log_size_per_component.at(JUMP_OPCODE_ABS_COMPONENT_IDX),
+            claimed_sum_per_component.at(JUMP_OPCODE_ABS_COMPONENT_IDX),
+            common_lookup_elements,
         );
-
-        // Jump Double Deref components
         let jump_double_deref = components::jump_opcode_double_deref::NewComponentImpl::try_new(
-            cairo_claim.jump_opcode_double_deref,
-            interaction_claim.jump_opcode_double_deref,
+            log_size_per_component.at(JUMP_OPCODE_DOUBLE_DEREF_COMPONENT_IDX),
+            claimed_sum_per_component.at(JUMP_OPCODE_DOUBLE_DEREF_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Jump Rel components
         let jump_rel = components::jump_opcode_rel::NewComponentImpl::try_new(
-            cairo_claim.jump_opcode_rel, interaction_claim.jump_opcode_rel, common_lookup_elements,
+            log_size_per_component.at(JUMP_OPCODE_REL_COMPONENT_IDX),
+            claimed_sum_per_component.at(JUMP_OPCODE_REL_COMPONENT_IDX),
+            common_lookup_elements,
         );
-
-        // Jump Rel Imm components
         let jump_rel_imm = components::jump_opcode_rel_imm::NewComponentImpl::try_new(
-            cairo_claim.jump_opcode_rel_imm,
-            interaction_claim.jump_opcode_rel_imm,
+            log_size_per_component.at(JUMP_OPCODE_REL_IMM_COMPONENT_IDX),
+            claimed_sum_per_component.at(JUMP_OPCODE_REL_IMM_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Mul components
         let mul = components::mul_opcode::NewComponentImpl::try_new(
-            cairo_claim.mul_opcode, interaction_claim.mul_opcode, common_lookup_elements,
+            log_size_per_component.at(MUL_OPCODE_COMPONENT_IDX),
+            claimed_sum_per_component.at(MUL_OPCODE_COMPONENT_IDX),
+            common_lookup_elements,
         );
-
-        // Mul Small components
         let mul_small = components::mul_opcode_small::NewComponentImpl::try_new(
-            cairo_claim.mul_opcode_small,
-            interaction_claim.mul_opcode_small,
+            log_size_per_component.at(MUL_OPCODE_SMALL_COMPONENT_IDX),
+            claimed_sum_per_component.at(MUL_OPCODE_SMALL_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // QM31 components
         let qm31 = components::qm_31_add_mul_opcode::NewComponentImpl::try_new(
-            cairo_claim.qm_31_add_mul_opcode,
-            interaction_claim.qm_31_add_mul_opcode,
+            log_size_per_component.at(QM_31_ADD_MUL_OPCODE_COMPONENT_IDX),
+            claimed_sum_per_component.at(QM_31_ADD_MUL_OPCODE_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Ret components
         let ret = components::ret_opcode::NewComponentImpl::try_new(
-            cairo_claim.ret_opcode, interaction_claim.ret_opcode, common_lookup_elements,
+            log_size_per_component.at(RET_OPCODE_COMPONENT_IDX),
+            claimed_sum_per_component.at(RET_OPCODE_COMPONENT_IDX),
+            common_lookup_elements,
         );
 
         OpcodeComponents {
@@ -484,130 +442,114 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
 #[generate_trait]
 pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
     fn new(
-        cairo_claim: @CairoClaim,
+        log_size_per_component: Span<Option<u32>>,
+        claimed_sum_per_component: Span<Option<QM31>>,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @CairoInteractionClaim,
     ) -> OpcodeComponents {
-        assert!(cairo_claim.generic_opcode.is_none(), "The generic opcode is not supported.");
-        assert!(interaction_claim.generic_opcode.is_none(), "The generic opcode is not supported.");
+        assert!(
+            (*log_size_per_component.at(GENERIC_OPCODE_COMPONENT_IDX)).is_none(),
+            "The generic opcode is not supported.",
+        );
+        assert!(
+            (*claimed_sum_per_component.at(GENERIC_OPCODE_COMPONENT_IDX)).is_none(),
+            "The generic opcode is not supported.",
+        );
 
-        // Add components
         let add = components::add_opcode::NewComponentImpl::try_new(
-            cairo_claim.add_opcode, interaction_claim.add_opcode, common_lookup_elements,
+            log_size_per_component.at(ADD_OPCODE_COMPONENT_IDX),
+            claimed_sum_per_component.at(ADD_OPCODE_COMPONENT_IDX),
+            common_lookup_elements,
         );
-
-        // Add Small components
         let add_small = components::add_opcode_small::NewComponentImpl::try_new(
-            cairo_claim.add_opcode_small,
-            interaction_claim.add_opcode_small,
+            log_size_per_component.at(ADD_OPCODE_SMALL_COMPONENT_IDX),
+            claimed_sum_per_component.at(ADD_OPCODE_SMALL_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Add AP components
         let add_ap = components::add_ap_opcode::NewComponentImpl::try_new(
-            cairo_claim.add_ap_opcode, interaction_claim.add_ap_opcode, common_lookup_elements,
+            log_size_per_component.at(ADD_AP_OPCODE_COMPONENT_IDX),
+            claimed_sum_per_component.at(ADD_AP_OPCODE_COMPONENT_IDX),
+            common_lookup_elements,
         );
-
-        // Assert Eq components
         let assert_eq = components::assert_eq_opcode::NewComponentImpl::try_new(
-            cairo_claim.assert_eq_opcode,
-            interaction_claim.assert_eq_opcode,
+            log_size_per_component.at(ASSERT_EQ_OPCODE_COMPONENT_IDX),
+            claimed_sum_per_component.at(ASSERT_EQ_OPCODE_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Assert Eq Imm components
         let assert_eq_imm = components::assert_eq_opcode_imm::NewComponentImpl::try_new(
-            cairo_claim.assert_eq_opcode_imm,
-            interaction_claim.assert_eq_opcode_imm,
+            log_size_per_component.at(ASSERT_EQ_OPCODE_IMM_COMPONENT_IDX),
+            claimed_sum_per_component.at(ASSERT_EQ_OPCODE_IMM_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Assert Eq Double Deref components
         let assert_eq_double_deref =
             components::assert_eq_opcode_double_deref::NewComponentImpl::try_new(
-            cairo_claim.assert_eq_opcode_double_deref,
-            interaction_claim.assert_eq_opcode_double_deref,
+            log_size_per_component.at(ASSERT_EQ_OPCODE_DOUBLE_DEREF_COMPONENT_IDX),
+            claimed_sum_per_component.at(ASSERT_EQ_OPCODE_DOUBLE_DEREF_COMPONENT_IDX),
             common_lookup_elements,
         );
-
         let blake = components::blake_compress_opcode::NewComponentImpl::try_new(
-            cairo_claim.blake_compress_opcode,
-            interaction_claim.blake_compress_opcode,
+            log_size_per_component.at(BLAKE_COMPRESS_OPCODE_COMPONENT_IDX),
+            claimed_sum_per_component.at(BLAKE_COMPRESS_OPCODE_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Call components
         let call = components::call_opcode_abs::NewComponentImpl::try_new(
-            cairo_claim.call_opcode_abs, interaction_claim.call_opcode_abs, common_lookup_elements,
+            log_size_per_component.at(CALL_OPCODE_ABS_COMPONENT_IDX),
+            claimed_sum_per_component.at(CALL_OPCODE_ABS_COMPONENT_IDX),
+            common_lookup_elements,
         );
-
-        // Call Rel_imm components
         let call_rel_imm = components::call_opcode_rel_imm::NewComponentImpl::try_new(
-            cairo_claim.call_opcode_rel_imm,
-            interaction_claim.call_opcode_rel_imm,
+            log_size_per_component.at(CALL_OPCODE_REL_IMM_COMPONENT_IDX),
+            claimed_sum_per_component.at(CALL_OPCODE_REL_IMM_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Jnz components
         let jnz = components::jnz_opcode_non_taken::NewComponentImpl::try_new(
-            cairo_claim.jnz_opcode_non_taken,
-            interaction_claim.jnz_opcode_non_taken,
+            log_size_per_component.at(JNZ_OPCODE_NON_TAKEN_COMPONENT_IDX),
+            claimed_sum_per_component.at(JNZ_OPCODE_NON_TAKEN_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Jnz Taken components
         let jnz_taken = components::jnz_opcode_taken::NewComponentImpl::try_new(
-            cairo_claim.jnz_opcode_taken,
-            interaction_claim.jnz_opcode_taken,
+            log_size_per_component.at(JNZ_OPCODE_TAKEN_COMPONENT_IDX),
+            claimed_sum_per_component.at(JNZ_OPCODE_TAKEN_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Jump components
         let jump = components::jump_opcode_abs::NewComponentImpl::try_new(
-            cairo_claim.jump_opcode_abs, interaction_claim.jump_opcode_abs, common_lookup_elements,
+            log_size_per_component.at(JUMP_OPCODE_ABS_COMPONENT_IDX),
+            claimed_sum_per_component.at(JUMP_OPCODE_ABS_COMPONENT_IDX),
+            common_lookup_elements,
         );
-
-        // Jump Double Deref components
         let jump_double_deref = components::jump_opcode_double_deref::NewComponentImpl::try_new(
-            cairo_claim.jump_opcode_double_deref,
-            interaction_claim.jump_opcode_double_deref,
+            log_size_per_component.at(JUMP_OPCODE_DOUBLE_DEREF_COMPONENT_IDX),
+            claimed_sum_per_component.at(JUMP_OPCODE_DOUBLE_DEREF_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Jump Rel components
         let jump_rel = components::jump_opcode_rel::NewComponentImpl::try_new(
-            cairo_claim.jump_opcode_rel, interaction_claim.jump_opcode_rel, common_lookup_elements,
+            log_size_per_component.at(JUMP_OPCODE_REL_COMPONENT_IDX),
+            claimed_sum_per_component.at(JUMP_OPCODE_REL_COMPONENT_IDX),
+            common_lookup_elements,
         );
-
-        // Jump Rel Imm components
         let jump_rel_imm = components::jump_opcode_rel_imm::NewComponentImpl::try_new(
-            cairo_claim.jump_opcode_rel_imm,
-            interaction_claim.jump_opcode_rel_imm,
+            log_size_per_component.at(JUMP_OPCODE_REL_IMM_COMPONENT_IDX),
+            claimed_sum_per_component.at(JUMP_OPCODE_REL_IMM_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Mul components
         let mul = components::mul_opcode::NewComponentImpl::try_new(
-            cairo_claim.mul_opcode, interaction_claim.mul_opcode, common_lookup_elements,
+            log_size_per_component.at(MUL_OPCODE_COMPONENT_IDX),
+            claimed_sum_per_component.at(MUL_OPCODE_COMPONENT_IDX),
+            common_lookup_elements,
         );
-
-        // Mul Small components
         let mul_small = components::mul_opcode_small::NewComponentImpl::try_new(
-            cairo_claim.mul_opcode_small,
-            interaction_claim.mul_opcode_small,
+            log_size_per_component.at(MUL_OPCODE_SMALL_COMPONENT_IDX),
+            claimed_sum_per_component.at(MUL_OPCODE_SMALL_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // QM31 components
         let qm31 = components::qm_31_add_mul_opcode::NewComponentImpl::try_new(
-            cairo_claim.qm_31_add_mul_opcode,
-            interaction_claim.qm_31_add_mul_opcode,
+            log_size_per_component.at(QM_31_ADD_MUL_OPCODE_COMPONENT_IDX),
+            claimed_sum_per_component.at(QM_31_ADD_MUL_OPCODE_COMPONENT_IDX),
             common_lookup_elements,
         );
-
-        // Ret components
         let ret = components::ret_opcode::NewComponentImpl::try_new(
-            cairo_claim.ret_opcode, interaction_claim.ret_opcode, common_lookup_elements,
+            log_size_per_component.at(RET_OPCODE_COMPONENT_IDX),
+            claimed_sum_per_component.at(RET_OPCODE_COMPONENT_IDX),
+            common_lookup_elements,
         );
 
         OpcodeComponents {

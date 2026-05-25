@@ -1,13 +1,6 @@
-use components::add_mod_builtin::InteractionClaimImpl as AddModBuiltinInteractionClaimImpl;
-use components::bitwise_builtin::InteractionClaimImpl as BitwiseBuiltinInteractionClaimImpl;
-use components::mul_mod_builtin::InteractionClaimImpl as MulModBuiltinInteractionClaimImpl;
-use components::pedersen_builtin::InteractionClaimImpl as PedersenBuiltinInteractionClaimImpl;
-use components::poseidon_builtin::InteractionClaimImpl as PoseidonBuiltinInteractionClaimImpl;
-use components::range_check96_builtin::InteractionClaimImpl as RangeCheckBuiltinBits96InteractionClaimImpl;
-use components::range_check_builtin::InteractionClaimImpl as RangeCheckBuiltinBits128InteractionClaimImpl;
 use core::array::Span;
 use core::box::BoxImpl;
-use stwo_cairo_air::claims::{CairoClaim, CairoInteractionClaim};
+use stwo_cairo_air::component_indices::*;
 use stwo_cairo_air::{PublicData, components};
 use stwo_constraint_framework::{
     AirComponent, CommonLookupElements, LookupElementsImpl, PreprocessedMaskValues,
@@ -50,66 +43,57 @@ pub struct BuiltinComponents {
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
     fn new(
-        cairo_claim: @CairoClaim,
+        log_size_per_component: Span<Option<u32>>,
+        claimed_sum_per_component: Span<Option<QM31>>,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @CairoInteractionClaim,
     ) -> BuiltinComponents {
         assert!(
-            cairo_claim.pedersen_builtin_narrow_windows.is_none()
-                && interaction_claim.pedersen_builtin_narrow_windows.is_none(),
-        );
-
-        let add_mod_builtin_component = components::add_mod_builtin::NewComponentImpl::try_new(
-            cairo_claim.add_mod_builtin, interaction_claim.add_mod_builtin, common_lookup_elements,
-        );
-
-        let bitwise_builtin_component = components::bitwise_builtin::NewComponentImpl::try_new(
-            cairo_claim.bitwise_builtin, interaction_claim.bitwise_builtin, common_lookup_elements,
-        );
-
-        let mul_mod_builtin_component = components::mul_mod_builtin::NewComponentImpl::try_new(
-            cairo_claim.mul_mod_builtin, interaction_claim.mul_mod_builtin, common_lookup_elements,
-        );
-
-        let pedersen_builtin_component = components::pedersen_builtin::NewComponentImpl::try_new(
-            cairo_claim.pedersen_builtin,
-            interaction_claim.pedersen_builtin,
-            common_lookup_elements,
-        );
-
-        let poseidon_builtin_component = components::poseidon_builtin::NewComponentImpl::try_new(
-            cairo_claim.poseidon_builtin,
-            interaction_claim.poseidon_builtin,
-            common_lookup_elements,
-        );
-
-        let range_check_96_builtin_component =
-            components::range_check96_builtin::NewComponentImpl::try_new(
-            cairo_claim.range_check96_builtin,
-            interaction_claim.range_check96_builtin,
-            common_lookup_elements,
-        );
-
-        let range_check_128_builtin_component =
-            components::range_check_builtin::NewComponentImpl::try_new(
-            cairo_claim.range_check_builtin,
-            interaction_claim.range_check_builtin,
-            common_lookup_elements,
-        );
-
-        let ec_op_builtin_component = components::ec_op_builtin::NewComponentImpl::try_new(
-            cairo_claim.ec_op_builtin, interaction_claim.ec_op_builtin, common_lookup_elements,
+            (*log_size_per_component.at(PEDERSEN_BUILTIN_NARROW_WINDOWS_COMPONENT_IDX)).is_none()
+                && (*claimed_sum_per_component.at(PEDERSEN_BUILTIN_NARROW_WINDOWS_COMPONENT_IDX))
+                    .is_none(),
         );
 
         BuiltinComponents {
-            add_mod_builtin: add_mod_builtin_component,
-            bitwise_builtin: bitwise_builtin_component,
-            mul_mod_builtin: mul_mod_builtin_component,
-            pedersen_builtin: pedersen_builtin_component,
-            poseidon_builtin: poseidon_builtin_component,
-            range_check_96_builtin: range_check_96_builtin_component,
-            range_check_128_builtin: range_check_128_builtin_component,
-            ec_op_builtin: ec_op_builtin_component,
+            add_mod_builtin: components::add_mod_builtin::NewComponentImpl::try_new(
+                log_size_per_component.at(ADD_MOD_BUILTIN_COMPONENT_IDX),
+                claimed_sum_per_component.at(ADD_MOD_BUILTIN_COMPONENT_IDX),
+                common_lookup_elements,
+            ),
+            bitwise_builtin: components::bitwise_builtin::NewComponentImpl::try_new(
+                log_size_per_component.at(BITWISE_BUILTIN_COMPONENT_IDX),
+                claimed_sum_per_component.at(BITWISE_BUILTIN_COMPONENT_IDX),
+                common_lookup_elements,
+            ),
+            mul_mod_builtin: components::mul_mod_builtin::NewComponentImpl::try_new(
+                log_size_per_component.at(MUL_MOD_BUILTIN_COMPONENT_IDX),
+                claimed_sum_per_component.at(MUL_MOD_BUILTIN_COMPONENT_IDX),
+                common_lookup_elements,
+            ),
+            pedersen_builtin: components::pedersen_builtin::NewComponentImpl::try_new(
+                log_size_per_component.at(PEDERSEN_BUILTIN_COMPONENT_IDX),
+                claimed_sum_per_component.at(PEDERSEN_BUILTIN_COMPONENT_IDX),
+                common_lookup_elements,
+            ),
+            poseidon_builtin: components::poseidon_builtin::NewComponentImpl::try_new(
+                log_size_per_component.at(POSEIDON_BUILTIN_COMPONENT_IDX),
+                claimed_sum_per_component.at(POSEIDON_BUILTIN_COMPONENT_IDX),
+                common_lookup_elements,
+            ),
+            range_check_96_builtin: components::range_check96_builtin::NewComponentImpl::try_new(
+                log_size_per_component.at(RANGE_CHECK96_BUILTIN_COMPONENT_IDX),
+                claimed_sum_per_component.at(RANGE_CHECK96_BUILTIN_COMPONENT_IDX),
+                common_lookup_elements,
+            ),
+            range_check_128_builtin: components::range_check_builtin::NewComponentImpl::try_new(
+                log_size_per_component.at(RANGE_CHECK_BUILTIN_COMPONENT_IDX),
+                claimed_sum_per_component.at(RANGE_CHECK_BUILTIN_COMPONENT_IDX),
+                common_lookup_elements,
+            ),
+            ec_op_builtin: components::ec_op_builtin::NewComponentImpl::try_new(
+                log_size_per_component.at(EC_OP_BUILTIN_COMPONENT_IDX),
+                claimed_sum_per_component.at(EC_OP_BUILTIN_COMPONENT_IDX),
+                common_lookup_elements,
+            ),
         }
     }
 
@@ -237,46 +221,51 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
 #[cfg(and(feature: "poseidon252_verifier", not(feature: "poseidon_outputs_packing")))]
 pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
     fn new(
-        cairo_claim: @CairoClaim,
+        log_size_per_component: Span<Option<u32>>,
+        claimed_sum_per_component: Span<Option<QM31>>,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @CairoInteractionClaim,
     ) -> BuiltinComponents {
         assert!(
-            cairo_claim.range_check96_builtin.is_none()
-                && interaction_claim.range_check96_builtin.is_none(),
+            (*log_size_per_component.at(RANGE_CHECK96_BUILTIN_COMPONENT_IDX)).is_none()
+                && (*claimed_sum_per_component.at(RANGE_CHECK96_BUILTIN_COMPONENT_IDX)).is_none(),
         );
         assert!(
-            cairo_claim.add_mod_builtin.is_none() && interaction_claim.add_mod_builtin.is_none(),
+            (*log_size_per_component.at(ADD_MOD_BUILTIN_COMPONENT_IDX)).is_none()
+                && (*claimed_sum_per_component.at(ADD_MOD_BUILTIN_COMPONENT_IDX)).is_none(),
         );
         assert!(
-            cairo_claim.mul_mod_builtin.is_none() && interaction_claim.mul_mod_builtin.is_none(),
+            (*log_size_per_component.at(MUL_MOD_BUILTIN_COMPONENT_IDX)).is_none()
+                && (*claimed_sum_per_component.at(MUL_MOD_BUILTIN_COMPONENT_IDX)).is_none(),
         );
         assert!(
-            cairo_claim.pedersen_builtin.is_none() && interaction_claim.pedersen_builtin.is_none(),
+            (*log_size_per_component.at(PEDERSEN_BUILTIN_COMPONENT_IDX)).is_none()
+                && (*claimed_sum_per_component.at(PEDERSEN_BUILTIN_COMPONENT_IDX)).is_none(),
         );
         assert!(
-            cairo_claim.pedersen_builtin_narrow_windows.is_none()
-                && interaction_claim.pedersen_builtin_narrow_windows.is_none(),
+            (*log_size_per_component.at(PEDERSEN_BUILTIN_NARROW_WINDOWS_COMPONENT_IDX)).is_none()
+                && (*claimed_sum_per_component.at(PEDERSEN_BUILTIN_NARROW_WINDOWS_COMPONENT_IDX))
+                    .is_none(),
         );
         assert!(
-            cairo_claim.poseidon_builtin.is_none() && interaction_claim.poseidon_builtin.is_none(),
+            (*log_size_per_component.at(POSEIDON_BUILTIN_COMPONENT_IDX)).is_none()
+                && (*claimed_sum_per_component.at(POSEIDON_BUILTIN_COMPONENT_IDX)).is_none(),
         );
-        assert!(cairo_claim.ec_op_builtin.is_none() && interaction_claim.ec_op_builtin.is_none());
-
-        let bitwise_builtin_component = components::bitwise_builtin::NewComponentImpl::try_new(
-            cairo_claim.bitwise_builtin, interaction_claim.bitwise_builtin, common_lookup_elements,
-        );
-
-        let range_check_128_builtin_component =
-            components::range_check_builtin::NewComponentImpl::try_new(
-            cairo_claim.range_check_builtin,
-            interaction_claim.range_check_builtin,
-            common_lookup_elements,
+        assert!(
+            (*log_size_per_component.at(EC_OP_BUILTIN_COMPONENT_IDX)).is_none()
+                && (*claimed_sum_per_component.at(EC_OP_BUILTIN_COMPONENT_IDX)).is_none(),
         );
 
         BuiltinComponents {
-            bitwise_builtin: bitwise_builtin_component,
-            range_check_128_builtin: range_check_128_builtin_component,
+            bitwise_builtin: components::bitwise_builtin::NewComponentImpl::try_new(
+                log_size_per_component.at(BITWISE_BUILTIN_COMPONENT_IDX),
+                claimed_sum_per_component.at(BITWISE_BUILTIN_COMPONENT_IDX),
+                common_lookup_elements,
+            ),
+            range_check_128_builtin: components::range_check_builtin::NewComponentImpl::try_new(
+                log_size_per_component.at(RANGE_CHECK_BUILTIN_COMPONENT_IDX),
+                claimed_sum_per_component.at(RANGE_CHECK_BUILTIN_COMPONENT_IDX),
+                common_lookup_elements,
+            ),
         }
     }
 
@@ -322,50 +311,52 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
 #[cfg(and(feature: "poseidon252_verifier", feature: "poseidon_outputs_packing"))]
 pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
     fn new(
-        cairo_claim: @CairoClaim,
+        log_size_per_component: Span<Option<u32>>,
+        claimed_sum_per_component: Span<Option<QM31>>,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @CairoInteractionClaim,
     ) -> BuiltinComponents {
         assert!(
-            cairo_claim.range_check96_builtin.is_none()
-                && interaction_claim.range_check96_builtin.is_none(),
+            (*log_size_per_component.at(RANGE_CHECK96_BUILTIN_COMPONENT_IDX)).is_none()
+                && (*claimed_sum_per_component.at(RANGE_CHECK96_BUILTIN_COMPONENT_IDX)).is_none(),
         );
         assert!(
-            cairo_claim.add_mod_builtin.is_none() && interaction_claim.add_mod_builtin.is_none(),
+            (*log_size_per_component.at(ADD_MOD_BUILTIN_COMPONENT_IDX)).is_none()
+                && (*claimed_sum_per_component.at(ADD_MOD_BUILTIN_COMPONENT_IDX)).is_none(),
         );
         assert!(
-            cairo_claim.mul_mod_builtin.is_none() && interaction_claim.mul_mod_builtin.is_none(),
+            (*log_size_per_component.at(MUL_MOD_BUILTIN_COMPONENT_IDX)).is_none()
+                && (*claimed_sum_per_component.at(MUL_MOD_BUILTIN_COMPONENT_IDX)).is_none(),
         );
         assert!(
-            cairo_claim.pedersen_builtin.is_none() && interaction_claim.pedersen_builtin.is_none(),
+            (*log_size_per_component.at(PEDERSEN_BUILTIN_COMPONENT_IDX)).is_none()
+                && (*claimed_sum_per_component.at(PEDERSEN_BUILTIN_COMPONENT_IDX)).is_none(),
         );
         assert!(
-            cairo_claim.pedersen_builtin_narrow_windows.is_none()
-                && interaction_claim.pedersen_builtin_narrow_windows.is_none(),
+            (*log_size_per_component.at(PEDERSEN_BUILTIN_NARROW_WINDOWS_COMPONENT_IDX)).is_none()
+                && (*claimed_sum_per_component.at(PEDERSEN_BUILTIN_NARROW_WINDOWS_COMPONENT_IDX))
+                    .is_none(),
         );
-        assert!(cairo_claim.ec_op_builtin.is_none() && interaction_claim.ec_op_builtin.is_none());
-
-        let bitwise_builtin_component = components::bitwise_builtin::NewComponentImpl::try_new(
-            cairo_claim.bitwise_builtin, interaction_claim.bitwise_builtin, common_lookup_elements,
-        );
-
-        let poseidon_builtin_component = components::poseidon_builtin::NewComponentImpl::try_new(
-            cairo_claim.poseidon_builtin,
-            interaction_claim.poseidon_builtin,
-            common_lookup_elements,
-        );
-
-        let range_check_128_builtin_component =
-            components::range_check_builtin::NewComponentImpl::try_new(
-            cairo_claim.range_check_builtin,
-            interaction_claim.range_check_builtin,
-            common_lookup_elements,
+        assert!(
+            (*log_size_per_component.at(EC_OP_BUILTIN_COMPONENT_IDX)).is_none()
+                && (*claimed_sum_per_component.at(EC_OP_BUILTIN_COMPONENT_IDX)).is_none(),
         );
 
         BuiltinComponents {
-            bitwise_builtin: bitwise_builtin_component,
-            poseidon_builtin: poseidon_builtin_component,
-            range_check_128_builtin: range_check_128_builtin_component,
+            bitwise_builtin: components::bitwise_builtin::NewComponentImpl::try_new(
+                log_size_per_component.at(BITWISE_BUILTIN_COMPONENT_IDX),
+                claimed_sum_per_component.at(BITWISE_BUILTIN_COMPONENT_IDX),
+                common_lookup_elements,
+            ),
+            poseidon_builtin: components::poseidon_builtin::NewComponentImpl::try_new(
+                log_size_per_component.at(POSEIDON_BUILTIN_COMPONENT_IDX),
+                claimed_sum_per_component.at(POSEIDON_BUILTIN_COMPONENT_IDX),
+                common_lookup_elements,
+            ),
+            range_check_128_builtin: components::range_check_builtin::NewComponentImpl::try_new(
+                log_size_per_component.at(RANGE_CHECK_BUILTIN_COMPONENT_IDX),
+                claimed_sum_per_component.at(RANGE_CHECK_BUILTIN_COMPONENT_IDX),
+                common_lookup_elements,
+            ),
         }
     }
 

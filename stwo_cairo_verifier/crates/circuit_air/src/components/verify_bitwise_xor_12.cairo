@@ -20,57 +20,18 @@ pub const N_INTERACTION_COLUMNS: usize = 32;
 /// `1 << LIMB_BITS = 1024`. Used as the offset shift between expansion bands.
 const LIMB_OFFSET: u32 = 1024;
 
-#[derive(Drop, Serde, Copy)]
-pub struct Claim {}
-
-pub impl ClaimImpl of ClaimTrait<Claim> {
-    fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
-        let log_size = LOG_SIZE;
-        let preprocessed_log_sizes = array![log_size].span();
-        let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        // 8 pairs × QM31 (4 base columns each) = 32 interaction columns.
-        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
-        array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
-    }
-
-    fn mix_into(self: @Claim, ref channel: Channel) {}
-
-    fn accumulate_relation_uses(self: @Claim, ref relation_uses: RelationUsesDict) {}
-}
-
-#[derive(Drop, Serde, Copy)]
-pub struct InteractionClaim {
-    pub claimed_sum: QM31,
-}
-
-#[generate_trait]
-pub impl InteractionClaimImpl of InteractionClaimTrait {
-    fn mix_into(self: @InteractionClaim, ref channel: Channel) {
-        channel.mix_felts([*self.claimed_sum].span());
-    }
-}
-
-
 #[derive(Drop)]
 pub struct Component {
-    pub claim: Claim,
-    pub interaction_claim: InteractionClaim,
+    pub claimed_sum: QM31,
     pub common_lookup_elements: CommonLookupElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
-    type Claim = Claim;
-    type InteractionClaim = InteractionClaim;
-
     fn new(
-        claim: @Claim,
-        interaction_claim: @InteractionClaim,
-        common_lookup_elements: @CommonLookupElements,
+        log_size: @u32, claimed_sum: @QM31, common_lookup_elements: @CommonLookupElements,
     ) -> Component {
         Component {
-            claim: *claim,
-            interaction_claim: *interaction_claim,
-            common_lookup_elements: common_lookup_elements.clone(),
+            claimed_sum: *claimed_sum, common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -86,7 +47,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         public_params: Span<u32>,
     ) {
         let log_size = LOG_SIZE;
-        let claimed_sum = *self.interaction_claim.claimed_sum;
+        let claimed_sum = *self.claimed_sum;
         let column_size = m31(pow2(log_size));
 
         // Preprocessed 10-bit XOR table columns (aliased as BITWISE_XOR_12_*_IDX in

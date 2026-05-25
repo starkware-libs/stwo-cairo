@@ -12,61 +12,20 @@ pub const RELATION_USES_PER_ROW: [(felt252, u32); 7] = [
     ('TripleXor32', 8), ('BlakeOutput', 1), ('Gate', 4),
 ];
 
-#[derive(Drop, Serde, Copy)]
-pub struct Claim {
-    pub log_size: u32,
-}
-
-pub impl ClaimImpl of ClaimTrait<Claim> {
-    fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
-        let log_size = *(self.log_size);
-        let preprocessed_log_sizes = array![log_size].span();
-        let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
-        array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
-    }
-
-    fn mix_into(self: @Claim, ref channel: Channel) {
-        channel.mix_u64((*(self.log_size)).into());
-    }
-
-    fn accumulate_relation_uses(self: @Claim, ref relation_uses: RelationUsesDict) {
-        accumulate_relation_uses(ref relation_uses, RELATION_USES_PER_ROW.span(), *self.log_size);
-    }
-}
-
-#[derive(Drop, Serde, Copy)]
-pub struct InteractionClaim {
-    pub claimed_sum: QM31,
-}
-
-#[generate_trait]
-pub impl InteractionClaimImpl of InteractionClaimTrait {
-    fn mix_into(self: @InteractionClaim, ref channel: Channel) {
-        channel.mix_felts([*self.claimed_sum].span());
-    }
-}
-
-
 #[derive(Drop)]
 pub struct Component {
-    pub claim: Claim,
-    pub interaction_claim: InteractionClaim,
+    pub log_size: u32,
+    pub claimed_sum: QM31,
     pub common_lookup_elements: CommonLookupElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
-    type Claim = Claim;
-    type InteractionClaim = InteractionClaim;
-
     fn new(
-        claim: @Claim,
-        interaction_claim: @InteractionClaim,
-        common_lookup_elements: @CommonLookupElements,
+        log_size: @u32, claimed_sum: @QM31, common_lookup_elements: @CommonLookupElements,
     ) -> Component {
         Component {
-            claim: *claim,
-            interaction_claim: *interaction_claim,
+            log_size: *log_size,
+            claimed_sum: *claimed_sum,
             common_lookup_elements: common_lookup_elements.clone(),
         }
     }
@@ -82,8 +41,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         random_coeff: QM31,
         public_params: Span<u32>,
     ) {
-        let log_size = *(self.claim.log_size);
-        let claimed_sum = *self.interaction_claim.claimed_sum;
+        let log_size = *self.log_size;
+        let claimed_sum = *self.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut verify_bitwise_xor_8_sum_0: QM31 = Zero::zero();
         let mut numerator_0: QM31 = Zero::zero();
@@ -225,7 +184,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         let t1 = preprocessed_mask_values.get_and_mark_used(T_1_IDX);
         let finalize_flag = preprocessed_mask_values.get_and_mark_used(FINALIZE_FLAG_IDX);
         let seq = preprocessed_mask_values
-            .get_and_mark_used(seq_column_idx(*(self.claim.log_size)));
+            .get_and_mark_used(seq_column_idx(*self.log_size));
         let state_before_addr = preprocessed_mask_values.get_and_mark_used(STATE_BEFORE_ADDR_IDX);
         let compress_enabler = preprocessed_mask_values.get_and_mark_used(COMPRESS_ENABLER_IDX);
         let state_after_addr = preprocessed_mask_values.get_and_mark_used(STATE_AFTER_ADDR_IDX);
