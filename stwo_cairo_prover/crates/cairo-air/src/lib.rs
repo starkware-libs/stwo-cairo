@@ -1,4 +1,5 @@
 pub mod air;
+pub mod all_components;
 pub mod cairo_components;
 pub mod claims;
 pub mod components;
