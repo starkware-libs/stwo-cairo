@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn decode_instruction_7dcb2_evaluate(
     input: QM31,
+    enabler: QM31,
     ap_update_add_1_col0: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref verify_instruction_sum_0: QM31,
@@ -30,7 +31,7 @@ pub fn decode_instruction_7dcb2_evaluate(
             ]
                 .span(),
         );
-    numerator_0 = qm31_const::<1, 0, 0, 0>();
+    numerator_0 = enabler;
 
     []
 }

@@ -6,6 +6,7 @@ use crate::prelude::*;
 
 pub fn mem_verify_evaluate(
     input: [QM31; 29],
+    enabler: QM31,
     id_col0: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref memory_address_to_id_sum_0: QM31,
@@ -49,6 +50,7 @@ pub fn mem_verify_evaluate(
         input;
     read_id_evaluate(
         mem_verify_input_address,
+        enabler,
         id_col0,
         common_lookup_elements,
         ref memory_address_to_id_sum_0,
@@ -78,7 +80,7 @@ pub fn mem_verify_evaluate(
             ]
                 .span(),
         );
-    numerator_1 = qm31_const::<1, 0, 0, 0>();
+    numerator_1 = enabler;
 
     []
 }

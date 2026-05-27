@@ -15,6 +15,7 @@ impl ReadU32 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [read_u_32_input]: [E::F; 1],
+        enabler: E::F,
         low_16_bits_col0: E::F,
         high_16_bits_col1: E::F,
         low_7_ms_bits_col2: E::F,
@@ -30,6 +31,7 @@ impl ReadU32 {
                 low_16_bits_col0.clone(),
                 high_16_bits_col1.clone(),
             ],
+            enabler.clone(),
             low_7_ms_bits_col2.clone(),
             high_14_ms_bits_col3.clone(),
             high_5_ms_bits_col4.clone(),

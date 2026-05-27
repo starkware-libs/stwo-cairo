@@ -14,6 +14,7 @@ impl CondRangeCheck2 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [cond_range_check_2_input_limb_0, cond_range_check_2_input_limb_1]: [E::F; 2],
+        enabler: E::F,
         partial_limb_msb_col0: E::F,
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,

@@ -164,6 +164,7 @@ impl FrameworkEval for Eval {
         ReadPositiveNumBits252::evaluate(
             [(E::F::from(M31::from(self.bitwise_builtin_segment_start))
                 + (seq.clone() * M31_5.clone()))],
+            M31_1.clone(),
             op0_id_col0.clone(),
             op0_limb_0_col1.clone(),
             op0_limb_1_col2.clone(),
@@ -200,6 +201,7 @@ impl FrameworkEval for Eval {
             [((E::F::from(M31::from(self.bitwise_builtin_segment_start))
                 + (seq.clone() * M31_5.clone()))
                 + M31_1.clone())],
+            M31_1.clone(),
             op1_id_col29.clone(),
             op1_limb_0_col30.clone(),
             op1_limb_1_col31.clone(),
@@ -234,6 +236,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_0_col1.clone(), op1_limb_0_col30.clone()],
+            M31_1.clone(),
             xor_col58.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -244,6 +247,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_1_col2.clone(), op1_limb_1_col31.clone()],
+            M31_1.clone(),
             xor_col59.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -254,6 +258,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_2_col3.clone(), op1_limb_2_col32.clone()],
+            M31_1.clone(),
             xor_col60.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -264,6 +269,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_3_col4.clone(), op1_limb_3_col33.clone()],
+            M31_1.clone(),
             xor_col61.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -274,6 +280,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_4_col5.clone(), op1_limb_4_col34.clone()],
+            M31_1.clone(),
             xor_col62.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -284,6 +291,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_5_col6.clone(), op1_limb_5_col35.clone()],
+            M31_1.clone(),
             xor_col63.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -294,6 +302,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_6_col7.clone(), op1_limb_6_col36.clone()],
+            M31_1.clone(),
             xor_col64.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -304,6 +313,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_7_col8.clone(), op1_limb_7_col37.clone()],
+            M31_1.clone(),
             xor_col65.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -314,6 +324,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_8_col9.clone(), op1_limb_8_col38.clone()],
+            M31_1.clone(),
             xor_col66.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -324,6 +335,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_9_col10.clone(), op1_limb_9_col39.clone()],
+            M31_1.clone(),
             xor_col67.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -334,6 +346,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_10_col11.clone(), op1_limb_10_col40.clone()],
+            M31_1.clone(),
             xor_col68.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -344,6 +357,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_11_col12.clone(), op1_limb_11_col41.clone()],
+            M31_1.clone(),
             xor_col69.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -354,6 +368,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_12_col13.clone(), op1_limb_12_col42.clone()],
+            M31_1.clone(),
             xor_col70.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -364,6 +379,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_13_col14.clone(), op1_limb_13_col43.clone()],
+            M31_1.clone(),
             xor_col71.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -374,6 +390,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_14_col15.clone(), op1_limb_14_col44.clone()],
+            M31_1.clone(),
             xor_col72.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -384,6 +401,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_15_col16.clone(), op1_limb_15_col45.clone()],
+            M31_1.clone(),
             xor_col73.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -394,6 +412,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_16_col17.clone(), op1_limb_16_col46.clone()],
+            M31_1.clone(),
             xor_col74.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -404,6 +423,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_17_col18.clone(), op1_limb_17_col47.clone()],
+            M31_1.clone(),
             xor_col75.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -414,6 +434,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_18_col19.clone(), op1_limb_18_col48.clone()],
+            M31_1.clone(),
             xor_col76.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -424,6 +445,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_19_col20.clone(), op1_limb_19_col49.clone()],
+            M31_1.clone(),
             xor_col77.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -434,6 +456,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_20_col21.clone(), op1_limb_20_col50.clone()],
+            M31_1.clone(),
             xor_col78.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -444,6 +467,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_21_col22.clone(), op1_limb_21_col51.clone()],
+            M31_1.clone(),
             xor_col79.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -454,6 +478,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_22_col23.clone(), op1_limb_22_col52.clone()],
+            M31_1.clone(),
             xor_col80.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -464,6 +489,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_23_col24.clone(), op1_limb_23_col53.clone()],
+            M31_1.clone(),
             xor_col81.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -474,6 +500,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_24_col25.clone(), op1_limb_24_col54.clone()],
+            M31_1.clone(),
             xor_col82.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -484,6 +511,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_25_col26.clone(), op1_limb_25_col55.clone()],
+            M31_1.clone(),
             xor_col83.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -494,6 +522,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_26_col27.clone(), op1_limb_26_col56.clone()],
+            M31_1.clone(),
             xor_col84.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -504,6 +533,7 @@ impl FrameworkEval for Eval {
         );
         BitwiseXorNumBits8::evaluate(
             [op0_limb_27_col28.clone(), op1_limb_27_col57.clone()],
+            M31_1.clone(),
             xor_col85.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -546,6 +576,7 @@ impl FrameworkEval for Eval {
                 and_tmp_b8fb8_90.clone(),
                 and_tmp_b8fb8_93.clone(),
             ],
+            M31_1.clone(),
             and_id_col86.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -584,6 +615,7 @@ impl FrameworkEval for Eval {
                 xor_col84.clone(),
                 xor_col85.clone(),
             ],
+            M31_1.clone(),
             xor_id_col87.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -622,6 +654,7 @@ impl FrameworkEval for Eval {
                 (and_tmp_b8fb8_90.clone() + xor_col84.clone()),
                 (and_tmp_b8fb8_93.clone() + xor_col85.clone()),
             ],
+            M31_1.clone(),
             or_id_col88.clone(),
             &self.common_lookup_elements,
             &mut eval,

@@ -783,6 +783,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         mod_utils_evaluate(
             [add_mod_builtin_segment_start, seq],
+            qm31_const::<1, 0, 0, 0>(),
             is_instance_0_col0,
             p0_id_col1,
             p0_limb_0_col2,

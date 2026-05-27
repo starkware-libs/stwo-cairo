@@ -18,6 +18,7 @@ impl PoseidonHadesPermutation {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [poseidon_hades_permutation_input_limb_0, poseidon_hades_permutation_input_limb_1, poseidon_hades_permutation_input_limb_2, poseidon_hades_permutation_input_limb_3, poseidon_hades_permutation_input_limb_4, poseidon_hades_permutation_input_limb_5, poseidon_hades_permutation_input_limb_6, poseidon_hades_permutation_input_limb_7, poseidon_hades_permutation_input_limb_8, poseidon_hades_permutation_input_limb_9, poseidon_hades_permutation_input_limb_10, poseidon_hades_permutation_input_limb_11, poseidon_hades_permutation_input_limb_12, poseidon_hades_permutation_input_limb_13, poseidon_hades_permutation_input_limb_14, poseidon_hades_permutation_input_limb_15, poseidon_hades_permutation_input_limb_16, poseidon_hades_permutation_input_limb_17, poseidon_hades_permutation_input_limb_18, poseidon_hades_permutation_input_limb_19, poseidon_hades_permutation_input_limb_20, poseidon_hades_permutation_input_limb_21, poseidon_hades_permutation_input_limb_22, poseidon_hades_permutation_input_limb_23, poseidon_hades_permutation_input_limb_24, poseidon_hades_permutation_input_limb_25, poseidon_hades_permutation_input_limb_26, poseidon_hades_permutation_input_limb_27, poseidon_hades_permutation_input_limb_28, poseidon_hades_permutation_input_limb_29]: [E::F; 30],
+        enabler: E::F,
         combination_limb_0_col0: E::F,
         combination_limb_1_col1: E::F,
         combination_limb_2_col2: E::F,
@@ -323,6 +324,7 @@ impl PoseidonHadesPermutation {
                 M31_102193642.clone(),
                 M31_208.clone(),
             ],
+            enabler.clone(),
             combination_limb_0_col0.clone(),
             combination_limb_1_col1.clone(),
             combination_limb_2_col2.clone(),
@@ -360,6 +362,7 @@ impl PoseidonHadesPermutation {
                 M31_41320857.clone(),
                 M31_112.clone(),
             ],
+            enabler.clone(),
             combination_limb_0_col11.clone(),
             combination_limb_1_col12.clone(),
             combination_limb_2_col13.clone(),
@@ -397,6 +400,7 @@ impl PoseidonHadesPermutation {
                 M31_60124463.clone(),
                 M31_116.clone(),
             ],
+            enabler.clone(),
             combination_limb_0_col22.clone(),
             combination_limb_1_col23.clone(),
             combination_limb_2_col24.clone(),
@@ -415,7 +419,7 @@ impl PoseidonHadesPermutation {
             eval.add_intermediate((seq.clone() * M31_2.clone()));
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            -E::EF::from(M31_1.clone()),
+            -E::EF::from(enabler.clone()),
             &[
                 M31_1480369132.clone(),
                 poseidon_full_round_chain_chain_tmp_tmp_da3c7_63.clone(),
@@ -455,7 +459,7 @@ impl PoseidonHadesPermutation {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1480369132.clone(),
                 poseidon_full_round_chain_chain_tmp_tmp_da3c7_63.clone(),
@@ -495,7 +499,7 @@ impl PoseidonHadesPermutation {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1090315331.clone(),
                 poseidon_full_round_chain_output_limb_0_col33.clone(),
@@ -513,7 +517,7 @@ impl PoseidonHadesPermutation {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1090315331.clone(),
                 poseidon_full_round_chain_output_limb_10_col43.clone(),
@@ -531,7 +535,7 @@ impl PoseidonHadesPermutation {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1987997202.clone(),
                 poseidon_full_round_chain_output_limb_20_col53.clone(),
@@ -600,6 +604,7 @@ impl PoseidonHadesPermutation {
                 M31_122233508.clone(),
                 M31_248.clone(),
             ],
+            enabler.clone(),
             combination_limb_0_col73.clone(),
             combination_limb_1_col74.clone(),
             combination_limb_2_col75.clone(),
@@ -616,7 +621,7 @@ impl PoseidonHadesPermutation {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1987997202.clone(),
                 combination_limb_0_col73.clone(),
@@ -685,6 +690,7 @@ impl PoseidonHadesPermutation {
                 M31_86573645.clone(),
                 M31_154.clone(),
             ],
+            enabler.clone(),
             combination_limb_0_col94.clone(),
             combination_limb_1_col95.clone(),
             combination_limb_2_col96.clone(),
@@ -701,7 +707,7 @@ impl PoseidonHadesPermutation {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            -E::EF::from(M31_1.clone()),
+            -E::EF::from(enabler.clone()),
             &[
                 M31_1343313504.clone(),
                 seq.clone(),
@@ -751,7 +757,7 @@ impl PoseidonHadesPermutation {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1343313504.clone(),
                 seq.clone(),
@@ -842,6 +848,7 @@ impl PoseidonHadesPermutation {
                 M31_22899501.clone(),
                 M31_99.clone(),
             ],
+            enabler.clone(),
             combination_limb_0_col145.clone(),
             combination_limb_1_col146.clone(),
             combination_limb_2_col147.clone(),
@@ -899,6 +906,7 @@ impl PoseidonHadesPermutation {
                 M31_18765944.clone(),
                 M31_20.clone(),
             ],
+            enabler.clone(),
             combination_limb_0_col156.clone(),
             combination_limb_1_col157.clone(),
             combination_limb_2_col158.clone(),
@@ -918,7 +926,7 @@ impl PoseidonHadesPermutation {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            -E::EF::from(M31_1.clone()),
+            -E::EF::from(enabler.clone()),
             &[
                 M31_1480369132.clone(),
                 poseidon_full_round_chain_chain_id_tmp_da3c7_146.clone(),
@@ -958,7 +966,7 @@ impl PoseidonHadesPermutation {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1480369132.clone(),
                 poseidon_full_round_chain_chain_id_tmp_da3c7_146.clone(),

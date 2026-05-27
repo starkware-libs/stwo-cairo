@@ -15,22 +15,23 @@ impl MemVerify {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [mem_verify_input_address, mem_verify_input_value_limb_0, mem_verify_input_value_limb_1, mem_verify_input_value_limb_2, mem_verify_input_value_limb_3, mem_verify_input_value_limb_4, mem_verify_input_value_limb_5, mem_verify_input_value_limb_6, mem_verify_input_value_limb_7, mem_verify_input_value_limb_8, mem_verify_input_value_limb_9, mem_verify_input_value_limb_10, mem_verify_input_value_limb_11, mem_verify_input_value_limb_12, mem_verify_input_value_limb_13, mem_verify_input_value_limb_14, mem_verify_input_value_limb_15, mem_verify_input_value_limb_16, mem_verify_input_value_limb_17, mem_verify_input_value_limb_18, mem_verify_input_value_limb_19, mem_verify_input_value_limb_20, mem_verify_input_value_limb_21, mem_verify_input_value_limb_22, mem_verify_input_value_limb_23, mem_verify_input_value_limb_24, mem_verify_input_value_limb_25, mem_verify_input_value_limb_26, mem_verify_input_value_limb_27]: [E::F; 29],
+        enabler: E::F,
         id_col0: E::F,
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
-        let M31_1 = E::F::from(M31::from(1));
         let M31_1662111297 = E::F::from(M31::from(1662111297));
 
         ReadId::evaluate(
             [mem_verify_input_address.clone()],
+            enabler.clone(),
             id_col0.clone(),
             common_lookup_elements,
             eval,
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1662111297.clone(),
                 id_col0.clone(),

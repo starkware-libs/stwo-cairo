@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn split_16_low_part_size_9_evaluate(
     input: QM31,
+    enabler: QM31,
     ms_7_bits_col0: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref sum: QM31,

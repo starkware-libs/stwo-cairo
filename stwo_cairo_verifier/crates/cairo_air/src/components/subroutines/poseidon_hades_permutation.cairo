@@ -9,6 +9,7 @@ use crate::prelude::*;
 
 pub fn poseidon_hades_permutation_evaluate(
     input: [QM31; 30],
+    enabler: QM31,
     combination_limb_0_col0: QM31,
     combination_limb_1_col1: QM31,
     combination_limb_2_col2: QM31,
@@ -299,6 +300,7 @@ pub fn poseidon_hades_permutation_evaluate(
             qm31_const::<108487870, 0, 0, 0>(), qm31_const::<44781849, 0, 0, 0>(),
             qm31_const::<102193642, 0, 0, 0>(), qm31_const::<208, 0, 0, 0>(),
         ],
+        enabler,
         combination_limb_0_col0,
         combination_limb_1_col1,
         combination_limb_2_col2,
@@ -327,6 +329,7 @@ pub fn poseidon_hades_permutation_evaluate(
             qm31_const::<133303902, 0, 0, 0>(), qm31_const::<48945103, 0, 0, 0>(),
             qm31_const::<41320857, 0, 0, 0>(), qm31_const::<112, 0, 0, 0>(),
         ],
+        enabler,
         combination_limb_0_col11,
         combination_limb_1_col12,
         combination_limb_2_col13,
@@ -355,6 +358,7 @@ pub fn poseidon_hades_permutation_evaluate(
             qm31_const::<33413160, 0, 0, 0>(), qm31_const::<90842759, 0, 0, 0>(),
             qm31_const::<60124463, 0, 0, 0>(), qm31_const::<116, 0, 0, 0>(),
         ],
+        enabler,
         combination_limb_0_col22,
         combination_limb_1_col23,
         combination_limb_2_col24,
@@ -390,7 +394,7 @@ pub fn poseidon_hades_permutation_evaluate(
             ]
                 .span(),
         );
-    numerator_0 = qm31_const::<1, 0, 0, 0>();
+    numerator_0 = enabler;
 
     poseidon_full_round_chain_sum_1 = common_lookup_elements
         .combine_qm31(
@@ -430,7 +434,7 @@ pub fn poseidon_hades_permutation_evaluate(
             ]
                 .span(),
         );
-    numerator_1 = qm31_const::<1, 0, 0, 0>();
+    numerator_1 = enabler;
 
     range_check_252_width_27_sum_2 = common_lookup_elements
         .combine_qm31(
@@ -448,7 +452,7 @@ pub fn poseidon_hades_permutation_evaluate(
             ]
                 .span(),
         );
-    numerator_2 = qm31_const::<1, 0, 0, 0>();
+    numerator_2 = enabler;
 
     range_check_252_width_27_sum_3 = common_lookup_elements
         .combine_qm31(
@@ -466,7 +470,7 @@ pub fn poseidon_hades_permutation_evaluate(
             ]
                 .span(),
         );
-    numerator_3 = qm31_const::<1, 0, 0, 0>();
+    numerator_3 = enabler;
 
     cube_252_sum_4 = common_lookup_elements
         .combine_qm31(
@@ -489,7 +493,7 @@ pub fn poseidon_hades_permutation_evaluate(
             ]
                 .span(),
         );
-    numerator_4 = qm31_const::<1, 0, 0, 0>();
+    numerator_4 = enabler;
     linear_combination_n_4_coefs_1_1_m2_1_evaluate(
         [
             poseidon_full_round_chain_output_limb_0_col33,
@@ -523,6 +527,7 @@ pub fn poseidon_hades_permutation_evaluate(
             qm31_const::<45351266, 0, 0, 0>(), qm31_const::<122233508, 0, 0, 0>(),
             qm31_const::<248, 0, 0, 0>(),
         ],
+        enabler,
         combination_limb_0_col73,
         combination_limb_1_col74,
         combination_limb_2_col75,
@@ -558,7 +563,7 @@ pub fn poseidon_hades_permutation_evaluate(
             ]
                 .span(),
         );
-    numerator_7 = qm31_const::<1, 0, 0, 0>();
+    numerator_7 = enabler;
     linear_combination_n_4_coefs_4_2_m2_1_evaluate(
         [
             poseidon_full_round_chain_output_limb_0_col33,
@@ -587,6 +592,7 @@ pub fn poseidon_hades_permutation_evaluate(
             qm31_const::<50468641, 0, 0, 0>(), qm31_const::<86573645, 0, 0, 0>(),
             qm31_const::<154, 0, 0, 0>(),
         ],
+        enabler,
         combination_limb_0_col94,
         combination_limb_1_col95,
         combination_limb_2_col96,
@@ -633,7 +639,7 @@ pub fn poseidon_hades_permutation_evaluate(
             ]
                 .span(),
         );
-    numerator_11 = qm31_const::<1, 0, 0, 0>();
+    numerator_11 = enabler;
 
     poseidon_3_partial_rounds_chain_sum_12 = common_lookup_elements
         .combine_qm31(
@@ -682,7 +688,7 @@ pub fn poseidon_hades_permutation_evaluate(
             ]
                 .span(),
         );
-    numerator_12 = qm31_const::<1, 0, 0, 0>();
+    numerator_12 = enabler;
     linear_combination_n_4_coefs_4_2_1_1_evaluate(
         [
             poseidon_3_partial_rounds_chain_output_limb_0_col105,
@@ -721,6 +727,7 @@ pub fn poseidon_hades_permutation_evaluate(
             qm31_const::<62360091, 0, 0, 0>(), qm31_const::<77099918, 0, 0, 0>(),
             qm31_const::<22899501, 0, 0, 0>(), qm31_const::<99, 0, 0, 0>(),
         ],
+        enabler,
         combination_limb_0_col145,
         combination_limb_1_col146,
         combination_limb_2_col147,
@@ -773,6 +780,7 @@ pub fn poseidon_hades_permutation_evaluate(
             qm31_const::<33439011, 0, 0, 0>(), qm31_const::<58475513, 0, 0, 0>(),
             qm31_const::<18765944, 0, 0, 0>(), qm31_const::<20, 0, 0, 0>(),
         ],
+        enabler,
         combination_limb_0_col156,
         combination_limb_1_col157,
         combination_limb_2_col158,
@@ -823,7 +831,7 @@ pub fn poseidon_hades_permutation_evaluate(
             ]
                 .span(),
         );
-    numerator_19 = qm31_const::<1, 0, 0, 0>();
+    numerator_19 = enabler;
 
     poseidon_full_round_chain_sum_20 = common_lookup_elements
         .combine_qm31(
@@ -863,7 +871,7 @@ pub fn poseidon_hades_permutation_evaluate(
             ]
                 .span(),
         );
-    numerator_20 = qm31_const::<1, 0, 0, 0>();
+    numerator_20 = enabler;
 
     []
 }

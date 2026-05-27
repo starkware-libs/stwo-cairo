@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn create_blake_output_evaluate(
     input: [QM31; 48],
+    enabler: QM31,
     triple_xor_32_output_limb_0_col0: QM31,
     triple_xor_32_output_limb_1_col1: QM31,
     triple_xor_32_output_limb_0_col2: QM31,
@@ -104,7 +105,7 @@ pub fn create_blake_output_evaluate(
             ]
                 .span(),
         );
-    numerator_0 = qm31_const::<1, 0, 0, 0>();
+    numerator_0 = enabler;
 
     triple_xor_32_sum_1 = common_lookup_elements
         .combine_qm31(
@@ -117,7 +118,7 @@ pub fn create_blake_output_evaluate(
             ]
                 .span(),
         );
-    numerator_1 = qm31_const::<1, 0, 0, 0>();
+    numerator_1 = enabler;
 
     triple_xor_32_sum_2 = common_lookup_elements
         .combine_qm31(
@@ -130,7 +131,7 @@ pub fn create_blake_output_evaluate(
             ]
                 .span(),
         );
-    numerator_2 = qm31_const::<1, 0, 0, 0>();
+    numerator_2 = enabler;
 
     triple_xor_32_sum_3 = common_lookup_elements
         .combine_qm31(
@@ -143,7 +144,7 @@ pub fn create_blake_output_evaluate(
             ]
                 .span(),
         );
-    numerator_3 = qm31_const::<1, 0, 0, 0>();
+    numerator_3 = enabler;
 
     triple_xor_32_sum_4 = common_lookup_elements
         .combine_qm31(
@@ -156,7 +157,7 @@ pub fn create_blake_output_evaluate(
             ]
                 .span(),
         );
-    numerator_4 = qm31_const::<1, 0, 0, 0>();
+    numerator_4 = enabler;
 
     triple_xor_32_sum_5 = common_lookup_elements
         .combine_qm31(
@@ -169,7 +170,7 @@ pub fn create_blake_output_evaluate(
             ]
                 .span(),
         );
-    numerator_5 = qm31_const::<1, 0, 0, 0>();
+    numerator_5 = enabler;
 
     triple_xor_32_sum_6 = common_lookup_elements
         .combine_qm31(
@@ -182,7 +183,7 @@ pub fn create_blake_output_evaluate(
             ]
                 .span(),
         );
-    numerator_6 = qm31_const::<1, 0, 0, 0>();
+    numerator_6 = enabler;
 
     triple_xor_32_sum_7 = common_lookup_elements
         .combine_qm31(
@@ -195,7 +196,7 @@ pub fn create_blake_output_evaluate(
             ]
                 .span(),
         );
-    numerator_7 = qm31_const::<1, 0, 0, 0>();
+    numerator_7 = enabler;
 
     []
 }

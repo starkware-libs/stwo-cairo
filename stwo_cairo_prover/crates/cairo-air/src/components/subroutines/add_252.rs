@@ -16,6 +16,7 @@ impl Add252 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [add_252_input_a_limb_0, add_252_input_a_limb_1, add_252_input_a_limb_2, add_252_input_a_limb_3, add_252_input_a_limb_4, add_252_input_a_limb_5, add_252_input_a_limb_6, add_252_input_a_limb_7, add_252_input_a_limb_8, add_252_input_a_limb_9, add_252_input_a_limb_10, add_252_input_a_limb_11, add_252_input_a_limb_12, add_252_input_a_limb_13, add_252_input_a_limb_14, add_252_input_a_limb_15, add_252_input_a_limb_16, add_252_input_a_limb_17, add_252_input_a_limb_18, add_252_input_a_limb_19, add_252_input_a_limb_20, add_252_input_a_limb_21, add_252_input_a_limb_22, add_252_input_a_limb_23, add_252_input_a_limb_24, add_252_input_a_limb_25, add_252_input_a_limb_26, add_252_input_a_limb_27, add_252_input_b_limb_0, add_252_input_b_limb_1, add_252_input_b_limb_2, add_252_input_b_limb_3, add_252_input_b_limb_4, add_252_input_b_limb_5, add_252_input_b_limb_6, add_252_input_b_limb_7, add_252_input_b_limb_8, add_252_input_b_limb_9, add_252_input_b_limb_10, add_252_input_b_limb_11, add_252_input_b_limb_12, add_252_input_b_limb_13, add_252_input_b_limb_14, add_252_input_b_limb_15, add_252_input_b_limb_16, add_252_input_b_limb_17, add_252_input_b_limb_18, add_252_input_b_limb_19, add_252_input_b_limb_20, add_252_input_b_limb_21, add_252_input_b_limb_22, add_252_input_b_limb_23, add_252_input_b_limb_24, add_252_input_b_limb_25, add_252_input_b_limb_26, add_252_input_b_limb_27]: [E::F; 56],
+        enabler: E::F,
         add_res_limb_0_col0: E::F,
         add_res_limb_1_col1: E::F,
         add_res_limb_2_col2: E::F,
@@ -79,6 +80,7 @@ impl Add252 {
                 add_res_limb_26_col26.clone(),
                 add_res_limb_27_col27.clone(),
             ],
+            enabler.clone(),
             common_lookup_elements,
             eval,
         );
@@ -169,6 +171,7 @@ impl Add252 {
                 add_res_limb_26_col26.clone(),
                 add_res_limb_27_col27.clone(),
             ],
+            enabler.clone(),
             sub_p_bit_col28.clone(),
             common_lookup_elements,
             eval,

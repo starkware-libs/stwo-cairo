@@ -226,574 +226,577 @@ pub impl AirComponentImpl of AirComponent<Component> {
         let mut numerator_66: QM31 = Zero::zero();
 
         let [
-            input_pc_col0,
-            input_ap_col1,
-            input_fp_col2,
-            offset0_col3,
-            offset1_col4,
-            offset2_col5,
-            dst_base_fp_col6,
-            op0_base_fp_col7,
-            op1_imm_col8,
-            op1_base_fp_col9,
-            op1_base_ap_col10,
-            res_add_col11,
-            res_mul_col12,
-            pc_update_jump_col13,
-            pc_update_jump_rel_col14,
-            pc_update_jnz_col15,
-            ap_update_add_col16,
-            ap_update_add_1_col17,
-            opcode_call_col18,
-            opcode_ret_col19,
-            opcode_assert_eq_col20,
-            dst_src_col21,
-            dst_id_col22,
-            dst_limb_0_col23,
-            dst_limb_1_col24,
-            dst_limb_2_col25,
-            dst_limb_3_col26,
-            dst_limb_4_col27,
-            dst_limb_5_col28,
-            dst_limb_6_col29,
-            dst_limb_7_col30,
-            dst_limb_8_col31,
-            dst_limb_9_col32,
-            dst_limb_10_col33,
-            dst_limb_11_col34,
-            dst_limb_12_col35,
-            dst_limb_13_col36,
-            dst_limb_14_col37,
-            dst_limb_15_col38,
-            dst_limb_16_col39,
-            dst_limb_17_col40,
-            dst_limb_18_col41,
-            dst_limb_19_col42,
-            dst_limb_20_col43,
-            dst_limb_21_col44,
-            dst_limb_22_col45,
-            dst_limb_23_col46,
-            dst_limb_24_col47,
-            dst_limb_25_col48,
-            dst_limb_26_col49,
-            dst_limb_27_col50,
-            op0_src_col51,
-            op0_id_col52,
-            op0_limb_0_col53,
-            op0_limb_1_col54,
-            op0_limb_2_col55,
-            op0_limb_3_col56,
-            op0_limb_4_col57,
-            op0_limb_5_col58,
-            op0_limb_6_col59,
-            op0_limb_7_col60,
-            op0_limb_8_col61,
-            op0_limb_9_col62,
-            op0_limb_10_col63,
-            op0_limb_11_col64,
-            op0_limb_12_col65,
-            op0_limb_13_col66,
-            op0_limb_14_col67,
-            op0_limb_15_col68,
-            op0_limb_16_col69,
-            op0_limb_17_col70,
-            op0_limb_18_col71,
-            op0_limb_19_col72,
-            op0_limb_20_col73,
-            op0_limb_21_col74,
-            op0_limb_22_col75,
-            op0_limb_23_col76,
-            op0_limb_24_col77,
-            op0_limb_25_col78,
-            op0_limb_26_col79,
-            op0_limb_27_col80,
-            partial_limb_msb_col81,
-            op1_src_col82,
-            op1_id_col83,
-            op1_limb_0_col84,
-            op1_limb_1_col85,
-            op1_limb_2_col86,
-            op1_limb_3_col87,
-            op1_limb_4_col88,
-            op1_limb_5_col89,
-            op1_limb_6_col90,
-            op1_limb_7_col91,
-            op1_limb_8_col92,
-            op1_limb_9_col93,
-            op1_limb_10_col94,
-            op1_limb_11_col95,
-            op1_limb_12_col96,
-            op1_limb_13_col97,
-            op1_limb_14_col98,
-            op1_limb_15_col99,
-            op1_limb_16_col100,
-            op1_limb_17_col101,
-            op1_limb_18_col102,
-            op1_limb_19_col103,
-            op1_limb_20_col104,
-            op1_limb_21_col105,
-            op1_limb_22_col106,
-            op1_limb_23_col107,
-            op1_limb_24_col108,
-            op1_limb_25_col109,
-            op1_limb_26_col110,
-            op1_limb_27_col111,
-            add_res_limb_0_col112,
-            add_res_limb_1_col113,
-            add_res_limb_2_col114,
-            add_res_limb_3_col115,
-            add_res_limb_4_col116,
-            add_res_limb_5_col117,
-            add_res_limb_6_col118,
-            add_res_limb_7_col119,
-            add_res_limb_8_col120,
-            add_res_limb_9_col121,
-            add_res_limb_10_col122,
-            add_res_limb_11_col123,
-            add_res_limb_12_col124,
-            add_res_limb_13_col125,
-            add_res_limb_14_col126,
-            add_res_limb_15_col127,
-            add_res_limb_16_col128,
-            add_res_limb_17_col129,
-            add_res_limb_18_col130,
-            add_res_limb_19_col131,
-            add_res_limb_20_col132,
-            add_res_limb_21_col133,
-            add_res_limb_22_col134,
-            add_res_limb_23_col135,
-            add_res_limb_24_col136,
-            add_res_limb_25_col137,
-            add_res_limb_26_col138,
-            add_res_limb_27_col139,
-            sub_p_bit_col140,
-            mul_res_limb_0_col141,
-            mul_res_limb_1_col142,
-            mul_res_limb_2_col143,
-            mul_res_limb_3_col144,
-            mul_res_limb_4_col145,
-            mul_res_limb_5_col146,
-            mul_res_limb_6_col147,
-            mul_res_limb_7_col148,
-            mul_res_limb_8_col149,
-            mul_res_limb_9_col150,
-            mul_res_limb_10_col151,
-            mul_res_limb_11_col152,
-            mul_res_limb_12_col153,
-            mul_res_limb_13_col154,
-            mul_res_limb_14_col155,
-            mul_res_limb_15_col156,
-            mul_res_limb_16_col157,
-            mul_res_limb_17_col158,
-            mul_res_limb_18_col159,
-            mul_res_limb_19_col160,
-            mul_res_limb_20_col161,
-            mul_res_limb_21_col162,
-            mul_res_limb_22_col163,
-            mul_res_limb_23_col164,
-            mul_res_limb_24_col165,
-            mul_res_limb_25_col166,
-            mul_res_limb_26_col167,
-            mul_res_limb_27_col168,
-            k_col169,
-            carry_0_col170,
-            carry_1_col171,
-            carry_2_col172,
-            carry_3_col173,
-            carry_4_col174,
-            carry_5_col175,
-            carry_6_col176,
-            carry_7_col177,
-            carry_8_col178,
-            carry_9_col179,
-            carry_10_col180,
-            carry_11_col181,
-            carry_12_col182,
-            carry_13_col183,
-            carry_14_col184,
-            carry_15_col185,
-            carry_16_col186,
-            carry_17_col187,
-            carry_18_col188,
-            carry_19_col189,
-            carry_20_col190,
-            carry_21_col191,
-            carry_22_col192,
-            carry_23_col193,
-            carry_24_col194,
-            carry_25_col195,
-            carry_26_col196,
-            res_limb_0_col197,
-            res_limb_1_col198,
-            res_limb_2_col199,
-            res_limb_3_col200,
-            res_limb_4_col201,
-            res_limb_5_col202,
-            res_limb_6_col203,
-            res_limb_7_col204,
-            res_limb_8_col205,
-            res_limb_9_col206,
-            res_limb_10_col207,
-            res_limb_11_col208,
-            res_limb_12_col209,
-            res_limb_13_col210,
-            res_limb_14_col211,
-            res_limb_15_col212,
-            res_limb_16_col213,
-            res_limb_17_col214,
-            res_limb_18_col215,
-            res_limb_19_col216,
-            res_limb_20_col217,
-            res_limb_21_col218,
-            res_limb_22_col219,
-            res_limb_23_col220,
-            res_limb_24_col221,
-            res_limb_25_col222,
-            res_limb_26_col223,
-            res_limb_27_col224,
-            partial_limb_msb_col225,
+            enabler_col0,
+            input_pc_col1,
+            input_ap_col2,
+            input_fp_col3,
+            offset0_col4,
+            offset1_col5,
+            offset2_col6,
+            dst_base_fp_col7,
+            op0_base_fp_col8,
+            op1_imm_col9,
+            op1_base_fp_col10,
+            op1_base_ap_col11,
+            res_add_col12,
+            res_mul_col13,
+            pc_update_jump_col14,
+            pc_update_jump_rel_col15,
+            pc_update_jnz_col16,
+            ap_update_add_col17,
+            ap_update_add_1_col18,
+            opcode_call_col19,
+            opcode_ret_col20,
+            opcode_assert_eq_col21,
+            dst_src_col22,
+            dst_id_col23,
+            dst_limb_0_col24,
+            dst_limb_1_col25,
+            dst_limb_2_col26,
+            dst_limb_3_col27,
+            dst_limb_4_col28,
+            dst_limb_5_col29,
+            dst_limb_6_col30,
+            dst_limb_7_col31,
+            dst_limb_8_col32,
+            dst_limb_9_col33,
+            dst_limb_10_col34,
+            dst_limb_11_col35,
+            dst_limb_12_col36,
+            dst_limb_13_col37,
+            dst_limb_14_col38,
+            dst_limb_15_col39,
+            dst_limb_16_col40,
+            dst_limb_17_col41,
+            dst_limb_18_col42,
+            dst_limb_19_col43,
+            dst_limb_20_col44,
+            dst_limb_21_col45,
+            dst_limb_22_col46,
+            dst_limb_23_col47,
+            dst_limb_24_col48,
+            dst_limb_25_col49,
+            dst_limb_26_col50,
+            dst_limb_27_col51,
+            op0_src_col52,
+            op0_id_col53,
+            op0_limb_0_col54,
+            op0_limb_1_col55,
+            op0_limb_2_col56,
+            op0_limb_3_col57,
+            op0_limb_4_col58,
+            op0_limb_5_col59,
+            op0_limb_6_col60,
+            op0_limb_7_col61,
+            op0_limb_8_col62,
+            op0_limb_9_col63,
+            op0_limb_10_col64,
+            op0_limb_11_col65,
+            op0_limb_12_col66,
+            op0_limb_13_col67,
+            op0_limb_14_col68,
+            op0_limb_15_col69,
+            op0_limb_16_col70,
+            op0_limb_17_col71,
+            op0_limb_18_col72,
+            op0_limb_19_col73,
+            op0_limb_20_col74,
+            op0_limb_21_col75,
+            op0_limb_22_col76,
+            op0_limb_23_col77,
+            op0_limb_24_col78,
+            op0_limb_25_col79,
+            op0_limb_26_col80,
+            op0_limb_27_col81,
+            partial_limb_msb_col82,
+            op1_src_col83,
+            op1_id_col84,
+            op1_limb_0_col85,
+            op1_limb_1_col86,
+            op1_limb_2_col87,
+            op1_limb_3_col88,
+            op1_limb_4_col89,
+            op1_limb_5_col90,
+            op1_limb_6_col91,
+            op1_limb_7_col92,
+            op1_limb_8_col93,
+            op1_limb_9_col94,
+            op1_limb_10_col95,
+            op1_limb_11_col96,
+            op1_limb_12_col97,
+            op1_limb_13_col98,
+            op1_limb_14_col99,
+            op1_limb_15_col100,
+            op1_limb_16_col101,
+            op1_limb_17_col102,
+            op1_limb_18_col103,
+            op1_limb_19_col104,
+            op1_limb_20_col105,
+            op1_limb_21_col106,
+            op1_limb_22_col107,
+            op1_limb_23_col108,
+            op1_limb_24_col109,
+            op1_limb_25_col110,
+            op1_limb_26_col111,
+            op1_limb_27_col112,
+            add_res_limb_0_col113,
+            add_res_limb_1_col114,
+            add_res_limb_2_col115,
+            add_res_limb_3_col116,
+            add_res_limb_4_col117,
+            add_res_limb_5_col118,
+            add_res_limb_6_col119,
+            add_res_limb_7_col120,
+            add_res_limb_8_col121,
+            add_res_limb_9_col122,
+            add_res_limb_10_col123,
+            add_res_limb_11_col124,
+            add_res_limb_12_col125,
+            add_res_limb_13_col126,
+            add_res_limb_14_col127,
+            add_res_limb_15_col128,
+            add_res_limb_16_col129,
+            add_res_limb_17_col130,
+            add_res_limb_18_col131,
+            add_res_limb_19_col132,
+            add_res_limb_20_col133,
+            add_res_limb_21_col134,
+            add_res_limb_22_col135,
+            add_res_limb_23_col136,
+            add_res_limb_24_col137,
+            add_res_limb_25_col138,
+            add_res_limb_26_col139,
+            add_res_limb_27_col140,
+            sub_p_bit_col141,
+            mul_res_limb_0_col142,
+            mul_res_limb_1_col143,
+            mul_res_limb_2_col144,
+            mul_res_limb_3_col145,
+            mul_res_limb_4_col146,
+            mul_res_limb_5_col147,
+            mul_res_limb_6_col148,
+            mul_res_limb_7_col149,
+            mul_res_limb_8_col150,
+            mul_res_limb_9_col151,
+            mul_res_limb_10_col152,
+            mul_res_limb_11_col153,
+            mul_res_limb_12_col154,
+            mul_res_limb_13_col155,
+            mul_res_limb_14_col156,
+            mul_res_limb_15_col157,
+            mul_res_limb_16_col158,
+            mul_res_limb_17_col159,
+            mul_res_limb_18_col160,
+            mul_res_limb_19_col161,
+            mul_res_limb_20_col162,
+            mul_res_limb_21_col163,
+            mul_res_limb_22_col164,
+            mul_res_limb_23_col165,
+            mul_res_limb_24_col166,
+            mul_res_limb_25_col167,
+            mul_res_limb_26_col168,
+            mul_res_limb_27_col169,
+            k_col170,
+            carry_0_col171,
+            carry_1_col172,
+            carry_2_col173,
+            carry_3_col174,
+            carry_4_col175,
+            carry_5_col176,
+            carry_6_col177,
+            carry_7_col178,
+            carry_8_col179,
+            carry_9_col180,
+            carry_10_col181,
+            carry_11_col182,
+            carry_12_col183,
+            carry_13_col184,
+            carry_14_col185,
+            carry_15_col186,
+            carry_16_col187,
+            carry_17_col188,
+            carry_18_col189,
+            carry_19_col190,
+            carry_20_col191,
+            carry_21_col192,
+            carry_22_col193,
+            carry_23_col194,
+            carry_24_col195,
+            carry_25_col196,
+            carry_26_col197,
+            res_limb_0_col198,
+            res_limb_1_col199,
+            res_limb_2_col200,
+            res_limb_3_col201,
+            res_limb_4_col202,
+            res_limb_5_col203,
+            res_limb_6_col204,
+            res_limb_7_col205,
+            res_limb_8_col206,
+            res_limb_9_col207,
+            res_limb_10_col208,
+            res_limb_11_col209,
+            res_limb_12_col210,
+            res_limb_13_col211,
+            res_limb_14_col212,
+            res_limb_15_col213,
+            res_limb_16_col214,
+            res_limb_17_col215,
+            res_limb_18_col216,
+            res_limb_19_col217,
+            res_limb_20_col218,
+            res_limb_21_col219,
+            res_limb_22_col220,
+            res_limb_23_col221,
+            res_limb_24_col222,
+            res_limb_25_col223,
+            res_limb_26_col224,
+            res_limb_27_col225,
             partial_limb_msb_col226,
             partial_limb_msb_col227,
-            msb_col228,
-            mid_limbs_set_col229,
-            partial_limb_msb_col230,
-            dst_sum_squares_inv_col231,
-            dst_sum_inv_col232,
-            op1_as_rel_imm_cond_col233,
-            msb_col234,
-            mid_limbs_set_col235,
-            partial_limb_msb_col236,
-            next_pc_jnz_col237,
-            next_pc_col238,
-            next_ap_col239,
-            range_check_29_bot11bits_col240,
-            next_fp_col241,
-            enabler_col242,
+            partial_limb_msb_col228,
+            msb_col229,
+            mid_limbs_set_col230,
+            partial_limb_msb_col231,
+            dst_sum_squares_inv_col232,
+            dst_sum_inv_col233,
+            op1_as_rel_imm_cond_col234,
+            msb_col235,
+            mid_limbs_set_col236,
+            partial_limb_msb_col237,
+            next_pc_jnz_col238,
+            next_pc_col239,
+            next_ap_col240,
+            range_check_29_bot11bits_col241,
+            next_fp_col242,
         ]: [Span<QM31>; 243] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
             .unbox();
-        let [input_pc_col0]: [QM31; 1] = (*input_pc_col0.try_into().unwrap()).unbox();
-        let [input_ap_col1]: [QM31; 1] = (*input_ap_col1.try_into().unwrap()).unbox();
-        let [input_fp_col2]: [QM31; 1] = (*input_fp_col2.try_into().unwrap()).unbox();
-        let [offset0_col3]: [QM31; 1] = (*offset0_col3.try_into().unwrap()).unbox();
-        let [offset1_col4]: [QM31; 1] = (*offset1_col4.try_into().unwrap()).unbox();
-        let [offset2_col5]: [QM31; 1] = (*offset2_col5.try_into().unwrap()).unbox();
-        let [dst_base_fp_col6]: [QM31; 1] = (*dst_base_fp_col6.try_into().unwrap()).unbox();
-        let [op0_base_fp_col7]: [QM31; 1] = (*op0_base_fp_col7.try_into().unwrap()).unbox();
-        let [op1_imm_col8]: [QM31; 1] = (*op1_imm_col8.try_into().unwrap()).unbox();
-        let [op1_base_fp_col9]: [QM31; 1] = (*op1_base_fp_col9.try_into().unwrap()).unbox();
-        let [op1_base_ap_col10]: [QM31; 1] = (*op1_base_ap_col10.try_into().unwrap()).unbox();
-        let [res_add_col11]: [QM31; 1] = (*res_add_col11.try_into().unwrap()).unbox();
-        let [res_mul_col12]: [QM31; 1] = (*res_mul_col12.try_into().unwrap()).unbox();
-        let [pc_update_jump_col13]: [QM31; 1] = (*pc_update_jump_col13.try_into().unwrap()).unbox();
-        let [pc_update_jump_rel_col14]: [QM31; 1] = (*pc_update_jump_rel_col14.try_into().unwrap())
+        let [enabler_col0]: [QM31; 1] = (*enabler_col0.try_into().unwrap()).unbox();
+        let [input_pc_col1]: [QM31; 1] = (*input_pc_col1.try_into().unwrap()).unbox();
+        let [input_ap_col2]: [QM31; 1] = (*input_ap_col2.try_into().unwrap()).unbox();
+        let [input_fp_col3]: [QM31; 1] = (*input_fp_col3.try_into().unwrap()).unbox();
+        let [offset0_col4]: [QM31; 1] = (*offset0_col4.try_into().unwrap()).unbox();
+        let [offset1_col5]: [QM31; 1] = (*offset1_col5.try_into().unwrap()).unbox();
+        let [offset2_col6]: [QM31; 1] = (*offset2_col6.try_into().unwrap()).unbox();
+        let [dst_base_fp_col7]: [QM31; 1] = (*dst_base_fp_col7.try_into().unwrap()).unbox();
+        let [op0_base_fp_col8]: [QM31; 1] = (*op0_base_fp_col8.try_into().unwrap()).unbox();
+        let [op1_imm_col9]: [QM31; 1] = (*op1_imm_col9.try_into().unwrap()).unbox();
+        let [op1_base_fp_col10]: [QM31; 1] = (*op1_base_fp_col10.try_into().unwrap()).unbox();
+        let [op1_base_ap_col11]: [QM31; 1] = (*op1_base_ap_col11.try_into().unwrap()).unbox();
+        let [res_add_col12]: [QM31; 1] = (*res_add_col12.try_into().unwrap()).unbox();
+        let [res_mul_col13]: [QM31; 1] = (*res_mul_col13.try_into().unwrap()).unbox();
+        let [pc_update_jump_col14]: [QM31; 1] = (*pc_update_jump_col14.try_into().unwrap()).unbox();
+        let [pc_update_jump_rel_col15]: [QM31; 1] = (*pc_update_jump_rel_col15.try_into().unwrap())
             .unbox();
-        let [pc_update_jnz_col15]: [QM31; 1] = (*pc_update_jnz_col15.try_into().unwrap()).unbox();
-        let [ap_update_add_col16]: [QM31; 1] = (*ap_update_add_col16.try_into().unwrap()).unbox();
-        let [ap_update_add_1_col17]: [QM31; 1] = (*ap_update_add_1_col17.try_into().unwrap())
+        let [pc_update_jnz_col16]: [QM31; 1] = (*pc_update_jnz_col16.try_into().unwrap()).unbox();
+        let [ap_update_add_col17]: [QM31; 1] = (*ap_update_add_col17.try_into().unwrap()).unbox();
+        let [ap_update_add_1_col18]: [QM31; 1] = (*ap_update_add_1_col18.try_into().unwrap())
             .unbox();
-        let [opcode_call_col18]: [QM31; 1] = (*opcode_call_col18.try_into().unwrap()).unbox();
-        let [opcode_ret_col19]: [QM31; 1] = (*opcode_ret_col19.try_into().unwrap()).unbox();
-        let [opcode_assert_eq_col20]: [QM31; 1] = (*opcode_assert_eq_col20.try_into().unwrap())
+        let [opcode_call_col19]: [QM31; 1] = (*opcode_call_col19.try_into().unwrap()).unbox();
+        let [opcode_ret_col20]: [QM31; 1] = (*opcode_ret_col20.try_into().unwrap()).unbox();
+        let [opcode_assert_eq_col21]: [QM31; 1] = (*opcode_assert_eq_col21.try_into().unwrap())
             .unbox();
-        let [dst_src_col21]: [QM31; 1] = (*dst_src_col21.try_into().unwrap()).unbox();
-        let [dst_id_col22]: [QM31; 1] = (*dst_id_col22.try_into().unwrap()).unbox();
-        let [dst_limb_0_col23]: [QM31; 1] = (*dst_limb_0_col23.try_into().unwrap()).unbox();
-        let [dst_limb_1_col24]: [QM31; 1] = (*dst_limb_1_col24.try_into().unwrap()).unbox();
-        let [dst_limb_2_col25]: [QM31; 1] = (*dst_limb_2_col25.try_into().unwrap()).unbox();
-        let [dst_limb_3_col26]: [QM31; 1] = (*dst_limb_3_col26.try_into().unwrap()).unbox();
-        let [dst_limb_4_col27]: [QM31; 1] = (*dst_limb_4_col27.try_into().unwrap()).unbox();
-        let [dst_limb_5_col28]: [QM31; 1] = (*dst_limb_5_col28.try_into().unwrap()).unbox();
-        let [dst_limb_6_col29]: [QM31; 1] = (*dst_limb_6_col29.try_into().unwrap()).unbox();
-        let [dst_limb_7_col30]: [QM31; 1] = (*dst_limb_7_col30.try_into().unwrap()).unbox();
-        let [dst_limb_8_col31]: [QM31; 1] = (*dst_limb_8_col31.try_into().unwrap()).unbox();
-        let [dst_limb_9_col32]: [QM31; 1] = (*dst_limb_9_col32.try_into().unwrap()).unbox();
-        let [dst_limb_10_col33]: [QM31; 1] = (*dst_limb_10_col33.try_into().unwrap()).unbox();
-        let [dst_limb_11_col34]: [QM31; 1] = (*dst_limb_11_col34.try_into().unwrap()).unbox();
-        let [dst_limb_12_col35]: [QM31; 1] = (*dst_limb_12_col35.try_into().unwrap()).unbox();
-        let [dst_limb_13_col36]: [QM31; 1] = (*dst_limb_13_col36.try_into().unwrap()).unbox();
-        let [dst_limb_14_col37]: [QM31; 1] = (*dst_limb_14_col37.try_into().unwrap()).unbox();
-        let [dst_limb_15_col38]: [QM31; 1] = (*dst_limb_15_col38.try_into().unwrap()).unbox();
-        let [dst_limb_16_col39]: [QM31; 1] = (*dst_limb_16_col39.try_into().unwrap()).unbox();
-        let [dst_limb_17_col40]: [QM31; 1] = (*dst_limb_17_col40.try_into().unwrap()).unbox();
-        let [dst_limb_18_col41]: [QM31; 1] = (*dst_limb_18_col41.try_into().unwrap()).unbox();
-        let [dst_limb_19_col42]: [QM31; 1] = (*dst_limb_19_col42.try_into().unwrap()).unbox();
-        let [dst_limb_20_col43]: [QM31; 1] = (*dst_limb_20_col43.try_into().unwrap()).unbox();
-        let [dst_limb_21_col44]: [QM31; 1] = (*dst_limb_21_col44.try_into().unwrap()).unbox();
-        let [dst_limb_22_col45]: [QM31; 1] = (*dst_limb_22_col45.try_into().unwrap()).unbox();
-        let [dst_limb_23_col46]: [QM31; 1] = (*dst_limb_23_col46.try_into().unwrap()).unbox();
-        let [dst_limb_24_col47]: [QM31; 1] = (*dst_limb_24_col47.try_into().unwrap()).unbox();
-        let [dst_limb_25_col48]: [QM31; 1] = (*dst_limb_25_col48.try_into().unwrap()).unbox();
-        let [dst_limb_26_col49]: [QM31; 1] = (*dst_limb_26_col49.try_into().unwrap()).unbox();
-        let [dst_limb_27_col50]: [QM31; 1] = (*dst_limb_27_col50.try_into().unwrap()).unbox();
-        let [op0_src_col51]: [QM31; 1] = (*op0_src_col51.try_into().unwrap()).unbox();
-        let [op0_id_col52]: [QM31; 1] = (*op0_id_col52.try_into().unwrap()).unbox();
-        let [op0_limb_0_col53]: [QM31; 1] = (*op0_limb_0_col53.try_into().unwrap()).unbox();
-        let [op0_limb_1_col54]: [QM31; 1] = (*op0_limb_1_col54.try_into().unwrap()).unbox();
-        let [op0_limb_2_col55]: [QM31; 1] = (*op0_limb_2_col55.try_into().unwrap()).unbox();
-        let [op0_limb_3_col56]: [QM31; 1] = (*op0_limb_3_col56.try_into().unwrap()).unbox();
-        let [op0_limb_4_col57]: [QM31; 1] = (*op0_limb_4_col57.try_into().unwrap()).unbox();
-        let [op0_limb_5_col58]: [QM31; 1] = (*op0_limb_5_col58.try_into().unwrap()).unbox();
-        let [op0_limb_6_col59]: [QM31; 1] = (*op0_limb_6_col59.try_into().unwrap()).unbox();
-        let [op0_limb_7_col60]: [QM31; 1] = (*op0_limb_7_col60.try_into().unwrap()).unbox();
-        let [op0_limb_8_col61]: [QM31; 1] = (*op0_limb_8_col61.try_into().unwrap()).unbox();
-        let [op0_limb_9_col62]: [QM31; 1] = (*op0_limb_9_col62.try_into().unwrap()).unbox();
-        let [op0_limb_10_col63]: [QM31; 1] = (*op0_limb_10_col63.try_into().unwrap()).unbox();
-        let [op0_limb_11_col64]: [QM31; 1] = (*op0_limb_11_col64.try_into().unwrap()).unbox();
-        let [op0_limb_12_col65]: [QM31; 1] = (*op0_limb_12_col65.try_into().unwrap()).unbox();
-        let [op0_limb_13_col66]: [QM31; 1] = (*op0_limb_13_col66.try_into().unwrap()).unbox();
-        let [op0_limb_14_col67]: [QM31; 1] = (*op0_limb_14_col67.try_into().unwrap()).unbox();
-        let [op0_limb_15_col68]: [QM31; 1] = (*op0_limb_15_col68.try_into().unwrap()).unbox();
-        let [op0_limb_16_col69]: [QM31; 1] = (*op0_limb_16_col69.try_into().unwrap()).unbox();
-        let [op0_limb_17_col70]: [QM31; 1] = (*op0_limb_17_col70.try_into().unwrap()).unbox();
-        let [op0_limb_18_col71]: [QM31; 1] = (*op0_limb_18_col71.try_into().unwrap()).unbox();
-        let [op0_limb_19_col72]: [QM31; 1] = (*op0_limb_19_col72.try_into().unwrap()).unbox();
-        let [op0_limb_20_col73]: [QM31; 1] = (*op0_limb_20_col73.try_into().unwrap()).unbox();
-        let [op0_limb_21_col74]: [QM31; 1] = (*op0_limb_21_col74.try_into().unwrap()).unbox();
-        let [op0_limb_22_col75]: [QM31; 1] = (*op0_limb_22_col75.try_into().unwrap()).unbox();
-        let [op0_limb_23_col76]: [QM31; 1] = (*op0_limb_23_col76.try_into().unwrap()).unbox();
-        let [op0_limb_24_col77]: [QM31; 1] = (*op0_limb_24_col77.try_into().unwrap()).unbox();
-        let [op0_limb_25_col78]: [QM31; 1] = (*op0_limb_25_col78.try_into().unwrap()).unbox();
-        let [op0_limb_26_col79]: [QM31; 1] = (*op0_limb_26_col79.try_into().unwrap()).unbox();
-        let [op0_limb_27_col80]: [QM31; 1] = (*op0_limb_27_col80.try_into().unwrap()).unbox();
-        let [partial_limb_msb_col81]: [QM31; 1] = (*partial_limb_msb_col81.try_into().unwrap())
+        let [dst_src_col22]: [QM31; 1] = (*dst_src_col22.try_into().unwrap()).unbox();
+        let [dst_id_col23]: [QM31; 1] = (*dst_id_col23.try_into().unwrap()).unbox();
+        let [dst_limb_0_col24]: [QM31; 1] = (*dst_limb_0_col24.try_into().unwrap()).unbox();
+        let [dst_limb_1_col25]: [QM31; 1] = (*dst_limb_1_col25.try_into().unwrap()).unbox();
+        let [dst_limb_2_col26]: [QM31; 1] = (*dst_limb_2_col26.try_into().unwrap()).unbox();
+        let [dst_limb_3_col27]: [QM31; 1] = (*dst_limb_3_col27.try_into().unwrap()).unbox();
+        let [dst_limb_4_col28]: [QM31; 1] = (*dst_limb_4_col28.try_into().unwrap()).unbox();
+        let [dst_limb_5_col29]: [QM31; 1] = (*dst_limb_5_col29.try_into().unwrap()).unbox();
+        let [dst_limb_6_col30]: [QM31; 1] = (*dst_limb_6_col30.try_into().unwrap()).unbox();
+        let [dst_limb_7_col31]: [QM31; 1] = (*dst_limb_7_col31.try_into().unwrap()).unbox();
+        let [dst_limb_8_col32]: [QM31; 1] = (*dst_limb_8_col32.try_into().unwrap()).unbox();
+        let [dst_limb_9_col33]: [QM31; 1] = (*dst_limb_9_col33.try_into().unwrap()).unbox();
+        let [dst_limb_10_col34]: [QM31; 1] = (*dst_limb_10_col34.try_into().unwrap()).unbox();
+        let [dst_limb_11_col35]: [QM31; 1] = (*dst_limb_11_col35.try_into().unwrap()).unbox();
+        let [dst_limb_12_col36]: [QM31; 1] = (*dst_limb_12_col36.try_into().unwrap()).unbox();
+        let [dst_limb_13_col37]: [QM31; 1] = (*dst_limb_13_col37.try_into().unwrap()).unbox();
+        let [dst_limb_14_col38]: [QM31; 1] = (*dst_limb_14_col38.try_into().unwrap()).unbox();
+        let [dst_limb_15_col39]: [QM31; 1] = (*dst_limb_15_col39.try_into().unwrap()).unbox();
+        let [dst_limb_16_col40]: [QM31; 1] = (*dst_limb_16_col40.try_into().unwrap()).unbox();
+        let [dst_limb_17_col41]: [QM31; 1] = (*dst_limb_17_col41.try_into().unwrap()).unbox();
+        let [dst_limb_18_col42]: [QM31; 1] = (*dst_limb_18_col42.try_into().unwrap()).unbox();
+        let [dst_limb_19_col43]: [QM31; 1] = (*dst_limb_19_col43.try_into().unwrap()).unbox();
+        let [dst_limb_20_col44]: [QM31; 1] = (*dst_limb_20_col44.try_into().unwrap()).unbox();
+        let [dst_limb_21_col45]: [QM31; 1] = (*dst_limb_21_col45.try_into().unwrap()).unbox();
+        let [dst_limb_22_col46]: [QM31; 1] = (*dst_limb_22_col46.try_into().unwrap()).unbox();
+        let [dst_limb_23_col47]: [QM31; 1] = (*dst_limb_23_col47.try_into().unwrap()).unbox();
+        let [dst_limb_24_col48]: [QM31; 1] = (*dst_limb_24_col48.try_into().unwrap()).unbox();
+        let [dst_limb_25_col49]: [QM31; 1] = (*dst_limb_25_col49.try_into().unwrap()).unbox();
+        let [dst_limb_26_col50]: [QM31; 1] = (*dst_limb_26_col50.try_into().unwrap()).unbox();
+        let [dst_limb_27_col51]: [QM31; 1] = (*dst_limb_27_col51.try_into().unwrap()).unbox();
+        let [op0_src_col52]: [QM31; 1] = (*op0_src_col52.try_into().unwrap()).unbox();
+        let [op0_id_col53]: [QM31; 1] = (*op0_id_col53.try_into().unwrap()).unbox();
+        let [op0_limb_0_col54]: [QM31; 1] = (*op0_limb_0_col54.try_into().unwrap()).unbox();
+        let [op0_limb_1_col55]: [QM31; 1] = (*op0_limb_1_col55.try_into().unwrap()).unbox();
+        let [op0_limb_2_col56]: [QM31; 1] = (*op0_limb_2_col56.try_into().unwrap()).unbox();
+        let [op0_limb_3_col57]: [QM31; 1] = (*op0_limb_3_col57.try_into().unwrap()).unbox();
+        let [op0_limb_4_col58]: [QM31; 1] = (*op0_limb_4_col58.try_into().unwrap()).unbox();
+        let [op0_limb_5_col59]: [QM31; 1] = (*op0_limb_5_col59.try_into().unwrap()).unbox();
+        let [op0_limb_6_col60]: [QM31; 1] = (*op0_limb_6_col60.try_into().unwrap()).unbox();
+        let [op0_limb_7_col61]: [QM31; 1] = (*op0_limb_7_col61.try_into().unwrap()).unbox();
+        let [op0_limb_8_col62]: [QM31; 1] = (*op0_limb_8_col62.try_into().unwrap()).unbox();
+        let [op0_limb_9_col63]: [QM31; 1] = (*op0_limb_9_col63.try_into().unwrap()).unbox();
+        let [op0_limb_10_col64]: [QM31; 1] = (*op0_limb_10_col64.try_into().unwrap()).unbox();
+        let [op0_limb_11_col65]: [QM31; 1] = (*op0_limb_11_col65.try_into().unwrap()).unbox();
+        let [op0_limb_12_col66]: [QM31; 1] = (*op0_limb_12_col66.try_into().unwrap()).unbox();
+        let [op0_limb_13_col67]: [QM31; 1] = (*op0_limb_13_col67.try_into().unwrap()).unbox();
+        let [op0_limb_14_col68]: [QM31; 1] = (*op0_limb_14_col68.try_into().unwrap()).unbox();
+        let [op0_limb_15_col69]: [QM31; 1] = (*op0_limb_15_col69.try_into().unwrap()).unbox();
+        let [op0_limb_16_col70]: [QM31; 1] = (*op0_limb_16_col70.try_into().unwrap()).unbox();
+        let [op0_limb_17_col71]: [QM31; 1] = (*op0_limb_17_col71.try_into().unwrap()).unbox();
+        let [op0_limb_18_col72]: [QM31; 1] = (*op0_limb_18_col72.try_into().unwrap()).unbox();
+        let [op0_limb_19_col73]: [QM31; 1] = (*op0_limb_19_col73.try_into().unwrap()).unbox();
+        let [op0_limb_20_col74]: [QM31; 1] = (*op0_limb_20_col74.try_into().unwrap()).unbox();
+        let [op0_limb_21_col75]: [QM31; 1] = (*op0_limb_21_col75.try_into().unwrap()).unbox();
+        let [op0_limb_22_col76]: [QM31; 1] = (*op0_limb_22_col76.try_into().unwrap()).unbox();
+        let [op0_limb_23_col77]: [QM31; 1] = (*op0_limb_23_col77.try_into().unwrap()).unbox();
+        let [op0_limb_24_col78]: [QM31; 1] = (*op0_limb_24_col78.try_into().unwrap()).unbox();
+        let [op0_limb_25_col79]: [QM31; 1] = (*op0_limb_25_col79.try_into().unwrap()).unbox();
+        let [op0_limb_26_col80]: [QM31; 1] = (*op0_limb_26_col80.try_into().unwrap()).unbox();
+        let [op0_limb_27_col81]: [QM31; 1] = (*op0_limb_27_col81.try_into().unwrap()).unbox();
+        let [partial_limb_msb_col82]: [QM31; 1] = (*partial_limb_msb_col82.try_into().unwrap())
             .unbox();
-        let [op1_src_col82]: [QM31; 1] = (*op1_src_col82.try_into().unwrap()).unbox();
-        let [op1_id_col83]: [QM31; 1] = (*op1_id_col83.try_into().unwrap()).unbox();
-        let [op1_limb_0_col84]: [QM31; 1] = (*op1_limb_0_col84.try_into().unwrap()).unbox();
-        let [op1_limb_1_col85]: [QM31; 1] = (*op1_limb_1_col85.try_into().unwrap()).unbox();
-        let [op1_limb_2_col86]: [QM31; 1] = (*op1_limb_2_col86.try_into().unwrap()).unbox();
-        let [op1_limb_3_col87]: [QM31; 1] = (*op1_limb_3_col87.try_into().unwrap()).unbox();
-        let [op1_limb_4_col88]: [QM31; 1] = (*op1_limb_4_col88.try_into().unwrap()).unbox();
-        let [op1_limb_5_col89]: [QM31; 1] = (*op1_limb_5_col89.try_into().unwrap()).unbox();
-        let [op1_limb_6_col90]: [QM31; 1] = (*op1_limb_6_col90.try_into().unwrap()).unbox();
-        let [op1_limb_7_col91]: [QM31; 1] = (*op1_limb_7_col91.try_into().unwrap()).unbox();
-        let [op1_limb_8_col92]: [QM31; 1] = (*op1_limb_8_col92.try_into().unwrap()).unbox();
-        let [op1_limb_9_col93]: [QM31; 1] = (*op1_limb_9_col93.try_into().unwrap()).unbox();
-        let [op1_limb_10_col94]: [QM31; 1] = (*op1_limb_10_col94.try_into().unwrap()).unbox();
-        let [op1_limb_11_col95]: [QM31; 1] = (*op1_limb_11_col95.try_into().unwrap()).unbox();
-        let [op1_limb_12_col96]: [QM31; 1] = (*op1_limb_12_col96.try_into().unwrap()).unbox();
-        let [op1_limb_13_col97]: [QM31; 1] = (*op1_limb_13_col97.try_into().unwrap()).unbox();
-        let [op1_limb_14_col98]: [QM31; 1] = (*op1_limb_14_col98.try_into().unwrap()).unbox();
-        let [op1_limb_15_col99]: [QM31; 1] = (*op1_limb_15_col99.try_into().unwrap()).unbox();
-        let [op1_limb_16_col100]: [QM31; 1] = (*op1_limb_16_col100.try_into().unwrap()).unbox();
-        let [op1_limb_17_col101]: [QM31; 1] = (*op1_limb_17_col101.try_into().unwrap()).unbox();
-        let [op1_limb_18_col102]: [QM31; 1] = (*op1_limb_18_col102.try_into().unwrap()).unbox();
-        let [op1_limb_19_col103]: [QM31; 1] = (*op1_limb_19_col103.try_into().unwrap()).unbox();
-        let [op1_limb_20_col104]: [QM31; 1] = (*op1_limb_20_col104.try_into().unwrap()).unbox();
-        let [op1_limb_21_col105]: [QM31; 1] = (*op1_limb_21_col105.try_into().unwrap()).unbox();
-        let [op1_limb_22_col106]: [QM31; 1] = (*op1_limb_22_col106.try_into().unwrap()).unbox();
-        let [op1_limb_23_col107]: [QM31; 1] = (*op1_limb_23_col107.try_into().unwrap()).unbox();
-        let [op1_limb_24_col108]: [QM31; 1] = (*op1_limb_24_col108.try_into().unwrap()).unbox();
-        let [op1_limb_25_col109]: [QM31; 1] = (*op1_limb_25_col109.try_into().unwrap()).unbox();
-        let [op1_limb_26_col110]: [QM31; 1] = (*op1_limb_26_col110.try_into().unwrap()).unbox();
-        let [op1_limb_27_col111]: [QM31; 1] = (*op1_limb_27_col111.try_into().unwrap()).unbox();
-        let [add_res_limb_0_col112]: [QM31; 1] = (*add_res_limb_0_col112.try_into().unwrap())
+        let [op1_src_col83]: [QM31; 1] = (*op1_src_col83.try_into().unwrap()).unbox();
+        let [op1_id_col84]: [QM31; 1] = (*op1_id_col84.try_into().unwrap()).unbox();
+        let [op1_limb_0_col85]: [QM31; 1] = (*op1_limb_0_col85.try_into().unwrap()).unbox();
+        let [op1_limb_1_col86]: [QM31; 1] = (*op1_limb_1_col86.try_into().unwrap()).unbox();
+        let [op1_limb_2_col87]: [QM31; 1] = (*op1_limb_2_col87.try_into().unwrap()).unbox();
+        let [op1_limb_3_col88]: [QM31; 1] = (*op1_limb_3_col88.try_into().unwrap()).unbox();
+        let [op1_limb_4_col89]: [QM31; 1] = (*op1_limb_4_col89.try_into().unwrap()).unbox();
+        let [op1_limb_5_col90]: [QM31; 1] = (*op1_limb_5_col90.try_into().unwrap()).unbox();
+        let [op1_limb_6_col91]: [QM31; 1] = (*op1_limb_6_col91.try_into().unwrap()).unbox();
+        let [op1_limb_7_col92]: [QM31; 1] = (*op1_limb_7_col92.try_into().unwrap()).unbox();
+        let [op1_limb_8_col93]: [QM31; 1] = (*op1_limb_8_col93.try_into().unwrap()).unbox();
+        let [op1_limb_9_col94]: [QM31; 1] = (*op1_limb_9_col94.try_into().unwrap()).unbox();
+        let [op1_limb_10_col95]: [QM31; 1] = (*op1_limb_10_col95.try_into().unwrap()).unbox();
+        let [op1_limb_11_col96]: [QM31; 1] = (*op1_limb_11_col96.try_into().unwrap()).unbox();
+        let [op1_limb_12_col97]: [QM31; 1] = (*op1_limb_12_col97.try_into().unwrap()).unbox();
+        let [op1_limb_13_col98]: [QM31; 1] = (*op1_limb_13_col98.try_into().unwrap()).unbox();
+        let [op1_limb_14_col99]: [QM31; 1] = (*op1_limb_14_col99.try_into().unwrap()).unbox();
+        let [op1_limb_15_col100]: [QM31; 1] = (*op1_limb_15_col100.try_into().unwrap()).unbox();
+        let [op1_limb_16_col101]: [QM31; 1] = (*op1_limb_16_col101.try_into().unwrap()).unbox();
+        let [op1_limb_17_col102]: [QM31; 1] = (*op1_limb_17_col102.try_into().unwrap()).unbox();
+        let [op1_limb_18_col103]: [QM31; 1] = (*op1_limb_18_col103.try_into().unwrap()).unbox();
+        let [op1_limb_19_col104]: [QM31; 1] = (*op1_limb_19_col104.try_into().unwrap()).unbox();
+        let [op1_limb_20_col105]: [QM31; 1] = (*op1_limb_20_col105.try_into().unwrap()).unbox();
+        let [op1_limb_21_col106]: [QM31; 1] = (*op1_limb_21_col106.try_into().unwrap()).unbox();
+        let [op1_limb_22_col107]: [QM31; 1] = (*op1_limb_22_col107.try_into().unwrap()).unbox();
+        let [op1_limb_23_col108]: [QM31; 1] = (*op1_limb_23_col108.try_into().unwrap()).unbox();
+        let [op1_limb_24_col109]: [QM31; 1] = (*op1_limb_24_col109.try_into().unwrap()).unbox();
+        let [op1_limb_25_col110]: [QM31; 1] = (*op1_limb_25_col110.try_into().unwrap()).unbox();
+        let [op1_limb_26_col111]: [QM31; 1] = (*op1_limb_26_col111.try_into().unwrap()).unbox();
+        let [op1_limb_27_col112]: [QM31; 1] = (*op1_limb_27_col112.try_into().unwrap()).unbox();
+        let [add_res_limb_0_col113]: [QM31; 1] = (*add_res_limb_0_col113.try_into().unwrap())
             .unbox();
-        let [add_res_limb_1_col113]: [QM31; 1] = (*add_res_limb_1_col113.try_into().unwrap())
+        let [add_res_limb_1_col114]: [QM31; 1] = (*add_res_limb_1_col114.try_into().unwrap())
             .unbox();
-        let [add_res_limb_2_col114]: [QM31; 1] = (*add_res_limb_2_col114.try_into().unwrap())
+        let [add_res_limb_2_col115]: [QM31; 1] = (*add_res_limb_2_col115.try_into().unwrap())
             .unbox();
-        let [add_res_limb_3_col115]: [QM31; 1] = (*add_res_limb_3_col115.try_into().unwrap())
+        let [add_res_limb_3_col116]: [QM31; 1] = (*add_res_limb_3_col116.try_into().unwrap())
             .unbox();
-        let [add_res_limb_4_col116]: [QM31; 1] = (*add_res_limb_4_col116.try_into().unwrap())
+        let [add_res_limb_4_col117]: [QM31; 1] = (*add_res_limb_4_col117.try_into().unwrap())
             .unbox();
-        let [add_res_limb_5_col117]: [QM31; 1] = (*add_res_limb_5_col117.try_into().unwrap())
+        let [add_res_limb_5_col118]: [QM31; 1] = (*add_res_limb_5_col118.try_into().unwrap())
             .unbox();
-        let [add_res_limb_6_col118]: [QM31; 1] = (*add_res_limb_6_col118.try_into().unwrap())
+        let [add_res_limb_6_col119]: [QM31; 1] = (*add_res_limb_6_col119.try_into().unwrap())
             .unbox();
-        let [add_res_limb_7_col119]: [QM31; 1] = (*add_res_limb_7_col119.try_into().unwrap())
+        let [add_res_limb_7_col120]: [QM31; 1] = (*add_res_limb_7_col120.try_into().unwrap())
             .unbox();
-        let [add_res_limb_8_col120]: [QM31; 1] = (*add_res_limb_8_col120.try_into().unwrap())
+        let [add_res_limb_8_col121]: [QM31; 1] = (*add_res_limb_8_col121.try_into().unwrap())
             .unbox();
-        let [add_res_limb_9_col121]: [QM31; 1] = (*add_res_limb_9_col121.try_into().unwrap())
+        let [add_res_limb_9_col122]: [QM31; 1] = (*add_res_limb_9_col122.try_into().unwrap())
             .unbox();
-        let [add_res_limb_10_col122]: [QM31; 1] = (*add_res_limb_10_col122.try_into().unwrap())
+        let [add_res_limb_10_col123]: [QM31; 1] = (*add_res_limb_10_col123.try_into().unwrap())
             .unbox();
-        let [add_res_limb_11_col123]: [QM31; 1] = (*add_res_limb_11_col123.try_into().unwrap())
+        let [add_res_limb_11_col124]: [QM31; 1] = (*add_res_limb_11_col124.try_into().unwrap())
             .unbox();
-        let [add_res_limb_12_col124]: [QM31; 1] = (*add_res_limb_12_col124.try_into().unwrap())
+        let [add_res_limb_12_col125]: [QM31; 1] = (*add_res_limb_12_col125.try_into().unwrap())
             .unbox();
-        let [add_res_limb_13_col125]: [QM31; 1] = (*add_res_limb_13_col125.try_into().unwrap())
+        let [add_res_limb_13_col126]: [QM31; 1] = (*add_res_limb_13_col126.try_into().unwrap())
             .unbox();
-        let [add_res_limb_14_col126]: [QM31; 1] = (*add_res_limb_14_col126.try_into().unwrap())
+        let [add_res_limb_14_col127]: [QM31; 1] = (*add_res_limb_14_col127.try_into().unwrap())
             .unbox();
-        let [add_res_limb_15_col127]: [QM31; 1] = (*add_res_limb_15_col127.try_into().unwrap())
+        let [add_res_limb_15_col128]: [QM31; 1] = (*add_res_limb_15_col128.try_into().unwrap())
             .unbox();
-        let [add_res_limb_16_col128]: [QM31; 1] = (*add_res_limb_16_col128.try_into().unwrap())
+        let [add_res_limb_16_col129]: [QM31; 1] = (*add_res_limb_16_col129.try_into().unwrap())
             .unbox();
-        let [add_res_limb_17_col129]: [QM31; 1] = (*add_res_limb_17_col129.try_into().unwrap())
+        let [add_res_limb_17_col130]: [QM31; 1] = (*add_res_limb_17_col130.try_into().unwrap())
             .unbox();
-        let [add_res_limb_18_col130]: [QM31; 1] = (*add_res_limb_18_col130.try_into().unwrap())
+        let [add_res_limb_18_col131]: [QM31; 1] = (*add_res_limb_18_col131.try_into().unwrap())
             .unbox();
-        let [add_res_limb_19_col131]: [QM31; 1] = (*add_res_limb_19_col131.try_into().unwrap())
+        let [add_res_limb_19_col132]: [QM31; 1] = (*add_res_limb_19_col132.try_into().unwrap())
             .unbox();
-        let [add_res_limb_20_col132]: [QM31; 1] = (*add_res_limb_20_col132.try_into().unwrap())
+        let [add_res_limb_20_col133]: [QM31; 1] = (*add_res_limb_20_col133.try_into().unwrap())
             .unbox();
-        let [add_res_limb_21_col133]: [QM31; 1] = (*add_res_limb_21_col133.try_into().unwrap())
+        let [add_res_limb_21_col134]: [QM31; 1] = (*add_res_limb_21_col134.try_into().unwrap())
             .unbox();
-        let [add_res_limb_22_col134]: [QM31; 1] = (*add_res_limb_22_col134.try_into().unwrap())
+        let [add_res_limb_22_col135]: [QM31; 1] = (*add_res_limb_22_col135.try_into().unwrap())
             .unbox();
-        let [add_res_limb_23_col135]: [QM31; 1] = (*add_res_limb_23_col135.try_into().unwrap())
+        let [add_res_limb_23_col136]: [QM31; 1] = (*add_res_limb_23_col136.try_into().unwrap())
             .unbox();
-        let [add_res_limb_24_col136]: [QM31; 1] = (*add_res_limb_24_col136.try_into().unwrap())
+        let [add_res_limb_24_col137]: [QM31; 1] = (*add_res_limb_24_col137.try_into().unwrap())
             .unbox();
-        let [add_res_limb_25_col137]: [QM31; 1] = (*add_res_limb_25_col137.try_into().unwrap())
+        let [add_res_limb_25_col138]: [QM31; 1] = (*add_res_limb_25_col138.try_into().unwrap())
             .unbox();
-        let [add_res_limb_26_col138]: [QM31; 1] = (*add_res_limb_26_col138.try_into().unwrap())
+        let [add_res_limb_26_col139]: [QM31; 1] = (*add_res_limb_26_col139.try_into().unwrap())
             .unbox();
-        let [add_res_limb_27_col139]: [QM31; 1] = (*add_res_limb_27_col139.try_into().unwrap())
+        let [add_res_limb_27_col140]: [QM31; 1] = (*add_res_limb_27_col140.try_into().unwrap())
             .unbox();
-        let [sub_p_bit_col140]: [QM31; 1] = (*sub_p_bit_col140.try_into().unwrap()).unbox();
-        let [mul_res_limb_0_col141]: [QM31; 1] = (*mul_res_limb_0_col141.try_into().unwrap())
+        let [sub_p_bit_col141]: [QM31; 1] = (*sub_p_bit_col141.try_into().unwrap()).unbox();
+        let [mul_res_limb_0_col142]: [QM31; 1] = (*mul_res_limb_0_col142.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_1_col142]: [QM31; 1] = (*mul_res_limb_1_col142.try_into().unwrap())
+        let [mul_res_limb_1_col143]: [QM31; 1] = (*mul_res_limb_1_col143.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_2_col143]: [QM31; 1] = (*mul_res_limb_2_col143.try_into().unwrap())
+        let [mul_res_limb_2_col144]: [QM31; 1] = (*mul_res_limb_2_col144.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_3_col144]: [QM31; 1] = (*mul_res_limb_3_col144.try_into().unwrap())
+        let [mul_res_limb_3_col145]: [QM31; 1] = (*mul_res_limb_3_col145.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_4_col145]: [QM31; 1] = (*mul_res_limb_4_col145.try_into().unwrap())
+        let [mul_res_limb_4_col146]: [QM31; 1] = (*mul_res_limb_4_col146.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_5_col146]: [QM31; 1] = (*mul_res_limb_5_col146.try_into().unwrap())
+        let [mul_res_limb_5_col147]: [QM31; 1] = (*mul_res_limb_5_col147.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_6_col147]: [QM31; 1] = (*mul_res_limb_6_col147.try_into().unwrap())
+        let [mul_res_limb_6_col148]: [QM31; 1] = (*mul_res_limb_6_col148.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_7_col148]: [QM31; 1] = (*mul_res_limb_7_col148.try_into().unwrap())
+        let [mul_res_limb_7_col149]: [QM31; 1] = (*mul_res_limb_7_col149.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_8_col149]: [QM31; 1] = (*mul_res_limb_8_col149.try_into().unwrap())
+        let [mul_res_limb_8_col150]: [QM31; 1] = (*mul_res_limb_8_col150.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_9_col150]: [QM31; 1] = (*mul_res_limb_9_col150.try_into().unwrap())
+        let [mul_res_limb_9_col151]: [QM31; 1] = (*mul_res_limb_9_col151.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_10_col151]: [QM31; 1] = (*mul_res_limb_10_col151.try_into().unwrap())
+        let [mul_res_limb_10_col152]: [QM31; 1] = (*mul_res_limb_10_col152.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_11_col152]: [QM31; 1] = (*mul_res_limb_11_col152.try_into().unwrap())
+        let [mul_res_limb_11_col153]: [QM31; 1] = (*mul_res_limb_11_col153.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_12_col153]: [QM31; 1] = (*mul_res_limb_12_col153.try_into().unwrap())
+        let [mul_res_limb_12_col154]: [QM31; 1] = (*mul_res_limb_12_col154.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_13_col154]: [QM31; 1] = (*mul_res_limb_13_col154.try_into().unwrap())
+        let [mul_res_limb_13_col155]: [QM31; 1] = (*mul_res_limb_13_col155.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_14_col155]: [QM31; 1] = (*mul_res_limb_14_col155.try_into().unwrap())
+        let [mul_res_limb_14_col156]: [QM31; 1] = (*mul_res_limb_14_col156.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_15_col156]: [QM31; 1] = (*mul_res_limb_15_col156.try_into().unwrap())
+        let [mul_res_limb_15_col157]: [QM31; 1] = (*mul_res_limb_15_col157.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_16_col157]: [QM31; 1] = (*mul_res_limb_16_col157.try_into().unwrap())
+        let [mul_res_limb_16_col158]: [QM31; 1] = (*mul_res_limb_16_col158.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_17_col158]: [QM31; 1] = (*mul_res_limb_17_col158.try_into().unwrap())
+        let [mul_res_limb_17_col159]: [QM31; 1] = (*mul_res_limb_17_col159.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_18_col159]: [QM31; 1] = (*mul_res_limb_18_col159.try_into().unwrap())
+        let [mul_res_limb_18_col160]: [QM31; 1] = (*mul_res_limb_18_col160.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_19_col160]: [QM31; 1] = (*mul_res_limb_19_col160.try_into().unwrap())
+        let [mul_res_limb_19_col161]: [QM31; 1] = (*mul_res_limb_19_col161.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_20_col161]: [QM31; 1] = (*mul_res_limb_20_col161.try_into().unwrap())
+        let [mul_res_limb_20_col162]: [QM31; 1] = (*mul_res_limb_20_col162.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_21_col162]: [QM31; 1] = (*mul_res_limb_21_col162.try_into().unwrap())
+        let [mul_res_limb_21_col163]: [QM31; 1] = (*mul_res_limb_21_col163.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_22_col163]: [QM31; 1] = (*mul_res_limb_22_col163.try_into().unwrap())
+        let [mul_res_limb_22_col164]: [QM31; 1] = (*mul_res_limb_22_col164.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_23_col164]: [QM31; 1] = (*mul_res_limb_23_col164.try_into().unwrap())
+        let [mul_res_limb_23_col165]: [QM31; 1] = (*mul_res_limb_23_col165.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_24_col165]: [QM31; 1] = (*mul_res_limb_24_col165.try_into().unwrap())
+        let [mul_res_limb_24_col166]: [QM31; 1] = (*mul_res_limb_24_col166.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_25_col166]: [QM31; 1] = (*mul_res_limb_25_col166.try_into().unwrap())
+        let [mul_res_limb_25_col167]: [QM31; 1] = (*mul_res_limb_25_col167.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_26_col167]: [QM31; 1] = (*mul_res_limb_26_col167.try_into().unwrap())
+        let [mul_res_limb_26_col168]: [QM31; 1] = (*mul_res_limb_26_col168.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_27_col168]: [QM31; 1] = (*mul_res_limb_27_col168.try_into().unwrap())
+        let [mul_res_limb_27_col169]: [QM31; 1] = (*mul_res_limb_27_col169.try_into().unwrap())
             .unbox();
-        let [k_col169]: [QM31; 1] = (*k_col169.try_into().unwrap()).unbox();
-        let [carry_0_col170]: [QM31; 1] = (*carry_0_col170.try_into().unwrap()).unbox();
-        let [carry_1_col171]: [QM31; 1] = (*carry_1_col171.try_into().unwrap()).unbox();
-        let [carry_2_col172]: [QM31; 1] = (*carry_2_col172.try_into().unwrap()).unbox();
-        let [carry_3_col173]: [QM31; 1] = (*carry_3_col173.try_into().unwrap()).unbox();
-        let [carry_4_col174]: [QM31; 1] = (*carry_4_col174.try_into().unwrap()).unbox();
-        let [carry_5_col175]: [QM31; 1] = (*carry_5_col175.try_into().unwrap()).unbox();
-        let [carry_6_col176]: [QM31; 1] = (*carry_6_col176.try_into().unwrap()).unbox();
-        let [carry_7_col177]: [QM31; 1] = (*carry_7_col177.try_into().unwrap()).unbox();
-        let [carry_8_col178]: [QM31; 1] = (*carry_8_col178.try_into().unwrap()).unbox();
-        let [carry_9_col179]: [QM31; 1] = (*carry_9_col179.try_into().unwrap()).unbox();
-        let [carry_10_col180]: [QM31; 1] = (*carry_10_col180.try_into().unwrap()).unbox();
-        let [carry_11_col181]: [QM31; 1] = (*carry_11_col181.try_into().unwrap()).unbox();
-        let [carry_12_col182]: [QM31; 1] = (*carry_12_col182.try_into().unwrap()).unbox();
-        let [carry_13_col183]: [QM31; 1] = (*carry_13_col183.try_into().unwrap()).unbox();
-        let [carry_14_col184]: [QM31; 1] = (*carry_14_col184.try_into().unwrap()).unbox();
-        let [carry_15_col185]: [QM31; 1] = (*carry_15_col185.try_into().unwrap()).unbox();
-        let [carry_16_col186]: [QM31; 1] = (*carry_16_col186.try_into().unwrap()).unbox();
-        let [carry_17_col187]: [QM31; 1] = (*carry_17_col187.try_into().unwrap()).unbox();
-        let [carry_18_col188]: [QM31; 1] = (*carry_18_col188.try_into().unwrap()).unbox();
-        let [carry_19_col189]: [QM31; 1] = (*carry_19_col189.try_into().unwrap()).unbox();
-        let [carry_20_col190]: [QM31; 1] = (*carry_20_col190.try_into().unwrap()).unbox();
-        let [carry_21_col191]: [QM31; 1] = (*carry_21_col191.try_into().unwrap()).unbox();
-        let [carry_22_col192]: [QM31; 1] = (*carry_22_col192.try_into().unwrap()).unbox();
-        let [carry_23_col193]: [QM31; 1] = (*carry_23_col193.try_into().unwrap()).unbox();
-        let [carry_24_col194]: [QM31; 1] = (*carry_24_col194.try_into().unwrap()).unbox();
-        let [carry_25_col195]: [QM31; 1] = (*carry_25_col195.try_into().unwrap()).unbox();
-        let [carry_26_col196]: [QM31; 1] = (*carry_26_col196.try_into().unwrap()).unbox();
-        let [res_limb_0_col197]: [QM31; 1] = (*res_limb_0_col197.try_into().unwrap()).unbox();
-        let [res_limb_1_col198]: [QM31; 1] = (*res_limb_1_col198.try_into().unwrap()).unbox();
-        let [res_limb_2_col199]: [QM31; 1] = (*res_limb_2_col199.try_into().unwrap()).unbox();
-        let [res_limb_3_col200]: [QM31; 1] = (*res_limb_3_col200.try_into().unwrap()).unbox();
-        let [res_limb_4_col201]: [QM31; 1] = (*res_limb_4_col201.try_into().unwrap()).unbox();
-        let [res_limb_5_col202]: [QM31; 1] = (*res_limb_5_col202.try_into().unwrap()).unbox();
-        let [res_limb_6_col203]: [QM31; 1] = (*res_limb_6_col203.try_into().unwrap()).unbox();
-        let [res_limb_7_col204]: [QM31; 1] = (*res_limb_7_col204.try_into().unwrap()).unbox();
-        let [res_limb_8_col205]: [QM31; 1] = (*res_limb_8_col205.try_into().unwrap()).unbox();
-        let [res_limb_9_col206]: [QM31; 1] = (*res_limb_9_col206.try_into().unwrap()).unbox();
-        let [res_limb_10_col207]: [QM31; 1] = (*res_limb_10_col207.try_into().unwrap()).unbox();
-        let [res_limb_11_col208]: [QM31; 1] = (*res_limb_11_col208.try_into().unwrap()).unbox();
-        let [res_limb_12_col209]: [QM31; 1] = (*res_limb_12_col209.try_into().unwrap()).unbox();
-        let [res_limb_13_col210]: [QM31; 1] = (*res_limb_13_col210.try_into().unwrap()).unbox();
-        let [res_limb_14_col211]: [QM31; 1] = (*res_limb_14_col211.try_into().unwrap()).unbox();
-        let [res_limb_15_col212]: [QM31; 1] = (*res_limb_15_col212.try_into().unwrap()).unbox();
-        let [res_limb_16_col213]: [QM31; 1] = (*res_limb_16_col213.try_into().unwrap()).unbox();
-        let [res_limb_17_col214]: [QM31; 1] = (*res_limb_17_col214.try_into().unwrap()).unbox();
-        let [res_limb_18_col215]: [QM31; 1] = (*res_limb_18_col215.try_into().unwrap()).unbox();
-        let [res_limb_19_col216]: [QM31; 1] = (*res_limb_19_col216.try_into().unwrap()).unbox();
-        let [res_limb_20_col217]: [QM31; 1] = (*res_limb_20_col217.try_into().unwrap()).unbox();
-        let [res_limb_21_col218]: [QM31; 1] = (*res_limb_21_col218.try_into().unwrap()).unbox();
-        let [res_limb_22_col219]: [QM31; 1] = (*res_limb_22_col219.try_into().unwrap()).unbox();
-        let [res_limb_23_col220]: [QM31; 1] = (*res_limb_23_col220.try_into().unwrap()).unbox();
-        let [res_limb_24_col221]: [QM31; 1] = (*res_limb_24_col221.try_into().unwrap()).unbox();
-        let [res_limb_25_col222]: [QM31; 1] = (*res_limb_25_col222.try_into().unwrap()).unbox();
-        let [res_limb_26_col223]: [QM31; 1] = (*res_limb_26_col223.try_into().unwrap()).unbox();
-        let [res_limb_27_col224]: [QM31; 1] = (*res_limb_27_col224.try_into().unwrap()).unbox();
-        let [partial_limb_msb_col225]: [QM31; 1] = (*partial_limb_msb_col225.try_into().unwrap())
-            .unbox();
+        let [k_col170]: [QM31; 1] = (*k_col170.try_into().unwrap()).unbox();
+        let [carry_0_col171]: [QM31; 1] = (*carry_0_col171.try_into().unwrap()).unbox();
+        let [carry_1_col172]: [QM31; 1] = (*carry_1_col172.try_into().unwrap()).unbox();
+        let [carry_2_col173]: [QM31; 1] = (*carry_2_col173.try_into().unwrap()).unbox();
+        let [carry_3_col174]: [QM31; 1] = (*carry_3_col174.try_into().unwrap()).unbox();
+        let [carry_4_col175]: [QM31; 1] = (*carry_4_col175.try_into().unwrap()).unbox();
+        let [carry_5_col176]: [QM31; 1] = (*carry_5_col176.try_into().unwrap()).unbox();
+        let [carry_6_col177]: [QM31; 1] = (*carry_6_col177.try_into().unwrap()).unbox();
+        let [carry_7_col178]: [QM31; 1] = (*carry_7_col178.try_into().unwrap()).unbox();
+        let [carry_8_col179]: [QM31; 1] = (*carry_8_col179.try_into().unwrap()).unbox();
+        let [carry_9_col180]: [QM31; 1] = (*carry_9_col180.try_into().unwrap()).unbox();
+        let [carry_10_col181]: [QM31; 1] = (*carry_10_col181.try_into().unwrap()).unbox();
+        let [carry_11_col182]: [QM31; 1] = (*carry_11_col182.try_into().unwrap()).unbox();
+        let [carry_12_col183]: [QM31; 1] = (*carry_12_col183.try_into().unwrap()).unbox();
+        let [carry_13_col184]: [QM31; 1] = (*carry_13_col184.try_into().unwrap()).unbox();
+        let [carry_14_col185]: [QM31; 1] = (*carry_14_col185.try_into().unwrap()).unbox();
+        let [carry_15_col186]: [QM31; 1] = (*carry_15_col186.try_into().unwrap()).unbox();
+        let [carry_16_col187]: [QM31; 1] = (*carry_16_col187.try_into().unwrap()).unbox();
+        let [carry_17_col188]: [QM31; 1] = (*carry_17_col188.try_into().unwrap()).unbox();
+        let [carry_18_col189]: [QM31; 1] = (*carry_18_col189.try_into().unwrap()).unbox();
+        let [carry_19_col190]: [QM31; 1] = (*carry_19_col190.try_into().unwrap()).unbox();
+        let [carry_20_col191]: [QM31; 1] = (*carry_20_col191.try_into().unwrap()).unbox();
+        let [carry_21_col192]: [QM31; 1] = (*carry_21_col192.try_into().unwrap()).unbox();
+        let [carry_22_col193]: [QM31; 1] = (*carry_22_col193.try_into().unwrap()).unbox();
+        let [carry_23_col194]: [QM31; 1] = (*carry_23_col194.try_into().unwrap()).unbox();
+        let [carry_24_col195]: [QM31; 1] = (*carry_24_col195.try_into().unwrap()).unbox();
+        let [carry_25_col196]: [QM31; 1] = (*carry_25_col196.try_into().unwrap()).unbox();
+        let [carry_26_col197]: [QM31; 1] = (*carry_26_col197.try_into().unwrap()).unbox();
+        let [res_limb_0_col198]: [QM31; 1] = (*res_limb_0_col198.try_into().unwrap()).unbox();
+        let [res_limb_1_col199]: [QM31; 1] = (*res_limb_1_col199.try_into().unwrap()).unbox();
+        let [res_limb_2_col200]: [QM31; 1] = (*res_limb_2_col200.try_into().unwrap()).unbox();
+        let [res_limb_3_col201]: [QM31; 1] = (*res_limb_3_col201.try_into().unwrap()).unbox();
+        let [res_limb_4_col202]: [QM31; 1] = (*res_limb_4_col202.try_into().unwrap()).unbox();
+        let [res_limb_5_col203]: [QM31; 1] = (*res_limb_5_col203.try_into().unwrap()).unbox();
+        let [res_limb_6_col204]: [QM31; 1] = (*res_limb_6_col204.try_into().unwrap()).unbox();
+        let [res_limb_7_col205]: [QM31; 1] = (*res_limb_7_col205.try_into().unwrap()).unbox();
+        let [res_limb_8_col206]: [QM31; 1] = (*res_limb_8_col206.try_into().unwrap()).unbox();
+        let [res_limb_9_col207]: [QM31; 1] = (*res_limb_9_col207.try_into().unwrap()).unbox();
+        let [res_limb_10_col208]: [QM31; 1] = (*res_limb_10_col208.try_into().unwrap()).unbox();
+        let [res_limb_11_col209]: [QM31; 1] = (*res_limb_11_col209.try_into().unwrap()).unbox();
+        let [res_limb_12_col210]: [QM31; 1] = (*res_limb_12_col210.try_into().unwrap()).unbox();
+        let [res_limb_13_col211]: [QM31; 1] = (*res_limb_13_col211.try_into().unwrap()).unbox();
+        let [res_limb_14_col212]: [QM31; 1] = (*res_limb_14_col212.try_into().unwrap()).unbox();
+        let [res_limb_15_col213]: [QM31; 1] = (*res_limb_15_col213.try_into().unwrap()).unbox();
+        let [res_limb_16_col214]: [QM31; 1] = (*res_limb_16_col214.try_into().unwrap()).unbox();
+        let [res_limb_17_col215]: [QM31; 1] = (*res_limb_17_col215.try_into().unwrap()).unbox();
+        let [res_limb_18_col216]: [QM31; 1] = (*res_limb_18_col216.try_into().unwrap()).unbox();
+        let [res_limb_19_col217]: [QM31; 1] = (*res_limb_19_col217.try_into().unwrap()).unbox();
+        let [res_limb_20_col218]: [QM31; 1] = (*res_limb_20_col218.try_into().unwrap()).unbox();
+        let [res_limb_21_col219]: [QM31; 1] = (*res_limb_21_col219.try_into().unwrap()).unbox();
+        let [res_limb_22_col220]: [QM31; 1] = (*res_limb_22_col220.try_into().unwrap()).unbox();
+        let [res_limb_23_col221]: [QM31; 1] = (*res_limb_23_col221.try_into().unwrap()).unbox();
+        let [res_limb_24_col222]: [QM31; 1] = (*res_limb_24_col222.try_into().unwrap()).unbox();
+        let [res_limb_25_col223]: [QM31; 1] = (*res_limb_25_col223.try_into().unwrap()).unbox();
+        let [res_limb_26_col224]: [QM31; 1] = (*res_limb_26_col224.try_into().unwrap()).unbox();
+        let [res_limb_27_col225]: [QM31; 1] = (*res_limb_27_col225.try_into().unwrap()).unbox();
         let [partial_limb_msb_col226]: [QM31; 1] = (*partial_limb_msb_col226.try_into().unwrap())
             .unbox();
         let [partial_limb_msb_col227]: [QM31; 1] = (*partial_limb_msb_col227.try_into().unwrap())
             .unbox();
-        let [msb_col228]: [QM31; 1] = (*msb_col228.try_into().unwrap()).unbox();
-        let [mid_limbs_set_col229]: [QM31; 1] = (*mid_limbs_set_col229.try_into().unwrap()).unbox();
-        let [partial_limb_msb_col230]: [QM31; 1] = (*partial_limb_msb_col230.try_into().unwrap())
+        let [partial_limb_msb_col228]: [QM31; 1] = (*partial_limb_msb_col228.try_into().unwrap())
             .unbox();
-        let [dst_sum_squares_inv_col231]: [QM31; 1] = (*dst_sum_squares_inv_col231
+        let [msb_col229]: [QM31; 1] = (*msb_col229.try_into().unwrap()).unbox();
+        let [mid_limbs_set_col230]: [QM31; 1] = (*mid_limbs_set_col230.try_into().unwrap()).unbox();
+        let [partial_limb_msb_col231]: [QM31; 1] = (*partial_limb_msb_col231.try_into().unwrap())
+            .unbox();
+        let [dst_sum_squares_inv_col232]: [QM31; 1] = (*dst_sum_squares_inv_col232
             .try_into()
             .unwrap())
             .unbox();
-        let [dst_sum_inv_col232]: [QM31; 1] = (*dst_sum_inv_col232.try_into().unwrap()).unbox();
-        let [op1_as_rel_imm_cond_col233]: [QM31; 1] = (*op1_as_rel_imm_cond_col233
+        let [dst_sum_inv_col233]: [QM31; 1] = (*dst_sum_inv_col233.try_into().unwrap()).unbox();
+        let [op1_as_rel_imm_cond_col234]: [QM31; 1] = (*op1_as_rel_imm_cond_col234
             .try_into()
             .unwrap())
             .unbox();
-        let [msb_col234]: [QM31; 1] = (*msb_col234.try_into().unwrap()).unbox();
-        let [mid_limbs_set_col235]: [QM31; 1] = (*mid_limbs_set_col235.try_into().unwrap()).unbox();
-        let [partial_limb_msb_col236]: [QM31; 1] = (*partial_limb_msb_col236.try_into().unwrap())
+        let [msb_col235]: [QM31; 1] = (*msb_col235.try_into().unwrap()).unbox();
+        let [mid_limbs_set_col236]: [QM31; 1] = (*mid_limbs_set_col236.try_into().unwrap()).unbox();
+        let [partial_limb_msb_col237]: [QM31; 1] = (*partial_limb_msb_col237.try_into().unwrap())
             .unbox();
-        let [next_pc_jnz_col237]: [QM31; 1] = (*next_pc_jnz_col237.try_into().unwrap()).unbox();
-        let [next_pc_col238]: [QM31; 1] = (*next_pc_col238.try_into().unwrap()).unbox();
-        let [next_ap_col239]: [QM31; 1] = (*next_ap_col239.try_into().unwrap()).unbox();
-        let [range_check_29_bot11bits_col240]: [QM31; 1] = (*range_check_29_bot11bits_col240
+        let [next_pc_jnz_col238]: [QM31; 1] = (*next_pc_jnz_col238.try_into().unwrap()).unbox();
+        let [next_pc_col239]: [QM31; 1] = (*next_pc_col239.try_into().unwrap()).unbox();
+        let [next_ap_col240]: [QM31; 1] = (*next_ap_col240.try_into().unwrap()).unbox();
+        let [range_check_29_bot11bits_col241]: [QM31; 1] = (*range_check_29_bot11bits_col241
             .try_into()
             .unwrap())
             .unbox();
-        let [next_fp_col241]: [QM31; 1] = (*next_fp_col241.try_into().unwrap()).unbox();
-        let [enabler_col242]: [QM31; 1] = (*enabler_col242.try_into().unwrap()).unbox();
+        let [next_fp_col242]: [QM31; 1] = (*next_fp_col242.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
+        // Constraint - Enabler is a bit
+        let constraint_quotient = (((enabler_col0 * enabler_col0) - enabler_col0));
+        sum = sum * random_coeff + constraint_quotient;
         let [
             decode_generic_instruction_output_tmp_c8168_26_op1_base_op0,
             decode_generic_instruction_output_tmp_c8168_26_res_op1,
@@ -805,25 +808,26 @@ pub impl AirComponentImpl of AirComponent<Component> {
             decode_generic_instruction_output_tmp_c8168_26_offset2,
         ] =
             decode_generic_instruction_evaluate(
-            input_pc_col0,
-            offset0_col3,
-            offset1_col4,
-            offset2_col5,
-            dst_base_fp_col6,
-            op0_base_fp_col7,
-            op1_imm_col8,
-            op1_base_fp_col9,
-            op1_base_ap_col10,
-            res_add_col11,
-            res_mul_col12,
-            pc_update_jump_col13,
-            pc_update_jump_rel_col14,
-            pc_update_jnz_col15,
-            ap_update_add_col16,
-            ap_update_add_1_col17,
-            opcode_call_col18,
-            opcode_ret_col19,
-            opcode_assert_eq_col20,
+            input_pc_col1,
+            enabler_col0,
+            offset0_col4,
+            offset1_col5,
+            offset2_col6,
+            dst_base_fp_col7,
+            op0_base_fp_col8,
+            op1_imm_col9,
+            op1_base_fp_col10,
+            op1_base_ap_col11,
+            res_add_col12,
+            res_mul_col13,
+            pc_update_jump_col14,
+            pc_update_jump_rel_col15,
+            pc_update_jnz_col16,
+            ap_update_add_col17,
+            ap_update_add_1_col18,
+            opcode_call_col19,
+            opcode_ret_col20,
+            opcode_assert_eq_col21,
             self.common_lookup_elements,
             ref verify_instruction_sum_0,
             ref numerator_0,
@@ -832,218 +836,219 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         eval_operands_evaluate(
             [
-                input_pc_col0, input_ap_col1, input_fp_col2, dst_base_fp_col6, op0_base_fp_col7,
-                op1_imm_col8, op1_base_fp_col9, op1_base_ap_col10, res_add_col11, res_mul_col12,
-                pc_update_jnz_col15, decode_generic_instruction_output_tmp_c8168_26_op1_base_op0,
+                input_pc_col1, input_ap_col2, input_fp_col3, dst_base_fp_col7, op0_base_fp_col8,
+                op1_imm_col9, op1_base_fp_col10, op1_base_ap_col11, res_add_col12, res_mul_col13,
+                pc_update_jnz_col16, decode_generic_instruction_output_tmp_c8168_26_op1_base_op0,
                 decode_generic_instruction_output_tmp_c8168_26_res_op1,
                 decode_generic_instruction_output_tmp_c8168_26_offset0,
                 decode_generic_instruction_output_tmp_c8168_26_offset1,
                 decode_generic_instruction_output_tmp_c8168_26_offset2,
             ],
-            dst_src_col21,
-            dst_id_col22,
-            dst_limb_0_col23,
-            dst_limb_1_col24,
-            dst_limb_2_col25,
-            dst_limb_3_col26,
-            dst_limb_4_col27,
-            dst_limb_5_col28,
-            dst_limb_6_col29,
-            dst_limb_7_col30,
-            dst_limb_8_col31,
-            dst_limb_9_col32,
-            dst_limb_10_col33,
-            dst_limb_11_col34,
-            dst_limb_12_col35,
-            dst_limb_13_col36,
-            dst_limb_14_col37,
-            dst_limb_15_col38,
-            dst_limb_16_col39,
-            dst_limb_17_col40,
-            dst_limb_18_col41,
-            dst_limb_19_col42,
-            dst_limb_20_col43,
-            dst_limb_21_col44,
-            dst_limb_22_col45,
-            dst_limb_23_col46,
-            dst_limb_24_col47,
-            dst_limb_25_col48,
-            dst_limb_26_col49,
-            dst_limb_27_col50,
-            op0_src_col51,
-            op0_id_col52,
-            op0_limb_0_col53,
-            op0_limb_1_col54,
-            op0_limb_2_col55,
-            op0_limb_3_col56,
-            op0_limb_4_col57,
-            op0_limb_5_col58,
-            op0_limb_6_col59,
-            op0_limb_7_col60,
-            op0_limb_8_col61,
-            op0_limb_9_col62,
-            op0_limb_10_col63,
-            op0_limb_11_col64,
-            op0_limb_12_col65,
-            op0_limb_13_col66,
-            op0_limb_14_col67,
-            op0_limb_15_col68,
-            op0_limb_16_col69,
-            op0_limb_17_col70,
-            op0_limb_18_col71,
-            op0_limb_19_col72,
-            op0_limb_20_col73,
-            op0_limb_21_col74,
-            op0_limb_22_col75,
-            op0_limb_23_col76,
-            op0_limb_24_col77,
-            op0_limb_25_col78,
-            op0_limb_26_col79,
-            op0_limb_27_col80,
-            partial_limb_msb_col81,
-            op1_src_col82,
-            op1_id_col83,
-            op1_limb_0_col84,
-            op1_limb_1_col85,
-            op1_limb_2_col86,
-            op1_limb_3_col87,
-            op1_limb_4_col88,
-            op1_limb_5_col89,
-            op1_limb_6_col90,
-            op1_limb_7_col91,
-            op1_limb_8_col92,
-            op1_limb_9_col93,
-            op1_limb_10_col94,
-            op1_limb_11_col95,
-            op1_limb_12_col96,
-            op1_limb_13_col97,
-            op1_limb_14_col98,
-            op1_limb_15_col99,
-            op1_limb_16_col100,
-            op1_limb_17_col101,
-            op1_limb_18_col102,
-            op1_limb_19_col103,
-            op1_limb_20_col104,
-            op1_limb_21_col105,
-            op1_limb_22_col106,
-            op1_limb_23_col107,
-            op1_limb_24_col108,
-            op1_limb_25_col109,
-            op1_limb_26_col110,
-            op1_limb_27_col111,
-            add_res_limb_0_col112,
-            add_res_limb_1_col113,
-            add_res_limb_2_col114,
-            add_res_limb_3_col115,
-            add_res_limb_4_col116,
-            add_res_limb_5_col117,
-            add_res_limb_6_col118,
-            add_res_limb_7_col119,
-            add_res_limb_8_col120,
-            add_res_limb_9_col121,
-            add_res_limb_10_col122,
-            add_res_limb_11_col123,
-            add_res_limb_12_col124,
-            add_res_limb_13_col125,
-            add_res_limb_14_col126,
-            add_res_limb_15_col127,
-            add_res_limb_16_col128,
-            add_res_limb_17_col129,
-            add_res_limb_18_col130,
-            add_res_limb_19_col131,
-            add_res_limb_20_col132,
-            add_res_limb_21_col133,
-            add_res_limb_22_col134,
-            add_res_limb_23_col135,
-            add_res_limb_24_col136,
-            add_res_limb_25_col137,
-            add_res_limb_26_col138,
-            add_res_limb_27_col139,
-            sub_p_bit_col140,
-            mul_res_limb_0_col141,
-            mul_res_limb_1_col142,
-            mul_res_limb_2_col143,
-            mul_res_limb_3_col144,
-            mul_res_limb_4_col145,
-            mul_res_limb_5_col146,
-            mul_res_limb_6_col147,
-            mul_res_limb_7_col148,
-            mul_res_limb_8_col149,
-            mul_res_limb_9_col150,
-            mul_res_limb_10_col151,
-            mul_res_limb_11_col152,
-            mul_res_limb_12_col153,
-            mul_res_limb_13_col154,
-            mul_res_limb_14_col155,
-            mul_res_limb_15_col156,
-            mul_res_limb_16_col157,
-            mul_res_limb_17_col158,
-            mul_res_limb_18_col159,
-            mul_res_limb_19_col160,
-            mul_res_limb_20_col161,
-            mul_res_limb_21_col162,
-            mul_res_limb_22_col163,
-            mul_res_limb_23_col164,
-            mul_res_limb_24_col165,
-            mul_res_limb_25_col166,
-            mul_res_limb_26_col167,
-            mul_res_limb_27_col168,
-            k_col169,
-            carry_0_col170,
-            carry_1_col171,
-            carry_2_col172,
-            carry_3_col173,
-            carry_4_col174,
-            carry_5_col175,
-            carry_6_col176,
-            carry_7_col177,
-            carry_8_col178,
-            carry_9_col179,
-            carry_10_col180,
-            carry_11_col181,
-            carry_12_col182,
-            carry_13_col183,
-            carry_14_col184,
-            carry_15_col185,
-            carry_16_col186,
-            carry_17_col187,
-            carry_18_col188,
-            carry_19_col189,
-            carry_20_col190,
-            carry_21_col191,
-            carry_22_col192,
-            carry_23_col193,
-            carry_24_col194,
-            carry_25_col195,
-            carry_26_col196,
-            res_limb_0_col197,
-            res_limb_1_col198,
-            res_limb_2_col199,
-            res_limb_3_col200,
-            res_limb_4_col201,
-            res_limb_5_col202,
-            res_limb_6_col203,
-            res_limb_7_col204,
-            res_limb_8_col205,
-            res_limb_9_col206,
-            res_limb_10_col207,
-            res_limb_11_col208,
-            res_limb_12_col209,
-            res_limb_13_col210,
-            res_limb_14_col211,
-            res_limb_15_col212,
-            res_limb_16_col213,
-            res_limb_17_col214,
-            res_limb_18_col215,
-            res_limb_19_col216,
-            res_limb_20_col217,
-            res_limb_21_col218,
-            res_limb_22_col219,
-            res_limb_23_col220,
-            res_limb_24_col221,
-            res_limb_25_col222,
-            res_limb_26_col223,
-            res_limb_27_col224,
+            enabler_col0,
+            dst_src_col22,
+            dst_id_col23,
+            dst_limb_0_col24,
+            dst_limb_1_col25,
+            dst_limb_2_col26,
+            dst_limb_3_col27,
+            dst_limb_4_col28,
+            dst_limb_5_col29,
+            dst_limb_6_col30,
+            dst_limb_7_col31,
+            dst_limb_8_col32,
+            dst_limb_9_col33,
+            dst_limb_10_col34,
+            dst_limb_11_col35,
+            dst_limb_12_col36,
+            dst_limb_13_col37,
+            dst_limb_14_col38,
+            dst_limb_15_col39,
+            dst_limb_16_col40,
+            dst_limb_17_col41,
+            dst_limb_18_col42,
+            dst_limb_19_col43,
+            dst_limb_20_col44,
+            dst_limb_21_col45,
+            dst_limb_22_col46,
+            dst_limb_23_col47,
+            dst_limb_24_col48,
+            dst_limb_25_col49,
+            dst_limb_26_col50,
+            dst_limb_27_col51,
+            op0_src_col52,
+            op0_id_col53,
+            op0_limb_0_col54,
+            op0_limb_1_col55,
+            op0_limb_2_col56,
+            op0_limb_3_col57,
+            op0_limb_4_col58,
+            op0_limb_5_col59,
+            op0_limb_6_col60,
+            op0_limb_7_col61,
+            op0_limb_8_col62,
+            op0_limb_9_col63,
+            op0_limb_10_col64,
+            op0_limb_11_col65,
+            op0_limb_12_col66,
+            op0_limb_13_col67,
+            op0_limb_14_col68,
+            op0_limb_15_col69,
+            op0_limb_16_col70,
+            op0_limb_17_col71,
+            op0_limb_18_col72,
+            op0_limb_19_col73,
+            op0_limb_20_col74,
+            op0_limb_21_col75,
+            op0_limb_22_col76,
+            op0_limb_23_col77,
+            op0_limb_24_col78,
+            op0_limb_25_col79,
+            op0_limb_26_col80,
+            op0_limb_27_col81,
+            partial_limb_msb_col82,
+            op1_src_col83,
+            op1_id_col84,
+            op1_limb_0_col85,
+            op1_limb_1_col86,
+            op1_limb_2_col87,
+            op1_limb_3_col88,
+            op1_limb_4_col89,
+            op1_limb_5_col90,
+            op1_limb_6_col91,
+            op1_limb_7_col92,
+            op1_limb_8_col93,
+            op1_limb_9_col94,
+            op1_limb_10_col95,
+            op1_limb_11_col96,
+            op1_limb_12_col97,
+            op1_limb_13_col98,
+            op1_limb_14_col99,
+            op1_limb_15_col100,
+            op1_limb_16_col101,
+            op1_limb_17_col102,
+            op1_limb_18_col103,
+            op1_limb_19_col104,
+            op1_limb_20_col105,
+            op1_limb_21_col106,
+            op1_limb_22_col107,
+            op1_limb_23_col108,
+            op1_limb_24_col109,
+            op1_limb_25_col110,
+            op1_limb_26_col111,
+            op1_limb_27_col112,
+            add_res_limb_0_col113,
+            add_res_limb_1_col114,
+            add_res_limb_2_col115,
+            add_res_limb_3_col116,
+            add_res_limb_4_col117,
+            add_res_limb_5_col118,
+            add_res_limb_6_col119,
+            add_res_limb_7_col120,
+            add_res_limb_8_col121,
+            add_res_limb_9_col122,
+            add_res_limb_10_col123,
+            add_res_limb_11_col124,
+            add_res_limb_12_col125,
+            add_res_limb_13_col126,
+            add_res_limb_14_col127,
+            add_res_limb_15_col128,
+            add_res_limb_16_col129,
+            add_res_limb_17_col130,
+            add_res_limb_18_col131,
+            add_res_limb_19_col132,
+            add_res_limb_20_col133,
+            add_res_limb_21_col134,
+            add_res_limb_22_col135,
+            add_res_limb_23_col136,
+            add_res_limb_24_col137,
+            add_res_limb_25_col138,
+            add_res_limb_26_col139,
+            add_res_limb_27_col140,
+            sub_p_bit_col141,
+            mul_res_limb_0_col142,
+            mul_res_limb_1_col143,
+            mul_res_limb_2_col144,
+            mul_res_limb_3_col145,
+            mul_res_limb_4_col146,
+            mul_res_limb_5_col147,
+            mul_res_limb_6_col148,
+            mul_res_limb_7_col149,
+            mul_res_limb_8_col150,
+            mul_res_limb_9_col151,
+            mul_res_limb_10_col152,
+            mul_res_limb_11_col153,
+            mul_res_limb_12_col154,
+            mul_res_limb_13_col155,
+            mul_res_limb_14_col156,
+            mul_res_limb_15_col157,
+            mul_res_limb_16_col158,
+            mul_res_limb_17_col159,
+            mul_res_limb_18_col160,
+            mul_res_limb_19_col161,
+            mul_res_limb_20_col162,
+            mul_res_limb_21_col163,
+            mul_res_limb_22_col164,
+            mul_res_limb_23_col165,
+            mul_res_limb_24_col166,
+            mul_res_limb_25_col167,
+            mul_res_limb_26_col168,
+            mul_res_limb_27_col169,
+            k_col170,
+            carry_0_col171,
+            carry_1_col172,
+            carry_2_col173,
+            carry_3_col174,
+            carry_4_col175,
+            carry_5_col176,
+            carry_6_col177,
+            carry_7_col178,
+            carry_8_col179,
+            carry_9_col180,
+            carry_10_col181,
+            carry_11_col182,
+            carry_12_col183,
+            carry_13_col184,
+            carry_14_col185,
+            carry_15_col186,
+            carry_16_col187,
+            carry_17_col188,
+            carry_18_col189,
+            carry_19_col190,
+            carry_20_col191,
+            carry_21_col192,
+            carry_22_col193,
+            carry_23_col194,
+            carry_24_col195,
+            carry_25_col196,
+            carry_26_col197,
+            res_limb_0_col198,
+            res_limb_1_col199,
+            res_limb_2_col200,
+            res_limb_3_col201,
+            res_limb_4_col202,
+            res_limb_5_col203,
+            res_limb_6_col204,
+            res_limb_7_col205,
+            res_limb_8_col206,
+            res_limb_9_col207,
+            res_limb_10_col208,
+            res_limb_11_col209,
+            res_limb_12_col210,
+            res_limb_13_col211,
+            res_limb_14_col212,
+            res_limb_15_col213,
+            res_limb_16_col214,
+            res_limb_17_col215,
+            res_limb_18_col216,
+            res_limb_19_col217,
+            res_limb_20_col218,
+            res_limb_21_col219,
+            res_limb_22_col220,
+            res_limb_23_col221,
+            res_limb_24_col222,
+            res_limb_25_col223,
+            res_limb_26_col224,
+            res_limb_27_col225,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_1,
             ref numerator_1,
@@ -1174,86 +1179,88 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         handle_opcodes_evaluate(
             [
-                input_pc_col0, input_fp_col2, dst_base_fp_col6, op0_base_fp_col7, op1_base_fp_col9,
-                pc_update_jump_col13, opcode_call_col18, opcode_ret_col19, opcode_assert_eq_col20,
+                input_pc_col1, input_fp_col3, dst_base_fp_col7, op0_base_fp_col8, op1_base_fp_col10,
+                pc_update_jump_col14, opcode_call_col19, opcode_ret_col20, opcode_assert_eq_col21,
                 decode_generic_instruction_output_tmp_c8168_26_res_op1,
                 decode_generic_instruction_output_tmp_c8168_26_instruction_size,
                 decode_generic_instruction_output_tmp_c8168_26_offset0,
                 decode_generic_instruction_output_tmp_c8168_26_offset1,
-                decode_generic_instruction_output_tmp_c8168_26_offset2, dst_limb_0_col23,
-                dst_limb_1_col24, dst_limb_2_col25, dst_limb_3_col26, dst_limb_4_col27,
-                dst_limb_5_col28, dst_limb_6_col29, dst_limb_7_col30, dst_limb_8_col31,
-                dst_limb_9_col32, dst_limb_10_col33, dst_limb_11_col34, dst_limb_12_col35,
-                dst_limb_13_col36, dst_limb_14_col37, dst_limb_15_col38, dst_limb_16_col39,
-                dst_limb_17_col40, dst_limb_18_col41, dst_limb_19_col42, dst_limb_20_col43,
-                dst_limb_21_col44, dst_limb_22_col45, dst_limb_23_col46, dst_limb_24_col47,
-                dst_limb_25_col48, dst_limb_26_col49, dst_limb_27_col50, op0_limb_0_col53,
-                op0_limb_1_col54, op0_limb_2_col55, op0_limb_3_col56, op0_limb_4_col57,
-                op0_limb_5_col58, op0_limb_6_col59, op0_limb_7_col60, op0_limb_8_col61,
-                op0_limb_9_col62, op0_limb_10_col63, op0_limb_11_col64, op0_limb_12_col65,
-                op0_limb_13_col66, op0_limb_14_col67, op0_limb_15_col68, op0_limb_16_col69,
-                op0_limb_17_col70, op0_limb_18_col71, op0_limb_19_col72, op0_limb_20_col73,
-                op0_limb_21_col74, op0_limb_22_col75, op0_limb_23_col76, op0_limb_24_col77,
-                op0_limb_25_col78, op0_limb_26_col79, op0_limb_27_col80, res_limb_0_col197,
-                res_limb_1_col198, res_limb_2_col199, res_limb_3_col200, res_limb_4_col201,
-                res_limb_5_col202, res_limb_6_col203, res_limb_7_col204, res_limb_8_col205,
-                res_limb_9_col206, res_limb_10_col207, res_limb_11_col208, res_limb_12_col209,
-                res_limb_13_col210, res_limb_14_col211, res_limb_15_col212, res_limb_16_col213,
-                res_limb_17_col214, res_limb_18_col215, res_limb_19_col216, res_limb_20_col217,
-                res_limb_21_col218, res_limb_22_col219, res_limb_23_col220, res_limb_24_col221,
-                res_limb_25_col222, res_limb_26_col223, res_limb_27_col224,
+                decode_generic_instruction_output_tmp_c8168_26_offset2, dst_limb_0_col24,
+                dst_limb_1_col25, dst_limb_2_col26, dst_limb_3_col27, dst_limb_4_col28,
+                dst_limb_5_col29, dst_limb_6_col30, dst_limb_7_col31, dst_limb_8_col32,
+                dst_limb_9_col33, dst_limb_10_col34, dst_limb_11_col35, dst_limb_12_col36,
+                dst_limb_13_col37, dst_limb_14_col38, dst_limb_15_col39, dst_limb_16_col40,
+                dst_limb_17_col41, dst_limb_18_col42, dst_limb_19_col43, dst_limb_20_col44,
+                dst_limb_21_col45, dst_limb_22_col46, dst_limb_23_col47, dst_limb_24_col48,
+                dst_limb_25_col49, dst_limb_26_col50, dst_limb_27_col51, op0_limb_0_col54,
+                op0_limb_1_col55, op0_limb_2_col56, op0_limb_3_col57, op0_limb_4_col58,
+                op0_limb_5_col59, op0_limb_6_col60, op0_limb_7_col61, op0_limb_8_col62,
+                op0_limb_9_col63, op0_limb_10_col64, op0_limb_11_col65, op0_limb_12_col66,
+                op0_limb_13_col67, op0_limb_14_col68, op0_limb_15_col69, op0_limb_16_col70,
+                op0_limb_17_col71, op0_limb_18_col72, op0_limb_19_col73, op0_limb_20_col74,
+                op0_limb_21_col75, op0_limb_22_col76, op0_limb_23_col77, op0_limb_24_col78,
+                op0_limb_25_col79, op0_limb_26_col80, op0_limb_27_col81, res_limb_0_col198,
+                res_limb_1_col199, res_limb_2_col200, res_limb_3_col201, res_limb_4_col202,
+                res_limb_5_col203, res_limb_6_col204, res_limb_7_col205, res_limb_8_col206,
+                res_limb_9_col207, res_limb_10_col208, res_limb_11_col209, res_limb_12_col210,
+                res_limb_13_col211, res_limb_14_col212, res_limb_15_col213, res_limb_16_col214,
+                res_limb_17_col215, res_limb_18_col216, res_limb_19_col217, res_limb_20_col218,
+                res_limb_21_col219, res_limb_22_col220, res_limb_23_col221, res_limb_24_col222,
+                res_limb_25_col223, res_limb_26_col224, res_limb_27_col225,
             ],
-            partial_limb_msb_col225,
+            enabler_col0,
             partial_limb_msb_col226,
+            partial_limb_msb_col227,
             self.common_lookup_elements,
             ref sum,
             random_coeff,
         );
         update_registers_evaluate(
             [
-                input_pc_col0, input_ap_col1, input_fp_col2, pc_update_jump_col13,
-                pc_update_jump_rel_col14, pc_update_jnz_col15, ap_update_add_col16,
-                ap_update_add_1_col17, opcode_call_col18, opcode_ret_col19,
+                input_pc_col1, input_ap_col2, input_fp_col3, pc_update_jump_col14,
+                pc_update_jump_rel_col15, pc_update_jnz_col16, ap_update_add_col17,
+                ap_update_add_1_col18, opcode_call_col19, opcode_ret_col20,
                 decode_generic_instruction_output_tmp_c8168_26_pc_update_regular,
                 decode_generic_instruction_output_tmp_c8168_26_fp_update_regular,
-                decode_generic_instruction_output_tmp_c8168_26_instruction_size, dst_limb_0_col23,
-                dst_limb_1_col24, dst_limb_2_col25, dst_limb_3_col26, dst_limb_4_col27,
-                dst_limb_5_col28, dst_limb_6_col29, dst_limb_7_col30, dst_limb_8_col31,
-                dst_limb_9_col32, dst_limb_10_col33, dst_limb_11_col34, dst_limb_12_col35,
-                dst_limb_13_col36, dst_limb_14_col37, dst_limb_15_col38, dst_limb_16_col39,
-                dst_limb_17_col40, dst_limb_18_col41, dst_limb_19_col42, dst_limb_20_col43,
-                dst_limb_21_col44, dst_limb_22_col45, dst_limb_23_col46, dst_limb_24_col47,
-                dst_limb_25_col48, dst_limb_26_col49, dst_limb_27_col50, op1_limb_0_col84,
-                op1_limb_1_col85, op1_limb_2_col86, op1_limb_3_col87, op1_limb_4_col88,
-                op1_limb_5_col89, op1_limb_6_col90, op1_limb_7_col91, op1_limb_8_col92,
-                op1_limb_9_col93, op1_limb_10_col94, op1_limb_11_col95, op1_limb_12_col96,
-                op1_limb_13_col97, op1_limb_14_col98, op1_limb_15_col99, op1_limb_16_col100,
-                op1_limb_17_col101, op1_limb_18_col102, op1_limb_19_col103, op1_limb_20_col104,
-                op1_limb_21_col105, op1_limb_22_col106, op1_limb_23_col107, op1_limb_24_col108,
-                op1_limb_25_col109, op1_limb_26_col110, op1_limb_27_col111, res_limb_0_col197,
-                res_limb_1_col198, res_limb_2_col199, res_limb_3_col200, res_limb_4_col201,
-                res_limb_5_col202, res_limb_6_col203, res_limb_7_col204, res_limb_8_col205,
-                res_limb_9_col206, res_limb_10_col207, res_limb_11_col208, res_limb_12_col209,
-                res_limb_13_col210, res_limb_14_col211, res_limb_15_col212, res_limb_16_col213,
-                res_limb_17_col214, res_limb_18_col215, res_limb_19_col216, res_limb_20_col217,
-                res_limb_21_col218, res_limb_22_col219, res_limb_23_col220, res_limb_24_col221,
-                res_limb_25_col222, res_limb_26_col223, res_limb_27_col224,
+                decode_generic_instruction_output_tmp_c8168_26_instruction_size, dst_limb_0_col24,
+                dst_limb_1_col25, dst_limb_2_col26, dst_limb_3_col27, dst_limb_4_col28,
+                dst_limb_5_col29, dst_limb_6_col30, dst_limb_7_col31, dst_limb_8_col32,
+                dst_limb_9_col33, dst_limb_10_col34, dst_limb_11_col35, dst_limb_12_col36,
+                dst_limb_13_col37, dst_limb_14_col38, dst_limb_15_col39, dst_limb_16_col40,
+                dst_limb_17_col41, dst_limb_18_col42, dst_limb_19_col43, dst_limb_20_col44,
+                dst_limb_21_col45, dst_limb_22_col46, dst_limb_23_col47, dst_limb_24_col48,
+                dst_limb_25_col49, dst_limb_26_col50, dst_limb_27_col51, op1_limb_0_col85,
+                op1_limb_1_col86, op1_limb_2_col87, op1_limb_3_col88, op1_limb_4_col89,
+                op1_limb_5_col90, op1_limb_6_col91, op1_limb_7_col92, op1_limb_8_col93,
+                op1_limb_9_col94, op1_limb_10_col95, op1_limb_11_col96, op1_limb_12_col97,
+                op1_limb_13_col98, op1_limb_14_col99, op1_limb_15_col100, op1_limb_16_col101,
+                op1_limb_17_col102, op1_limb_18_col103, op1_limb_19_col104, op1_limb_20_col105,
+                op1_limb_21_col106, op1_limb_22_col107, op1_limb_23_col108, op1_limb_24_col109,
+                op1_limb_25_col110, op1_limb_26_col111, op1_limb_27_col112, res_limb_0_col198,
+                res_limb_1_col199, res_limb_2_col200, res_limb_3_col201, res_limb_4_col202,
+                res_limb_5_col203, res_limb_6_col204, res_limb_7_col205, res_limb_8_col206,
+                res_limb_9_col207, res_limb_10_col208, res_limb_11_col209, res_limb_12_col210,
+                res_limb_13_col211, res_limb_14_col212, res_limb_15_col213, res_limb_16_col214,
+                res_limb_17_col215, res_limb_18_col216, res_limb_19_col217, res_limb_20_col218,
+                res_limb_21_col219, res_limb_22_col220, res_limb_23_col221, res_limb_24_col222,
+                res_limb_25_col223, res_limb_26_col224, res_limb_27_col225,
             ],
-            partial_limb_msb_col227,
-            msb_col228,
-            mid_limbs_set_col229,
-            partial_limb_msb_col230,
-            dst_sum_squares_inv_col231,
-            dst_sum_inv_col232,
-            op1_as_rel_imm_cond_col233,
-            msb_col234,
-            mid_limbs_set_col235,
-            partial_limb_msb_col236,
-            next_pc_jnz_col237,
-            next_pc_col238,
-            next_ap_col239,
-            range_check_29_bot11bits_col240,
-            next_fp_col241,
+            enabler_col0,
+            partial_limb_msb_col228,
+            msb_col229,
+            mid_limbs_set_col230,
+            partial_limb_msb_col231,
+            dst_sum_squares_inv_col232,
+            dst_sum_inv_col233,
+            op1_as_rel_imm_cond_col234,
+            msb_col235,
+            mid_limbs_set_col236,
+            partial_limb_msb_col237,
+            next_pc_jnz_col238,
+            next_pc_col239,
+            next_ap_col240,
+            range_check_29_bot11bits_col241,
+            next_fp_col242,
             self.common_lookup_elements,
             ref range_check_18_sum_63,
             ref numerator_63,
@@ -1263,25 +1270,21 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
 
-        // Constraint - Enabler is a bit
-        let constraint_quotient = (((enabler_col242 * enabler_col242) - enabler_col242));
-        sum = sum * random_coeff + constraint_quotient;
-
         opcodes_sum_65 = self
             .common_lookup_elements
             .combine_qm31(
-                [qm31_const::<428564188, 0, 0, 0>(), input_pc_col0, input_ap_col1, input_fp_col2]
+                [qm31_const::<428564188, 0, 0, 0>(), input_pc_col1, input_ap_col2, input_fp_col3]
                     .span(),
             );
-        numerator_65 = enabler_col242;
+        numerator_65 = enabler_col0;
 
         opcodes_sum_66 = self
             .common_lookup_elements
             .combine_qm31(
-                [qm31_const::<428564188, 0, 0, 0>(), next_pc_col238, next_ap_col239, next_fp_col241]
+                [qm31_const::<428564188, 0, 0, 0>(), next_pc_col239, next_ap_col240, next_fp_col242]
                     .span(),
             );
-        numerator_66 = enabler_col242;
+        numerator_66 = enabler_col0;
 
         lookup_constraints(
             ref sum,

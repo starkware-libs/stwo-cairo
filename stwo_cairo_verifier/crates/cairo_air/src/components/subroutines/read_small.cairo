@@ -8,6 +8,7 @@ use crate::prelude::*;
 
 pub fn read_small_evaluate(
     input: QM31,
+    enabler: QM31,
     id_col0: QM31,
     msb_col1: QM31,
     mid_limbs_set_col2: QM31,
@@ -27,6 +28,7 @@ pub fn read_small_evaluate(
     let read_small_input = input;
     read_id_evaluate(
         read_small_input,
+        enabler,
         id_col0,
         common_lookup_elements,
         ref memory_address_to_id_sum_0,
@@ -41,10 +43,11 @@ pub fn read_small_evaluate(
         decode_small_sign_output_tmp_c806d_5_limb27,
     ] =
         decode_small_sign_evaluate(
-        [], msb_col1, mid_limbs_set_col2, common_lookup_elements, ref sum, random_coeff,
+        [], enabler, msb_col1, mid_limbs_set_col2, common_lookup_elements, ref sum, random_coeff,
     );
     cond_range_check_2_evaluate(
         [remainder_bits_col6, qm31_const::<1, 0, 0, 0>()],
+        enabler,
         partial_limb_msb_col7,
         common_lookup_elements,
         ref sum,
@@ -80,7 +83,7 @@ pub fn read_small_evaluate(
             ]
                 .span(),
         );
-    numerator_1 = qm31_const::<1, 0, 0, 0>();
+    numerator_1 = enabler;
 
     (((((value_limb_0_col3 + (value_limb_1_col4 * qm31_const::<512, 0, 0, 0>()))
         + (value_limb_2_col5 * qm31_const::<262144, 0, 0, 0>()))

@@ -71,7 +71,6 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let M31_1 = E::F::from(M31::from(1));
         let M31_1090315331 = E::F::from(M31::from(1090315331));
         let M31_1109051422 = E::F::from(M31::from(1109051422));
         let M31_1424798916 = E::F::from(M31::from(1424798916));
@@ -82,177 +81,175 @@ impl FrameworkEval for Eval {
         let M31_262144 = E::F::from(M31::from(262144));
         let M31_4194304 = E::F::from(M31::from(4194304));
         let M31_517791011 = E::F::from(M31::from(517791011));
-        let input_limb_0_col0 = eval.next_trace_mask();
-        let input_limb_1_col1 = eval.next_trace_mask();
-        let input_limb_2_col2 = eval.next_trace_mask();
-        let input_limb_3_col3 = eval.next_trace_mask();
-        let input_limb_4_col4 = eval.next_trace_mask();
-        let input_limb_5_col5 = eval.next_trace_mask();
-        let input_limb_6_col6 = eval.next_trace_mask();
-        let input_limb_7_col7 = eval.next_trace_mask();
-        let input_limb_8_col8 = eval.next_trace_mask();
-        let input_limb_9_col9 = eval.next_trace_mask();
-        let limb_0_high_part_col10 = eval.next_trace_mask();
-        let limb_1_low_part_col11 = eval.next_trace_mask();
-        let limb_2_high_part_col12 = eval.next_trace_mask();
-        let limb_3_low_part_col13 = eval.next_trace_mask();
-        let limb_4_high_part_col14 = eval.next_trace_mask();
-        let limb_5_low_part_col15 = eval.next_trace_mask();
-        let limb_6_high_part_col16 = eval.next_trace_mask();
-        let limb_7_low_part_col17 = eval.next_trace_mask();
-        let limb_8_high_part_col18 = eval.next_trace_mask();
-        let enabler_col19 = eval.next_trace_mask();
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.common_lookup_elements,
-            E::EF::from(M31_1.clone()),
-            &[
-                M31_517791011.clone(),
-                limb_0_high_part_col10.clone(),
-                limb_1_low_part_col11.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.common_lookup_elements,
-            E::EF::from(M31_1.clone()),
-            &[
-                M31_1109051422.clone(),
-                (input_limb_0_col0.clone() - (limb_0_high_part_col10.clone() * M31_262144.clone())),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.common_lookup_elements,
-            E::EF::from(M31_1.clone()),
-            &[
-                M31_1109051422.clone(),
-                ((input_limb_1_col1.clone() - limb_1_low_part_col11.clone()) * M31_4194304.clone()),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.common_lookup_elements,
-            E::EF::from(M31_1.clone()),
-            &[
-                M31_1897792095.clone(),
-                limb_2_high_part_col12.clone(),
-                limb_3_low_part_col13.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.common_lookup_elements,
-            E::EF::from(M31_1.clone()),
-            &[
-                M31_1424798916.clone(),
-                (input_limb_2_col2.clone() - (limb_2_high_part_col12.clone() * M31_262144.clone())),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.common_lookup_elements,
-            E::EF::from(M31_1.clone()),
-            &[
-                M31_1109051422.clone(),
-                ((input_limb_3_col3.clone() - limb_3_low_part_col13.clone()) * M31_4194304.clone()),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.common_lookup_elements,
-            E::EF::from(M31_1.clone()),
-            &[
-                M31_1881014476.clone(),
-                limb_4_high_part_col14.clone(),
-                limb_5_low_part_col15.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.common_lookup_elements,
-            E::EF::from(M31_1.clone()),
-            &[
-                M31_1109051422.clone(),
-                (input_limb_4_col4.clone() - (limb_4_high_part_col14.clone() * M31_262144.clone())),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.common_lookup_elements,
-            E::EF::from(M31_1.clone()),
-            &[
-                M31_1109051422.clone(),
-                ((input_limb_5_col5.clone() - limb_5_low_part_col15.clone()) * M31_4194304.clone()),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.common_lookup_elements,
-            E::EF::from(M31_1.clone()),
-            &[
-                M31_1864236857.clone(),
-                limb_6_high_part_col16.clone(),
-                limb_7_low_part_col17.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.common_lookup_elements,
-            E::EF::from(M31_1.clone()),
-            &[
-                M31_1424798916.clone(),
-                (input_limb_6_col6.clone() - (limb_6_high_part_col16.clone() * M31_262144.clone())),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.common_lookup_elements,
-            E::EF::from(M31_1.clone()),
-            &[
-                M31_1109051422.clone(),
-                ((input_limb_7_col7.clone() - limb_7_low_part_col17.clone()) * M31_4194304.clone()),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.common_lookup_elements,
-            E::EF::from(M31_1.clone()),
-            &[
-                M31_1847459238.clone(),
-                limb_8_high_part_col18.clone(),
-                input_limb_9_col9.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.common_lookup_elements,
-            E::EF::from(M31_1.clone()),
-            &[
-                M31_1109051422.clone(),
-                (input_limb_8_col8.clone() - (limb_8_high_part_col18.clone() * M31_262144.clone())),
-            ],
-        ));
+        let enabler_col0 = eval.next_trace_mask();
+        let input_limb_0_col1 = eval.next_trace_mask();
+        let input_limb_1_col2 = eval.next_trace_mask();
+        let input_limb_2_col3 = eval.next_trace_mask();
+        let input_limb_3_col4 = eval.next_trace_mask();
+        let input_limb_4_col5 = eval.next_trace_mask();
+        let input_limb_5_col6 = eval.next_trace_mask();
+        let input_limb_6_col7 = eval.next_trace_mask();
+        let input_limb_7_col8 = eval.next_trace_mask();
+        let input_limb_8_col9 = eval.next_trace_mask();
+        let input_limb_9_col10 = eval.next_trace_mask();
+        let limb_0_high_part_col11 = eval.next_trace_mask();
+        let limb_1_low_part_col12 = eval.next_trace_mask();
+        let limb_2_high_part_col13 = eval.next_trace_mask();
+        let limb_3_low_part_col14 = eval.next_trace_mask();
+        let limb_4_high_part_col15 = eval.next_trace_mask();
+        let limb_5_low_part_col16 = eval.next_trace_mask();
+        let limb_6_high_part_col17 = eval.next_trace_mask();
+        let limb_7_low_part_col18 = eval.next_trace_mask();
+        let limb_8_high_part_col19 = eval.next_trace_mask();
 
         // Enabler is a bit.
-        eval.add_constraint(
-            ((enabler_col19.clone() * enabler_col19.clone()) - enabler_col19.clone()),
-        );
+        eval.add_constraint(((enabler_col0.clone() * enabler_col0.clone()) - enabler_col0.clone()));
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler_col19.clone()),
+            E::EF::from(enabler_col0.clone()),
+            &[
+                M31_517791011.clone(),
+                limb_0_high_part_col11.clone(),
+                limb_1_low_part_col12.clone(),
+            ],
+        ));
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.common_lookup_elements,
+            E::EF::from(enabler_col0.clone()),
+            &[
+                M31_1109051422.clone(),
+                (input_limb_0_col1.clone() - (limb_0_high_part_col11.clone() * M31_262144.clone())),
+            ],
+        ));
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.common_lookup_elements,
+            E::EF::from(enabler_col0.clone()),
+            &[
+                M31_1109051422.clone(),
+                ((input_limb_1_col2.clone() - limb_1_low_part_col12.clone()) * M31_4194304.clone()),
+            ],
+        ));
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.common_lookup_elements,
+            E::EF::from(enabler_col0.clone()),
+            &[
+                M31_1897792095.clone(),
+                limb_2_high_part_col13.clone(),
+                limb_3_low_part_col14.clone(),
+            ],
+        ));
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.common_lookup_elements,
+            E::EF::from(enabler_col0.clone()),
+            &[
+                M31_1424798916.clone(),
+                (input_limb_2_col3.clone() - (limb_2_high_part_col13.clone() * M31_262144.clone())),
+            ],
+        ));
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.common_lookup_elements,
+            E::EF::from(enabler_col0.clone()),
+            &[
+                M31_1109051422.clone(),
+                ((input_limb_3_col4.clone() - limb_3_low_part_col14.clone()) * M31_4194304.clone()),
+            ],
+        ));
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.common_lookup_elements,
+            E::EF::from(enabler_col0.clone()),
+            &[
+                M31_1881014476.clone(),
+                limb_4_high_part_col15.clone(),
+                limb_5_low_part_col16.clone(),
+            ],
+        ));
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.common_lookup_elements,
+            E::EF::from(enabler_col0.clone()),
+            &[
+                M31_1109051422.clone(),
+                (input_limb_4_col5.clone() - (limb_4_high_part_col15.clone() * M31_262144.clone())),
+            ],
+        ));
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.common_lookup_elements,
+            E::EF::from(enabler_col0.clone()),
+            &[
+                M31_1109051422.clone(),
+                ((input_limb_5_col6.clone() - limb_5_low_part_col16.clone()) * M31_4194304.clone()),
+            ],
+        ));
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.common_lookup_elements,
+            E::EF::from(enabler_col0.clone()),
+            &[
+                M31_1864236857.clone(),
+                limb_6_high_part_col17.clone(),
+                limb_7_low_part_col18.clone(),
+            ],
+        ));
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.common_lookup_elements,
+            E::EF::from(enabler_col0.clone()),
+            &[
+                M31_1424798916.clone(),
+                (input_limb_6_col7.clone() - (limb_6_high_part_col17.clone() * M31_262144.clone())),
+            ],
+        ));
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.common_lookup_elements,
+            E::EF::from(enabler_col0.clone()),
+            &[
+                M31_1109051422.clone(),
+                ((input_limb_7_col8.clone() - limb_7_low_part_col18.clone()) * M31_4194304.clone()),
+            ],
+        ));
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.common_lookup_elements,
+            E::EF::from(enabler_col0.clone()),
+            &[
+                M31_1847459238.clone(),
+                limb_8_high_part_col19.clone(),
+                input_limb_9_col10.clone(),
+            ],
+        ));
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.common_lookup_elements,
+            E::EF::from(enabler_col0.clone()),
+            &[
+                M31_1109051422.clone(),
+                (input_limb_8_col9.clone() - (limb_8_high_part_col19.clone() * M31_262144.clone())),
+            ],
+        ));
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.common_lookup_elements,
+            -E::EF::from(enabler_col0.clone()),
             &[
                 M31_1090315331.clone(),
-                input_limb_0_col0.clone(),
-                input_limb_1_col1.clone(),
-                input_limb_2_col2.clone(),
-                input_limb_3_col3.clone(),
-                input_limb_4_col4.clone(),
-                input_limb_5_col5.clone(),
-                input_limb_6_col6.clone(),
-                input_limb_7_col7.clone(),
-                input_limb_8_col8.clone(),
-                input_limb_9_col9.clone(),
+                input_limb_0_col1.clone(),
+                input_limb_1_col2.clone(),
+                input_limb_2_col3.clone(),
+                input_limb_3_col4.clone(),
+                input_limb_4_col5.clone(),
+                input_limb_5_col6.clone(),
+                input_limb_6_col7.clone(),
+                input_limb_7_col8.clone(),
+                input_limb_8_col9.clone(),
+                input_limb_9_col10.clone(),
             ],
         ));
 

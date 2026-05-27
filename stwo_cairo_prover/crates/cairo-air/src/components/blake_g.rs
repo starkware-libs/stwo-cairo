@@ -74,71 +74,74 @@ impl FrameworkEval for Eval {
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_0 = E::F::from(M31::from(0));
         let M31_1139985212 = E::F::from(M31::from(1139985212));
-        let input_limb_0_col0 = eval.next_trace_mask();
-        let input_limb_1_col1 = eval.next_trace_mask();
-        let input_limb_2_col2 = eval.next_trace_mask();
-        let input_limb_3_col3 = eval.next_trace_mask();
-        let input_limb_4_col4 = eval.next_trace_mask();
-        let input_limb_5_col5 = eval.next_trace_mask();
-        let input_limb_6_col6 = eval.next_trace_mask();
-        let input_limb_7_col7 = eval.next_trace_mask();
-        let input_limb_8_col8 = eval.next_trace_mask();
-        let input_limb_9_col9 = eval.next_trace_mask();
-        let input_limb_10_col10 = eval.next_trace_mask();
-        let input_limb_11_col11 = eval.next_trace_mask();
-        let triple_sum32_res_limb_0_col12 = eval.next_trace_mask();
-        let triple_sum32_res_limb_1_col13 = eval.next_trace_mask();
-        let ms_8_bits_col14 = eval.next_trace_mask();
+        let enabler_col0 = eval.next_trace_mask();
+        let input_limb_0_col1 = eval.next_trace_mask();
+        let input_limb_1_col2 = eval.next_trace_mask();
+        let input_limb_2_col3 = eval.next_trace_mask();
+        let input_limb_3_col4 = eval.next_trace_mask();
+        let input_limb_4_col5 = eval.next_trace_mask();
+        let input_limb_5_col6 = eval.next_trace_mask();
+        let input_limb_6_col7 = eval.next_trace_mask();
+        let input_limb_7_col8 = eval.next_trace_mask();
+        let input_limb_8_col9 = eval.next_trace_mask();
+        let input_limb_9_col10 = eval.next_trace_mask();
+        let input_limb_10_col11 = eval.next_trace_mask();
+        let input_limb_11_col12 = eval.next_trace_mask();
+        let triple_sum32_res_limb_0_col13 = eval.next_trace_mask();
+        let triple_sum32_res_limb_1_col14 = eval.next_trace_mask();
         let ms_8_bits_col15 = eval.next_trace_mask();
         let ms_8_bits_col16 = eval.next_trace_mask();
         let ms_8_bits_col17 = eval.next_trace_mask();
-        let xor_col18 = eval.next_trace_mask();
+        let ms_8_bits_col18 = eval.next_trace_mask();
         let xor_col19 = eval.next_trace_mask();
         let xor_col20 = eval.next_trace_mask();
         let xor_col21 = eval.next_trace_mask();
-        let triple_sum32_res_limb_0_col22 = eval.next_trace_mask();
-        let triple_sum32_res_limb_1_col23 = eval.next_trace_mask();
-        let ms_4_bits_col24 = eval.next_trace_mask();
+        let xor_col22 = eval.next_trace_mask();
+        let triple_sum32_res_limb_0_col23 = eval.next_trace_mask();
+        let triple_sum32_res_limb_1_col24 = eval.next_trace_mask();
         let ms_4_bits_col25 = eval.next_trace_mask();
         let ms_4_bits_col26 = eval.next_trace_mask();
         let ms_4_bits_col27 = eval.next_trace_mask();
-        let xor_col28 = eval.next_trace_mask();
+        let ms_4_bits_col28 = eval.next_trace_mask();
         let xor_col29 = eval.next_trace_mask();
         let xor_col30 = eval.next_trace_mask();
         let xor_col31 = eval.next_trace_mask();
-        let triple_sum32_res_limb_0_col32 = eval.next_trace_mask();
-        let triple_sum32_res_limb_1_col33 = eval.next_trace_mask();
-        let ms_8_bits_col34 = eval.next_trace_mask();
+        let xor_col32 = eval.next_trace_mask();
+        let triple_sum32_res_limb_0_col33 = eval.next_trace_mask();
+        let triple_sum32_res_limb_1_col34 = eval.next_trace_mask();
         let ms_8_bits_col35 = eval.next_trace_mask();
         let ms_8_bits_col36 = eval.next_trace_mask();
         let ms_8_bits_col37 = eval.next_trace_mask();
-        let xor_col38 = eval.next_trace_mask();
+        let ms_8_bits_col38 = eval.next_trace_mask();
         let xor_col39 = eval.next_trace_mask();
         let xor_col40 = eval.next_trace_mask();
         let xor_col41 = eval.next_trace_mask();
-        let triple_sum32_res_limb_0_col42 = eval.next_trace_mask();
-        let triple_sum32_res_limb_1_col43 = eval.next_trace_mask();
-        let ms_9_bits_col44 = eval.next_trace_mask();
+        let xor_col42 = eval.next_trace_mask();
+        let triple_sum32_res_limb_0_col43 = eval.next_trace_mask();
+        let triple_sum32_res_limb_1_col44 = eval.next_trace_mask();
         let ms_9_bits_col45 = eval.next_trace_mask();
         let ms_9_bits_col46 = eval.next_trace_mask();
         let ms_9_bits_col47 = eval.next_trace_mask();
-        let xor_col48 = eval.next_trace_mask();
+        let ms_9_bits_col48 = eval.next_trace_mask();
         let xor_col49 = eval.next_trace_mask();
         let xor_col50 = eval.next_trace_mask();
         let xor_col51 = eval.next_trace_mask();
-        let enabler_col52 = eval.next_trace_mask();
+        let xor_col52 = eval.next_trace_mask();
 
+        // Enabler is a bit.
+        eval.add_constraint(((enabler_col0.clone() * enabler_col0.clone()) - enabler_col0.clone()));
         TripleSum32::evaluate(
             [
-                input_limb_0_col0.clone(),
-                input_limb_1_col1.clone(),
-                input_limb_2_col2.clone(),
-                input_limb_3_col3.clone(),
-                input_limb_8_col8.clone(),
-                input_limb_9_col9.clone(),
+                input_limb_0_col1.clone(),
+                input_limb_1_col2.clone(),
+                input_limb_2_col3.clone(),
+                input_limb_3_col4.clone(),
+                input_limb_8_col9.clone(),
+                input_limb_9_col10.clone(),
             ],
-            triple_sum32_res_limb_0_col12.clone(),
-            triple_sum32_res_limb_1_col13.clone(),
+            enabler_col0.clone(),
+            triple_sum32_res_limb_0_col13.clone(),
+            triple_sum32_res_limb_1_col14.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
@@ -147,33 +150,35 @@ impl FrameworkEval for Eval {
         let [xor_rot_32_r_16_output_tmp_4da06_21_limb_0, xor_rot_32_r_16_output_tmp_4da06_21_limb_1] =
             XorRot32R16::evaluate(
                 [
-                    triple_sum32_res_limb_0_col12.clone(),
-                    triple_sum32_res_limb_1_col13.clone(),
-                    input_limb_6_col6.clone(),
-                    input_limb_7_col7.clone(),
+                    triple_sum32_res_limb_0_col13.clone(),
+                    triple_sum32_res_limb_1_col14.clone(),
+                    input_limb_6_col7.clone(),
+                    input_limb_7_col8.clone(),
                 ],
-                ms_8_bits_col14.clone(),
+                enabler_col0.clone(),
                 ms_8_bits_col15.clone(),
                 ms_8_bits_col16.clone(),
                 ms_8_bits_col17.clone(),
-                xor_col18.clone(),
+                ms_8_bits_col18.clone(),
                 xor_col19.clone(),
                 xor_col20.clone(),
                 xor_col21.clone(),
+                xor_col22.clone(),
                 &self.common_lookup_elements,
                 &mut eval,
             );
         TripleSum32::evaluate(
             [
-                input_limb_4_col4.clone(),
-                input_limb_5_col5.clone(),
+                input_limb_4_col5.clone(),
+                input_limb_5_col6.clone(),
                 xor_rot_32_r_16_output_tmp_4da06_21_limb_0.clone(),
                 xor_rot_32_r_16_output_tmp_4da06_21_limb_1.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
             ],
-            triple_sum32_res_limb_0_col22.clone(),
-            triple_sum32_res_limb_1_col23.clone(),
+            enabler_col0.clone(),
+            triple_sum32_res_limb_0_col23.clone(),
+            triple_sum32_res_limb_1_col24.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
@@ -182,33 +187,35 @@ impl FrameworkEval for Eval {
         let [xor_rot_32_r_12_output_tmp_4da06_43_limb_0, xor_rot_32_r_12_output_tmp_4da06_43_limb_1] =
             XorRot32R12::evaluate(
                 [
-                    input_limb_2_col2.clone(),
-                    input_limb_3_col3.clone(),
-                    triple_sum32_res_limb_0_col22.clone(),
-                    triple_sum32_res_limb_1_col23.clone(),
+                    input_limb_2_col3.clone(),
+                    input_limb_3_col4.clone(),
+                    triple_sum32_res_limb_0_col23.clone(),
+                    triple_sum32_res_limb_1_col24.clone(),
                 ],
-                ms_4_bits_col24.clone(),
+                enabler_col0.clone(),
                 ms_4_bits_col25.clone(),
                 ms_4_bits_col26.clone(),
                 ms_4_bits_col27.clone(),
-                xor_col28.clone(),
+                ms_4_bits_col28.clone(),
                 xor_col29.clone(),
                 xor_col30.clone(),
                 xor_col31.clone(),
+                xor_col32.clone(),
                 &self.common_lookup_elements,
                 &mut eval,
             );
         TripleSum32::evaluate(
             [
-                triple_sum32_res_limb_0_col12.clone(),
-                triple_sum32_res_limb_1_col13.clone(),
+                triple_sum32_res_limb_0_col13.clone(),
+                triple_sum32_res_limb_1_col14.clone(),
                 xor_rot_32_r_12_output_tmp_4da06_43_limb_0.clone(),
                 xor_rot_32_r_12_output_tmp_4da06_43_limb_1.clone(),
-                input_limb_10_col10.clone(),
-                input_limb_11_col11.clone(),
+                input_limb_10_col11.clone(),
+                input_limb_11_col12.clone(),
             ],
-            triple_sum32_res_limb_0_col32.clone(),
-            triple_sum32_res_limb_1_col33.clone(),
+            enabler_col0.clone(),
+            triple_sum32_res_limb_0_col33.clone(),
+            triple_sum32_res_limb_1_col34.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
@@ -217,33 +224,35 @@ impl FrameworkEval for Eval {
         let [xor_rot_32_r_8_output_tmp_4da06_65_limb_0, xor_rot_32_r_8_output_tmp_4da06_65_limb_1] =
             XorRot32R8::evaluate(
                 [
-                    triple_sum32_res_limb_0_col32.clone(),
-                    triple_sum32_res_limb_1_col33.clone(),
+                    triple_sum32_res_limb_0_col33.clone(),
+                    triple_sum32_res_limb_1_col34.clone(),
                     xor_rot_32_r_16_output_tmp_4da06_21_limb_0.clone(),
                     xor_rot_32_r_16_output_tmp_4da06_21_limb_1.clone(),
                 ],
-                ms_8_bits_col34.clone(),
+                enabler_col0.clone(),
                 ms_8_bits_col35.clone(),
                 ms_8_bits_col36.clone(),
                 ms_8_bits_col37.clone(),
-                xor_col38.clone(),
+                ms_8_bits_col38.clone(),
                 xor_col39.clone(),
                 xor_col40.clone(),
                 xor_col41.clone(),
+                xor_col42.clone(),
                 &self.common_lookup_elements,
                 &mut eval,
             );
         TripleSum32::evaluate(
             [
-                triple_sum32_res_limb_0_col22.clone(),
-                triple_sum32_res_limb_1_col23.clone(),
+                triple_sum32_res_limb_0_col23.clone(),
+                triple_sum32_res_limb_1_col24.clone(),
                 xor_rot_32_r_8_output_tmp_4da06_65_limb_0.clone(),
                 xor_rot_32_r_8_output_tmp_4da06_65_limb_1.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
             ],
-            triple_sum32_res_limb_0_col42.clone(),
-            triple_sum32_res_limb_1_col43.clone(),
+            enabler_col0.clone(),
+            triple_sum32_res_limb_0_col43.clone(),
+            triple_sum32_res_limb_1_col44.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
@@ -254,47 +263,44 @@ impl FrameworkEval for Eval {
                 [
                     xor_rot_32_r_12_output_tmp_4da06_43_limb_0.clone(),
                     xor_rot_32_r_12_output_tmp_4da06_43_limb_1.clone(),
-                    triple_sum32_res_limb_0_col42.clone(),
-                    triple_sum32_res_limb_1_col43.clone(),
+                    triple_sum32_res_limb_0_col43.clone(),
+                    triple_sum32_res_limb_1_col44.clone(),
                 ],
-                ms_9_bits_col44.clone(),
+                enabler_col0.clone(),
                 ms_9_bits_col45.clone(),
                 ms_9_bits_col46.clone(),
                 ms_9_bits_col47.clone(),
-                xor_col48.clone(),
+                ms_9_bits_col48.clone(),
                 xor_col49.clone(),
                 xor_col50.clone(),
                 xor_col51.clone(),
+                xor_col52.clone(),
                 &self.common_lookup_elements,
                 &mut eval,
             );
-        // Enabler is a bit.
-        eval.add_constraint(
-            ((enabler_col52.clone() * enabler_col52.clone()) - enabler_col52.clone()),
-        );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler_col52.clone()),
+            -E::EF::from(enabler_col0.clone()),
             &[
                 M31_1139985212.clone(),
-                input_limb_0_col0.clone(),
-                input_limb_1_col1.clone(),
-                input_limb_2_col2.clone(),
-                input_limb_3_col3.clone(),
-                input_limb_4_col4.clone(),
-                input_limb_5_col5.clone(),
-                input_limb_6_col6.clone(),
-                input_limb_7_col7.clone(),
-                input_limb_8_col8.clone(),
-                input_limb_9_col9.clone(),
-                input_limb_10_col10.clone(),
-                input_limb_11_col11.clone(),
-                triple_sum32_res_limb_0_col32.clone(),
-                triple_sum32_res_limb_1_col33.clone(),
+                input_limb_0_col1.clone(),
+                input_limb_1_col2.clone(),
+                input_limb_2_col3.clone(),
+                input_limb_3_col4.clone(),
+                input_limb_4_col5.clone(),
+                input_limb_5_col6.clone(),
+                input_limb_6_col7.clone(),
+                input_limb_7_col8.clone(),
+                input_limb_8_col9.clone(),
+                input_limb_9_col10.clone(),
+                input_limb_10_col11.clone(),
+                input_limb_11_col12.clone(),
+                triple_sum32_res_limb_0_col33.clone(),
+                triple_sum32_res_limb_1_col34.clone(),
                 xor_rot_32_r_7_output_tmp_4da06_87_limb_0.clone(),
                 xor_rot_32_r_7_output_tmp_4da06_87_limb_1.clone(),
-                triple_sum32_res_limb_0_col42.clone(),
-                triple_sum32_res_limb_1_col43.clone(),
+                triple_sum32_res_limb_0_col43.clone(),
+                triple_sum32_res_limb_1_col44.clone(),
                 xor_rot_32_r_8_output_tmp_4da06_65_limb_0.clone(),
                 xor_rot_32_r_8_output_tmp_4da06_65_limb_1.clone(),
             ],

@@ -16,6 +16,7 @@ impl PoseidonPartialRound {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [poseidon_partial_round_input_z0_3_limb_0, poseidon_partial_round_input_z0_3_limb_1, poseidon_partial_round_input_z0_3_limb_2, poseidon_partial_round_input_z0_3_limb_3, poseidon_partial_round_input_z0_3_limb_4, poseidon_partial_round_input_z0_3_limb_5, poseidon_partial_round_input_z0_3_limb_6, poseidon_partial_round_input_z0_3_limb_7, poseidon_partial_round_input_z0_3_limb_8, poseidon_partial_round_input_z0_3_limb_9, poseidon_partial_round_input_z1_limb_0, poseidon_partial_round_input_z1_limb_1, poseidon_partial_round_input_z1_limb_2, poseidon_partial_round_input_z1_limb_3, poseidon_partial_round_input_z1_limb_4, poseidon_partial_round_input_z1_limb_5, poseidon_partial_round_input_z1_limb_6, poseidon_partial_round_input_z1_limb_7, poseidon_partial_round_input_z1_limb_8, poseidon_partial_round_input_z1_limb_9, poseidon_partial_round_input_z1_3_limb_0, poseidon_partial_round_input_z1_3_limb_1, poseidon_partial_round_input_z1_3_limb_2, poseidon_partial_round_input_z1_3_limb_3, poseidon_partial_round_input_z1_3_limb_4, poseidon_partial_round_input_z1_3_limb_5, poseidon_partial_round_input_z1_3_limb_6, poseidon_partial_round_input_z1_3_limb_7, poseidon_partial_round_input_z1_3_limb_8, poseidon_partial_round_input_z1_3_limb_9, poseidon_partial_round_input_z2_limb_0, poseidon_partial_round_input_z2_limb_1, poseidon_partial_round_input_z2_limb_2, poseidon_partial_round_input_z2_limb_3, poseidon_partial_round_input_z2_limb_4, poseidon_partial_round_input_z2_limb_5, poseidon_partial_round_input_z2_limb_6, poseidon_partial_round_input_z2_limb_7, poseidon_partial_round_input_z2_limb_8, poseidon_partial_round_input_z2_limb_9, poseidon_partial_round_input_half_key_limb_0, poseidon_partial_round_input_half_key_limb_1, poseidon_partial_round_input_half_key_limb_2, poseidon_partial_round_input_half_key_limb_3, poseidon_partial_round_input_half_key_limb_4, poseidon_partial_round_input_half_key_limb_5, poseidon_partial_round_input_half_key_limb_6, poseidon_partial_round_input_half_key_limb_7, poseidon_partial_round_input_half_key_limb_8, poseidon_partial_round_input_half_key_limb_9]: [E::F; 50],
+        enabler: E::F,
         cube_252_output_limb_0_col0: E::F,
         cube_252_output_limb_1_col1: E::F,
         cube_252_output_limb_2_col2: E::F,
@@ -51,13 +52,12 @@ impl PoseidonPartialRound {
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
-        let M31_1 = E::F::from(M31::from(1));
         let M31_1090315331 = E::F::from(M31::from(1090315331));
         let M31_1987997202 = E::F::from(M31::from(1987997202));
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1987997202.clone(),
                 poseidon_partial_round_input_z2_limb_0.clone(),
@@ -146,6 +146,7 @@ impl PoseidonPartialRound {
                 poseidon_partial_round_input_half_key_limb_8.clone(),
                 poseidon_partial_round_input_half_key_limb_9.clone(),
             ],
+            enabler.clone(),
             combination_limb_0_col10.clone(),
             combination_limb_1_col11.clone(),
             combination_limb_2_col12.clone(),
@@ -162,7 +163,7 @@ impl PoseidonPartialRound {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1090315331.clone(),
                 combination_limb_0_col10.clone(),
@@ -191,6 +192,7 @@ impl PoseidonPartialRound {
                 combination_limb_8_col18.clone(),
                 combination_limb_9_col19.clone(),
             ],
+            enabler.clone(),
             combination_limb_0_col21.clone(),
             combination_limb_1_col22.clone(),
             combination_limb_2_col23.clone(),

@@ -16,6 +16,7 @@ impl Mul252 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [mul_252_input_a_limb_0, mul_252_input_a_limb_1, mul_252_input_a_limb_2, mul_252_input_a_limb_3, mul_252_input_a_limb_4, mul_252_input_a_limb_5, mul_252_input_a_limb_6, mul_252_input_a_limb_7, mul_252_input_a_limb_8, mul_252_input_a_limb_9, mul_252_input_a_limb_10, mul_252_input_a_limb_11, mul_252_input_a_limb_12, mul_252_input_a_limb_13, mul_252_input_a_limb_14, mul_252_input_a_limb_15, mul_252_input_a_limb_16, mul_252_input_a_limb_17, mul_252_input_a_limb_18, mul_252_input_a_limb_19, mul_252_input_a_limb_20, mul_252_input_a_limb_21, mul_252_input_a_limb_22, mul_252_input_a_limb_23, mul_252_input_a_limb_24, mul_252_input_a_limb_25, mul_252_input_a_limb_26, mul_252_input_a_limb_27, mul_252_input_b_limb_0, mul_252_input_b_limb_1, mul_252_input_b_limb_2, mul_252_input_b_limb_3, mul_252_input_b_limb_4, mul_252_input_b_limb_5, mul_252_input_b_limb_6, mul_252_input_b_limb_7, mul_252_input_b_limb_8, mul_252_input_b_limb_9, mul_252_input_b_limb_10, mul_252_input_b_limb_11, mul_252_input_b_limb_12, mul_252_input_b_limb_13, mul_252_input_b_limb_14, mul_252_input_b_limb_15, mul_252_input_b_limb_16, mul_252_input_b_limb_17, mul_252_input_b_limb_18, mul_252_input_b_limb_19, mul_252_input_b_limb_20, mul_252_input_b_limb_21, mul_252_input_b_limb_22, mul_252_input_b_limb_23, mul_252_input_b_limb_24, mul_252_input_b_limb_25, mul_252_input_b_limb_26, mul_252_input_b_limb_27]: [E::F; 56],
+        enabler: E::F,
         mul_res_limb_0_col0: E::F,
         mul_res_limb_1_col1: E::F,
         mul_res_limb_2_col2: E::F,
@@ -106,6 +107,7 @@ impl Mul252 {
                 mul_res_limb_26_col26.clone(),
                 mul_res_limb_27_col27.clone(),
             ],
+            enabler.clone(),
             common_lookup_elements,
             eval,
         );
@@ -196,6 +198,7 @@ impl Mul252 {
                 mul_res_limb_26_col26.clone(),
                 mul_res_limb_27_col27.clone(),
             ],
+            enabler.clone(),
             k_col28.clone(),
             carry_0_col29.clone(),
             carry_1_col30.clone(),

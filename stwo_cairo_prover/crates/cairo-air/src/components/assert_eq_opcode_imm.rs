@@ -60,64 +60,66 @@ impl FrameworkEval for Eval {
         let M31_1 = E::F::from(M31::from(1));
         let M31_2 = E::F::from(M31::from(2));
         let M31_428564188 = E::F::from(M31::from(428564188));
-        let input_pc_col0 = eval.next_trace_mask();
-        let input_ap_col1 = eval.next_trace_mask();
-        let input_fp_col2 = eval.next_trace_mask();
-        let offset0_col3 = eval.next_trace_mask();
-        let dst_base_fp_col4 = eval.next_trace_mask();
-        let ap_update_add_1_col5 = eval.next_trace_mask();
-        let mem_dst_base_col6 = eval.next_trace_mask();
-        let dst_id_col7 = eval.next_trace_mask();
-        let enabler_col8 = eval.next_trace_mask();
+        let enabler_col0 = eval.next_trace_mask();
+        let input_pc_col1 = eval.next_trace_mask();
+        let input_ap_col2 = eval.next_trace_mask();
+        let input_fp_col3 = eval.next_trace_mask();
+        let offset0_col4 = eval.next_trace_mask();
+        let dst_base_fp_col5 = eval.next_trace_mask();
+        let ap_update_add_1_col6 = eval.next_trace_mask();
+        let mem_dst_base_col7 = eval.next_trace_mask();
+        let dst_id_col8 = eval.next_trace_mask();
 
+        // Enabler is a bit.
+        eval.add_constraint(((enabler_col0.clone() * enabler_col0.clone()) - enabler_col0.clone()));
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [decode_instruction_324b0_output_tmp_86a47_5_offset0] =
             DecodeInstruction324B0::evaluate(
-                [input_pc_col0.clone()],
-                offset0_col3.clone(),
-                dst_base_fp_col4.clone(),
-                ap_update_add_1_col5.clone(),
+                [input_pc_col1.clone()],
+                enabler_col0.clone(),
+                offset0_col4.clone(),
+                dst_base_fp_col5.clone(),
+                ap_update_add_1_col6.clone(),
                 &self.common_lookup_elements,
                 &mut eval,
             );
         // mem_dst_base.
         eval.add_constraint(
-            (mem_dst_base_col6.clone()
-                - ((dst_base_fp_col4.clone() * input_fp_col2.clone())
-                    + ((M31_1.clone() - dst_base_fp_col4.clone()) * input_ap_col1.clone()))),
+            (mem_dst_base_col7.clone()
+                - ((dst_base_fp_col5.clone() * input_fp_col3.clone())
+                    + ((M31_1.clone() - dst_base_fp_col5.clone()) * input_ap_col2.clone()))),
         );
         MemVerifyEqual::evaluate(
             [
-                (mem_dst_base_col6.clone()
+                (mem_dst_base_col7.clone()
                     + decode_instruction_324b0_output_tmp_86a47_5_offset0.clone()),
-                (input_pc_col0.clone() + M31_1.clone()),
+                (input_pc_col1.clone() + M31_1.clone()),
             ],
-            dst_id_col7.clone(),
+            enabler_col0.clone(),
+            dst_id_col8.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
-        // Enabler is a bit.
-        eval.add_constraint(((enabler_col8.clone() * enabler_col8.clone()) - enabler_col8.clone()));
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::from(enabler_col8.clone()),
+            E::EF::from(enabler_col0.clone()),
             &[
                 M31_428564188.clone(),
-                input_pc_col0.clone(),
-                input_ap_col1.clone(),
-                input_fp_col2.clone(),
+                input_pc_col1.clone(),
+                input_ap_col2.clone(),
+                input_fp_col3.clone(),
             ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler_col8.clone()),
+            -E::EF::from(enabler_col0.clone()),
             &[
                 M31_428564188.clone(),
-                (input_pc_col0.clone() + M31_2.clone()),
-                (input_ap_col1.clone() + ap_update_add_1_col5.clone()),
-                input_fp_col2.clone(),
+                (input_pc_col1.clone() + M31_2.clone()),
+                (input_ap_col2.clone() + ap_update_add_1_col6.clone()),
+                input_fp_col3.clone(),
             ],
         ));
 

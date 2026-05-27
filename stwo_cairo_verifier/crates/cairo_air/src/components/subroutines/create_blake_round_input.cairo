@@ -8,6 +8,7 @@ use crate::prelude::*;
 
 pub fn create_blake_round_input_evaluate(
     input: [QM31; 4],
+    enabler: QM31,
     low_16_bits_col0: QM31,
     high_16_bits_col1: QM31,
     low_7_ms_bits_col2: QM31,
@@ -131,6 +132,7 @@ pub fn create_blake_round_input_evaluate(
         input;
     read_u_32_evaluate(
         create_blake_round_input_input_limb_0,
+        enabler,
         low_16_bits_col0,
         high_16_bits_col1,
         low_7_ms_bits_col2,
@@ -149,6 +151,7 @@ pub fn create_blake_round_input_evaluate(
     );
     read_u_32_evaluate(
         (create_blake_round_input_input_limb_0 + qm31_const::<1, 0, 0, 0>()),
+        enabler,
         low_16_bits_col6,
         high_16_bits_col7,
         low_7_ms_bits_col8,
@@ -167,6 +170,7 @@ pub fn create_blake_round_input_evaluate(
     );
     read_u_32_evaluate(
         (create_blake_round_input_input_limb_0 + qm31_const::<2, 0, 0, 0>()),
+        enabler,
         low_16_bits_col12,
         high_16_bits_col13,
         low_7_ms_bits_col14,
@@ -185,6 +189,7 @@ pub fn create_blake_round_input_evaluate(
     );
     read_u_32_evaluate(
         (create_blake_round_input_input_limb_0 + qm31_const::<3, 0, 0, 0>()),
+        enabler,
         low_16_bits_col18,
         high_16_bits_col19,
         low_7_ms_bits_col20,
@@ -203,6 +208,7 @@ pub fn create_blake_round_input_evaluate(
     );
     read_u_32_evaluate(
         (create_blake_round_input_input_limb_0 + qm31_const::<4, 0, 0, 0>()),
+        enabler,
         low_16_bits_col24,
         high_16_bits_col25,
         low_7_ms_bits_col26,
@@ -221,6 +227,7 @@ pub fn create_blake_round_input_evaluate(
     );
     read_u_32_evaluate(
         (create_blake_round_input_input_limb_0 + qm31_const::<5, 0, 0, 0>()),
+        enabler,
         low_16_bits_col30,
         high_16_bits_col31,
         low_7_ms_bits_col32,
@@ -239,6 +246,7 @@ pub fn create_blake_round_input_evaluate(
     );
     read_u_32_evaluate(
         (create_blake_round_input_input_limb_0 + qm31_const::<6, 0, 0, 0>()),
+        enabler,
         low_16_bits_col36,
         high_16_bits_col37,
         low_7_ms_bits_col38,
@@ -257,6 +265,7 @@ pub fn create_blake_round_input_evaluate(
     );
     read_u_32_evaluate(
         (create_blake_round_input_input_limb_0 + qm31_const::<7, 0, 0, 0>()),
+        enabler,
         low_16_bits_col42,
         high_16_bits_col43,
         low_7_ms_bits_col44,
@@ -276,6 +285,7 @@ pub fn create_blake_round_input_evaluate(
     let split_16_low_part_size_8_output_tmp_4204d_89_limb_0: QM31 =
         split_16_low_part_size_8_evaluate(
         create_blake_round_input_input_limb_1,
+        enabler,
         ms_8_bits_col48,
         common_lookup_elements,
         ref sum,
@@ -284,6 +294,7 @@ pub fn create_blake_round_input_evaluate(
     let split_16_low_part_size_8_output_tmp_4204d_91_limb_0: QM31 =
         split_16_low_part_size_8_evaluate(
         create_blake_round_input_input_limb_2,
+        enabler,
         ms_8_bits_col49,
         common_lookup_elements,
         ref sum,
@@ -291,6 +302,7 @@ pub fn create_blake_round_input_evaluate(
     );
     bitwise_xor_num_bits_8_evaluate(
         [split_16_low_part_size_8_output_tmp_4204d_89_limb_0, qm31_const::<127, 0, 0, 0>()],
+        enabler,
         xor_col50,
         common_lookup_elements,
         ref verify_bitwise_xor_8_sum_24,
@@ -300,6 +312,7 @@ pub fn create_blake_round_input_evaluate(
     );
     bitwise_xor_num_bits_8_evaluate(
         [ms_8_bits_col48, qm31_const::<82, 0, 0, 0>()],
+        enabler,
         xor_col51,
         common_lookup_elements,
         ref verify_bitwise_xor_8_sum_25,
@@ -309,6 +322,7 @@ pub fn create_blake_round_input_evaluate(
     );
     bitwise_xor_num_bits_8_evaluate(
         [split_16_low_part_size_8_output_tmp_4204d_91_limb_0, qm31_const::<14, 0, 0, 0>()],
+        enabler,
         xor_col52,
         common_lookup_elements,
         ref verify_bitwise_xor_8_sum_26,
@@ -318,6 +332,7 @@ pub fn create_blake_round_input_evaluate(
     );
     bitwise_xor_num_bits_8_evaluate(
         [ms_8_bits_col49, qm31_const::<81, 0, 0, 0>()],
+        enabler,
         xor_col53,
         common_lookup_elements,
         ref verify_bitwise_xor_8_sum_27,

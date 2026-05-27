@@ -65,76 +65,77 @@ impl FrameworkEval for Eval {
         let M31_262144 = E::F::from(M31::from(262144));
         let M31_428564188 = E::F::from(M31::from(428564188));
         let M31_512 = E::F::from(M31::from(512));
-        let input_pc_col0 = eval.next_trace_mask();
-        let input_ap_col1 = eval.next_trace_mask();
-        let input_fp_col2 = eval.next_trace_mask();
-        let offset2_col3 = eval.next_trace_mask();
-        let op1_base_fp_col4 = eval.next_trace_mask();
-        let ap_update_add_1_col5 = eval.next_trace_mask();
-        let mem1_base_col6 = eval.next_trace_mask();
-        let next_pc_id_col7 = eval.next_trace_mask();
-        let next_pc_limb_0_col8 = eval.next_trace_mask();
-        let next_pc_limb_1_col9 = eval.next_trace_mask();
-        let next_pc_limb_2_col10 = eval.next_trace_mask();
-        let next_pc_limb_3_col11 = eval.next_trace_mask();
-        let partial_limb_msb_col12 = eval.next_trace_mask();
-        let enabler_col13 = eval.next_trace_mask();
+        let enabler_col0 = eval.next_trace_mask();
+        let input_pc_col1 = eval.next_trace_mask();
+        let input_ap_col2 = eval.next_trace_mask();
+        let input_fp_col3 = eval.next_trace_mask();
+        let offset2_col4 = eval.next_trace_mask();
+        let op1_base_fp_col5 = eval.next_trace_mask();
+        let ap_update_add_1_col6 = eval.next_trace_mask();
+        let mem1_base_col7 = eval.next_trace_mask();
+        let next_pc_id_col8 = eval.next_trace_mask();
+        let next_pc_limb_0_col9 = eval.next_trace_mask();
+        let next_pc_limb_1_col10 = eval.next_trace_mask();
+        let next_pc_limb_2_col11 = eval.next_trace_mask();
+        let next_pc_limb_3_col12 = eval.next_trace_mask();
+        let partial_limb_msb_col13 = eval.next_trace_mask();
 
+        // Enabler is a bit.
+        eval.add_constraint(((enabler_col0.clone() * enabler_col0.clone()) - enabler_col0.clone()));
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [decode_instruction_1f0a3_output_tmp_6e19b_5_offset2, decode_instruction_1f0a3_output_tmp_6e19b_5_op1_base_ap] =
             DecodeInstruction1F0A3::evaluate(
-                [input_pc_col0.clone()],
-                offset2_col3.clone(),
-                op1_base_fp_col4.clone(),
-                ap_update_add_1_col5.clone(),
+                [input_pc_col1.clone()],
+                enabler_col0.clone(),
+                offset2_col4.clone(),
+                op1_base_fp_col5.clone(),
+                ap_update_add_1_col6.clone(),
                 &self.common_lookup_elements,
                 &mut eval,
             );
         // mem1_base.
         eval.add_constraint(
-            (mem1_base_col6.clone()
-                - ((op1_base_fp_col4.clone() * input_fp_col2.clone())
+            (mem1_base_col7.clone()
+                - ((op1_base_fp_col5.clone() * input_fp_col3.clone())
                     + (decode_instruction_1f0a3_output_tmp_6e19b_5_op1_base_ap.clone()
-                        * input_ap_col1.clone()))),
+                        * input_ap_col2.clone()))),
         );
         ReadPositiveNumBits29::evaluate(
-            [(mem1_base_col6.clone()
+            [(mem1_base_col7.clone()
                 + decode_instruction_1f0a3_output_tmp_6e19b_5_offset2.clone())],
-            next_pc_id_col7.clone(),
-            next_pc_limb_0_col8.clone(),
-            next_pc_limb_1_col9.clone(),
-            next_pc_limb_2_col10.clone(),
-            next_pc_limb_3_col11.clone(),
-            partial_limb_msb_col12.clone(),
+            enabler_col0.clone(),
+            next_pc_id_col8.clone(),
+            next_pc_limb_0_col9.clone(),
+            next_pc_limb_1_col10.clone(),
+            next_pc_limb_2_col11.clone(),
+            next_pc_limb_3_col12.clone(),
+            partial_limb_msb_col13.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
-        // Enabler is a bit.
-        eval.add_constraint(
-            ((enabler_col13.clone() * enabler_col13.clone()) - enabler_col13.clone()),
-        );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::from(enabler_col13.clone()),
+            E::EF::from(enabler_col0.clone()),
             &[
                 M31_428564188.clone(),
-                input_pc_col0.clone(),
-                input_ap_col1.clone(),
-                input_fp_col2.clone(),
+                input_pc_col1.clone(),
+                input_ap_col2.clone(),
+                input_fp_col3.clone(),
             ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler_col13.clone()),
+            -E::EF::from(enabler_col0.clone()),
             &[
                 M31_428564188.clone(),
-                (((next_pc_limb_0_col8.clone() + (next_pc_limb_1_col9.clone() * M31_512.clone()))
-                    + (next_pc_limb_2_col10.clone() * M31_262144.clone()))
-                    + (next_pc_limb_3_col11.clone() * M31_134217728.clone())),
-                (input_ap_col1.clone() + ap_update_add_1_col5.clone()),
-                input_fp_col2.clone(),
+                (((next_pc_limb_0_col9.clone()
+                    + (next_pc_limb_1_col10.clone() * M31_512.clone()))
+                    + (next_pc_limb_2_col11.clone() * M31_262144.clone()))
+                    + (next_pc_limb_3_col12.clone() * M31_134217728.clone())),
+                (input_ap_col2.clone() + ap_update_add_1_col6.clone()),
+                input_fp_col3.clone(),
             ],
         ));
 
