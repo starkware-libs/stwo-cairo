@@ -119,11 +119,6 @@ pub struct RelationUse {
     pub uses: u64,
 }
 
-struct BuiltinClaim {
-    segment_start: u32,
-    log_size: u32,
-}
-
 #[allow(clippy::too_many_arguments)]
 fn verify_builtins(
     add_mod_builtin_claim: &Option<add_mod_builtin::Claim>,
@@ -173,11 +168,7 @@ fn verify_builtins(
         ($name:ident) => {
             paste! {
                 check_builtin(
-                    (*[<$name _builtin_claim>])
-                        .map(|claim| BuiltinClaim {
-                            segment_start: claim.[<$name _builtin_segment_start>],
-                            log_size: claim.log_size,
-                        }),
+                    (*[<$name _builtin_claim>]).map(|claim| claim.log_size),
                     $name,
                     stringify!($name),
                     [<$name:upper _BUILTIN_MEMORY_CELLS>]
@@ -188,19 +179,13 @@ fn verify_builtins(
 
     // All other supported builtins.
     check_builtin(
-        (*range_check_128_builtin_claim).map(|claim| BuiltinClaim {
-            segment_start: claim.range_check_builtin_segment_start,
-            log_size: claim.log_size,
-        }),
+        (*range_check_128_builtin_claim).map(|claim| claim.log_size),
         range_check_128,
         "range_check_128",
         RANGE_CHECK_BUILTIN_MEMORY_CELLS,
     );
     check_builtin(
-        (*range_check_96_builtin_claim).map(|claim| BuiltinClaim {
-            segment_start: claim.range_check96_builtin_segment_start,
-            log_size: claim.log_size,
-        }),
+        (*range_check_96_builtin_claim).map(|claim| claim.log_size),
         range_check_96,
         "range_check_96",
         RANGE_CHECK_96_BUILTIN_MEMORY_CELLS,
@@ -210,20 +195,14 @@ fn verify_builtins(
         "Both pedersen_builtin_claim and pedersen_builtin_narrow_windows_claim builtins cannot be used together");
     if let Some(claim) = pedersen_builtin_claim {
         check_builtin(
-            Some(BuiltinClaim {
-                segment_start: claim.pedersen_builtin_segment_start,
-                log_size: claim.log_size,
-            }),
+            Some(claim.log_size),
             pedersen,
             "pedersen",
             PEDERSEN_BUILTIN_MEMORY_CELLS,
         );
     } else {
         check_builtin(
-            pedersen_builtin_narrow_windows_claim.map(|claim| BuiltinClaim {
-                segment_start: claim.pedersen_builtin_segment_start,
-                log_size: claim.log_size,
-            }),
+            pedersen_builtin_narrow_windows_claim.map(|claim| claim.log_size),
             pedersen,
             "pedersen",
             PEDERSEN_BUILTIN_NARROW_WINDOWS_MEMORY_CELLS,
@@ -252,7 +231,7 @@ fn verify_program(program: &MemorySection, public_segments: &PublicSegmentRanges
 }
 
 fn check_builtin(
-    builtin_claim: Option<BuiltinClaim>,
+    log_size: Option<u32>,
     segment_range: Option<SegmentRange>,
     name: &str,
     n_cells: usize,
@@ -267,27 +246,20 @@ fn check_builtin(
         }
     };
 
-    // If segment range is non-empty, claim must be Some.
-    let BuiltinClaim {
-        segment_start,
-        log_size,
-    } = builtin_claim.unwrap_or_else(|| {
+    // If segment range is non-empty, log_size must be Some.
+    let log_size = log_size.unwrap_or_else(|| {
         panic!("Missing {name} builtin claim despite non-empty segment range {segment_range:?}")
     });
 
-    let segment_end = segment_start + (1 << log_size) * n_cells as u32;
     let start_ptr = segment_range.start_ptr.value;
     let stop_ptr = segment_range.stop_ptr.value;
+    let segment_end = start_ptr + (1 << log_size) * n_cells as u32;
     assert!(
         (stop_ptr - start_ptr).is_multiple_of(n_cells as u32),
         "Builtin segment range must divisible by {n_cells} cells, but got start_ptr: {start_ptr}, stop_ptr: {stop_ptr}"
     );
 
-    // Check that segment_start == start_ptr <= stop_ptr <= segment_end < 2**31.
-    assert_eq!(
-        start_ptr, segment_start,
-        "Builtin segment start doesn't match claim"
-    );
+    // Check that start_ptr <= stop_ptr <= segment_end < 2**31.
     assert!(
         start_ptr <= stop_ptr,
         "Range start should be less than or equal to range stop"

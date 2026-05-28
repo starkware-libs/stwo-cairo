@@ -69,10 +69,7 @@ impl ClaimGenerator {
 
         (
             trace,
-            Claim {
-                log_size,
-                ec_op_builtin_segment_start: self.ec_op_builtin_segment_start,
-            },
+            Claim { log_size },
             InteractionClaimGenerator {
                 log_size,
                 lookup_data,

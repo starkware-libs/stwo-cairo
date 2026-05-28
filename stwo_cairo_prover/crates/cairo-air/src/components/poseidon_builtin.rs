@@ -18,12 +18,12 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 2] = [
 pub struct Eval {
     pub claim: Claim,
     pub common_lookup_elements: relations::CommonLookupElements,
+    pub poseidon_builtin_segment_start: u32,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Claim {
     pub log_size: u32,
-    pub poseidon_builtin_segment_start: u32,
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
@@ -70,7 +70,7 @@ impl FrameworkEval for Eval {
 
         let instance_addr_tmp_a172e_0 = eval.add_intermediate(
             ((seq.clone() * M31_6.clone())
-                + E::F::from(M31::from(self.claim.poseidon_builtin_segment_start))),
+                + E::F::from(M31::from(self.poseidon_builtin_segment_start))),
         );
         ReadId::evaluate(
             [instance_addr_tmp_a172e_0.clone()],
@@ -142,11 +142,9 @@ mod tests {
     fn poseidon_builtin_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
-            claim: Claim {
-                log_size: 4,
-                poseidon_builtin_segment_start: rng.gen::<u32>(),
-            },
+            claim: Claim { log_size: 4 },
             common_lookup_elements: relations::CommonLookupElements::dummy(),
+            poseidon_builtin_segment_start: rng.gen::<u32>(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

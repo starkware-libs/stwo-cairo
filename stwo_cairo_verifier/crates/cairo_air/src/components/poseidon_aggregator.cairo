@@ -78,6 +78,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
+        public_params: Span<u32>,
     ) {
         let log_size = *(self.claim.log_size);
         let claimed_sum = *self.interaction_claim.claimed_sum;
@@ -3035,6 +3036,7 @@ mod tests {
         let mut interaction_columns = make_interaction_trace(
             interaction_values, qm31_const::<1115374022, 1127856551, 489657863, 643630026>(),
         );
+        let public_params = [].span();
         component
             .evaluate_constraints_at_point(
                 ref sum,
@@ -3042,6 +3044,7 @@ mod tests {
                 ref trace_columns,
                 ref interaction_columns,
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
+                public_params,
             );
         preprocessed_trace.validate_usage();
         assert_eq!(sum, QM31Trait::from_fixed_array(POSEIDON_AGGREGATOR_SAMPLE_EVAL_RESULT))

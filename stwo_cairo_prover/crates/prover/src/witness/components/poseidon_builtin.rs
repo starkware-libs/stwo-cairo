@@ -57,10 +57,7 @@ impl ClaimGenerator {
 
         (
             trace,
-            Claim {
-                log_size,
-                poseidon_builtin_segment_start: self.poseidon_builtin_segment_start,
-            },
+            Claim { log_size },
             InteractionClaimGenerator {
                 log_size,
                 lookup_data,
