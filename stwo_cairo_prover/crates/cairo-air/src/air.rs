@@ -91,6 +91,7 @@ pub struct PublicData {
     pub public_memory: PublicMemory,
     pub initial_state: CasmState,
     pub final_state: CasmState,
+    pub component_log_sizes: Vec<u32>,
 }
 impl PublicData {
     /// Sums the logup of the public data.
@@ -151,6 +152,10 @@ impl PublicData {
     }
 
     pub fn mix_into<MC: MerkleChannel>(&self, channel: &mut MC::C) {
+        // Mix the program length to avoid ambiguity due to the padding in `pack_into_secure_felts`.
+        channel.mix_felts(&pack_into_secure_felts(
+            [self.public_memory.program.len() as u32].into_iter(),
+        ));
         let (public_claim, output_claim, program_claim) = self.pack_into_u32s();
         channel.mix_felts(&pack_into_secure_felts(public_claim.into_iter()));
         let mut hasher = MC::H::default();
@@ -197,6 +202,7 @@ impl PublicData {
                     safe_call_ids,
                     program,
                 },
+            component_log_sizes,
         } = self;
 
         let mut public_claim = vec![
@@ -237,6 +243,9 @@ impl PublicData {
         }
         for (id, _) in program {
             public_claim.push(*id);
+        }
+        for log_size in component_log_sizes {
+            public_claim.push(*log_size);
         }
 
         // Collect output values.
@@ -721,6 +730,7 @@ mod tests {
                 ap: M31::from_u32_unchecked(2520),
                 fp: M31::from_u32_unchecked(1336),
             },
+            component_log_sizes: vec![],
         };
 
         let sum = public_data.logup_sum(&dummy_lookup_elements);

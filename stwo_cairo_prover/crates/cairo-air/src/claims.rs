@@ -1022,10 +1022,11 @@ impl CairoClaim {
             component_enable_bits.push(false);
         }
 
+        let mut public_data = self.public_data.clone();
+        public_data.component_log_sizes = component_log_sizes.clone();
         FlatClaim {
             component_enable_bits,
-            component_log_sizes,
-            public_data: self.public_data.clone(),
+            public_data,
         }
     }
 }

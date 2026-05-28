@@ -150,6 +150,7 @@ pub fn create_cairo_claim_generator(
         public_memory,
         initial_state,
         final_state,
+        component_log_sizes: vec![],
     };
 
     let mut cairo_claim_generator = CairoClaimGenerator {

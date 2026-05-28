@@ -47,6 +47,7 @@ fn verify_claim(claim: &CairoClaim) {
                 ap: final_ap,
                 fp: final_fp,
             },
+        component_log_sizes: _,
     } = &claim.public_data;
 
     verify_builtins(
