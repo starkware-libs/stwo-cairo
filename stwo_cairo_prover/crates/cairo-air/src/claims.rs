@@ -8,7 +8,7 @@ use stwo::core::pcs::TreeVec;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 
 use super::flat_claims::FlatClaim;
-use crate::air::{accumulate_relation_uses, PublicData, RelationUsesDict};
+use crate::air::{PublicClaim, PublicData, RelationUsesDict, accumulate_relation_uses};
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
 use crate::components::memory_id_to_big::accumulate_relation_memory;
 use crate::components::*;
@@ -1022,10 +1022,14 @@ impl CairoClaim {
             component_enable_bits.push(false);
         }
 
+        let public_data = self.public_data.clone();
+        
         FlatClaim {
             component_enable_bits,
-            component_log_sizes,
-            public_data: self.public_data.clone(),
+            public_claim : PublicClaim {
+                public_data,
+                component_log_sizes,
+            }
         }
     }
 }

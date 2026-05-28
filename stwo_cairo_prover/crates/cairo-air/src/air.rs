@@ -86,11 +86,150 @@ pub fn accumulate_relation_uses<const N: usize>(
     }
 }
 
+pub struct PublicClaim {
+    pub public_data: PublicData,
+    pub component_log_sizes: Vec<u32>,
+}
+
+impl PublicClaim {
+    pub fn mix_into<MC: MerkleChannel>(&self, channel: &mut MC::C) {
+        // Mix the program length to avoid ambiguity due to the padding in `pack_into_secure_felts`.
+        channel.mix_felts(&pack_into_secure_felts(
+            [self.public_data.public_memory.program.len() as u32].into_iter(),
+        ));
+        let (public_claim, output_claim, program_claim) = self.pack_into_u32s();
+        channel.mix_felts(&pack_into_secure_felts(public_claim.into_iter()));
+        let mut hasher = MC::H::default();
+        hasher.update_leaf(
+            output_claim
+                .iter()
+                .map(|x| M31::from_u32_unchecked(*x))
+                .collect::<Vec<_>>()
+                .as_slice(),
+        );
+        MC::mix_root(channel, hasher.finalize());
+
+        let mut hasher = MC::H::default();
+        hasher.update_leaf(
+            program_claim
+                .iter()
+                .map(|x| M31::from_u32_unchecked(*x))
+                .collect::<Vec<_>>()
+                .as_slice(),
+        );
+        MC::mix_root(channel, hasher.finalize());
+    }
+
+    /// Converts public data to [u32], where each u32 is at most 2^31 - 1.
+    /// Returns the output and program values separately.
+    pub fn pack_into_u32s(&self) -> (Vec<u32>, Vec<u32>, Vec<u32>) {
+        let Self {
+            public_data:
+        PublicData {
+            initial_state:
+                CasmState {
+                    pc: initial_pc,
+                    ap: initial_ap,
+                    fp: initial_fp,
+                },
+            final_state:
+                CasmState {
+                    pc: final_pc,
+                    ap: final_ap,
+                    fp: final_fp,
+                },
+            public_memory:
+                PublicMemory {
+                    public_segments,
+                    output,
+                    safe_call_ids,
+                    program,
+                },
+            },
+            component_log_sizes,
+        } = self;
+
+        let mut public_claim = vec![
+            initial_pc.0,
+            initial_ap.0,
+            initial_fp.0,
+            final_pc.0,
+            final_ap.0,
+            final_fp.0,
+        ];
+        let PublicSegmentRanges {
+            output: output_ranges,
+            pedersen,
+            range_check_128,
+            ecdsa,
+            bitwise,
+            ec_op,
+            keccak,
+            poseidon,
+            range_check_96,
+            add_mod,
+            mul_mod,
+        } = public_segments;
+        Self::single_segment_range(Some(*output_ranges), &mut public_claim);
+        Self::single_segment_range(*pedersen, &mut public_claim);
+        Self::single_segment_range(*range_check_128, &mut public_claim);
+        Self::single_segment_range(*ecdsa, &mut public_claim);
+        Self::single_segment_range(*bitwise, &mut public_claim);
+        Self::single_segment_range(*ec_op, &mut public_claim);
+        Self::single_segment_range(*keccak, &mut public_claim);
+        Self::single_segment_range(*poseidon, &mut public_claim);
+        Self::single_segment_range(*range_check_96, &mut public_claim);
+        Self::single_segment_range(*add_mod, &mut public_claim);
+        Self::single_segment_range(*mul_mod, &mut public_claim);
+        public_claim.extend(safe_call_ids);
+        for (id, _) in output {
+            public_claim.push(*id);
+        }
+        for (id, _) in program {
+            public_claim.push(*id);
+        }
+        for log_size in component_log_sizes {
+            public_claim.push(*log_size);
+        }
+
+        // Collect output values.
+        let mut output_claim = vec![];
+        for (_, value) in output {
+            output_claim
+                .extend::<[u32; FELT252_N_WORDS]>(split(*value, (1 << FELT252_BITS_PER_WORD) - 1));
+        }
+
+        // Collect program values.
+        let mut program_claim = vec![];
+        for (_, value) in program {
+            program_claim
+                .extend::<[u32; FELT252_N_WORDS]>(split(*value, (1 << FELT252_BITS_PER_WORD) - 1));
+        }
+
+        (public_claim, output_claim, program_claim)
+    }
+
+    fn single_segment_range(segment: Option<SegmentRange>, public_claim: &mut Vec<u32>) {
+        if let Some(segment) = segment {
+            public_claim.extend([
+                segment.start_ptr.id,
+                segment.start_ptr.value,
+                segment.stop_ptr.id,
+                segment.stop_ptr.value,
+            ]);
+        } else {
+            public_claim.extend([0_u32; 4]);
+        }
+    }
+}
+
+
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, Default, Clone)]
 pub struct PublicData {
     pub public_memory: PublicMemory,
     pub initial_state: CasmState,
     pub final_state: CasmState,
+ 
 }
 impl PublicData {
     /// Sums the logup of the public data.
@@ -148,125 +287,6 @@ impl PublicData {
 
         let inverted_values = QM31::batch_inverse(&values_to_inverse);
         inverted_values.iter().sum::<QM31>()
-    }
-
-    pub fn mix_into<MC: MerkleChannel>(&self, channel: &mut MC::C) {
-        let (public_claim, output_claim, program_claim) = self.pack_into_u32s();
-        channel.mix_felts(&pack_into_secure_felts(public_claim.into_iter()));
-        let mut hasher = MC::H::default();
-        hasher.update_leaf(
-            output_claim
-                .iter()
-                .map(|x| M31::from_u32_unchecked(*x))
-                .collect::<Vec<_>>()
-                .as_slice(),
-        );
-        MC::mix_root(channel, hasher.finalize());
-
-        let mut hasher = MC::H::default();
-        hasher.update_leaf(
-            program_claim
-                .iter()
-                .map(|x| M31::from_u32_unchecked(*x))
-                .collect::<Vec<_>>()
-                .as_slice(),
-        );
-        MC::mix_root(channel, hasher.finalize());
-    }
-
-    /// Converts public data to [u32], where each u32 is at most 2^31 - 1.
-    /// Returns the output and program values separately.
-    pub fn pack_into_u32s(&self) -> (Vec<u32>, Vec<u32>, Vec<u32>) {
-        let PublicData {
-            initial_state:
-                CasmState {
-                    pc: initial_pc,
-                    ap: initial_ap,
-                    fp: initial_fp,
-                },
-            final_state:
-                CasmState {
-                    pc: final_pc,
-                    ap: final_ap,
-                    fp: final_fp,
-                },
-            public_memory:
-                PublicMemory {
-                    public_segments,
-                    output,
-                    safe_call_ids,
-                    program,
-                },
-        } = self;
-
-        let mut public_claim = vec![
-            initial_pc.0,
-            initial_ap.0,
-            initial_fp.0,
-            final_pc.0,
-            final_ap.0,
-            final_fp.0,
-        ];
-        let PublicSegmentRanges {
-            output: output_ranges,
-            pedersen,
-            range_check_128,
-            ecdsa,
-            bitwise,
-            ec_op,
-            keccak,
-            poseidon,
-            range_check_96,
-            add_mod,
-            mul_mod,
-        } = public_segments;
-        Self::single_segment_range(Some(*output_ranges), &mut public_claim);
-        Self::single_segment_range(*pedersen, &mut public_claim);
-        Self::single_segment_range(*range_check_128, &mut public_claim);
-        Self::single_segment_range(*ecdsa, &mut public_claim);
-        Self::single_segment_range(*bitwise, &mut public_claim);
-        Self::single_segment_range(*ec_op, &mut public_claim);
-        Self::single_segment_range(*keccak, &mut public_claim);
-        Self::single_segment_range(*poseidon, &mut public_claim);
-        Self::single_segment_range(*range_check_96, &mut public_claim);
-        Self::single_segment_range(*add_mod, &mut public_claim);
-        Self::single_segment_range(*mul_mod, &mut public_claim);
-        public_claim.extend(safe_call_ids);
-        for (id, _) in output {
-            public_claim.push(*id);
-        }
-        for (id, _) in program {
-            public_claim.push(*id);
-        }
-
-        // Collect output values.
-        let mut output_claim = vec![];
-        for (_, value) in output {
-            output_claim
-                .extend::<[u32; FELT252_N_WORDS]>(split(*value, (1 << FELT252_BITS_PER_WORD) - 1));
-        }
-
-        // Collect program values.
-        let mut program_claim = vec![];
-        for (_, value) in program {
-            program_claim
-                .extend::<[u32; FELT252_N_WORDS]>(split(*value, (1 << FELT252_BITS_PER_WORD) - 1));
-        }
-
-        (public_claim, output_claim, program_claim)
-    }
-
-    fn single_segment_range(segment: Option<SegmentRange>, public_claim: &mut Vec<u32>) {
-        if let Some(segment) = segment {
-            public_claim.extend([
-                segment.start_ptr.id,
-                segment.start_ptr.value,
-                segment.stop_ptr.id,
-                segment.stop_ptr.value,
-            ]);
-        } else {
-            public_claim.extend([0_u32; 4]);
-        }
     }
 }
 
