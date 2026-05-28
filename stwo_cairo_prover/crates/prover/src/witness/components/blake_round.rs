@@ -1,5 +1,6 @@
 #![allow(unused_parens)]
-use cairo_air::components::blake_round::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use cairo_air::components::blake_round::N_TRACE_COLUMNS;
+use stwo::core::fields::qm31::SecureField;
 use stwo_cairo_adapter::memory::Memory;
 
 use crate::witness::components::{
@@ -35,7 +36,7 @@ impl ClaimGenerator {
         blake_g_state: &blake_g::ClaimGenerator,
     ) -> (
         ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
+        u32,
         InteractionClaimGenerator,
     ) {
         let mut packed_inputs = self.packed_inputs.into_inner().unwrap();
@@ -86,7 +87,7 @@ impl ClaimGenerator {
 
         (
             trace,
-            Claim { log_size },
+            log_size,
             InteractionClaimGenerator {
                 n_rows,
                 log_size,
@@ -2578,7 +2579,7 @@ impl InteractionClaimGenerator {
         common_lookup_elements: &relations::CommonLookupElements,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
+        SecureField,
     ) {
         let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
@@ -3004,6 +3005,6 @@ impl InteractionClaimGenerator {
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
 
-        (trace, InteractionClaim { claimed_sum })
+        (trace, claimed_sum)
     }
 }

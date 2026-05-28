@@ -1,9 +1,7 @@
 // This file was created by the AIR team.
 
 #![allow(unused_parens)]
-use cairo_air::components::verify_bitwise_xor_7::{
-    Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS,
-};
+use cairo_air::components::verify_bitwise_xor_7::{LOG_SIZE, N_TRACE_COLUMNS};
 
 use crate::witness::prelude::*;
 
@@ -42,7 +40,7 @@ impl ClaimGenerator {
         self,
     ) -> (
         ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
+        u32,
         InteractionClaimGenerator,
     ) {
         let mults = self
@@ -53,7 +51,7 @@ impl ClaimGenerator {
 
         let (trace, lookup_data) = write_trace_simd(&self.preprocessed_trace, mults);
 
-        (trace, Claim {}, InteractionClaimGenerator { lookup_data })
+        (trace, LOG_SIZE, InteractionClaimGenerator { lookup_data })
     }
 }
 
@@ -137,7 +135,7 @@ impl InteractionClaimGenerator {
         common_lookup_elements: &relations::CommonLookupElements,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
+        SecureField,
     ) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(LOG_SIZE) };
 
@@ -157,6 +155,6 @@ impl InteractionClaimGenerator {
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
 
-        (trace, InteractionClaim { claimed_sum })
+        (trace, claimed_sum)
     }
 }

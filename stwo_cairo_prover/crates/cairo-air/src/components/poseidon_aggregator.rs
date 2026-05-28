@@ -6,6 +6,7 @@ use crate::components::subroutines::poseidon_hades_permutation::PoseidonHadesPer
 use crate::components::subroutines::read_positive_known_id_num_bits_252::ReadPositiveKnownIdNumBits252;
 
 pub const N_TRACE_COLUMNS: usize = 342;
+pub const N_INTERACTION_COLUMNS: usize = 56;
 pub const RELATION_USES_PER_ROW: [RelationUse; 8] = [
     RelationUse {
         relation_id: "Cube252",
@@ -42,32 +43,15 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 8] = [
 ];
 
 pub struct Eval {
-    pub claim: Claim,
-    pub common_lookup_elements: relations::CommonLookupElements,
-}
-
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct Claim {
     pub log_size: u32,
-}
-impl Claim {
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 14];
-        TreeVec::new(vec![trace_log_sizes, interaction_log_sizes])
-    }
-}
-
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct InteractionClaim {
-    pub claimed_sum: SecureField,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 pub type Component = FrameworkComponent<Eval>;
 
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
-        self.claim.log_size
+        self.log_size
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
@@ -1124,7 +1108,7 @@ mod tests {
     fn poseidon_aggregator_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
-            claim: Claim { log_size: 4 },
+            log_size: 4,
             common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());

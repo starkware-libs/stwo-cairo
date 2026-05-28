@@ -4,6 +4,7 @@ use crate::components::prelude::*;
 use crate::components::subroutines::poseidon_partial_round::PoseidonPartialRound;
 
 pub const N_TRACE_COLUMNS: usize = 169;
+pub const N_INTERACTION_COLUMNS: usize = 36;
 pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
     RelationUse {
         relation_id: "Cube252",
@@ -32,32 +33,15 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
 ];
 
 pub struct Eval {
-    pub claim: Claim,
-    pub common_lookup_elements: relations::CommonLookupElements,
-}
-
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct Claim {
     pub log_size: u32,
-}
-impl Claim {
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 9];
-        TreeVec::new(vec![trace_log_sizes, interaction_log_sizes])
-    }
-}
-
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct InteractionClaim {
-    pub claimed_sum: SecureField,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 pub type Component = FrameworkComponent<Eval>;
 
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
-        self.claim.log_size
+        self.log_size
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
@@ -668,7 +652,7 @@ mod tests {
     fn poseidon_3_partial_rounds_chain_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
-            claim: Claim { log_size: 4 },
+            log_size: 4,
             common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());

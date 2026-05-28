@@ -5,6 +5,7 @@ use crate::components::subroutines::decode_instruction_c67a5::DecodeInstructionC
 use crate::components::subroutines::qm_31_read_reduced::Qm31ReadReduced;
 
 pub const N_TRACE_COLUMNS: usize = 73;
+pub const N_INTERACTION_COLUMNS: usize = 24;
 pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
@@ -29,32 +30,15 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
 ];
 
 pub struct Eval {
-    pub claim: Claim,
-    pub common_lookup_elements: relations::CommonLookupElements,
-}
-
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct Claim {
     pub log_size: u32,
-}
-impl Claim {
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 6];
-        TreeVec::new(vec![trace_log_sizes, interaction_log_sizes])
-    }
-}
-
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct InteractionClaim {
-    pub claimed_sum: SecureField,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 pub type Component = FrameworkComponent<Eval>;
 
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
-        self.claim.log_size
+        self.log_size
     }
 
     fn max_constraint_log_degree_bound(&self) -> u32 {
@@ -388,7 +372,7 @@ mod tests {
     fn qm_31_add_mul_opcode_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
-            claim: Claim { log_size: 4 },
+            log_size: 4,
             common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());

@@ -1,13 +1,7 @@
 use std::simd::Simd;
 use std::sync::Arc;
 
-use cairo_air::components::memory_id_to_big::{
-    Claim as BigClaim, InteractionClaim as BigInteractionClaim, MEMORY_ID_SIZE,
-    N_MULTIPLICITY_COLUMNS,
-};
-use cairo_air::components::memory_id_to_small::{
-    Claim as SmallClaim, InteractionClaim as SmallInteractionClaim,
-};
+use cairo_air::components::memory_id_to_big::{MEMORY_ID_SIZE, N_MULTIPLICITY_COLUMNS};
 use cairo_air::relations::{
     self, MEMORY_ID_TO_BIG_RELATION_ID, RANGE_CHECK_9_9_B_RELATION_ID,
     RANGE_CHECK_9_9_C_RELATION_ID, RANGE_CHECK_9_9_D_RELATION_ID, RANGE_CHECK_9_9_E_RELATION_ID,
@@ -112,7 +106,8 @@ impl ClaimGenerator {
     ) -> (
         BigTraces,
         SmallTrace,
-        (BigClaim, SmallClaim),
+        Vec<u32>,
+        u32,
         InteractionClaimGenerator,
     ) {
         let big_table_traces = gen_big_memory_traces(
@@ -259,12 +254,8 @@ impl ClaimGenerator {
         (
             big_traces,
             small_trace,
-            (
-                BigClaim { big_log_sizes },
-                SmallClaim {
-                    log_size: small_log_size,
-                },
-            ),
+            big_log_sizes,
+            small_log_size,
             InteractionClaimGenerator {
                 big_components_values,
                 big_multiplicities,
@@ -421,12 +412,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        BigTraces,
-        SmallTrace,
-        BigInteractionClaim,
-        SmallInteractionClaim,
-    ) {
+    ) -> (BigTraces, SmallTrace, Vec<SecureField>, SecureField) {
         let mut offset = 0;
         let (big_traces, big_claimed_sums): (Vec<_>, Vec<_>) = self
             .big_components_values
@@ -448,17 +434,8 @@ impl InteractionClaimGenerator {
             self.gen_small_memory_interaction_trace(common_lookup_elements);
         let claimed_sum = big_claimed_sums.iter().sum::<SecureField>();
 
-        (
-            big_traces,
-            small_trace,
-            BigInteractionClaim {
-                big_claimed_sums,
-                claimed_sum,
-            },
-            SmallInteractionClaim {
-                claimed_sum: small_claimed_sum,
-            },
-        )
+        let _ = claimed_sum;
+        (big_traces, small_trace, big_claimed_sums, small_claimed_sum)
     }
 
     fn gen_big_memory_interaction_trace(
@@ -704,7 +681,7 @@ mod tests {
         let preprocessed_trace = Arc::new(PreProcessedTrace::canonical_without_pedersen());
         let id_to_big = super::ClaimGenerator::new(Arc::clone(&memory));
         let range_check_9_9 = range_check_9_9::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let (big_traces, small_trace, (big_claim, small_claim), interaction_generator) =
+        let (big_traces, small_trace, big_log_sizes, small_log_size, interaction_generator) =
             id_to_big.write_trace(&range_check_9_9, log_max_seq_size, None);
         for big_trace in big_traces {
             tree_builder.extend_evals(big_trace);
@@ -716,7 +693,7 @@ mod tests {
         let mut dummy_channel = Blake2sChannel::default();
         let interaction_elements = CommonLookupElements::draw(&mut dummy_channel);
         let mut tree_builder = commitment_scheme.tree_builder();
-        let (big_traces, small_trace, big_interaction_claim, small_interaction_claim) =
+        let (big_traces, small_trace, big_claimed_sums, small_claimed_sum) =
             interaction_generator.write_interaction_trace(&interaction_elements);
         for big_trace in big_traces {
             tree_builder.extend_evals(big_trace);
@@ -727,8 +704,8 @@ mod tests {
         let mut location_allocator =
             TraceLocationAllocator::new_with_preprocessed_columns(&preprocessed_trace.ids());
         let big_components = memory_id_to_big::big_components_from_claim(
-            &big_claim.big_log_sizes,
-            &big_interaction_claim.big_claimed_sums,
+            &big_log_sizes,
+            &big_claimed_sums,
             &interaction_elements,
             &mut location_allocator,
         );
@@ -736,10 +713,10 @@ mod tests {
         let small_component = memory_id_to_small::Component::new(
             &mut location_allocator,
             memory_id_to_small::Eval {
-                claim: small_claim,
+                log_size: small_log_size,
                 common_lookup_elements: interaction_elements.clone(),
             },
-            small_interaction_claim.claimed_sum,
+            small_claimed_sum,
         );
 
         let trace_domain_evaluations = commitment_scheme.trace_domain_evaluations();
@@ -780,11 +757,11 @@ mod tests {
         let expected_big_log_sizes =
             vec![expected_first_big_log_size, expected_second_big_log_size];
 
-        let (_, _, (big_claim, small_claim), _) =
+        let (_, _, big_log_sizes, small_log_size, _) =
             id_to_big.write_trace(&range_check_9_9, log_max_seq_size, None);
 
-        assert_eq!(small_claim.log_size, expected_small_log_size);
-        assert_eq!(big_claim.big_log_sizes, expected_big_log_sizes);
+        assert_eq!(small_log_size, expected_small_log_size);
+        assert_eq!(big_log_sizes, expected_big_log_sizes);
     }
 
     #[test]

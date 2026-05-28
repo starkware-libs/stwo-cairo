@@ -3,10 +3,11 @@
 use std::simd::u32x16;
 
 use cairo_air::components::verify_bitwise_xor_12::{
-    Claim, InteractionClaim, EXPAND_BITS, LIMB_BITS, LOG_SIZE, N_MULT_COLUMNS,
+    EXPAND_BITS, LIMB_BITS, LOG_SIZE, N_MULT_COLUMNS,
 };
 use cairo_air::relations::VERIFY_BITWISE_XOR_12_RELATION_ID;
 use itertools::{chain, Itertools};
+use stwo::core::fields::qm31::SecureField;
 
 use crate::witness::prelude::*;
 
@@ -28,7 +29,7 @@ impl ClaimGenerator {
         self,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        Claim,
+        u32,
         InteractionClaimGenerator,
     ) {
         let mults = self.mults.map(AtomicMultiplicityColumn::into_simd_vec);
@@ -42,7 +43,7 @@ impl ClaimGenerator {
             .collect_vec();
         let lookup_data = LookupData { mults };
 
-        (trace, Claim {}, InteractionClaimGenerator { lookup_data })
+        (trace, LOG_SIZE, InteractionClaimGenerator { lookup_data })
     }
 }
 
@@ -80,7 +81,7 @@ impl InteractionClaimGenerator {
         common_lookup_elements: &relations::CommonLookupElements,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
+        SecureField,
     ) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(LOG_SIZE) };
 
@@ -147,6 +148,6 @@ impl InteractionClaimGenerator {
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
 
-        (trace, InteractionClaim { claimed_sum })
+        (trace, claimed_sum)
     }
 }

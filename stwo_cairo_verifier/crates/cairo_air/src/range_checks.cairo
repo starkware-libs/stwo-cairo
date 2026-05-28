@@ -1,21 +1,5 @@
-use components::range_check96_builtin::InteractionClaimImpl as RangeCheck96BuiltinInteractionClaimImpl;
-use components::range_check_11::InteractionClaimImpl as RangeCheck_11InteractionClaimImpl;
-use components::range_check_12::InteractionClaimImpl as RangeCheck_12InteractionClaimImpl;
-use components::range_check_18::InteractionClaimImpl as RangeCheck_18InteractionClaimImpl;
-use components::range_check_20::InteractionClaimImpl as RangeCheck_20InteractionClaimImpl;
-use components::range_check_252_width_27::InteractionClaimImpl as RangeCheckFelt252Width27InteractionClaimImpl;
-use components::range_check_3_3_3_3_3::InteractionClaimImpl as RangeCheck_3_3_3_3_3InteractionClaimImpl;
-use components::range_check_3_6_6_3::InteractionClaimImpl as RangeCheck_3_6_6_3InteractionClaimImpl;
-use components::range_check_4_3::InteractionClaimImpl as RangeCheck_4_3InteractionClaimImpl;
-use components::range_check_4_4::InteractionClaimImpl as RangeCheck_4_4InteractionClaimImpl;
-use components::range_check_4_4_4_4::InteractionClaimImpl as RangeCheck_4_4_4_4InteractionClaimImpl;
-use components::range_check_6::InteractionClaimImpl as RangeCheck_6InteractionClaimImpl;
-use components::range_check_7_2_5::InteractionClaimImpl as RangeCheck_7_2_5InteractionClaimImpl;
-use components::range_check_8::InteractionClaimImpl as RangeCheck_8InteractionClaimImpl;
-use components::range_check_9_9::InteractionClaimImpl as RangeCheck_9_9InteractionClaimImpl;
-use components::range_check_builtin::InteractionClaimImpl as RangeCheckBuiltinInteractionClaimImpl;
 use core::array::Span;
-use stwo_cairo_air::claims::{CairoClaim, CairoInteractionClaim};
+use stwo_cairo_air::component_indices::*;
 use stwo_cairo_air::components;
 use stwo_constraint_framework::{
     AirComponent, CommonLookupElements, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
@@ -43,82 +27,86 @@ pub struct RangeChecksComponents {
 #[generate_trait]
 pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
     fn new(
-        cairo_claim: @CairoClaim,
+        log_size_per_component: Span<Option<u32>>,
+        claimed_sum_per_component: Span<Option<QM31>>,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @CairoInteractionClaim,
     ) -> RangeChecksComponents {
         RangeChecksComponents {
             rc_6: components::range_check_6::NewComponentImpl::try_new(
-                cairo_claim.range_check_6, interaction_claim.range_check_6, common_lookup_elements,
+                log_size_per_component.at(RANGE_CHECK_6_COMPONENT_IDX),
+                claimed_sum_per_component.at(RANGE_CHECK_6_COMPONENT_IDX),
+                common_lookup_elements,
             )
                 .unwrap(),
             rc_8: components::range_check_8::NewComponentImpl::try_new(
-                cairo_claim.range_check_8, interaction_claim.range_check_8, common_lookup_elements,
+                log_size_per_component.at(RANGE_CHECK_8_COMPONENT_IDX),
+                claimed_sum_per_component.at(RANGE_CHECK_8_COMPONENT_IDX),
+                common_lookup_elements,
             )
                 .unwrap(),
             rc_11: components::range_check_11::NewComponentImpl::try_new(
-                cairo_claim.range_check_11,
-                interaction_claim.range_check_11,
+                log_size_per_component.at(RANGE_CHECK_11_COMPONENT_IDX),
+                claimed_sum_per_component.at(RANGE_CHECK_11_COMPONENT_IDX),
                 common_lookup_elements,
             )
                 .unwrap(),
             rc_12: components::range_check_12::NewComponentImpl::try_new(
-                cairo_claim.range_check_12,
-                interaction_claim.range_check_12,
+                log_size_per_component.at(RANGE_CHECK_12_COMPONENT_IDX),
+                claimed_sum_per_component.at(RANGE_CHECK_12_COMPONENT_IDX),
                 common_lookup_elements,
             )
                 .unwrap(),
             rc_18: components::range_check_18::NewComponentImpl::try_new(
-                cairo_claim.range_check_18,
-                interaction_claim.range_check_18,
+                log_size_per_component.at(RANGE_CHECK_18_COMPONENT_IDX),
+                claimed_sum_per_component.at(RANGE_CHECK_18_COMPONENT_IDX),
                 common_lookup_elements,
             )
                 .unwrap(),
             rc_20: components::range_check_20::NewComponentImpl::try_new(
-                cairo_claim.range_check_20,
-                interaction_claim.range_check_20,
+                log_size_per_component.at(RANGE_CHECK_20_COMPONENT_IDX),
+                claimed_sum_per_component.at(RANGE_CHECK_20_COMPONENT_IDX),
                 common_lookup_elements,
             )
                 .unwrap(),
             rc_4_3: components::range_check_4_3::NewComponentImpl::try_new(
-                cairo_claim.range_check_4_3,
-                interaction_claim.range_check_4_3,
+                log_size_per_component.at(RANGE_CHECK_4_3_COMPONENT_IDX),
+                claimed_sum_per_component.at(RANGE_CHECK_4_3_COMPONENT_IDX),
                 common_lookup_elements,
             )
                 .unwrap(),
             rc_4_4: components::range_check_4_4::NewComponentImpl::try_new(
-                cairo_claim.range_check_4_4,
-                interaction_claim.range_check_4_4,
+                log_size_per_component.at(RANGE_CHECK_4_4_COMPONENT_IDX),
+                claimed_sum_per_component.at(RANGE_CHECK_4_4_COMPONENT_IDX),
                 common_lookup_elements,
             )
                 .unwrap(),
             rc_9_9: components::range_check_9_9::NewComponentImpl::try_new(
-                cairo_claim.range_check_9_9,
-                interaction_claim.range_check_9_9,
+                log_size_per_component.at(RANGE_CHECK_9_9_COMPONENT_IDX),
+                claimed_sum_per_component.at(RANGE_CHECK_9_9_COMPONENT_IDX),
                 common_lookup_elements,
             )
                 .unwrap(),
             rc_7_2_5: components::range_check_7_2_5::NewComponentImpl::try_new(
-                cairo_claim.range_check_7_2_5,
-                interaction_claim.range_check_7_2_5,
+                log_size_per_component.at(RANGE_CHECK_7_2_5_COMPONENT_IDX),
+                claimed_sum_per_component.at(RANGE_CHECK_7_2_5_COMPONENT_IDX),
                 common_lookup_elements,
             )
                 .unwrap(),
             rc_3_6_6_3: components::range_check_3_6_6_3::NewComponentImpl::try_new(
-                cairo_claim.range_check_3_6_6_3,
-                interaction_claim.range_check_3_6_6_3,
+                log_size_per_component.at(RANGE_CHECK_3_6_6_3_COMPONENT_IDX),
+                claimed_sum_per_component.at(RANGE_CHECK_3_6_6_3_COMPONENT_IDX),
                 common_lookup_elements,
             )
                 .unwrap(),
             rc_4_4_4_4: components::range_check_4_4_4_4::NewComponentImpl::try_new(
-                cairo_claim.range_check_4_4_4_4,
-                interaction_claim.range_check_4_4_4_4,
+                log_size_per_component.at(RANGE_CHECK_4_4_4_4_COMPONENT_IDX),
+                claimed_sum_per_component.at(RANGE_CHECK_4_4_4_4_COMPONENT_IDX),
                 common_lookup_elements,
             )
                 .unwrap(),
             rc_3_3_3_3_3: components::range_check_3_3_3_3_3::NewComponentImpl::try_new(
-                cairo_claim.range_check_3_3_3_3_3,
-                interaction_claim.range_check_3_3_3_3_3,
+                log_size_per_component.at(RANGE_CHECK_3_3_3_3_3_COMPONENT_IDX),
+                claimed_sum_per_component.at(RANGE_CHECK_3_3_3_3_3_COMPONENT_IDX),
                 common_lookup_elements,
             )
                 .unwrap(),

@@ -10,6 +10,7 @@ pub use dashmap::DashMap;
 pub use num_traits::{One, Zero};
 pub use rayon::prelude::*;
 pub use stwo::core::fields::m31::M31;
+pub use stwo::core::fields::qm31::SecureField;
 pub use stwo::core::fields::FieldExpOps;
 pub use stwo::core::poly::circle::CanonicCoset;
 pub use stwo::prover::backend::simd::column::BaseColumn;

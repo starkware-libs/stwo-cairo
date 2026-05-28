@@ -18,11 +18,8 @@ use tracing::{span, Level};
 use crate::air::{MemorySection, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange};
 use crate::cairo_components::CairoComponents;
 use crate::claims::{lookup_sum, CairoClaim};
+use crate::component_indices::*;
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
-use crate::components::{
-    add_mod_builtin, bitwise_builtin, ec_op_builtin, mul_mod_builtin, pedersen_builtin,
-    pedersen_builtin_narrow_windows, poseidon_builtin, range_check96_builtin, range_check_builtin,
-};
 use crate::relations::CommonLookupElements;
 use crate::CairoProofForRustVerifier;
 
@@ -50,15 +47,15 @@ fn verify_claim(claim: &CairoClaim) {
     } = &claim.public_data;
 
     verify_builtins(
-        &claim.add_mod_builtin,
-        &claim.bitwise_builtin,
-        &claim.mul_mod_builtin,
-        &claim.pedersen_builtin,
-        &claim.pedersen_builtin_narrow_windows,
-        &claim.poseidon_builtin,
-        &claim.range_check96_builtin,
-        &claim.range_check_builtin,
-        &claim.ec_op_builtin,
+        claim.component_log_sizes[ADD_MOD_BUILTIN_COMPONENT_IDX],
+        claim.component_log_sizes[BITWISE_BUILTIN_COMPONENT_IDX],
+        claim.component_log_sizes[MUL_MOD_BUILTIN_COMPONENT_IDX],
+        claim.component_log_sizes[PEDERSEN_BUILTIN_COMPONENT_IDX],
+        claim.component_log_sizes[PEDERSEN_BUILTIN_NARROW_WINDOWS_COMPONENT_IDX],
+        claim.component_log_sizes[POSEIDON_BUILTIN_COMPONENT_IDX],
+        claim.component_log_sizes[RANGE_CHECK96_BUILTIN_COMPONENT_IDX],
+        claim.component_log_sizes[RANGE_CHECK_BUILTIN_COMPONENT_IDX],
+        claim.component_log_sizes[EC_OP_BUILTIN_COMPONENT_IDX],
         public_segments,
     );
 
@@ -81,13 +78,9 @@ fn verify_claim(claim: &CairoClaim) {
 
     // Large value IDs reside in [LARGE_MEMORY_VALUE_ID_BASE..P).
     // Check that IDs in (ID -> Value) do not overflow P.
-    let largest_id = claim
-        .memory_id_to_big
-        .as_ref()
-        .unwrap()
-        .big_log_sizes
-        .iter()
-        .map(|log_size| 1 << log_size)
+    let largest_id = (0..MEMORY_ADDRESS_TO_ID_SPLIT)
+        .filter_map(|i| claim.component_log_sizes[MEMORY_ID_TO_BIG_BASE_COMPONENT_IDX + i])
+        .map(|log_size| 1u32 << log_size)
         .sum::<u32>()
         - 1
         + LARGE_MEMORY_VALUE_ID_BASE;
@@ -121,15 +114,15 @@ pub struct RelationUse {
 
 #[allow(clippy::too_many_arguments)]
 fn verify_builtins(
-    add_mod_builtin_claim: &Option<add_mod_builtin::Claim>,
-    bitwise_builtin_claim: &Option<bitwise_builtin::Claim>,
-    mul_mod_builtin_claim: &Option<mul_mod_builtin::Claim>,
-    pedersen_builtin_claim: &Option<pedersen_builtin::Claim>,
-    pedersen_builtin_narrow_windows_claim: &Option<pedersen_builtin_narrow_windows::Claim>,
-    poseidon_builtin_claim: &Option<poseidon_builtin::Claim>,
-    range_check_96_builtin_claim: &Option<range_check96_builtin::Claim>,
-    range_check_128_builtin_claim: &Option<range_check_builtin::Claim>,
-    ec_op_builtin_claim: &Option<ec_op_builtin::Claim>,
+    add_mod_builtin_log_size: Option<u32>,
+    bitwise_builtin_log_size: Option<u32>,
+    mul_mod_builtin_log_size: Option<u32>,
+    pedersen_builtin_log_size: Option<u32>,
+    pedersen_builtin_narrow_windows_log_size: Option<u32>,
+    poseidon_builtin_log_size: Option<u32>,
+    range_check_96_builtin_log_size: Option<u32>,
+    range_check_128_builtin_log_size: Option<u32>,
+    ec_op_builtin_log_size: Option<u32>,
     segment_ranges: &PublicSegmentRanges,
 ) {
     let PublicSegmentRanges {
@@ -168,7 +161,7 @@ fn verify_builtins(
         ($name:ident) => {
             paste! {
                 check_builtin(
-                    (*[<$name _builtin_claim>]).map(|claim| claim.log_size),
+                    [<$name _builtin_log_size>],
                     $name,
                     stringify!($name),
                     [<$name:upper _BUILTIN_MEMORY_CELLS>]
@@ -179,30 +172,30 @@ fn verify_builtins(
 
     // All other supported builtins.
     check_builtin(
-        (*range_check_128_builtin_claim).map(|claim| claim.log_size),
+        range_check_128_builtin_log_size,
         range_check_128,
         "range_check_128",
         RANGE_CHECK_BUILTIN_MEMORY_CELLS,
     );
     check_builtin(
-        (*range_check_96_builtin_claim).map(|claim| claim.log_size),
+        range_check_96_builtin_log_size,
         range_check_96,
         "range_check_96",
         RANGE_CHECK_96_BUILTIN_MEMORY_CELLS,
     );
     assert!(
-        !(pedersen_builtin_claim.is_some() && pedersen_builtin_narrow_windows_claim.is_some()),
+        !(pedersen_builtin_log_size.is_some() && pedersen_builtin_narrow_windows_log_size.is_some()),
         "Both pedersen_builtin_claim and pedersen_builtin_narrow_windows_claim builtins cannot be used together");
-    if let Some(claim) = pedersen_builtin_claim {
+    if let Some(log_size) = pedersen_builtin_log_size {
         check_builtin(
-            Some(claim.log_size),
+            Some(log_size),
             pedersen,
             "pedersen",
             PEDERSEN_BUILTIN_MEMORY_CELLS,
         );
     } else {
         check_builtin(
-            pedersen_builtin_narrow_windows_claim.map(|claim| claim.log_size),
+            pedersen_builtin_narrow_windows_log_size,
             pedersen,
             "pedersen",
             PEDERSEN_BUILTIN_NARROW_WINDOWS_MEMORY_CELLS,
@@ -302,7 +295,8 @@ pub fn verify_cairo_ex<MC: MerkleChannel>(
     // Auxiliary verifications.
     // Assert that ADDRESS->ID component does not overflow.
     assert!(
-        (1 << claim.memory_address_to_id.as_ref().unwrap().log_size) * MEMORY_ADDRESS_TO_ID_SPLIT
+        (1 << claim.component_log_sizes[MEMORY_ADDRESS_TO_ID_COMPONENT_IDX].unwrap())
+            * MEMORY_ADDRESS_TO_ID_SPLIT
             <= (1 << LOG_MEMORY_ADDRESS_BOUND)
     );
 

@@ -1,26 +1,22 @@
 use itertools::Itertools;
-use serde::{Deserialize, Serialize};
-use stwo::core::channel::Channel;
 use stwo::core::fields::m31::M31;
 use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
-use stwo::core::pcs::TreeVec;
 use stwo_cairo_common::memory::LARGE_MEMORY_VALUE_ID_BASE;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{PreProcessedColumn, Seq};
 use stwo_cairo_common::prover_types::cpu::FELT252_N_WORDS;
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::{
     relation, EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry, TraceLocationAllocator,
 };
 
 use super::prelude::RelationUse;
-use crate::air::{accumulate_relation_uses, RelationUsesDict};
-use crate::components::subroutines::range_check_mem_value_n_28::RangeCheckMemValueN28;
 use crate::relations;
 
 // TODO(AlonH): Make memory size configurable.
 pub const MEMORY_ID_SIZE: usize = 1;
 pub const N_MULTIPLICITY_COLUMNS: usize = 1;
 pub const BIG_N_COLUMNS: usize = FELT252_N_WORDS + N_MULTIPLICITY_COLUMNS;
+pub const BIG_N_INTERACTION_COLUMNS: usize =
+    SECURE_EXTENSION_DEGREE * (FELT252_N_WORDS.div_ceil(2) + 1).div_ceil(2);
 
 pub type BigComponent = FrameworkComponent<BigEval>;
 
@@ -129,7 +125,7 @@ impl FrameworkEval for BigEval {
         let memory_id_to_big_output_col27 = eval.next_trace_mask();
         let multiplicity = eval.next_trace_mask();
 
-        RangeCheckMemValueN28::evaluate(
+        crate::components::subroutines::range_check_mem_value_n_28::RangeCheckMemValueN28::evaluate(
             [
                 memory_id_to_big_output_col0.clone(),
                 memory_id_to_big_output_col1.clone(),
@@ -226,64 +222,6 @@ pub fn big_components_from_claim(
         offset += 1 << log_size;
     }
     components
-}
-
-pub fn accumulate_relation_memory(relation_uses: &mut RelationUsesDict, claim: &Option<Claim>) {
-    let memory_id_to_value = claim.as_ref().expect("memory_id_to_value must be Some");
-
-    // TODO(ShaharS): Look into the file name of memory_id_to_big.
-    // memory_id_to_value has a big value component and a small value component.
-    for log_size in &memory_id_to_value.big_log_sizes {
-        accumulate_relation_uses(relation_uses, RELATION_USES_PER_ROW, *log_size);
-    }
-}
-
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct Claim {
-    pub big_log_sizes: Vec<u32>,
-}
-impl Claim {
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        // Original trace.
-        let big_trace_log_sizes = self
-            .big_log_sizes
-            .iter()
-            .flat_map(|&log_size| vec![log_size; BIG_N_COLUMNS])
-            .collect_vec();
-
-        // Interaction trace.
-        let big_interaction_log_sizes = self
-            .big_log_sizes
-            .iter()
-            .flat_map(|&log_size| {
-                // A range-check for every pair of limbs, batched in pairs.
-                // And a yield of the value.
-                vec![
-                    log_size;
-                    SECURE_EXTENSION_DEGREE * ((FELT252_N_WORDS.div_ceil(2) + 1).div_ceil(2))
-                ]
-            })
-            .collect_vec();
-
-        TreeVec::new(vec![big_trace_log_sizes, big_interaction_log_sizes])
-    }
-
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        self.big_log_sizes
-            .iter()
-            .for_each(|&log_size| channel.mix_u64(log_size as u64));
-    }
-}
-
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct InteractionClaim {
-    pub big_claimed_sums: Vec<SecureField>,
-    pub claimed_sum: SecureField,
-}
-impl InteractionClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_felts(&self.big_claimed_sums);
-    }
 }
 
 #[cfg(test)]

@@ -1025,19 +1025,15 @@ pub mod tests {
                 .unwrap();
                 let proof_a = prove_cairo::<Blake2sMerkleChannel>(input_a, prover_params).unwrap();
                 let poseidon_builtin_size_a = 2u32.pow(
-                    proof_a
-                        .claim
-                        .poseidon_builtin
-                        .expect("Poseidon builtin is not present in the claim")
-                        .log_size,
+                    proof_a.claim.component_log_sizes
+                        [cairo_air::component_indices::POSEIDON_BUILTIN_COMPONENT_IDX]
+                        .expect("Poseidon builtin is not present in the claim"),
                 );
                 assert!(poseidon_builtin_size_a == 16, "Expected program to contain 15 poseidon instances, which then padded to the next power of two");
 
-                let poseidon_aggregator_log_size_a = proof_a
-                    .claim
-                    .poseidon_aggregator
-                    .expect("Poseidon context is not present in the claim")
-                    .log_size;
+                let poseidon_aggregator_log_size_a = proof_a.claim.component_log_sizes
+                    [cairo_air::component_indices::POSEIDON_AGGREGATOR_COMPONENT_IDX]
+                    .expect("Poseidon context is not present in the claim");
 
                 // Run poseidon builtin with 15 different instances, each one 30 times.
                 let compiled_program_b =
@@ -1051,19 +1047,15 @@ pub mod tests {
                 .unwrap();
                 let proof_b = prove_cairo::<Blake2sMerkleChannel>(input_b, prover_params).unwrap();
                 let poseidon_builtin_size_b = 2u32.pow(
-                    proof_b
-                        .claim
-                        .poseidon_builtin
-                        .expect("Poseidon builtin is not present in the claim")
-                        .log_size,
+                    proof_b.claim.component_log_sizes
+                        [cairo_air::component_indices::POSEIDON_BUILTIN_COMPONENT_IDX]
+                        .expect("Poseidon builtin is not present in the claim"),
                 );
                 assert!(poseidon_builtin_size_b == 512, "Expected program to contain 15*30 poseidon instances, which then padded to the next power of two");
 
-                let poseidon_aggregator_log_size_b = proof_b
-                    .claim
-                    .poseidon_aggregator
-                    .expect("Poseidon context is not present in the claim")
-                    .log_size;
+                let poseidon_aggregator_log_size_b = proof_b.claim.component_log_sizes
+                    [cairo_air::component_indices::POSEIDON_AGGREGATOR_COMPONENT_IDX]
+                    .expect("Poseidon context is not present in the claim");
 
                 assert_eq!(
                     poseidon_aggregator_log_size_a,
@@ -1096,19 +1088,15 @@ pub mod tests {
                 .unwrap();
                 let proof_a = prove_cairo::<Blake2sMerkleChannel>(input_a, prover_params).unwrap();
                 let pedersen_builtin_size_a = 2u32.pow(
-                    proof_a
-                        .claim
-                        .pedersen_builtin
-                        .expect("Pedersen builtin is not present in the claim")
-                        .log_size,
+                    proof_a.claim.component_log_sizes
+                        [cairo_air::component_indices::PEDERSEN_BUILTIN_COMPONENT_IDX]
+                        .expect("Pedersen builtin is not present in the claim"),
                 );
                 assert!(pedersen_builtin_size_a == 16, "Expected program to contain 15 pedersen instances, which then padded to the next power of two");
 
-                let pedersen_aggregator_log_size_a = proof_a
-                    .claim
-                    .pedersen_aggregator_window_bits_18
-                    .expect("Pedersen context is not present in the claim")
-                    .log_size;
+                let pedersen_aggregator_log_size_a = proof_a.claim.component_log_sizes
+                    [cairo_air::component_indices::PEDERSEN_AGGREGATOR_WINDOW_BITS_18_COMPONENT_IDX]
+                    .expect("Pedersen context is not present in the claim");
 
                 // Run pedersen builtin with 15 different instances, each one 30 times.
                 let compiled_program_b =
@@ -1122,19 +1110,15 @@ pub mod tests {
                 .unwrap();
                 let proof_b = prove_cairo::<Blake2sMerkleChannel>(input_b, prover_params).unwrap();
                 let pedersen_builtin_size_b = 2u32.pow(
-                    proof_b
-                        .claim
-                        .pedersen_builtin
-                        .expect("Pedersen builtin is not present in the claim")
-                        .log_size,
+                    proof_b.claim.component_log_sizes
+                        [cairo_air::component_indices::PEDERSEN_BUILTIN_COMPONENT_IDX]
+                        .expect("Pedersen builtin is not present in the claim"),
                 );
                 assert!(pedersen_builtin_size_b == 512, "Expected program to contain 15*30 pedersen instances, which then padded to the next power of two");
 
-                let pedersen_aggregator_log_size_b = proof_b
-                    .claim
-                    .pedersen_aggregator_window_bits_18
-                    .expect("Pedersen context is not present in the claim")
-                    .log_size;
+                let pedersen_aggregator_log_size_b = proof_b.claim.component_log_sizes
+                    [cairo_air::component_indices::PEDERSEN_AGGREGATOR_WINDOW_BITS_18_COMPONENT_IDX]
+                    .expect("Pedersen context is not present in the claim");
 
                 assert_eq!(
                     pedersen_aggregator_log_size_a,
