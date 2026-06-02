@@ -334,6 +334,7 @@ impl FrameworkEval for Eval {
                 E::F::from(M31::from(self.add_mod_builtin_segment_start)),
                 seq.clone(),
             ],
+            M31_1.clone(),
             is_instance_0_col0.clone(),
             p0_id_col1.clone(),
             p0_limb_0_col2.clone(),

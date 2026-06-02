@@ -62,56 +62,58 @@ impl FrameworkEval for Eval {
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_0 = E::F::from(M31::from(0));
+        let M31_1 = E::F::from(M31::from(1));
         let M31_1719106205 = E::F::from(M31::from(1719106205));
-        let input_pc_col0 = eval.next_trace_mask();
-        let input_offset0_col1 = eval.next_trace_mask();
-        let input_offset1_col2 = eval.next_trace_mask();
-        let input_offset2_col3 = eval.next_trace_mask();
-        let input_inst_felt5_high_col4 = eval.next_trace_mask();
-        let input_inst_felt6_col5 = eval.next_trace_mask();
-        let input_opcode_extension_col6 = eval.next_trace_mask();
-        let offset0_low_col7 = eval.next_trace_mask();
-        let offset0_mid_col8 = eval.next_trace_mask();
-        let offset1_low_col9 = eval.next_trace_mask();
-        let offset1_mid_col10 = eval.next_trace_mask();
-        let offset1_high_col11 = eval.next_trace_mask();
-        let offset2_low_col12 = eval.next_trace_mask();
-        let offset2_mid_col13 = eval.next_trace_mask();
-        let offset2_high_col14 = eval.next_trace_mask();
-        let instruction_id_col15 = eval.next_trace_mask();
-        let multiplicity_0_col16 = eval.next_trace_mask();
+        let multiplicity_0_col0 = eval.next_trace_mask();
+        let input_pc_col1 = eval.next_trace_mask();
+        let input_offset0_col2 = eval.next_trace_mask();
+        let input_offset1_col3 = eval.next_trace_mask();
+        let input_offset2_col4 = eval.next_trace_mask();
+        let input_inst_felt5_high_col5 = eval.next_trace_mask();
+        let input_inst_felt6_col6 = eval.next_trace_mask();
+        let input_opcode_extension_col7 = eval.next_trace_mask();
+        let offset0_low_col8 = eval.next_trace_mask();
+        let offset0_mid_col9 = eval.next_trace_mask();
+        let offset1_low_col10 = eval.next_trace_mask();
+        let offset1_mid_col11 = eval.next_trace_mask();
+        let offset1_high_col12 = eval.next_trace_mask();
+        let offset2_low_col13 = eval.next_trace_mask();
+        let offset2_mid_col14 = eval.next_trace_mask();
+        let offset2_high_col15 = eval.next_trace_mask();
+        let instruction_id_col16 = eval.next_trace_mask();
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [encode_offsets_output_tmp_40a8f_8_limb_1, encode_offsets_output_tmp_40a8f_8_limb_3] =
             EncodeOffsets::evaluate(
                 [
-                    input_offset0_col1.clone(),
-                    input_offset1_col2.clone(),
-                    input_offset2_col3.clone(),
+                    input_offset0_col2.clone(),
+                    input_offset1_col3.clone(),
+                    input_offset2_col4.clone(),
                 ],
-                offset0_low_col7.clone(),
-                offset0_mid_col8.clone(),
-                offset1_low_col9.clone(),
-                offset1_mid_col10.clone(),
-                offset1_high_col11.clone(),
-                offset2_low_col12.clone(),
-                offset2_mid_col13.clone(),
-                offset2_high_col14.clone(),
+                M31_1.clone(),
+                offset0_low_col8.clone(),
+                offset0_mid_col9.clone(),
+                offset1_low_col10.clone(),
+                offset1_mid_col11.clone(),
+                offset1_high_col12.clone(),
+                offset2_low_col13.clone(),
+                offset2_mid_col14.clone(),
+                offset2_high_col15.clone(),
                 &self.common_lookup_elements,
                 &mut eval,
             );
         MemVerify::evaluate(
             [
-                input_pc_col0.clone(),
-                offset0_low_col7.clone(),
+                input_pc_col1.clone(),
+                offset0_low_col8.clone(),
                 encode_offsets_output_tmp_40a8f_8_limb_1.clone(),
-                offset1_mid_col10.clone(),
+                offset1_mid_col11.clone(),
                 encode_offsets_output_tmp_40a8f_8_limb_3.clone(),
-                offset2_mid_col13.clone(),
-                (offset2_high_col14.clone() + input_inst_felt5_high_col4.clone()),
-                input_inst_felt6_col5.clone(),
-                input_opcode_extension_col6.clone(),
+                offset2_mid_col14.clone(),
+                (offset2_high_col15.clone() + input_inst_felt5_high_col5.clone()),
+                input_inst_felt6_col6.clone(),
+                input_opcode_extension_col7.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
@@ -133,22 +135,23 @@ impl FrameworkEval for Eval {
                 M31_0.clone(),
                 M31_0.clone(),
             ],
-            instruction_id_col15.clone(),
+            M31_1.clone(),
+            instruction_id_col16.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(multiplicity_0_col16.clone()),
+            -E::EF::from(multiplicity_0_col0.clone()),
             &[
                 M31_1719106205.clone(),
-                input_pc_col0.clone(),
-                input_offset0_col1.clone(),
-                input_offset1_col2.clone(),
-                input_offset2_col3.clone(),
-                input_inst_felt5_high_col4.clone(),
-                input_inst_felt6_col5.clone(),
-                input_opcode_extension_col6.clone(),
+                input_pc_col1.clone(),
+                input_offset0_col2.clone(),
+                input_offset1_col3.clone(),
+                input_offset2_col4.clone(),
+                input_inst_felt5_high_col5.clone(),
+                input_inst_felt6_col6.clone(),
+                input_opcode_extension_col7.clone(),
             ],
         ));
 

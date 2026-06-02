@@ -6,6 +6,7 @@ use crate::prelude::*;
 
 pub fn read_positive_known_id_num_bits_96_evaluate(
     input: QM31,
+    enabler: QM31,
     value_limb_0_col0: QM31,
     value_limb_1_col1: QM31,
     value_limb_2_col2: QM31,
@@ -28,6 +29,7 @@ pub fn read_positive_known_id_num_bits_96_evaluate(
     let read_positive_known_id_num_bits_96_input = input;
     range_check_last_limb_bits_in_ms_limb_6_evaluate(
         value_limb_10_col10,
+        enabler,
         common_lookup_elements,
         ref range_check_6_sum_0,
         ref numerator_0,
@@ -51,7 +53,7 @@ pub fn read_positive_known_id_num_bits_96_evaluate(
             ]
                 .span(),
         );
-    numerator_1 = qm31_const::<1, 0, 0, 0>();
+    numerator_1 = enabler;
 
     []
 }

@@ -31,6 +31,7 @@ impl ClaimGenerator {
         InteractionClaimGenerator,
     ) {
         let log_size = self.log_size;
+        let size = 1 << log_size;
 
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
             log_size,
@@ -39,20 +40,10 @@ impl ClaimGenerator {
             pedersen_aggregator_window_bits_18_state,
         );
         for inputs in sub_component_inputs.memory_address_to_id {
-            add_inputs(
-                memory_address_to_id_state,
-                &inputs,
-                inputs.len() * N_LANES,
-                0,
-            );
+            add_inputs(memory_address_to_id_state, &inputs, size, 0);
         }
         for inputs in sub_component_inputs.pedersen_aggregator_window_bits_18 {
-            add_inputs(
-                pedersen_aggregator_window_bits_18_state,
-                &inputs,
-                inputs.len() * N_LANES,
-                0,
-            );
+            add_inputs(pedersen_aggregator_window_bits_18_state, &inputs, size, 0);
         }
 
         (

@@ -7,6 +7,7 @@ use crate::prelude::*;
 
 pub fn read_positive_num_bits_36_evaluate(
     input: QM31,
+    enabler: QM31,
     id_col0: QM31,
     value_limb_0_col1: QM31,
     value_limb_1_col2: QM31,
@@ -23,6 +24,7 @@ pub fn read_positive_num_bits_36_evaluate(
     let read_positive_num_bits_36_input = input;
     read_id_evaluate(
         read_positive_num_bits_36_input,
+        enabler,
         id_col0,
         common_lookup_elements,
         ref memory_address_to_id_sum_0,
@@ -32,6 +34,7 @@ pub fn read_positive_num_bits_36_evaluate(
     );
     read_positive_known_id_num_bits_36_evaluate(
         id_col0,
+        enabler,
         value_limb_0_col1,
         value_limb_1_col2,
         value_limb_2_col3,

@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn decode_instruction_11364_evaluate(
     input: QM31,
+    enabler: QM31,
     offset1_col0: QM31,
     offset2_col1: QM31,
     op0_base_fp_col2: QM31,
@@ -38,7 +39,7 @@ pub fn decode_instruction_11364_evaluate(
             ]
                 .span(),
         );
-    numerator_0 = qm31_const::<1, 0, 0, 0>();
+    numerator_0 = enabler;
 
     [
         (offset1_col0 - qm31_const::<32768, 0, 0, 0>()),

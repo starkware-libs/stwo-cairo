@@ -15,6 +15,7 @@ impl Qm31ReadReduced {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [qm_31_read_reduced_input]: [E::F; 1],
+        enabler: E::F,
         id_col0: E::F,
         value_limb_0_col1: E::F,
         value_limb_1_col2: E::F,
@@ -46,6 +47,7 @@ impl Qm31ReadReduced {
 
         ReadPositiveNumBits144::evaluate(
             [qm_31_read_reduced_input.clone()],
+            enabler.clone(),
             id_col0.clone(),
             value_limb_0_col1.clone(),
             value_limb_1_col2.clone(),
@@ -68,7 +70,7 @@ impl Qm31ReadReduced {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1027333874.clone(),
                 value_limb_3_col4.clone(),

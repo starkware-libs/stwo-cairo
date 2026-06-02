@@ -68,18 +68,21 @@ impl FrameworkEval for Eval {
         );
         ReadId::evaluate(
             [instance_addr_tmp_364c7_0.clone()],
+            M31_1.clone(),
             input_state_0_id_col0.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         ReadId::evaluate(
             [(instance_addr_tmp_364c7_0.clone() + M31_1.clone())],
+            M31_1.clone(),
             input_state_1_id_col1.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         ReadId::evaluate(
             [(instance_addr_tmp_364c7_0.clone() + M31_2.clone())],
+            M31_1.clone(),
             output_state_id_col2.clone(),
             &self.common_lookup_elements,
             &mut eval,

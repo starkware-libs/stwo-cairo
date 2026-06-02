@@ -15,12 +15,14 @@ impl MemCondVerifyEqualKnownId {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [mem_cond_verify_equal_known_id_input_limb_0, mem_cond_verify_equal_known_id_input_limb_1, mem_cond_verify_equal_known_id_input_limb_2]: [E::F; 3],
+        enabler: E::F,
         id_col0: E::F,
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
         ReadId::evaluate(
             [mem_cond_verify_equal_known_id_input_limb_0.clone()],
+            enabler.clone(),
             id_col0.clone(),
             common_lookup_elements,
             eval,

@@ -14,18 +14,18 @@ impl RangeCheck29 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [range_check_29_input]: [E::F; 1],
+        enabler: E::F,
         range_check_29_bot11bits_col0: E::F,
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
-        let M31_1 = E::F::from(M31::from(1));
         let M31_1048576 = E::F::from(M31::from(1048576));
         let M31_1109051422 = E::F::from(M31::from(1109051422));
         let M31_991608089 = E::F::from(M31::from(991608089));
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1109051422.clone(),
                 ((range_check_29_input.clone() - range_check_29_bot11bits_col0.clone())
@@ -35,7 +35,7 @@ impl RangeCheck29 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[M31_991608089.clone(), range_check_29_bot11bits_col0.clone()],
         ));
 

@@ -17,6 +17,7 @@ impl XorRot32R8 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [xor_rot_32_r_8_input_limb_0, xor_rot_32_r_8_input_limb_1, xor_rot_32_r_8_input_limb_2, xor_rot_32_r_8_input_limb_3]: [E::F; 4],
+        enabler: E::F,
         ms_8_bits_col0: E::F,
         ms_8_bits_col1: E::F,
         ms_8_bits_col2: E::F,
@@ -32,24 +33,28 @@ impl XorRot32R8 {
 
         let [split_16_low_part_size_8_output_tmp_2a160_1_limb_0] = Split16LowPartSize8::evaluate(
             [xor_rot_32_r_8_input_limb_0.clone()],
+            enabler.clone(),
             ms_8_bits_col0.clone(),
             common_lookup_elements,
             eval,
         );
         let [split_16_low_part_size_8_output_tmp_2a160_3_limb_0] = Split16LowPartSize8::evaluate(
             [xor_rot_32_r_8_input_limb_1.clone()],
+            enabler.clone(),
             ms_8_bits_col1.clone(),
             common_lookup_elements,
             eval,
         );
         let [split_16_low_part_size_8_output_tmp_2a160_5_limb_0] = Split16LowPartSize8::evaluate(
             [xor_rot_32_r_8_input_limb_2.clone()],
+            enabler.clone(),
             ms_8_bits_col2.clone(),
             common_lookup_elements,
             eval,
         );
         let [split_16_low_part_size_8_output_tmp_2a160_7_limb_0] = Split16LowPartSize8::evaluate(
             [xor_rot_32_r_8_input_limb_3.clone()],
+            enabler.clone(),
             ms_8_bits_col3.clone(),
             common_lookup_elements,
             eval,
@@ -59,12 +64,14 @@ impl XorRot32R8 {
                 split_16_low_part_size_8_output_tmp_2a160_1_limb_0.clone(),
                 split_16_low_part_size_8_output_tmp_2a160_5_limb_0.clone(),
             ],
+            enabler.clone(),
             xor_col4.clone(),
             common_lookup_elements,
             eval,
         );
         BitwiseXorNumBits8::evaluate(
             [ms_8_bits_col0.clone(), ms_8_bits_col2.clone()],
+            enabler.clone(),
             xor_col5.clone(),
             common_lookup_elements,
             eval,
@@ -74,12 +81,14 @@ impl XorRot32R8 {
                 split_16_low_part_size_8_output_tmp_2a160_3_limb_0.clone(),
                 split_16_low_part_size_8_output_tmp_2a160_7_limb_0.clone(),
             ],
+            enabler.clone(),
             xor_col6.clone(),
             common_lookup_elements,
             eval,
         );
         BitwiseXorNumBits8B::evaluate(
             [ms_8_bits_col1.clone(), ms_8_bits_col3.clone()],
+            enabler.clone(),
             xor_col7.clone(),
             common_lookup_elements,
             eval,

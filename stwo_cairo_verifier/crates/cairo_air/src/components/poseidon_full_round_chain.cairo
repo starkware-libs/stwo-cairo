@@ -111,676 +111,683 @@ pub impl AirComponentImpl of AirComponent<Component> {
         let mut numerator_11: QM31 = Zero::zero();
 
         let [
-            input_limb_0_col0,
-            input_limb_1_col1,
-            input_limb_2_col2,
-            input_limb_3_col3,
-            input_limb_4_col4,
-            input_limb_5_col5,
-            input_limb_6_col6,
-            input_limb_7_col7,
-            input_limb_8_col8,
-            input_limb_9_col9,
-            input_limb_10_col10,
-            input_limb_11_col11,
-            input_limb_12_col12,
-            input_limb_13_col13,
-            input_limb_14_col14,
-            input_limb_15_col15,
-            input_limb_16_col16,
-            input_limb_17_col17,
-            input_limb_18_col18,
-            input_limb_19_col19,
-            input_limb_20_col20,
-            input_limb_21_col21,
-            input_limb_22_col22,
-            input_limb_23_col23,
-            input_limb_24_col24,
-            input_limb_25_col25,
-            input_limb_26_col26,
-            input_limb_27_col27,
-            input_limb_28_col28,
-            input_limb_29_col29,
-            input_limb_30_col30,
-            input_limb_31_col31,
-            cube_252_output_limb_0_col32,
-            cube_252_output_limb_1_col33,
-            cube_252_output_limb_2_col34,
-            cube_252_output_limb_3_col35,
-            cube_252_output_limb_4_col36,
-            cube_252_output_limb_5_col37,
-            cube_252_output_limb_6_col38,
-            cube_252_output_limb_7_col39,
-            cube_252_output_limb_8_col40,
-            cube_252_output_limb_9_col41,
-            cube_252_output_limb_0_col42,
-            cube_252_output_limb_1_col43,
-            cube_252_output_limb_2_col44,
-            cube_252_output_limb_3_col45,
-            cube_252_output_limb_4_col46,
-            cube_252_output_limb_5_col47,
-            cube_252_output_limb_6_col48,
-            cube_252_output_limb_7_col49,
-            cube_252_output_limb_8_col50,
-            cube_252_output_limb_9_col51,
-            cube_252_output_limb_0_col52,
-            cube_252_output_limb_1_col53,
-            cube_252_output_limb_2_col54,
-            cube_252_output_limb_3_col55,
-            cube_252_output_limb_4_col56,
-            cube_252_output_limb_5_col57,
-            cube_252_output_limb_6_col58,
-            cube_252_output_limb_7_col59,
-            cube_252_output_limb_8_col60,
-            cube_252_output_limb_9_col61,
-            poseidon_round_keys_output_limb_0_col62,
-            poseidon_round_keys_output_limb_1_col63,
-            poseidon_round_keys_output_limb_2_col64,
-            poseidon_round_keys_output_limb_3_col65,
-            poseidon_round_keys_output_limb_4_col66,
-            poseidon_round_keys_output_limb_5_col67,
-            poseidon_round_keys_output_limb_6_col68,
-            poseidon_round_keys_output_limb_7_col69,
-            poseidon_round_keys_output_limb_8_col70,
-            poseidon_round_keys_output_limb_9_col71,
-            poseidon_round_keys_output_limb_10_col72,
-            poseidon_round_keys_output_limb_11_col73,
-            poseidon_round_keys_output_limb_12_col74,
-            poseidon_round_keys_output_limb_13_col75,
-            poseidon_round_keys_output_limb_14_col76,
-            poseidon_round_keys_output_limb_15_col77,
-            poseidon_round_keys_output_limb_16_col78,
-            poseidon_round_keys_output_limb_17_col79,
-            poseidon_round_keys_output_limb_18_col80,
-            poseidon_round_keys_output_limb_19_col81,
-            poseidon_round_keys_output_limb_20_col82,
-            poseidon_round_keys_output_limb_21_col83,
-            poseidon_round_keys_output_limb_22_col84,
-            poseidon_round_keys_output_limb_23_col85,
-            poseidon_round_keys_output_limb_24_col86,
-            poseidon_round_keys_output_limb_25_col87,
-            poseidon_round_keys_output_limb_26_col88,
-            poseidon_round_keys_output_limb_27_col89,
-            poseidon_round_keys_output_limb_28_col90,
-            poseidon_round_keys_output_limb_29_col91,
-            combination_limb_0_col92,
-            combination_limb_1_col93,
-            combination_limb_2_col94,
-            combination_limb_3_col95,
-            combination_limb_4_col96,
-            combination_limb_5_col97,
-            combination_limb_6_col98,
-            combination_limb_7_col99,
-            combination_limb_8_col100,
-            combination_limb_9_col101,
-            p_coef_col102,
-            combination_limb_0_col103,
-            combination_limb_1_col104,
-            combination_limb_2_col105,
-            combination_limb_3_col106,
-            combination_limb_4_col107,
-            combination_limb_5_col108,
-            combination_limb_6_col109,
-            combination_limb_7_col110,
-            combination_limb_8_col111,
-            combination_limb_9_col112,
-            p_coef_col113,
-            combination_limb_0_col114,
-            combination_limb_1_col115,
-            combination_limb_2_col116,
-            combination_limb_3_col117,
-            combination_limb_4_col118,
-            combination_limb_5_col119,
-            combination_limb_6_col120,
-            combination_limb_7_col121,
-            combination_limb_8_col122,
-            combination_limb_9_col123,
-            p_coef_col124,
-            enabler_col125,
+            enabler_col0,
+            input_limb_0_col1,
+            input_limb_1_col2,
+            input_limb_2_col3,
+            input_limb_3_col4,
+            input_limb_4_col5,
+            input_limb_5_col6,
+            input_limb_6_col7,
+            input_limb_7_col8,
+            input_limb_8_col9,
+            input_limb_9_col10,
+            input_limb_10_col11,
+            input_limb_11_col12,
+            input_limb_12_col13,
+            input_limb_13_col14,
+            input_limb_14_col15,
+            input_limb_15_col16,
+            input_limb_16_col17,
+            input_limb_17_col18,
+            input_limb_18_col19,
+            input_limb_19_col20,
+            input_limb_20_col21,
+            input_limb_21_col22,
+            input_limb_22_col23,
+            input_limb_23_col24,
+            input_limb_24_col25,
+            input_limb_25_col26,
+            input_limb_26_col27,
+            input_limb_27_col28,
+            input_limb_28_col29,
+            input_limb_29_col30,
+            input_limb_30_col31,
+            input_limb_31_col32,
+            cube_252_output_limb_0_col33,
+            cube_252_output_limb_1_col34,
+            cube_252_output_limb_2_col35,
+            cube_252_output_limb_3_col36,
+            cube_252_output_limb_4_col37,
+            cube_252_output_limb_5_col38,
+            cube_252_output_limb_6_col39,
+            cube_252_output_limb_7_col40,
+            cube_252_output_limb_8_col41,
+            cube_252_output_limb_9_col42,
+            cube_252_output_limb_0_col43,
+            cube_252_output_limb_1_col44,
+            cube_252_output_limb_2_col45,
+            cube_252_output_limb_3_col46,
+            cube_252_output_limb_4_col47,
+            cube_252_output_limb_5_col48,
+            cube_252_output_limb_6_col49,
+            cube_252_output_limb_7_col50,
+            cube_252_output_limb_8_col51,
+            cube_252_output_limb_9_col52,
+            cube_252_output_limb_0_col53,
+            cube_252_output_limb_1_col54,
+            cube_252_output_limb_2_col55,
+            cube_252_output_limb_3_col56,
+            cube_252_output_limb_4_col57,
+            cube_252_output_limb_5_col58,
+            cube_252_output_limb_6_col59,
+            cube_252_output_limb_7_col60,
+            cube_252_output_limb_8_col61,
+            cube_252_output_limb_9_col62,
+            poseidon_round_keys_output_limb_0_col63,
+            poseidon_round_keys_output_limb_1_col64,
+            poseidon_round_keys_output_limb_2_col65,
+            poseidon_round_keys_output_limb_3_col66,
+            poseidon_round_keys_output_limb_4_col67,
+            poseidon_round_keys_output_limb_5_col68,
+            poseidon_round_keys_output_limb_6_col69,
+            poseidon_round_keys_output_limb_7_col70,
+            poseidon_round_keys_output_limb_8_col71,
+            poseidon_round_keys_output_limb_9_col72,
+            poseidon_round_keys_output_limb_10_col73,
+            poseidon_round_keys_output_limb_11_col74,
+            poseidon_round_keys_output_limb_12_col75,
+            poseidon_round_keys_output_limb_13_col76,
+            poseidon_round_keys_output_limb_14_col77,
+            poseidon_round_keys_output_limb_15_col78,
+            poseidon_round_keys_output_limb_16_col79,
+            poseidon_round_keys_output_limb_17_col80,
+            poseidon_round_keys_output_limb_18_col81,
+            poseidon_round_keys_output_limb_19_col82,
+            poseidon_round_keys_output_limb_20_col83,
+            poseidon_round_keys_output_limb_21_col84,
+            poseidon_round_keys_output_limb_22_col85,
+            poseidon_round_keys_output_limb_23_col86,
+            poseidon_round_keys_output_limb_24_col87,
+            poseidon_round_keys_output_limb_25_col88,
+            poseidon_round_keys_output_limb_26_col89,
+            poseidon_round_keys_output_limb_27_col90,
+            poseidon_round_keys_output_limb_28_col91,
+            poseidon_round_keys_output_limb_29_col92,
+            combination_limb_0_col93,
+            combination_limb_1_col94,
+            combination_limb_2_col95,
+            combination_limb_3_col96,
+            combination_limb_4_col97,
+            combination_limb_5_col98,
+            combination_limb_6_col99,
+            combination_limb_7_col100,
+            combination_limb_8_col101,
+            combination_limb_9_col102,
+            p_coef_col103,
+            combination_limb_0_col104,
+            combination_limb_1_col105,
+            combination_limb_2_col106,
+            combination_limb_3_col107,
+            combination_limb_4_col108,
+            combination_limb_5_col109,
+            combination_limb_6_col110,
+            combination_limb_7_col111,
+            combination_limb_8_col112,
+            combination_limb_9_col113,
+            p_coef_col114,
+            combination_limb_0_col115,
+            combination_limb_1_col116,
+            combination_limb_2_col117,
+            combination_limb_3_col118,
+            combination_limb_4_col119,
+            combination_limb_5_col120,
+            combination_limb_6_col121,
+            combination_limb_7_col122,
+            combination_limb_8_col123,
+            combination_limb_9_col124,
+            p_coef_col125,
         ]: [Span<QM31>; 126] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
             .unbox();
-        let [input_limb_0_col0]: [QM31; 1] = (*input_limb_0_col0.try_into().unwrap()).unbox();
-        let [input_limb_1_col1]: [QM31; 1] = (*input_limb_1_col1.try_into().unwrap()).unbox();
-        let [input_limb_2_col2]: [QM31; 1] = (*input_limb_2_col2.try_into().unwrap()).unbox();
-        let [input_limb_3_col3]: [QM31; 1] = (*input_limb_3_col3.try_into().unwrap()).unbox();
-        let [input_limb_4_col4]: [QM31; 1] = (*input_limb_4_col4.try_into().unwrap()).unbox();
-        let [input_limb_5_col5]: [QM31; 1] = (*input_limb_5_col5.try_into().unwrap()).unbox();
-        let [input_limb_6_col6]: [QM31; 1] = (*input_limb_6_col6.try_into().unwrap()).unbox();
-        let [input_limb_7_col7]: [QM31; 1] = (*input_limb_7_col7.try_into().unwrap()).unbox();
-        let [input_limb_8_col8]: [QM31; 1] = (*input_limb_8_col8.try_into().unwrap()).unbox();
-        let [input_limb_9_col9]: [QM31; 1] = (*input_limb_9_col9.try_into().unwrap()).unbox();
-        let [input_limb_10_col10]: [QM31; 1] = (*input_limb_10_col10.try_into().unwrap()).unbox();
-        let [input_limb_11_col11]: [QM31; 1] = (*input_limb_11_col11.try_into().unwrap()).unbox();
-        let [input_limb_12_col12]: [QM31; 1] = (*input_limb_12_col12.try_into().unwrap()).unbox();
-        let [input_limb_13_col13]: [QM31; 1] = (*input_limb_13_col13.try_into().unwrap()).unbox();
-        let [input_limb_14_col14]: [QM31; 1] = (*input_limb_14_col14.try_into().unwrap()).unbox();
-        let [input_limb_15_col15]: [QM31; 1] = (*input_limb_15_col15.try_into().unwrap()).unbox();
-        let [input_limb_16_col16]: [QM31; 1] = (*input_limb_16_col16.try_into().unwrap()).unbox();
-        let [input_limb_17_col17]: [QM31; 1] = (*input_limb_17_col17.try_into().unwrap()).unbox();
-        let [input_limb_18_col18]: [QM31; 1] = (*input_limb_18_col18.try_into().unwrap()).unbox();
-        let [input_limb_19_col19]: [QM31; 1] = (*input_limb_19_col19.try_into().unwrap()).unbox();
-        let [input_limb_20_col20]: [QM31; 1] = (*input_limb_20_col20.try_into().unwrap()).unbox();
-        let [input_limb_21_col21]: [QM31; 1] = (*input_limb_21_col21.try_into().unwrap()).unbox();
-        let [input_limb_22_col22]: [QM31; 1] = (*input_limb_22_col22.try_into().unwrap()).unbox();
-        let [input_limb_23_col23]: [QM31; 1] = (*input_limb_23_col23.try_into().unwrap()).unbox();
-        let [input_limb_24_col24]: [QM31; 1] = (*input_limb_24_col24.try_into().unwrap()).unbox();
-        let [input_limb_25_col25]: [QM31; 1] = (*input_limb_25_col25.try_into().unwrap()).unbox();
-        let [input_limb_26_col26]: [QM31; 1] = (*input_limb_26_col26.try_into().unwrap()).unbox();
-        let [input_limb_27_col27]: [QM31; 1] = (*input_limb_27_col27.try_into().unwrap()).unbox();
-        let [input_limb_28_col28]: [QM31; 1] = (*input_limb_28_col28.try_into().unwrap()).unbox();
-        let [input_limb_29_col29]: [QM31; 1] = (*input_limb_29_col29.try_into().unwrap()).unbox();
-        let [input_limb_30_col30]: [QM31; 1] = (*input_limb_30_col30.try_into().unwrap()).unbox();
-        let [input_limb_31_col31]: [QM31; 1] = (*input_limb_31_col31.try_into().unwrap()).unbox();
-        let [cube_252_output_limb_0_col32]: [QM31; 1] = (*cube_252_output_limb_0_col32
+        let [enabler_col0]: [QM31; 1] = (*enabler_col0.try_into().unwrap()).unbox();
+        let [input_limb_0_col1]: [QM31; 1] = (*input_limb_0_col1.try_into().unwrap()).unbox();
+        let [input_limb_1_col2]: [QM31; 1] = (*input_limb_1_col2.try_into().unwrap()).unbox();
+        let [input_limb_2_col3]: [QM31; 1] = (*input_limb_2_col3.try_into().unwrap()).unbox();
+        let [input_limb_3_col4]: [QM31; 1] = (*input_limb_3_col4.try_into().unwrap()).unbox();
+        let [input_limb_4_col5]: [QM31; 1] = (*input_limb_4_col5.try_into().unwrap()).unbox();
+        let [input_limb_5_col6]: [QM31; 1] = (*input_limb_5_col6.try_into().unwrap()).unbox();
+        let [input_limb_6_col7]: [QM31; 1] = (*input_limb_6_col7.try_into().unwrap()).unbox();
+        let [input_limb_7_col8]: [QM31; 1] = (*input_limb_7_col8.try_into().unwrap()).unbox();
+        let [input_limb_8_col9]: [QM31; 1] = (*input_limb_8_col9.try_into().unwrap()).unbox();
+        let [input_limb_9_col10]: [QM31; 1] = (*input_limb_9_col10.try_into().unwrap()).unbox();
+        let [input_limb_10_col11]: [QM31; 1] = (*input_limb_10_col11.try_into().unwrap()).unbox();
+        let [input_limb_11_col12]: [QM31; 1] = (*input_limb_11_col12.try_into().unwrap()).unbox();
+        let [input_limb_12_col13]: [QM31; 1] = (*input_limb_12_col13.try_into().unwrap()).unbox();
+        let [input_limb_13_col14]: [QM31; 1] = (*input_limb_13_col14.try_into().unwrap()).unbox();
+        let [input_limb_14_col15]: [QM31; 1] = (*input_limb_14_col15.try_into().unwrap()).unbox();
+        let [input_limb_15_col16]: [QM31; 1] = (*input_limb_15_col16.try_into().unwrap()).unbox();
+        let [input_limb_16_col17]: [QM31; 1] = (*input_limb_16_col17.try_into().unwrap()).unbox();
+        let [input_limb_17_col18]: [QM31; 1] = (*input_limb_17_col18.try_into().unwrap()).unbox();
+        let [input_limb_18_col19]: [QM31; 1] = (*input_limb_18_col19.try_into().unwrap()).unbox();
+        let [input_limb_19_col20]: [QM31; 1] = (*input_limb_19_col20.try_into().unwrap()).unbox();
+        let [input_limb_20_col21]: [QM31; 1] = (*input_limb_20_col21.try_into().unwrap()).unbox();
+        let [input_limb_21_col22]: [QM31; 1] = (*input_limb_21_col22.try_into().unwrap()).unbox();
+        let [input_limb_22_col23]: [QM31; 1] = (*input_limb_22_col23.try_into().unwrap()).unbox();
+        let [input_limb_23_col24]: [QM31; 1] = (*input_limb_23_col24.try_into().unwrap()).unbox();
+        let [input_limb_24_col25]: [QM31; 1] = (*input_limb_24_col25.try_into().unwrap()).unbox();
+        let [input_limb_25_col26]: [QM31; 1] = (*input_limb_25_col26.try_into().unwrap()).unbox();
+        let [input_limb_26_col27]: [QM31; 1] = (*input_limb_26_col27.try_into().unwrap()).unbox();
+        let [input_limb_27_col28]: [QM31; 1] = (*input_limb_27_col28.try_into().unwrap()).unbox();
+        let [input_limb_28_col29]: [QM31; 1] = (*input_limb_28_col29.try_into().unwrap()).unbox();
+        let [input_limb_29_col30]: [QM31; 1] = (*input_limb_29_col30.try_into().unwrap()).unbox();
+        let [input_limb_30_col31]: [QM31; 1] = (*input_limb_30_col31.try_into().unwrap()).unbox();
+        let [input_limb_31_col32]: [QM31; 1] = (*input_limb_31_col32.try_into().unwrap()).unbox();
+        let [cube_252_output_limb_0_col33]: [QM31; 1] = (*cube_252_output_limb_0_col33
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_1_col33]: [QM31; 1] = (*cube_252_output_limb_1_col33
+        let [cube_252_output_limb_1_col34]: [QM31; 1] = (*cube_252_output_limb_1_col34
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_2_col34]: [QM31; 1] = (*cube_252_output_limb_2_col34
+        let [cube_252_output_limb_2_col35]: [QM31; 1] = (*cube_252_output_limb_2_col35
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_3_col35]: [QM31; 1] = (*cube_252_output_limb_3_col35
+        let [cube_252_output_limb_3_col36]: [QM31; 1] = (*cube_252_output_limb_3_col36
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_4_col36]: [QM31; 1] = (*cube_252_output_limb_4_col36
+        let [cube_252_output_limb_4_col37]: [QM31; 1] = (*cube_252_output_limb_4_col37
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_5_col37]: [QM31; 1] = (*cube_252_output_limb_5_col37
+        let [cube_252_output_limb_5_col38]: [QM31; 1] = (*cube_252_output_limb_5_col38
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_6_col38]: [QM31; 1] = (*cube_252_output_limb_6_col38
+        let [cube_252_output_limb_6_col39]: [QM31; 1] = (*cube_252_output_limb_6_col39
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_7_col39]: [QM31; 1] = (*cube_252_output_limb_7_col39
+        let [cube_252_output_limb_7_col40]: [QM31; 1] = (*cube_252_output_limb_7_col40
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_8_col40]: [QM31; 1] = (*cube_252_output_limb_8_col40
+        let [cube_252_output_limb_8_col41]: [QM31; 1] = (*cube_252_output_limb_8_col41
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_9_col41]: [QM31; 1] = (*cube_252_output_limb_9_col41
+        let [cube_252_output_limb_9_col42]: [QM31; 1] = (*cube_252_output_limb_9_col42
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_0_col42]: [QM31; 1] = (*cube_252_output_limb_0_col42
+        let [cube_252_output_limb_0_col43]: [QM31; 1] = (*cube_252_output_limb_0_col43
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_1_col43]: [QM31; 1] = (*cube_252_output_limb_1_col43
+        let [cube_252_output_limb_1_col44]: [QM31; 1] = (*cube_252_output_limb_1_col44
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_2_col44]: [QM31; 1] = (*cube_252_output_limb_2_col44
+        let [cube_252_output_limb_2_col45]: [QM31; 1] = (*cube_252_output_limb_2_col45
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_3_col45]: [QM31; 1] = (*cube_252_output_limb_3_col45
+        let [cube_252_output_limb_3_col46]: [QM31; 1] = (*cube_252_output_limb_3_col46
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_4_col46]: [QM31; 1] = (*cube_252_output_limb_4_col46
+        let [cube_252_output_limb_4_col47]: [QM31; 1] = (*cube_252_output_limb_4_col47
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_5_col47]: [QM31; 1] = (*cube_252_output_limb_5_col47
+        let [cube_252_output_limb_5_col48]: [QM31; 1] = (*cube_252_output_limb_5_col48
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_6_col48]: [QM31; 1] = (*cube_252_output_limb_6_col48
+        let [cube_252_output_limb_6_col49]: [QM31; 1] = (*cube_252_output_limb_6_col49
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_7_col49]: [QM31; 1] = (*cube_252_output_limb_7_col49
+        let [cube_252_output_limb_7_col50]: [QM31; 1] = (*cube_252_output_limb_7_col50
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_8_col50]: [QM31; 1] = (*cube_252_output_limb_8_col50
+        let [cube_252_output_limb_8_col51]: [QM31; 1] = (*cube_252_output_limb_8_col51
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_9_col51]: [QM31; 1] = (*cube_252_output_limb_9_col51
+        let [cube_252_output_limb_9_col52]: [QM31; 1] = (*cube_252_output_limb_9_col52
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_0_col52]: [QM31; 1] = (*cube_252_output_limb_0_col52
+        let [cube_252_output_limb_0_col53]: [QM31; 1] = (*cube_252_output_limb_0_col53
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_1_col53]: [QM31; 1] = (*cube_252_output_limb_1_col53
+        let [cube_252_output_limb_1_col54]: [QM31; 1] = (*cube_252_output_limb_1_col54
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_2_col54]: [QM31; 1] = (*cube_252_output_limb_2_col54
+        let [cube_252_output_limb_2_col55]: [QM31; 1] = (*cube_252_output_limb_2_col55
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_3_col55]: [QM31; 1] = (*cube_252_output_limb_3_col55
+        let [cube_252_output_limb_3_col56]: [QM31; 1] = (*cube_252_output_limb_3_col56
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_4_col56]: [QM31; 1] = (*cube_252_output_limb_4_col56
+        let [cube_252_output_limb_4_col57]: [QM31; 1] = (*cube_252_output_limb_4_col57
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_5_col57]: [QM31; 1] = (*cube_252_output_limb_5_col57
+        let [cube_252_output_limb_5_col58]: [QM31; 1] = (*cube_252_output_limb_5_col58
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_6_col58]: [QM31; 1] = (*cube_252_output_limb_6_col58
+        let [cube_252_output_limb_6_col59]: [QM31; 1] = (*cube_252_output_limb_6_col59
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_7_col59]: [QM31; 1] = (*cube_252_output_limb_7_col59
+        let [cube_252_output_limb_7_col60]: [QM31; 1] = (*cube_252_output_limb_7_col60
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_8_col60]: [QM31; 1] = (*cube_252_output_limb_8_col60
+        let [cube_252_output_limb_8_col61]: [QM31; 1] = (*cube_252_output_limb_8_col61
             .try_into()
             .unwrap())
             .unbox();
-        let [cube_252_output_limb_9_col61]: [QM31; 1] = (*cube_252_output_limb_9_col61
+        let [cube_252_output_limb_9_col62]: [QM31; 1] = (*cube_252_output_limb_9_col62
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_0_col62]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_0_col62
+        let [poseidon_round_keys_output_limb_0_col63]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_0_col63
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_1_col63]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_1_col63
+        let [poseidon_round_keys_output_limb_1_col64]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_1_col64
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_2_col64]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_2_col64
+        let [poseidon_round_keys_output_limb_2_col65]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_2_col65
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_3_col65]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_3_col65
+        let [poseidon_round_keys_output_limb_3_col66]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_3_col66
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_4_col66]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_4_col66
+        let [poseidon_round_keys_output_limb_4_col67]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_4_col67
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_5_col67]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_5_col67
+        let [poseidon_round_keys_output_limb_5_col68]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_5_col68
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_6_col68]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_6_col68
+        let [poseidon_round_keys_output_limb_6_col69]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_6_col69
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_7_col69]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_7_col69
+        let [poseidon_round_keys_output_limb_7_col70]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_7_col70
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_8_col70]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_8_col70
+        let [poseidon_round_keys_output_limb_8_col71]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_8_col71
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_9_col71]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_9_col71
+        let [poseidon_round_keys_output_limb_9_col72]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_9_col72
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_10_col72]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_10_col72
+        let [poseidon_round_keys_output_limb_10_col73]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_10_col73
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_11_col73]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_11_col73
+        let [poseidon_round_keys_output_limb_11_col74]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_11_col74
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_12_col74]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_12_col74
+        let [poseidon_round_keys_output_limb_12_col75]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_12_col75
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_13_col75]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_13_col75
+        let [poseidon_round_keys_output_limb_13_col76]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_13_col76
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_14_col76]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_14_col76
+        let [poseidon_round_keys_output_limb_14_col77]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_14_col77
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_15_col77]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_15_col77
+        let [poseidon_round_keys_output_limb_15_col78]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_15_col78
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_16_col78]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_16_col78
+        let [poseidon_round_keys_output_limb_16_col79]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_16_col79
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_17_col79]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_17_col79
+        let [poseidon_round_keys_output_limb_17_col80]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_17_col80
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_18_col80]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_18_col80
+        let [poseidon_round_keys_output_limb_18_col81]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_18_col81
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_19_col81]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_19_col81
+        let [poseidon_round_keys_output_limb_19_col82]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_19_col82
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_20_col82]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_20_col82
+        let [poseidon_round_keys_output_limb_20_col83]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_20_col83
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_21_col83]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_21_col83
+        let [poseidon_round_keys_output_limb_21_col84]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_21_col84
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_22_col84]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_22_col84
+        let [poseidon_round_keys_output_limb_22_col85]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_22_col85
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_23_col85]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_23_col85
+        let [poseidon_round_keys_output_limb_23_col86]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_23_col86
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_24_col86]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_24_col86
+        let [poseidon_round_keys_output_limb_24_col87]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_24_col87
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_25_col87]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_25_col87
+        let [poseidon_round_keys_output_limb_25_col88]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_25_col88
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_26_col88]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_26_col88
+        let [poseidon_round_keys_output_limb_26_col89]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_26_col89
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_27_col89]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_27_col89
+        let [poseidon_round_keys_output_limb_27_col90]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_27_col90
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_28_col90]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_28_col90
+        let [poseidon_round_keys_output_limb_28_col91]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_28_col91
             .try_into()
             .unwrap())
             .unbox();
-        let [poseidon_round_keys_output_limb_29_col91]: [QM31; 1] =
-            (*poseidon_round_keys_output_limb_29_col91
+        let [poseidon_round_keys_output_limb_29_col92]: [QM31; 1] =
+            (*poseidon_round_keys_output_limb_29_col92
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_0_col92]: [QM31; 1] = (*combination_limb_0_col92.try_into().unwrap())
+        let [combination_limb_0_col93]: [QM31; 1] = (*combination_limb_0_col93.try_into().unwrap())
             .unbox();
-        let [combination_limb_1_col93]: [QM31; 1] = (*combination_limb_1_col93.try_into().unwrap())
+        let [combination_limb_1_col94]: [QM31; 1] = (*combination_limb_1_col94.try_into().unwrap())
             .unbox();
-        let [combination_limb_2_col94]: [QM31; 1] = (*combination_limb_2_col94.try_into().unwrap())
+        let [combination_limb_2_col95]: [QM31; 1] = (*combination_limb_2_col95.try_into().unwrap())
             .unbox();
-        let [combination_limb_3_col95]: [QM31; 1] = (*combination_limb_3_col95.try_into().unwrap())
+        let [combination_limb_3_col96]: [QM31; 1] = (*combination_limb_3_col96.try_into().unwrap())
             .unbox();
-        let [combination_limb_4_col96]: [QM31; 1] = (*combination_limb_4_col96.try_into().unwrap())
+        let [combination_limb_4_col97]: [QM31; 1] = (*combination_limb_4_col97.try_into().unwrap())
             .unbox();
-        let [combination_limb_5_col97]: [QM31; 1] = (*combination_limb_5_col97.try_into().unwrap())
+        let [combination_limb_5_col98]: [QM31; 1] = (*combination_limb_5_col98.try_into().unwrap())
             .unbox();
-        let [combination_limb_6_col98]: [QM31; 1] = (*combination_limb_6_col98.try_into().unwrap())
+        let [combination_limb_6_col99]: [QM31; 1] = (*combination_limb_6_col99.try_into().unwrap())
             .unbox();
-        let [combination_limb_7_col99]: [QM31; 1] = (*combination_limb_7_col99.try_into().unwrap())
+        let [combination_limb_7_col100]: [QM31; 1] = (*combination_limb_7_col100
+            .try_into()
+            .unwrap())
             .unbox();
-        let [combination_limb_8_col100]: [QM31; 1] = (*combination_limb_8_col100
+        let [combination_limb_8_col101]: [QM31; 1] = (*combination_limb_8_col101
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_9_col101]: [QM31; 1] = (*combination_limb_9_col101
+        let [combination_limb_9_col102]: [QM31; 1] = (*combination_limb_9_col102
             .try_into()
             .unwrap())
             .unbox();
-        let [p_coef_col102]: [QM31; 1] = (*p_coef_col102.try_into().unwrap()).unbox();
-        let [combination_limb_0_col103]: [QM31; 1] = (*combination_limb_0_col103
+        let [p_coef_col103]: [QM31; 1] = (*p_coef_col103.try_into().unwrap()).unbox();
+        let [combination_limb_0_col104]: [QM31; 1] = (*combination_limb_0_col104
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_1_col104]: [QM31; 1] = (*combination_limb_1_col104
+        let [combination_limb_1_col105]: [QM31; 1] = (*combination_limb_1_col105
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_2_col105]: [QM31; 1] = (*combination_limb_2_col105
+        let [combination_limb_2_col106]: [QM31; 1] = (*combination_limb_2_col106
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_3_col106]: [QM31; 1] = (*combination_limb_3_col106
+        let [combination_limb_3_col107]: [QM31; 1] = (*combination_limb_3_col107
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_4_col107]: [QM31; 1] = (*combination_limb_4_col107
+        let [combination_limb_4_col108]: [QM31; 1] = (*combination_limb_4_col108
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_5_col108]: [QM31; 1] = (*combination_limb_5_col108
+        let [combination_limb_5_col109]: [QM31; 1] = (*combination_limb_5_col109
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_6_col109]: [QM31; 1] = (*combination_limb_6_col109
+        let [combination_limb_6_col110]: [QM31; 1] = (*combination_limb_6_col110
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_7_col110]: [QM31; 1] = (*combination_limb_7_col110
+        let [combination_limb_7_col111]: [QM31; 1] = (*combination_limb_7_col111
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_8_col111]: [QM31; 1] = (*combination_limb_8_col111
+        let [combination_limb_8_col112]: [QM31; 1] = (*combination_limb_8_col112
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_9_col112]: [QM31; 1] = (*combination_limb_9_col112
+        let [combination_limb_9_col113]: [QM31; 1] = (*combination_limb_9_col113
             .try_into()
             .unwrap())
             .unbox();
-        let [p_coef_col113]: [QM31; 1] = (*p_coef_col113.try_into().unwrap()).unbox();
-        let [combination_limb_0_col114]: [QM31; 1] = (*combination_limb_0_col114
+        let [p_coef_col114]: [QM31; 1] = (*p_coef_col114.try_into().unwrap()).unbox();
+        let [combination_limb_0_col115]: [QM31; 1] = (*combination_limb_0_col115
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_1_col115]: [QM31; 1] = (*combination_limb_1_col115
+        let [combination_limb_1_col116]: [QM31; 1] = (*combination_limb_1_col116
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_2_col116]: [QM31; 1] = (*combination_limb_2_col116
+        let [combination_limb_2_col117]: [QM31; 1] = (*combination_limb_2_col117
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_3_col117]: [QM31; 1] = (*combination_limb_3_col117
+        let [combination_limb_3_col118]: [QM31; 1] = (*combination_limb_3_col118
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_4_col118]: [QM31; 1] = (*combination_limb_4_col118
+        let [combination_limb_4_col119]: [QM31; 1] = (*combination_limb_4_col119
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_5_col119]: [QM31; 1] = (*combination_limb_5_col119
+        let [combination_limb_5_col120]: [QM31; 1] = (*combination_limb_5_col120
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_6_col120]: [QM31; 1] = (*combination_limb_6_col120
+        let [combination_limb_6_col121]: [QM31; 1] = (*combination_limb_6_col121
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_7_col121]: [QM31; 1] = (*combination_limb_7_col121
+        let [combination_limb_7_col122]: [QM31; 1] = (*combination_limb_7_col122
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_8_col122]: [QM31; 1] = (*combination_limb_8_col122
+        let [combination_limb_8_col123]: [QM31; 1] = (*combination_limb_8_col123
             .try_into()
             .unwrap())
             .unbox();
-        let [combination_limb_9_col123]: [QM31; 1] = (*combination_limb_9_col123
+        let [combination_limb_9_col124]: [QM31; 1] = (*combination_limb_9_col124
             .try_into()
             .unwrap())
             .unbox();
-        let [p_coef_col124]: [QM31; 1] = (*p_coef_col124.try_into().unwrap()).unbox();
-        let [enabler_col125]: [QM31; 1] = (*enabler_col125.try_into().unwrap()).unbox();
+        let [p_coef_col125]: [QM31; 1] = (*p_coef_col125.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
+
+        // Constraint - Enabler is a bit
+        let constraint_quotient = (((enabler_col0 * enabler_col0) - enabler_col0));
+        sum = sum * random_coeff + constraint_quotient;
 
         cube_252_sum_0 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1987997202, 0, 0, 0>(), input_limb_2_col2, input_limb_3_col3,
-                    input_limb_4_col4, input_limb_5_col5, input_limb_6_col6, input_limb_7_col7,
-                    input_limb_8_col8, input_limb_9_col9, input_limb_10_col10, input_limb_11_col11,
-                    cube_252_output_limb_0_col32, cube_252_output_limb_1_col33,
-                    cube_252_output_limb_2_col34, cube_252_output_limb_3_col35,
-                    cube_252_output_limb_4_col36, cube_252_output_limb_5_col37,
-                    cube_252_output_limb_6_col38, cube_252_output_limb_7_col39,
-                    cube_252_output_limb_8_col40, cube_252_output_limb_9_col41,
+                    qm31_const::<1987997202, 0, 0, 0>(), input_limb_2_col3, input_limb_3_col4,
+                    input_limb_4_col5, input_limb_5_col6, input_limb_6_col7, input_limb_7_col8,
+                    input_limb_8_col9, input_limb_9_col10, input_limb_10_col11, input_limb_11_col12,
+                    cube_252_output_limb_0_col33, cube_252_output_limb_1_col34,
+                    cube_252_output_limb_2_col35, cube_252_output_limb_3_col36,
+                    cube_252_output_limb_4_col37, cube_252_output_limb_5_col38,
+                    cube_252_output_limb_6_col39, cube_252_output_limb_7_col40,
+                    cube_252_output_limb_8_col41, cube_252_output_limb_9_col42,
                 ]
                     .span(),
             );
-        numerator_0 = qm31_const::<1, 0, 0, 0>();
+        numerator_0 = enabler_col0;
 
         cube_252_sum_1 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1987997202, 0, 0, 0>(), input_limb_12_col12, input_limb_13_col13,
-                    input_limb_14_col14, input_limb_15_col15, input_limb_16_col16,
-                    input_limb_17_col17, input_limb_18_col18, input_limb_19_col19,
-                    input_limb_20_col20, input_limb_21_col21, cube_252_output_limb_0_col42,
-                    cube_252_output_limb_1_col43, cube_252_output_limb_2_col44,
-                    cube_252_output_limb_3_col45, cube_252_output_limb_4_col46,
-                    cube_252_output_limb_5_col47, cube_252_output_limb_6_col48,
-                    cube_252_output_limb_7_col49, cube_252_output_limb_8_col50,
-                    cube_252_output_limb_9_col51,
+                    qm31_const::<1987997202, 0, 0, 0>(), input_limb_12_col13, input_limb_13_col14,
+                    input_limb_14_col15, input_limb_15_col16, input_limb_16_col17,
+                    input_limb_17_col18, input_limb_18_col19, input_limb_19_col20,
+                    input_limb_20_col21, input_limb_21_col22, cube_252_output_limb_0_col43,
+                    cube_252_output_limb_1_col44, cube_252_output_limb_2_col45,
+                    cube_252_output_limb_3_col46, cube_252_output_limb_4_col47,
+                    cube_252_output_limb_5_col48, cube_252_output_limb_6_col49,
+                    cube_252_output_limb_7_col50, cube_252_output_limb_8_col51,
+                    cube_252_output_limb_9_col52,
                 ]
                     .span(),
             );
-        numerator_1 = qm31_const::<1, 0, 0, 0>();
+        numerator_1 = enabler_col0;
 
         cube_252_sum_2 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1987997202, 0, 0, 0>(), input_limb_22_col22, input_limb_23_col23,
-                    input_limb_24_col24, input_limb_25_col25, input_limb_26_col26,
-                    input_limb_27_col27, input_limb_28_col28, input_limb_29_col29,
-                    input_limb_30_col30, input_limb_31_col31, cube_252_output_limb_0_col52,
-                    cube_252_output_limb_1_col53, cube_252_output_limb_2_col54,
-                    cube_252_output_limb_3_col55, cube_252_output_limb_4_col56,
-                    cube_252_output_limb_5_col57, cube_252_output_limb_6_col58,
-                    cube_252_output_limb_7_col59, cube_252_output_limb_8_col60,
-                    cube_252_output_limb_9_col61,
+                    qm31_const::<1987997202, 0, 0, 0>(), input_limb_22_col23, input_limb_23_col24,
+                    input_limb_24_col25, input_limb_25_col26, input_limb_26_col27,
+                    input_limb_27_col28, input_limb_28_col29, input_limb_29_col30,
+                    input_limb_30_col31, input_limb_31_col32, cube_252_output_limb_0_col53,
+                    cube_252_output_limb_1_col54, cube_252_output_limb_2_col55,
+                    cube_252_output_limb_3_col56, cube_252_output_limb_4_col57,
+                    cube_252_output_limb_5_col58, cube_252_output_limb_6_col59,
+                    cube_252_output_limb_7_col60, cube_252_output_limb_8_col61,
+                    cube_252_output_limb_9_col62,
                 ]
                     .span(),
             );
-        numerator_2 = qm31_const::<1, 0, 0, 0>();
+        numerator_2 = enabler_col0;
 
         poseidon_round_keys_sum_3 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1024310512, 0, 0, 0>(), input_limb_1_col1,
-                    poseidon_round_keys_output_limb_0_col62,
-                    poseidon_round_keys_output_limb_1_col63,
-                    poseidon_round_keys_output_limb_2_col64,
-                    poseidon_round_keys_output_limb_3_col65,
-                    poseidon_round_keys_output_limb_4_col66,
-                    poseidon_round_keys_output_limb_5_col67,
-                    poseidon_round_keys_output_limb_6_col68,
-                    poseidon_round_keys_output_limb_7_col69,
-                    poseidon_round_keys_output_limb_8_col70,
-                    poseidon_round_keys_output_limb_9_col71,
-                    poseidon_round_keys_output_limb_10_col72,
-                    poseidon_round_keys_output_limb_11_col73,
-                    poseidon_round_keys_output_limb_12_col74,
-                    poseidon_round_keys_output_limb_13_col75,
-                    poseidon_round_keys_output_limb_14_col76,
-                    poseidon_round_keys_output_limb_15_col77,
-                    poseidon_round_keys_output_limb_16_col78,
-                    poseidon_round_keys_output_limb_17_col79,
-                    poseidon_round_keys_output_limb_18_col80,
-                    poseidon_round_keys_output_limb_19_col81,
-                    poseidon_round_keys_output_limb_20_col82,
-                    poseidon_round_keys_output_limb_21_col83,
-                    poseidon_round_keys_output_limb_22_col84,
-                    poseidon_round_keys_output_limb_23_col85,
-                    poseidon_round_keys_output_limb_24_col86,
-                    poseidon_round_keys_output_limb_25_col87,
-                    poseidon_round_keys_output_limb_26_col88,
-                    poseidon_round_keys_output_limb_27_col89,
-                    poseidon_round_keys_output_limb_28_col90,
-                    poseidon_round_keys_output_limb_29_col91,
+                    qm31_const::<1024310512, 0, 0, 0>(), input_limb_1_col2,
+                    poseidon_round_keys_output_limb_0_col63,
+                    poseidon_round_keys_output_limb_1_col64,
+                    poseidon_round_keys_output_limb_2_col65,
+                    poseidon_round_keys_output_limb_3_col66,
+                    poseidon_round_keys_output_limb_4_col67,
+                    poseidon_round_keys_output_limb_5_col68,
+                    poseidon_round_keys_output_limb_6_col69,
+                    poseidon_round_keys_output_limb_7_col70,
+                    poseidon_round_keys_output_limb_8_col71,
+                    poseidon_round_keys_output_limb_9_col72,
+                    poseidon_round_keys_output_limb_10_col73,
+                    poseidon_round_keys_output_limb_11_col74,
+                    poseidon_round_keys_output_limb_12_col75,
+                    poseidon_round_keys_output_limb_13_col76,
+                    poseidon_round_keys_output_limb_14_col77,
+                    poseidon_round_keys_output_limb_15_col78,
+                    poseidon_round_keys_output_limb_16_col79,
+                    poseidon_round_keys_output_limb_17_col80,
+                    poseidon_round_keys_output_limb_18_col81,
+                    poseidon_round_keys_output_limb_19_col82,
+                    poseidon_round_keys_output_limb_20_col83,
+                    poseidon_round_keys_output_limb_21_col84,
+                    poseidon_round_keys_output_limb_22_col85,
+                    poseidon_round_keys_output_limb_23_col86,
+                    poseidon_round_keys_output_limb_24_col87,
+                    poseidon_round_keys_output_limb_25_col88,
+                    poseidon_round_keys_output_limb_26_col89,
+                    poseidon_round_keys_output_limb_27_col90,
+                    poseidon_round_keys_output_limb_28_col91,
+                    poseidon_round_keys_output_limb_29_col92,
                 ]
                     .span(),
             );
-        numerator_3 = qm31_const::<1, 0, 0, 0>();
+        numerator_3 = enabler_col0;
         linear_combination_n_4_coefs_3_1_1_1_evaluate(
             [
-                cube_252_output_limb_0_col32, cube_252_output_limb_1_col33,
-                cube_252_output_limb_2_col34, cube_252_output_limb_3_col35,
-                cube_252_output_limb_4_col36, cube_252_output_limb_5_col37,
-                cube_252_output_limb_6_col38, cube_252_output_limb_7_col39,
-                cube_252_output_limb_8_col40, cube_252_output_limb_9_col41,
-                cube_252_output_limb_0_col42, cube_252_output_limb_1_col43,
-                cube_252_output_limb_2_col44, cube_252_output_limb_3_col45,
-                cube_252_output_limb_4_col46, cube_252_output_limb_5_col47,
-                cube_252_output_limb_6_col48, cube_252_output_limb_7_col49,
-                cube_252_output_limb_8_col50, cube_252_output_limb_9_col51,
-                cube_252_output_limb_0_col52, cube_252_output_limb_1_col53,
-                cube_252_output_limb_2_col54, cube_252_output_limb_3_col55,
-                cube_252_output_limb_4_col56, cube_252_output_limb_5_col57,
-                cube_252_output_limb_6_col58, cube_252_output_limb_7_col59,
-                cube_252_output_limb_8_col60, cube_252_output_limb_9_col61,
-                poseidon_round_keys_output_limb_0_col62, poseidon_round_keys_output_limb_1_col63,
-                poseidon_round_keys_output_limb_2_col64, poseidon_round_keys_output_limb_3_col65,
-                poseidon_round_keys_output_limb_4_col66, poseidon_round_keys_output_limb_5_col67,
-                poseidon_round_keys_output_limb_6_col68, poseidon_round_keys_output_limb_7_col69,
-                poseidon_round_keys_output_limb_8_col70, poseidon_round_keys_output_limb_9_col71,
+                cube_252_output_limb_0_col33, cube_252_output_limb_1_col34,
+                cube_252_output_limb_2_col35, cube_252_output_limb_3_col36,
+                cube_252_output_limb_4_col37, cube_252_output_limb_5_col38,
+                cube_252_output_limb_6_col39, cube_252_output_limb_7_col40,
+                cube_252_output_limb_8_col41, cube_252_output_limb_9_col42,
+                cube_252_output_limb_0_col43, cube_252_output_limb_1_col44,
+                cube_252_output_limb_2_col45, cube_252_output_limb_3_col46,
+                cube_252_output_limb_4_col47, cube_252_output_limb_5_col48,
+                cube_252_output_limb_6_col49, cube_252_output_limb_7_col50,
+                cube_252_output_limb_8_col51, cube_252_output_limb_9_col52,
+                cube_252_output_limb_0_col53, cube_252_output_limb_1_col54,
+                cube_252_output_limb_2_col55, cube_252_output_limb_3_col56,
+                cube_252_output_limb_4_col57, cube_252_output_limb_5_col58,
+                cube_252_output_limb_6_col59, cube_252_output_limb_7_col60,
+                cube_252_output_limb_8_col61, cube_252_output_limb_9_col62,
+                poseidon_round_keys_output_limb_0_col63, poseidon_round_keys_output_limb_1_col64,
+                poseidon_round_keys_output_limb_2_col65, poseidon_round_keys_output_limb_3_col66,
+                poseidon_round_keys_output_limb_4_col67, poseidon_round_keys_output_limb_5_col68,
+                poseidon_round_keys_output_limb_6_col69, poseidon_round_keys_output_limb_7_col70,
+                poseidon_round_keys_output_limb_8_col71, poseidon_round_keys_output_limb_9_col72,
             ],
-            combination_limb_0_col92,
-            combination_limb_1_col93,
-            combination_limb_2_col94,
-            combination_limb_3_col95,
-            combination_limb_4_col96,
-            combination_limb_5_col97,
-            combination_limb_6_col98,
-            combination_limb_7_col99,
-            combination_limb_8_col100,
-            combination_limb_9_col101,
-            p_coef_col102,
+            enabler_col0,
+            combination_limb_0_col93,
+            combination_limb_1_col94,
+            combination_limb_2_col95,
+            combination_limb_3_col96,
+            combination_limb_4_col97,
+            combination_limb_5_col98,
+            combination_limb_6_col99,
+            combination_limb_7_col100,
+            combination_limb_8_col101,
+            combination_limb_9_col102,
+            p_coef_col103,
             self.common_lookup_elements,
             ref range_check_3_3_3_3_3_sum_4,
             ref numerator_4,
@@ -791,38 +798,39 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         linear_combination_n_4_coefs_1_m1_1_1_evaluate(
             [
-                cube_252_output_limb_0_col32, cube_252_output_limb_1_col33,
-                cube_252_output_limb_2_col34, cube_252_output_limb_3_col35,
-                cube_252_output_limb_4_col36, cube_252_output_limb_5_col37,
-                cube_252_output_limb_6_col38, cube_252_output_limb_7_col39,
-                cube_252_output_limb_8_col40, cube_252_output_limb_9_col41,
-                cube_252_output_limb_0_col42, cube_252_output_limb_1_col43,
-                cube_252_output_limb_2_col44, cube_252_output_limb_3_col45,
-                cube_252_output_limb_4_col46, cube_252_output_limb_5_col47,
-                cube_252_output_limb_6_col48, cube_252_output_limb_7_col49,
-                cube_252_output_limb_8_col50, cube_252_output_limb_9_col51,
-                cube_252_output_limb_0_col52, cube_252_output_limb_1_col53,
-                cube_252_output_limb_2_col54, cube_252_output_limb_3_col55,
-                cube_252_output_limb_4_col56, cube_252_output_limb_5_col57,
-                cube_252_output_limb_6_col58, cube_252_output_limb_7_col59,
-                cube_252_output_limb_8_col60, cube_252_output_limb_9_col61,
-                poseidon_round_keys_output_limb_10_col72, poseidon_round_keys_output_limb_11_col73,
-                poseidon_round_keys_output_limb_12_col74, poseidon_round_keys_output_limb_13_col75,
-                poseidon_round_keys_output_limb_14_col76, poseidon_round_keys_output_limb_15_col77,
-                poseidon_round_keys_output_limb_16_col78, poseidon_round_keys_output_limb_17_col79,
-                poseidon_round_keys_output_limb_18_col80, poseidon_round_keys_output_limb_19_col81,
+                cube_252_output_limb_0_col33, cube_252_output_limb_1_col34,
+                cube_252_output_limb_2_col35, cube_252_output_limb_3_col36,
+                cube_252_output_limb_4_col37, cube_252_output_limb_5_col38,
+                cube_252_output_limb_6_col39, cube_252_output_limb_7_col40,
+                cube_252_output_limb_8_col41, cube_252_output_limb_9_col42,
+                cube_252_output_limb_0_col43, cube_252_output_limb_1_col44,
+                cube_252_output_limb_2_col45, cube_252_output_limb_3_col46,
+                cube_252_output_limb_4_col47, cube_252_output_limb_5_col48,
+                cube_252_output_limb_6_col49, cube_252_output_limb_7_col50,
+                cube_252_output_limb_8_col51, cube_252_output_limb_9_col52,
+                cube_252_output_limb_0_col53, cube_252_output_limb_1_col54,
+                cube_252_output_limb_2_col55, cube_252_output_limb_3_col56,
+                cube_252_output_limb_4_col57, cube_252_output_limb_5_col58,
+                cube_252_output_limb_6_col59, cube_252_output_limb_7_col60,
+                cube_252_output_limb_8_col61, cube_252_output_limb_9_col62,
+                poseidon_round_keys_output_limb_10_col73, poseidon_round_keys_output_limb_11_col74,
+                poseidon_round_keys_output_limb_12_col75, poseidon_round_keys_output_limb_13_col76,
+                poseidon_round_keys_output_limb_14_col77, poseidon_round_keys_output_limb_15_col78,
+                poseidon_round_keys_output_limb_16_col79, poseidon_round_keys_output_limb_17_col80,
+                poseidon_round_keys_output_limb_18_col81, poseidon_round_keys_output_limb_19_col82,
             ],
-            combination_limb_0_col103,
-            combination_limb_1_col104,
-            combination_limb_2_col105,
-            combination_limb_3_col106,
-            combination_limb_4_col107,
-            combination_limb_5_col108,
-            combination_limb_6_col109,
-            combination_limb_7_col110,
-            combination_limb_8_col111,
-            combination_limb_9_col112,
-            p_coef_col113,
+            enabler_col0,
+            combination_limb_0_col104,
+            combination_limb_1_col105,
+            combination_limb_2_col106,
+            combination_limb_3_col107,
+            combination_limb_4_col108,
+            combination_limb_5_col109,
+            combination_limb_6_col110,
+            combination_limb_7_col111,
+            combination_limb_8_col112,
+            combination_limb_9_col113,
+            p_coef_col114,
             self.common_lookup_elements,
             ref range_check_3_3_3_3_3_sum_6,
             ref numerator_6,
@@ -833,38 +841,39 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         linear_combination_n_4_coefs_1_1_m2_1_evaluate(
             [
-                cube_252_output_limb_0_col32, cube_252_output_limb_1_col33,
-                cube_252_output_limb_2_col34, cube_252_output_limb_3_col35,
-                cube_252_output_limb_4_col36, cube_252_output_limb_5_col37,
-                cube_252_output_limb_6_col38, cube_252_output_limb_7_col39,
-                cube_252_output_limb_8_col40, cube_252_output_limb_9_col41,
-                cube_252_output_limb_0_col42, cube_252_output_limb_1_col43,
-                cube_252_output_limb_2_col44, cube_252_output_limb_3_col45,
-                cube_252_output_limb_4_col46, cube_252_output_limb_5_col47,
-                cube_252_output_limb_6_col48, cube_252_output_limb_7_col49,
-                cube_252_output_limb_8_col50, cube_252_output_limb_9_col51,
-                cube_252_output_limb_0_col52, cube_252_output_limb_1_col53,
-                cube_252_output_limb_2_col54, cube_252_output_limb_3_col55,
-                cube_252_output_limb_4_col56, cube_252_output_limb_5_col57,
-                cube_252_output_limb_6_col58, cube_252_output_limb_7_col59,
-                cube_252_output_limb_8_col60, cube_252_output_limb_9_col61,
-                poseidon_round_keys_output_limb_20_col82, poseidon_round_keys_output_limb_21_col83,
-                poseidon_round_keys_output_limb_22_col84, poseidon_round_keys_output_limb_23_col85,
-                poseidon_round_keys_output_limb_24_col86, poseidon_round_keys_output_limb_25_col87,
-                poseidon_round_keys_output_limb_26_col88, poseidon_round_keys_output_limb_27_col89,
-                poseidon_round_keys_output_limb_28_col90, poseidon_round_keys_output_limb_29_col91,
+                cube_252_output_limb_0_col33, cube_252_output_limb_1_col34,
+                cube_252_output_limb_2_col35, cube_252_output_limb_3_col36,
+                cube_252_output_limb_4_col37, cube_252_output_limb_5_col38,
+                cube_252_output_limb_6_col39, cube_252_output_limb_7_col40,
+                cube_252_output_limb_8_col41, cube_252_output_limb_9_col42,
+                cube_252_output_limb_0_col43, cube_252_output_limb_1_col44,
+                cube_252_output_limb_2_col45, cube_252_output_limb_3_col46,
+                cube_252_output_limb_4_col47, cube_252_output_limb_5_col48,
+                cube_252_output_limb_6_col49, cube_252_output_limb_7_col50,
+                cube_252_output_limb_8_col51, cube_252_output_limb_9_col52,
+                cube_252_output_limb_0_col53, cube_252_output_limb_1_col54,
+                cube_252_output_limb_2_col55, cube_252_output_limb_3_col56,
+                cube_252_output_limb_4_col57, cube_252_output_limb_5_col58,
+                cube_252_output_limb_6_col59, cube_252_output_limb_7_col60,
+                cube_252_output_limb_8_col61, cube_252_output_limb_9_col62,
+                poseidon_round_keys_output_limb_20_col83, poseidon_round_keys_output_limb_21_col84,
+                poseidon_round_keys_output_limb_22_col85, poseidon_round_keys_output_limb_23_col86,
+                poseidon_round_keys_output_limb_24_col87, poseidon_round_keys_output_limb_25_col88,
+                poseidon_round_keys_output_limb_26_col89, poseidon_round_keys_output_limb_27_col90,
+                poseidon_round_keys_output_limb_28_col91, poseidon_round_keys_output_limb_29_col92,
             ],
-            combination_limb_0_col114,
-            combination_limb_1_col115,
-            combination_limb_2_col116,
-            combination_limb_3_col117,
-            combination_limb_4_col118,
-            combination_limb_5_col119,
-            combination_limb_6_col120,
-            combination_limb_7_col121,
-            combination_limb_8_col122,
-            combination_limb_9_col123,
-            p_coef_col124,
+            enabler_col0,
+            combination_limb_0_col115,
+            combination_limb_1_col116,
+            combination_limb_2_col117,
+            combination_limb_3_col118,
+            combination_limb_4_col119,
+            combination_limb_5_col120,
+            combination_limb_6_col121,
+            combination_limb_7_col122,
+            combination_limb_8_col123,
+            combination_limb_9_col124,
+            p_coef_col125,
             self.common_lookup_elements,
             ref range_check_3_3_3_3_3_sum_8,
             ref numerator_8,
@@ -874,50 +883,46 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
 
-        // Constraint - Enabler is a bit
-        let constraint_quotient = (((enabler_col125 * enabler_col125) - enabler_col125));
-        sum = sum * random_coeff + constraint_quotient;
-
         poseidon_full_round_chain_sum_10 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1480369132, 0, 0, 0>(), input_limb_0_col0, input_limb_1_col1,
-                    input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5,
-                    input_limb_6_col6, input_limb_7_col7, input_limb_8_col8, input_limb_9_col9,
-                    input_limb_10_col10, input_limb_11_col11, input_limb_12_col12,
-                    input_limb_13_col13, input_limb_14_col14, input_limb_15_col15,
-                    input_limb_16_col16, input_limb_17_col17, input_limb_18_col18,
-                    input_limb_19_col19, input_limb_20_col20, input_limb_21_col21,
-                    input_limb_22_col22, input_limb_23_col23, input_limb_24_col24,
-                    input_limb_25_col25, input_limb_26_col26, input_limb_27_col27,
-                    input_limb_28_col28, input_limb_29_col29, input_limb_30_col30,
-                    input_limb_31_col31,
+                    qm31_const::<1480369132, 0, 0, 0>(), input_limb_0_col1, input_limb_1_col2,
+                    input_limb_2_col3, input_limb_3_col4, input_limb_4_col5, input_limb_5_col6,
+                    input_limb_6_col7, input_limb_7_col8, input_limb_8_col9, input_limb_9_col10,
+                    input_limb_10_col11, input_limb_11_col12, input_limb_12_col13,
+                    input_limb_13_col14, input_limb_14_col15, input_limb_15_col16,
+                    input_limb_16_col17, input_limb_17_col18, input_limb_18_col19,
+                    input_limb_19_col20, input_limb_20_col21, input_limb_21_col22,
+                    input_limb_22_col23, input_limb_23_col24, input_limb_24_col25,
+                    input_limb_25_col26, input_limb_26_col27, input_limb_27_col28,
+                    input_limb_28_col29, input_limb_29_col30, input_limb_30_col31,
+                    input_limb_31_col32,
                 ]
                     .span(),
             );
-        numerator_10 = enabler_col125;
+        numerator_10 = enabler_col0;
 
         poseidon_full_round_chain_sum_11 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1480369132, 0, 0, 0>(), input_limb_0_col0,
-                    (input_limb_1_col1 + qm31_const::<1, 0, 0, 0>()), combination_limb_0_col92,
-                    combination_limb_1_col93, combination_limb_2_col94, combination_limb_3_col95,
-                    combination_limb_4_col96, combination_limb_5_col97, combination_limb_6_col98,
-                    combination_limb_7_col99, combination_limb_8_col100, combination_limb_9_col101,
-                    combination_limb_0_col103, combination_limb_1_col104, combination_limb_2_col105,
-                    combination_limb_3_col106, combination_limb_4_col107, combination_limb_5_col108,
-                    combination_limb_6_col109, combination_limb_7_col110, combination_limb_8_col111,
-                    combination_limb_9_col112, combination_limb_0_col114, combination_limb_1_col115,
-                    combination_limb_2_col116, combination_limb_3_col117, combination_limb_4_col118,
-                    combination_limb_5_col119, combination_limb_6_col120, combination_limb_7_col121,
-                    combination_limb_8_col122, combination_limb_9_col123,
+                    qm31_const::<1480369132, 0, 0, 0>(), input_limb_0_col1,
+                    (input_limb_1_col2 + qm31_const::<1, 0, 0, 0>()), combination_limb_0_col93,
+                    combination_limb_1_col94, combination_limb_2_col95, combination_limb_3_col96,
+                    combination_limb_4_col97, combination_limb_5_col98, combination_limb_6_col99,
+                    combination_limb_7_col100, combination_limb_8_col101, combination_limb_9_col102,
+                    combination_limb_0_col104, combination_limb_1_col105, combination_limb_2_col106,
+                    combination_limb_3_col107, combination_limb_4_col108, combination_limb_5_col109,
+                    combination_limb_6_col110, combination_limb_7_col111, combination_limb_8_col112,
+                    combination_limb_9_col113, combination_limb_0_col115, combination_limb_1_col116,
+                    combination_limb_2_col117, combination_limb_3_col118, combination_limb_4_col119,
+                    combination_limb_5_col120, combination_limb_6_col121, combination_limb_7_col122,
+                    combination_limb_8_col123, combination_limb_9_col124,
                 ]
                     .span(),
             );
-        numerator_11 = enabler_col125;
+        numerator_11 = enabler_col0;
 
         lookup_constraints(
             ref sum,

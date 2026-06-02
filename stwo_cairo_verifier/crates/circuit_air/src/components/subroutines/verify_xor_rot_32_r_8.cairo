@@ -6,6 +6,7 @@ use crate::prelude::*;
 
 pub fn verify_xor_rot_32_r_8_evaluate(
     input: [QM31; 6],
+    enabler: QM31,
     ms_8_bits_col0: QM31,
     ms_8_bits_col1: QM31,
     ms_8_bits_col2: QM31,
@@ -36,6 +37,7 @@ pub fn verify_xor_rot_32_r_8_evaluate(
     let split_16_low_part_size_8_output_tmp_e2dc4_1_limb_0: QM31 =
         split_16_low_part_size_8_evaluate(
         verify_xor_rot_32_r_8_input_limb_0,
+        enabler,
         ms_8_bits_col0,
         common_lookup_elements,
         ref sum,
@@ -44,6 +46,7 @@ pub fn verify_xor_rot_32_r_8_evaluate(
     let split_16_low_part_size_8_output_tmp_e2dc4_3_limb_0: QM31 =
         split_16_low_part_size_8_evaluate(
         verify_xor_rot_32_r_8_input_limb_1,
+        enabler,
         ms_8_bits_col1,
         common_lookup_elements,
         ref sum,
@@ -52,6 +55,7 @@ pub fn verify_xor_rot_32_r_8_evaluate(
     let split_16_low_part_size_8_output_tmp_e2dc4_5_limb_0: QM31 =
         split_16_low_part_size_8_evaluate(
         verify_xor_rot_32_r_8_input_limb_2,
+        enabler,
         ms_8_bits_col2,
         common_lookup_elements,
         ref sum,
@@ -60,6 +64,7 @@ pub fn verify_xor_rot_32_r_8_evaluate(
     let split_16_low_part_size_8_output_tmp_e2dc4_7_limb_0: QM31 =
         split_16_low_part_size_8_evaluate(
         verify_xor_rot_32_r_8_input_limb_3,
+        enabler,
         ms_8_bits_col3,
         common_lookup_elements,
         ref sum,
@@ -68,6 +73,7 @@ pub fn verify_xor_rot_32_r_8_evaluate(
     let split_16_low_part_size_8_output_tmp_e2dc4_9_limb_0: QM31 =
         split_16_low_part_size_8_evaluate(
         verify_xor_rot_32_r_8_input_limb_4,
+        enabler,
         ms_8_bits_col4,
         common_lookup_elements,
         ref sum,
@@ -76,6 +82,7 @@ pub fn verify_xor_rot_32_r_8_evaluate(
     let split_16_low_part_size_8_output_tmp_e2dc4_11_limb_0: QM31 =
         split_16_low_part_size_8_evaluate(
         verify_xor_rot_32_r_8_input_limb_5,
+        enabler,
         ms_8_bits_col5,
         common_lookup_elements,
         ref sum,
@@ -90,7 +97,7 @@ pub fn verify_xor_rot_32_r_8_evaluate(
             ]
                 .span(),
         );
-    numerator_0 = qm31_const::<1, 0, 0, 0>();
+    numerator_0 = enabler;
 
     verify_bitwise_xor_8_sum_1 = common_lookup_elements
         .combine_qm31(
@@ -101,7 +108,7 @@ pub fn verify_xor_rot_32_r_8_evaluate(
             ]
                 .span(),
         );
-    numerator_1 = qm31_const::<1, 0, 0, 0>();
+    numerator_1 = enabler;
 
     verify_bitwise_xor_8_sum_2 = common_lookup_elements
         .combine_qm31(
@@ -111,7 +118,7 @@ pub fn verify_xor_rot_32_r_8_evaluate(
             ]
                 .span(),
         );
-    numerator_2 = qm31_const::<1, 0, 0, 0>();
+    numerator_2 = enabler;
 
     verify_bitwise_xor_8_sum_3 = common_lookup_elements
         .combine_qm31(
@@ -122,7 +129,7 @@ pub fn verify_xor_rot_32_r_8_evaluate(
             ]
                 .span(),
         );
-    numerator_3 = qm31_const::<1, 0, 0, 0>();
+    numerator_3 = enabler;
 
     []
 }

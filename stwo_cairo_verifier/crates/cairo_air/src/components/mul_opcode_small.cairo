@@ -112,89 +112,92 @@ pub impl AirComponentImpl of AirComponent<Component> {
         let mut numerator_11: QM31 = Zero::zero();
 
         let [
-            input_pc_col0,
-            input_ap_col1,
-            input_fp_col2,
-            offset0_col3,
-            offset1_col4,
-            offset2_col5,
-            dst_base_fp_col6,
-            op0_base_fp_col7,
-            op1_imm_col8,
-            op1_base_fp_col9,
-            ap_update_add_1_col10,
-            mem_dst_base_col11,
-            mem0_base_col12,
-            mem1_base_col13,
-            dst_id_col14,
-            dst_limb_0_col15,
-            dst_limb_1_col16,
-            dst_limb_2_col17,
-            dst_limb_3_col18,
-            dst_limb_4_col19,
-            dst_limb_5_col20,
-            dst_limb_6_col21,
-            dst_limb_7_col22,
-            op0_id_col23,
-            op0_limb_0_col24,
-            op0_limb_1_col25,
-            op0_limb_2_col26,
-            op0_limb_3_col27,
-            op1_id_col28,
-            op1_limb_0_col29,
-            op1_limb_1_col30,
-            op1_limb_2_col31,
-            op1_limb_3_col32,
-            carry_1_col33,
-            carry_3_col34,
-            carry_5_col35,
-            enabler_col36,
+            enabler_col0,
+            input_pc_col1,
+            input_ap_col2,
+            input_fp_col3,
+            offset0_col4,
+            offset1_col5,
+            offset2_col6,
+            dst_base_fp_col7,
+            op0_base_fp_col8,
+            op1_imm_col9,
+            op1_base_fp_col10,
+            ap_update_add_1_col11,
+            mem_dst_base_col12,
+            mem0_base_col13,
+            mem1_base_col14,
+            dst_id_col15,
+            dst_limb_0_col16,
+            dst_limb_1_col17,
+            dst_limb_2_col18,
+            dst_limb_3_col19,
+            dst_limb_4_col20,
+            dst_limb_5_col21,
+            dst_limb_6_col22,
+            dst_limb_7_col23,
+            op0_id_col24,
+            op0_limb_0_col25,
+            op0_limb_1_col26,
+            op0_limb_2_col27,
+            op0_limb_3_col28,
+            op1_id_col29,
+            op1_limb_0_col30,
+            op1_limb_1_col31,
+            op1_limb_2_col32,
+            op1_limb_3_col33,
+            carry_1_col34,
+            carry_3_col35,
+            carry_5_col36,
         ]: [Span<QM31>; 37] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
             .unbox();
-        let [input_pc_col0]: [QM31; 1] = (*input_pc_col0.try_into().unwrap()).unbox();
-        let [input_ap_col1]: [QM31; 1] = (*input_ap_col1.try_into().unwrap()).unbox();
-        let [input_fp_col2]: [QM31; 1] = (*input_fp_col2.try_into().unwrap()).unbox();
-        let [offset0_col3]: [QM31; 1] = (*offset0_col3.try_into().unwrap()).unbox();
-        let [offset1_col4]: [QM31; 1] = (*offset1_col4.try_into().unwrap()).unbox();
-        let [offset2_col5]: [QM31; 1] = (*offset2_col5.try_into().unwrap()).unbox();
-        let [dst_base_fp_col6]: [QM31; 1] = (*dst_base_fp_col6.try_into().unwrap()).unbox();
-        let [op0_base_fp_col7]: [QM31; 1] = (*op0_base_fp_col7.try_into().unwrap()).unbox();
-        let [op1_imm_col8]: [QM31; 1] = (*op1_imm_col8.try_into().unwrap()).unbox();
-        let [op1_base_fp_col9]: [QM31; 1] = (*op1_base_fp_col9.try_into().unwrap()).unbox();
-        let [ap_update_add_1_col10]: [QM31; 1] = (*ap_update_add_1_col10.try_into().unwrap())
+        let [enabler_col0]: [QM31; 1] = (*enabler_col0.try_into().unwrap()).unbox();
+        let [input_pc_col1]: [QM31; 1] = (*input_pc_col1.try_into().unwrap()).unbox();
+        let [input_ap_col2]: [QM31; 1] = (*input_ap_col2.try_into().unwrap()).unbox();
+        let [input_fp_col3]: [QM31; 1] = (*input_fp_col3.try_into().unwrap()).unbox();
+        let [offset0_col4]: [QM31; 1] = (*offset0_col4.try_into().unwrap()).unbox();
+        let [offset1_col5]: [QM31; 1] = (*offset1_col5.try_into().unwrap()).unbox();
+        let [offset2_col6]: [QM31; 1] = (*offset2_col6.try_into().unwrap()).unbox();
+        let [dst_base_fp_col7]: [QM31; 1] = (*dst_base_fp_col7.try_into().unwrap()).unbox();
+        let [op0_base_fp_col8]: [QM31; 1] = (*op0_base_fp_col8.try_into().unwrap()).unbox();
+        let [op1_imm_col9]: [QM31; 1] = (*op1_imm_col9.try_into().unwrap()).unbox();
+        let [op1_base_fp_col10]: [QM31; 1] = (*op1_base_fp_col10.try_into().unwrap()).unbox();
+        let [ap_update_add_1_col11]: [QM31; 1] = (*ap_update_add_1_col11.try_into().unwrap())
             .unbox();
-        let [mem_dst_base_col11]: [QM31; 1] = (*mem_dst_base_col11.try_into().unwrap()).unbox();
-        let [mem0_base_col12]: [QM31; 1] = (*mem0_base_col12.try_into().unwrap()).unbox();
-        let [mem1_base_col13]: [QM31; 1] = (*mem1_base_col13.try_into().unwrap()).unbox();
-        let [dst_id_col14]: [QM31; 1] = (*dst_id_col14.try_into().unwrap()).unbox();
-        let [dst_limb_0_col15]: [QM31; 1] = (*dst_limb_0_col15.try_into().unwrap()).unbox();
-        let [dst_limb_1_col16]: [QM31; 1] = (*dst_limb_1_col16.try_into().unwrap()).unbox();
-        let [dst_limb_2_col17]: [QM31; 1] = (*dst_limb_2_col17.try_into().unwrap()).unbox();
-        let [dst_limb_3_col18]: [QM31; 1] = (*dst_limb_3_col18.try_into().unwrap()).unbox();
-        let [dst_limb_4_col19]: [QM31; 1] = (*dst_limb_4_col19.try_into().unwrap()).unbox();
-        let [dst_limb_5_col20]: [QM31; 1] = (*dst_limb_5_col20.try_into().unwrap()).unbox();
-        let [dst_limb_6_col21]: [QM31; 1] = (*dst_limb_6_col21.try_into().unwrap()).unbox();
-        let [dst_limb_7_col22]: [QM31; 1] = (*dst_limb_7_col22.try_into().unwrap()).unbox();
-        let [op0_id_col23]: [QM31; 1] = (*op0_id_col23.try_into().unwrap()).unbox();
-        let [op0_limb_0_col24]: [QM31; 1] = (*op0_limb_0_col24.try_into().unwrap()).unbox();
-        let [op0_limb_1_col25]: [QM31; 1] = (*op0_limb_1_col25.try_into().unwrap()).unbox();
-        let [op0_limb_2_col26]: [QM31; 1] = (*op0_limb_2_col26.try_into().unwrap()).unbox();
-        let [op0_limb_3_col27]: [QM31; 1] = (*op0_limb_3_col27.try_into().unwrap()).unbox();
-        let [op1_id_col28]: [QM31; 1] = (*op1_id_col28.try_into().unwrap()).unbox();
-        let [op1_limb_0_col29]: [QM31; 1] = (*op1_limb_0_col29.try_into().unwrap()).unbox();
-        let [op1_limb_1_col30]: [QM31; 1] = (*op1_limb_1_col30.try_into().unwrap()).unbox();
-        let [op1_limb_2_col31]: [QM31; 1] = (*op1_limb_2_col31.try_into().unwrap()).unbox();
-        let [op1_limb_3_col32]: [QM31; 1] = (*op1_limb_3_col32.try_into().unwrap()).unbox();
-        let [carry_1_col33]: [QM31; 1] = (*carry_1_col33.try_into().unwrap()).unbox();
-        let [carry_3_col34]: [QM31; 1] = (*carry_3_col34.try_into().unwrap()).unbox();
-        let [carry_5_col35]: [QM31; 1] = (*carry_5_col35.try_into().unwrap()).unbox();
-        let [enabler_col36]: [QM31; 1] = (*enabler_col36.try_into().unwrap()).unbox();
+        let [mem_dst_base_col12]: [QM31; 1] = (*mem_dst_base_col12.try_into().unwrap()).unbox();
+        let [mem0_base_col13]: [QM31; 1] = (*mem0_base_col13.try_into().unwrap()).unbox();
+        let [mem1_base_col14]: [QM31; 1] = (*mem1_base_col14.try_into().unwrap()).unbox();
+        let [dst_id_col15]: [QM31; 1] = (*dst_id_col15.try_into().unwrap()).unbox();
+        let [dst_limb_0_col16]: [QM31; 1] = (*dst_limb_0_col16.try_into().unwrap()).unbox();
+        let [dst_limb_1_col17]: [QM31; 1] = (*dst_limb_1_col17.try_into().unwrap()).unbox();
+        let [dst_limb_2_col18]: [QM31; 1] = (*dst_limb_2_col18.try_into().unwrap()).unbox();
+        let [dst_limb_3_col19]: [QM31; 1] = (*dst_limb_3_col19.try_into().unwrap()).unbox();
+        let [dst_limb_4_col20]: [QM31; 1] = (*dst_limb_4_col20.try_into().unwrap()).unbox();
+        let [dst_limb_5_col21]: [QM31; 1] = (*dst_limb_5_col21.try_into().unwrap()).unbox();
+        let [dst_limb_6_col22]: [QM31; 1] = (*dst_limb_6_col22.try_into().unwrap()).unbox();
+        let [dst_limb_7_col23]: [QM31; 1] = (*dst_limb_7_col23.try_into().unwrap()).unbox();
+        let [op0_id_col24]: [QM31; 1] = (*op0_id_col24.try_into().unwrap()).unbox();
+        let [op0_limb_0_col25]: [QM31; 1] = (*op0_limb_0_col25.try_into().unwrap()).unbox();
+        let [op0_limb_1_col26]: [QM31; 1] = (*op0_limb_1_col26.try_into().unwrap()).unbox();
+        let [op0_limb_2_col27]: [QM31; 1] = (*op0_limb_2_col27.try_into().unwrap()).unbox();
+        let [op0_limb_3_col28]: [QM31; 1] = (*op0_limb_3_col28.try_into().unwrap()).unbox();
+        let [op1_id_col29]: [QM31; 1] = (*op1_id_col29.try_into().unwrap()).unbox();
+        let [op1_limb_0_col30]: [QM31; 1] = (*op1_limb_0_col30.try_into().unwrap()).unbox();
+        let [op1_limb_1_col31]: [QM31; 1] = (*op1_limb_1_col31.try_into().unwrap()).unbox();
+        let [op1_limb_2_col32]: [QM31; 1] = (*op1_limb_2_col32.try_into().unwrap()).unbox();
+        let [op1_limb_3_col33]: [QM31; 1] = (*op1_limb_3_col33.try_into().unwrap()).unbox();
+        let [carry_1_col34]: [QM31; 1] = (*carry_1_col34.try_into().unwrap()).unbox();
+        let [carry_3_col35]: [QM31; 1] = (*carry_3_col35.try_into().unwrap()).unbox();
+        let [carry_5_col36]: [QM31; 1] = (*carry_5_col36.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
+        // Constraint - Enabler is a bit
+        let constraint_quotient = (((enabler_col0 * enabler_col0) - enabler_col0));
+        sum = sum * random_coeff + constraint_quotient;
         let [
             decode_instruction_c630b_output_tmp_3c8b0_11_offset0,
             decode_instruction_c630b_output_tmp_3c8b0_11_offset1,
@@ -202,15 +205,16 @@ pub impl AirComponentImpl of AirComponent<Component> {
             decode_instruction_c630b_output_tmp_3c8b0_11_op1_base_ap,
         ] =
             decode_instruction_c630b_evaluate(
-            input_pc_col0,
-            offset0_col3,
-            offset1_col4,
-            offset2_col5,
-            dst_base_fp_col6,
-            op0_base_fp_col7,
-            op1_imm_col8,
-            op1_base_fp_col9,
-            ap_update_add_1_col10,
+            input_pc_col1,
+            enabler_col0,
+            offset0_col4,
+            offset1_col5,
+            offset2_col6,
+            dst_base_fp_col7,
+            op0_base_fp_col8,
+            op1_imm_col9,
+            op1_base_fp_col10,
+            ap_update_add_1_col11,
             self.common_lookup_elements,
             ref verify_instruction_sum_0,
             ref numerator_0,
@@ -219,38 +223,39 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
 
         // Constraint - if imm then offset2 is 1
-        let constraint_quotient = ((op1_imm_col8
+        let constraint_quotient = ((op1_imm_col9
             * (qm31_const::<1, 0, 0, 0>() - decode_instruction_c630b_output_tmp_3c8b0_11_offset2)));
         sum = sum * random_coeff + constraint_quotient;
 
         // Constraint - mem_dst_base
-        let constraint_quotient = ((mem_dst_base_col11
-            - ((dst_base_fp_col6 * input_fp_col2)
-                + ((qm31_const::<1, 0, 0, 0>() - dst_base_fp_col6) * input_ap_col1))));
+        let constraint_quotient = ((mem_dst_base_col12
+            - ((dst_base_fp_col7 * input_fp_col3)
+                + ((qm31_const::<1, 0, 0, 0>() - dst_base_fp_col7) * input_ap_col2))));
         sum = sum * random_coeff + constraint_quotient;
 
         // Constraint - mem0_base
-        let constraint_quotient = ((mem0_base_col12
-            - ((op0_base_fp_col7 * input_fp_col2)
-                + ((qm31_const::<1, 0, 0, 0>() - op0_base_fp_col7) * input_ap_col1))));
+        let constraint_quotient = ((mem0_base_col13
+            - ((op0_base_fp_col8 * input_fp_col3)
+                + ((qm31_const::<1, 0, 0, 0>() - op0_base_fp_col8) * input_ap_col2))));
         sum = sum * random_coeff + constraint_quotient;
 
         // Constraint - mem1_base
-        let constraint_quotient = ((mem1_base_col13
-            - (((op1_imm_col8 * input_pc_col0) + (op1_base_fp_col9 * input_fp_col2))
-                + (decode_instruction_c630b_output_tmp_3c8b0_11_op1_base_ap * input_ap_col1))));
+        let constraint_quotient = ((mem1_base_col14
+            - (((op1_imm_col9 * input_pc_col1) + (op1_base_fp_col10 * input_fp_col3))
+                + (decode_instruction_c630b_output_tmp_3c8b0_11_op1_base_ap * input_ap_col2))));
         sum = sum * random_coeff + constraint_quotient;
         read_positive_num_bits_72_evaluate(
-            (mem_dst_base_col11 + decode_instruction_c630b_output_tmp_3c8b0_11_offset0),
-            dst_id_col14,
-            dst_limb_0_col15,
-            dst_limb_1_col16,
-            dst_limb_2_col17,
-            dst_limb_3_col18,
-            dst_limb_4_col19,
-            dst_limb_5_col20,
-            dst_limb_6_col21,
-            dst_limb_7_col22,
+            (mem_dst_base_col12 + decode_instruction_c630b_output_tmp_3c8b0_11_offset0),
+            enabler_col0,
+            dst_id_col15,
+            dst_limb_0_col16,
+            dst_limb_1_col17,
+            dst_limb_2_col18,
+            dst_limb_3_col19,
+            dst_limb_4_col20,
+            dst_limb_5_col21,
+            dst_limb_6_col22,
+            dst_limb_7_col23,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_1,
             ref numerator_1,
@@ -260,12 +265,13 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_positive_num_bits_36_evaluate(
-            (mem0_base_col12 + decode_instruction_c630b_output_tmp_3c8b0_11_offset1),
-            op0_id_col23,
-            op0_limb_0_col24,
-            op0_limb_1_col25,
-            op0_limb_2_col26,
-            op0_limb_3_col27,
+            (mem0_base_col13 + decode_instruction_c630b_output_tmp_3c8b0_11_offset1),
+            enabler_col0,
+            op0_id_col24,
+            op0_limb_0_col25,
+            op0_limb_1_col26,
+            op0_limb_2_col27,
+            op0_limb_3_col28,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_3,
             ref numerator_3,
@@ -275,12 +281,13 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_positive_num_bits_36_evaluate(
-            (mem1_base_col13 + decode_instruction_c630b_output_tmp_3c8b0_11_offset2),
-            op1_id_col28,
-            op1_limb_0_col29,
-            op1_limb_1_col30,
-            op1_limb_2_col31,
-            op1_limb_3_col32,
+            (mem1_base_col14 + decode_instruction_c630b_output_tmp_3c8b0_11_offset2),
+            enabler_col0,
+            op1_id_col29,
+            op1_limb_0_col30,
+            op1_limb_1_col31,
+            op1_limb_2_col32,
+            op1_limb_3_col33,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_5,
             ref numerator_5,
@@ -291,14 +298,15 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         verify_mul_small_evaluate(
             [
-                op0_limb_0_col24, op0_limb_1_col25, op0_limb_2_col26, op0_limb_3_col27,
-                op1_limb_0_col29, op1_limb_1_col30, op1_limb_2_col31, op1_limb_3_col32,
-                dst_limb_0_col15, dst_limb_1_col16, dst_limb_2_col17, dst_limb_3_col18,
-                dst_limb_4_col19, dst_limb_5_col20, dst_limb_6_col21, dst_limb_7_col22,
+                op0_limb_0_col25, op0_limb_1_col26, op0_limb_2_col27, op0_limb_3_col28,
+                op1_limb_0_col30, op1_limb_1_col31, op1_limb_2_col32, op1_limb_3_col33,
+                dst_limb_0_col16, dst_limb_1_col17, dst_limb_2_col18, dst_limb_3_col19,
+                dst_limb_4_col20, dst_limb_5_col21, dst_limb_6_col22, dst_limb_7_col23,
             ],
-            carry_1_col33,
-            carry_3_col34,
-            carry_5_col35,
+            enabler_col0,
+            carry_1_col34,
+            carry_3_col35,
+            carry_5_col36,
             self.common_lookup_elements,
             ref range_check_11_sum_7,
             ref numerator_7,
@@ -310,29 +318,25 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
 
-        // Constraint - Enabler is a bit
-        let constraint_quotient = (((enabler_col36 * enabler_col36) - enabler_col36));
-        sum = sum * random_coeff + constraint_quotient;
-
         opcodes_sum_10 = self
             .common_lookup_elements
             .combine_qm31(
-                [qm31_const::<428564188, 0, 0, 0>(), input_pc_col0, input_ap_col1, input_fp_col2]
+                [qm31_const::<428564188, 0, 0, 0>(), input_pc_col1, input_ap_col2, input_fp_col3]
                     .span(),
             );
-        numerator_10 = enabler_col36;
+        numerator_10 = enabler_col0;
 
         opcodes_sum_11 = self
             .common_lookup_elements
             .combine_qm31(
                 [
                     qm31_const::<428564188, 0, 0, 0>(),
-                    ((input_pc_col0 + qm31_const::<1, 0, 0, 0>()) + op1_imm_col8),
-                    (input_ap_col1 + ap_update_add_1_col10), input_fp_col2,
+                    ((input_pc_col1 + qm31_const::<1, 0, 0, 0>()) + op1_imm_col9),
+                    (input_ap_col2 + ap_update_add_1_col11), input_fp_col3,
                 ]
                     .span(),
             );
-        numerator_11 = enabler_col36;
+        numerator_11 = enabler_col0;
 
         lookup_constraints(
             ref sum,

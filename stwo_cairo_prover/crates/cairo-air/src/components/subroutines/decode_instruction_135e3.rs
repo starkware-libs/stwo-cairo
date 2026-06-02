@@ -14,6 +14,7 @@ impl DecodeInstruction135E3 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [decode_instruction_135e3_input_pc]: [E::F; 1],
+        enabler: E::F,
         offset0_col0: E::F,
         offset2_col1: E::F,
         dst_base_fp_col2: E::F,
@@ -47,7 +48,7 @@ impl DecodeInstruction135E3 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1719106205.clone(),
                 decode_instruction_135e3_input_pc.clone(),

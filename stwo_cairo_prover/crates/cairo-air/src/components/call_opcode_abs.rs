@@ -67,125 +67,127 @@ impl FrameworkEval for Eval {
         let M31_262144 = E::F::from(M31::from(262144));
         let M31_428564188 = E::F::from(M31::from(428564188));
         let M31_512 = E::F::from(M31::from(512));
-        let input_pc_col0 = eval.next_trace_mask();
-        let input_ap_col1 = eval.next_trace_mask();
-        let input_fp_col2 = eval.next_trace_mask();
-        let offset2_col3 = eval.next_trace_mask();
-        let op1_base_fp_col4 = eval.next_trace_mask();
-        let stored_fp_id_col5 = eval.next_trace_mask();
-        let stored_fp_limb_0_col6 = eval.next_trace_mask();
-        let stored_fp_limb_1_col7 = eval.next_trace_mask();
-        let stored_fp_limb_2_col8 = eval.next_trace_mask();
-        let stored_fp_limb_3_col9 = eval.next_trace_mask();
-        let partial_limb_msb_col10 = eval.next_trace_mask();
-        let stored_ret_pc_id_col11 = eval.next_trace_mask();
-        let stored_ret_pc_limb_0_col12 = eval.next_trace_mask();
-        let stored_ret_pc_limb_1_col13 = eval.next_trace_mask();
-        let stored_ret_pc_limb_2_col14 = eval.next_trace_mask();
-        let stored_ret_pc_limb_3_col15 = eval.next_trace_mask();
-        let partial_limb_msb_col16 = eval.next_trace_mask();
-        let mem1_base_col17 = eval.next_trace_mask();
-        let next_pc_id_col18 = eval.next_trace_mask();
-        let next_pc_limb_0_col19 = eval.next_trace_mask();
-        let next_pc_limb_1_col20 = eval.next_trace_mask();
-        let next_pc_limb_2_col21 = eval.next_trace_mask();
-        let next_pc_limb_3_col22 = eval.next_trace_mask();
-        let partial_limb_msb_col23 = eval.next_trace_mask();
-        let enabler_col24 = eval.next_trace_mask();
+        let enabler_col0 = eval.next_trace_mask();
+        let input_pc_col1 = eval.next_trace_mask();
+        let input_ap_col2 = eval.next_trace_mask();
+        let input_fp_col3 = eval.next_trace_mask();
+        let offset2_col4 = eval.next_trace_mask();
+        let op1_base_fp_col5 = eval.next_trace_mask();
+        let stored_fp_id_col6 = eval.next_trace_mask();
+        let stored_fp_limb_0_col7 = eval.next_trace_mask();
+        let stored_fp_limb_1_col8 = eval.next_trace_mask();
+        let stored_fp_limb_2_col9 = eval.next_trace_mask();
+        let stored_fp_limb_3_col10 = eval.next_trace_mask();
+        let partial_limb_msb_col11 = eval.next_trace_mask();
+        let stored_ret_pc_id_col12 = eval.next_trace_mask();
+        let stored_ret_pc_limb_0_col13 = eval.next_trace_mask();
+        let stored_ret_pc_limb_1_col14 = eval.next_trace_mask();
+        let stored_ret_pc_limb_2_col15 = eval.next_trace_mask();
+        let stored_ret_pc_limb_3_col16 = eval.next_trace_mask();
+        let partial_limb_msb_col17 = eval.next_trace_mask();
+        let mem1_base_col18 = eval.next_trace_mask();
+        let next_pc_id_col19 = eval.next_trace_mask();
+        let next_pc_limb_0_col20 = eval.next_trace_mask();
+        let next_pc_limb_1_col21 = eval.next_trace_mask();
+        let next_pc_limb_2_col22 = eval.next_trace_mask();
+        let next_pc_limb_3_col23 = eval.next_trace_mask();
+        let partial_limb_msb_col24 = eval.next_trace_mask();
 
+        // Enabler is a bit.
+        eval.add_constraint(((enabler_col0.clone() * enabler_col0.clone()) - enabler_col0.clone()));
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [decode_instruction_edfb6_output_tmp_46e76_4_offset2, decode_instruction_edfb6_output_tmp_46e76_4_op1_base_ap] =
             DecodeInstructionEdfb6::evaluate(
-                [input_pc_col0.clone()],
-                offset2_col3.clone(),
-                op1_base_fp_col4.clone(),
+                [input_pc_col1.clone()],
+                enabler_col0.clone(),
+                offset2_col4.clone(),
+                op1_base_fp_col5.clone(),
                 &self.common_lookup_elements,
                 &mut eval,
             );
         ReadPositiveNumBits29::evaluate(
-            [input_ap_col1.clone()],
-            stored_fp_id_col5.clone(),
-            stored_fp_limb_0_col6.clone(),
-            stored_fp_limb_1_col7.clone(),
-            stored_fp_limb_2_col8.clone(),
-            stored_fp_limb_3_col9.clone(),
-            partial_limb_msb_col10.clone(),
+            [input_ap_col2.clone()],
+            enabler_col0.clone(),
+            stored_fp_id_col6.clone(),
+            stored_fp_limb_0_col7.clone(),
+            stored_fp_limb_1_col8.clone(),
+            stored_fp_limb_2_col9.clone(),
+            stored_fp_limb_3_col10.clone(),
+            partial_limb_msb_col11.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         //[ap] = fp.
         eval.add_constraint(
-            ((((stored_fp_limb_0_col6.clone()
-                + (stored_fp_limb_1_col7.clone() * M31_512.clone()))
-                + (stored_fp_limb_2_col8.clone() * M31_262144.clone()))
-                + (stored_fp_limb_3_col9.clone() * M31_134217728.clone()))
-                - input_fp_col2.clone()),
+            ((((stored_fp_limb_0_col7.clone()
+                + (stored_fp_limb_1_col8.clone() * M31_512.clone()))
+                + (stored_fp_limb_2_col9.clone() * M31_262144.clone()))
+                + (stored_fp_limb_3_col10.clone() * M31_134217728.clone()))
+                - input_fp_col3.clone()),
         );
         ReadPositiveNumBits29::evaluate(
-            [(input_ap_col1.clone() + M31_1.clone())],
-            stored_ret_pc_id_col11.clone(),
-            stored_ret_pc_limb_0_col12.clone(),
-            stored_ret_pc_limb_1_col13.clone(),
-            stored_ret_pc_limb_2_col14.clone(),
-            stored_ret_pc_limb_3_col15.clone(),
-            partial_limb_msb_col16.clone(),
+            [(input_ap_col2.clone() + M31_1.clone())],
+            enabler_col0.clone(),
+            stored_ret_pc_id_col12.clone(),
+            stored_ret_pc_limb_0_col13.clone(),
+            stored_ret_pc_limb_1_col14.clone(),
+            stored_ret_pc_limb_2_col15.clone(),
+            stored_ret_pc_limb_3_col16.clone(),
+            partial_limb_msb_col17.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         //[ap+1] = return_pc.
         eval.add_constraint(
-            ((((stored_ret_pc_limb_0_col12.clone()
-                + (stored_ret_pc_limb_1_col13.clone() * M31_512.clone()))
-                + (stored_ret_pc_limb_2_col14.clone() * M31_262144.clone()))
-                + (stored_ret_pc_limb_3_col15.clone() * M31_134217728.clone()))
-                - (input_pc_col0.clone() + M31_1.clone())),
+            ((((stored_ret_pc_limb_0_col13.clone()
+                + (stored_ret_pc_limb_1_col14.clone() * M31_512.clone()))
+                + (stored_ret_pc_limb_2_col15.clone() * M31_262144.clone()))
+                + (stored_ret_pc_limb_3_col16.clone() * M31_134217728.clone()))
+                - (input_pc_col1.clone() + M31_1.clone())),
         );
         // mem1_base.
         eval.add_constraint(
-            (mem1_base_col17.clone()
-                - ((op1_base_fp_col4.clone() * input_fp_col2.clone())
+            (mem1_base_col18.clone()
+                - ((op1_base_fp_col5.clone() * input_fp_col3.clone())
                     + (decode_instruction_edfb6_output_tmp_46e76_4_op1_base_ap.clone()
-                        * input_ap_col1.clone()))),
+                        * input_ap_col2.clone()))),
         );
         ReadPositiveNumBits29::evaluate(
-            [(mem1_base_col17.clone()
+            [(mem1_base_col18.clone()
                 + decode_instruction_edfb6_output_tmp_46e76_4_offset2.clone())],
-            next_pc_id_col18.clone(),
-            next_pc_limb_0_col19.clone(),
-            next_pc_limb_1_col20.clone(),
-            next_pc_limb_2_col21.clone(),
-            next_pc_limb_3_col22.clone(),
-            partial_limb_msb_col23.clone(),
+            enabler_col0.clone(),
+            next_pc_id_col19.clone(),
+            next_pc_limb_0_col20.clone(),
+            next_pc_limb_1_col21.clone(),
+            next_pc_limb_2_col22.clone(),
+            next_pc_limb_3_col23.clone(),
+            partial_limb_msb_col24.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
-        // Enabler is a bit.
-        eval.add_constraint(
-            ((enabler_col24.clone() * enabler_col24.clone()) - enabler_col24.clone()),
-        );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::from(enabler_col24.clone()),
+            E::EF::from(enabler_col0.clone()),
             &[
                 M31_428564188.clone(),
-                input_pc_col0.clone(),
-                input_ap_col1.clone(),
-                input_fp_col2.clone(),
+                input_pc_col1.clone(),
+                input_ap_col2.clone(),
+                input_fp_col3.clone(),
             ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler_col24.clone()),
+            -E::EF::from(enabler_col0.clone()),
             &[
                 M31_428564188.clone(),
-                (((next_pc_limb_0_col19.clone()
-                    + (next_pc_limb_1_col20.clone() * M31_512.clone()))
-                    + (next_pc_limb_2_col21.clone() * M31_262144.clone()))
-                    + (next_pc_limb_3_col22.clone() * M31_134217728.clone())),
-                (input_ap_col1.clone() + M31_2.clone()),
-                (input_ap_col1.clone() + M31_2.clone()),
+                (((next_pc_limb_0_col20.clone()
+                    + (next_pc_limb_1_col21.clone() * M31_512.clone()))
+                    + (next_pc_limb_2_col22.clone() * M31_262144.clone()))
+                    + (next_pc_limb_3_col23.clone() * M31_134217728.clone())),
+                (input_ap_col2.clone() + M31_2.clone()),
+                (input_ap_col2.clone() + M31_2.clone()),
             ],
         ));
 

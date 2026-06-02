@@ -347,1223 +347,1228 @@ pub impl AirComponentImpl of AirComponent<Component> {
         let mut numerator_128: QM31 = Zero::zero();
 
         let [
-            input_limb_0_col0,
-            input_limb_1_col1,
-            input_limb_2_col2,
-            input_limb_3_col3,
-            input_limb_4_col4,
-            input_limb_5_col5,
-            input_limb_6_col6,
-            input_limb_7_col7,
-            input_limb_8_col8,
-            input_limb_9_col9,
-            input_limb_10_col10,
-            input_limb_11_col11,
-            input_limb_12_col12,
-            input_limb_13_col13,
-            input_limb_14_col14,
-            input_limb_15_col15,
-            input_limb_16_col16,
-            input_limb_17_col17,
-            input_limb_18_col18,
-            input_limb_19_col19,
-            input_limb_20_col20,
-            input_limb_21_col21,
-            input_limb_22_col22,
-            input_limb_23_col23,
-            input_limb_24_col24,
-            input_limb_25_col25,
-            input_limb_26_col26,
-            input_limb_27_col27,
-            input_limb_28_col28,
-            input_limb_29_col29,
-            input_limb_30_col30,
-            input_limb_31_col31,
-            input_limb_32_col32,
-            input_limb_33_col33,
-            input_limb_34_col34,
-            input_limb_35_col35,
-            input_limb_36_col36,
-            input_limb_37_col37,
-            input_limb_38_col38,
-            input_limb_39_col39,
-            input_limb_40_col40,
-            input_limb_41_col41,
-            input_limb_42_col42,
-            input_limb_43_col43,
-            input_limb_44_col44,
-            input_limb_45_col45,
-            input_limb_46_col46,
-            input_limb_47_col47,
-            input_limb_48_col48,
-            input_limb_49_col49,
-            input_limb_50_col50,
-            input_limb_51_col51,
-            input_limb_52_col52,
-            input_limb_53_col53,
-            input_limb_54_col54,
-            input_limb_55_col55,
-            input_limb_56_col56,
-            input_limb_57_col57,
-            input_limb_58_col58,
-            input_limb_59_col59,
-            input_limb_60_col60,
-            input_limb_61_col61,
-            input_limb_62_col62,
-            input_limb_63_col63,
-            input_limb_64_col64,
-            input_limb_65_col65,
-            input_limb_66_col66,
-            input_limb_67_col67,
-            input_limb_68_col68,
-            input_limb_69_col69,
-            input_limb_70_col70,
-            input_limb_71_col71,
-            input_limb_72_col72,
-            input_limb_73_col73,
-            input_limb_74_col74,
-            input_limb_75_col75,
-            input_limb_76_col76,
-            input_limb_77_col77,
-            input_limb_78_col78,
-            input_limb_79_col79,
-            input_limb_80_col80,
-            input_limb_81_col81,
-            input_limb_82_col82,
-            input_limb_83_col83,
-            input_limb_84_col84,
-            input_limb_85_col85,
-            pedersen_points_table_window_bits_9_output_limb_0_col86,
-            pedersen_points_table_window_bits_9_output_limb_1_col87,
-            pedersen_points_table_window_bits_9_output_limb_2_col88,
-            pedersen_points_table_window_bits_9_output_limb_3_col89,
-            pedersen_points_table_window_bits_9_output_limb_4_col90,
-            pedersen_points_table_window_bits_9_output_limb_5_col91,
-            pedersen_points_table_window_bits_9_output_limb_6_col92,
-            pedersen_points_table_window_bits_9_output_limb_7_col93,
-            pedersen_points_table_window_bits_9_output_limb_8_col94,
-            pedersen_points_table_window_bits_9_output_limb_9_col95,
-            pedersen_points_table_window_bits_9_output_limb_10_col96,
-            pedersen_points_table_window_bits_9_output_limb_11_col97,
-            pedersen_points_table_window_bits_9_output_limb_12_col98,
-            pedersen_points_table_window_bits_9_output_limb_13_col99,
-            pedersen_points_table_window_bits_9_output_limb_14_col100,
-            pedersen_points_table_window_bits_9_output_limb_15_col101,
-            pedersen_points_table_window_bits_9_output_limb_16_col102,
-            pedersen_points_table_window_bits_9_output_limb_17_col103,
-            pedersen_points_table_window_bits_9_output_limb_18_col104,
-            pedersen_points_table_window_bits_9_output_limb_19_col105,
-            pedersen_points_table_window_bits_9_output_limb_20_col106,
-            pedersen_points_table_window_bits_9_output_limb_21_col107,
-            pedersen_points_table_window_bits_9_output_limb_22_col108,
-            pedersen_points_table_window_bits_9_output_limb_23_col109,
-            pedersen_points_table_window_bits_9_output_limb_24_col110,
-            pedersen_points_table_window_bits_9_output_limb_25_col111,
-            pedersen_points_table_window_bits_9_output_limb_26_col112,
-            pedersen_points_table_window_bits_9_output_limb_27_col113,
-            pedersen_points_table_window_bits_9_output_limb_28_col114,
-            pedersen_points_table_window_bits_9_output_limb_29_col115,
-            pedersen_points_table_window_bits_9_output_limb_30_col116,
-            pedersen_points_table_window_bits_9_output_limb_31_col117,
-            pedersen_points_table_window_bits_9_output_limb_32_col118,
-            pedersen_points_table_window_bits_9_output_limb_33_col119,
-            pedersen_points_table_window_bits_9_output_limb_34_col120,
-            pedersen_points_table_window_bits_9_output_limb_35_col121,
-            pedersen_points_table_window_bits_9_output_limb_36_col122,
-            pedersen_points_table_window_bits_9_output_limb_37_col123,
-            pedersen_points_table_window_bits_9_output_limb_38_col124,
-            pedersen_points_table_window_bits_9_output_limb_39_col125,
-            pedersen_points_table_window_bits_9_output_limb_40_col126,
-            pedersen_points_table_window_bits_9_output_limb_41_col127,
-            pedersen_points_table_window_bits_9_output_limb_42_col128,
-            pedersen_points_table_window_bits_9_output_limb_43_col129,
-            pedersen_points_table_window_bits_9_output_limb_44_col130,
-            pedersen_points_table_window_bits_9_output_limb_45_col131,
-            pedersen_points_table_window_bits_9_output_limb_46_col132,
-            pedersen_points_table_window_bits_9_output_limb_47_col133,
-            pedersen_points_table_window_bits_9_output_limb_48_col134,
-            pedersen_points_table_window_bits_9_output_limb_49_col135,
-            pedersen_points_table_window_bits_9_output_limb_50_col136,
-            pedersen_points_table_window_bits_9_output_limb_51_col137,
-            pedersen_points_table_window_bits_9_output_limb_52_col138,
-            pedersen_points_table_window_bits_9_output_limb_53_col139,
-            pedersen_points_table_window_bits_9_output_limb_54_col140,
-            pedersen_points_table_window_bits_9_output_limb_55_col141,
-            slope_limb_0_col142,
-            slope_limb_1_col143,
-            slope_limb_2_col144,
-            slope_limb_3_col145,
-            slope_limb_4_col146,
-            slope_limb_5_col147,
-            slope_limb_6_col148,
-            slope_limb_7_col149,
-            slope_limb_8_col150,
-            slope_limb_9_col151,
-            slope_limb_10_col152,
-            slope_limb_11_col153,
-            slope_limb_12_col154,
-            slope_limb_13_col155,
-            slope_limb_14_col156,
-            slope_limb_15_col157,
-            slope_limb_16_col158,
-            slope_limb_17_col159,
-            slope_limb_18_col160,
-            slope_limb_19_col161,
-            slope_limb_20_col162,
-            slope_limb_21_col163,
-            slope_limb_22_col164,
-            slope_limb_23_col165,
-            slope_limb_24_col166,
-            slope_limb_25_col167,
-            slope_limb_26_col168,
-            slope_limb_27_col169,
-            k_col170,
-            carry_0_col171,
-            carry_1_col172,
-            carry_2_col173,
-            carry_3_col174,
-            carry_4_col175,
-            carry_5_col176,
-            carry_6_col177,
-            carry_7_col178,
-            carry_8_col179,
-            carry_9_col180,
-            carry_10_col181,
-            carry_11_col182,
-            carry_12_col183,
-            carry_13_col184,
-            carry_14_col185,
-            carry_15_col186,
-            carry_16_col187,
-            carry_17_col188,
-            carry_18_col189,
-            carry_19_col190,
-            carry_20_col191,
-            carry_21_col192,
-            carry_22_col193,
-            carry_23_col194,
-            carry_24_col195,
-            carry_25_col196,
-            carry_26_col197,
-            result_x_limb_0_col198,
-            result_x_limb_1_col199,
-            result_x_limb_2_col200,
-            result_x_limb_3_col201,
-            result_x_limb_4_col202,
-            result_x_limb_5_col203,
-            result_x_limb_6_col204,
-            result_x_limb_7_col205,
-            result_x_limb_8_col206,
-            result_x_limb_9_col207,
-            result_x_limb_10_col208,
-            result_x_limb_11_col209,
-            result_x_limb_12_col210,
-            result_x_limb_13_col211,
-            result_x_limb_14_col212,
-            result_x_limb_15_col213,
-            result_x_limb_16_col214,
-            result_x_limb_17_col215,
-            result_x_limb_18_col216,
-            result_x_limb_19_col217,
-            result_x_limb_20_col218,
-            result_x_limb_21_col219,
-            result_x_limb_22_col220,
-            result_x_limb_23_col221,
-            result_x_limb_24_col222,
-            result_x_limb_25_col223,
-            result_x_limb_26_col224,
-            result_x_limb_27_col225,
-            k_col226,
-            carry_0_col227,
-            carry_1_col228,
-            carry_2_col229,
-            carry_3_col230,
-            carry_4_col231,
-            carry_5_col232,
-            carry_6_col233,
-            carry_7_col234,
-            carry_8_col235,
-            carry_9_col236,
-            carry_10_col237,
-            carry_11_col238,
-            carry_12_col239,
-            carry_13_col240,
-            carry_14_col241,
-            carry_15_col242,
-            carry_16_col243,
-            carry_17_col244,
-            carry_18_col245,
-            carry_19_col246,
-            carry_20_col247,
-            carry_21_col248,
-            carry_22_col249,
-            carry_23_col250,
-            carry_24_col251,
-            carry_25_col252,
-            carry_26_col253,
-            result_y_limb_0_col254,
-            result_y_limb_1_col255,
-            result_y_limb_2_col256,
-            result_y_limb_3_col257,
-            result_y_limb_4_col258,
-            result_y_limb_5_col259,
-            result_y_limb_6_col260,
-            result_y_limb_7_col261,
-            result_y_limb_8_col262,
-            result_y_limb_9_col263,
-            result_y_limb_10_col264,
-            result_y_limb_11_col265,
-            result_y_limb_12_col266,
-            result_y_limb_13_col267,
-            result_y_limb_14_col268,
-            result_y_limb_15_col269,
-            result_y_limb_16_col270,
-            result_y_limb_17_col271,
-            result_y_limb_18_col272,
-            result_y_limb_19_col273,
-            result_y_limb_20_col274,
-            result_y_limb_21_col275,
-            result_y_limb_22_col276,
-            result_y_limb_23_col277,
-            result_y_limb_24_col278,
-            result_y_limb_25_col279,
-            result_y_limb_26_col280,
-            result_y_limb_27_col281,
-            k_col282,
-            carry_0_col283,
-            carry_1_col284,
-            carry_2_col285,
-            carry_3_col286,
-            carry_4_col287,
-            carry_5_col288,
-            carry_6_col289,
-            carry_7_col290,
-            carry_8_col291,
-            carry_9_col292,
-            carry_10_col293,
-            carry_11_col294,
-            carry_12_col295,
-            carry_13_col296,
-            carry_14_col297,
-            carry_15_col298,
-            carry_16_col299,
-            carry_17_col300,
-            carry_18_col301,
-            carry_19_col302,
-            carry_20_col303,
-            carry_21_col304,
-            carry_22_col305,
-            carry_23_col306,
-            carry_24_col307,
-            carry_25_col308,
-            carry_26_col309,
-            enabler_col310,
+            enabler_col0,
+            input_limb_0_col1,
+            input_limb_1_col2,
+            input_limb_2_col3,
+            input_limb_3_col4,
+            input_limb_4_col5,
+            input_limb_5_col6,
+            input_limb_6_col7,
+            input_limb_7_col8,
+            input_limb_8_col9,
+            input_limb_9_col10,
+            input_limb_10_col11,
+            input_limb_11_col12,
+            input_limb_12_col13,
+            input_limb_13_col14,
+            input_limb_14_col15,
+            input_limb_15_col16,
+            input_limb_16_col17,
+            input_limb_17_col18,
+            input_limb_18_col19,
+            input_limb_19_col20,
+            input_limb_20_col21,
+            input_limb_21_col22,
+            input_limb_22_col23,
+            input_limb_23_col24,
+            input_limb_24_col25,
+            input_limb_25_col26,
+            input_limb_26_col27,
+            input_limb_27_col28,
+            input_limb_28_col29,
+            input_limb_29_col30,
+            input_limb_30_col31,
+            input_limb_31_col32,
+            input_limb_32_col33,
+            input_limb_33_col34,
+            input_limb_34_col35,
+            input_limb_35_col36,
+            input_limb_36_col37,
+            input_limb_37_col38,
+            input_limb_38_col39,
+            input_limb_39_col40,
+            input_limb_40_col41,
+            input_limb_41_col42,
+            input_limb_42_col43,
+            input_limb_43_col44,
+            input_limb_44_col45,
+            input_limb_45_col46,
+            input_limb_46_col47,
+            input_limb_47_col48,
+            input_limb_48_col49,
+            input_limb_49_col50,
+            input_limb_50_col51,
+            input_limb_51_col52,
+            input_limb_52_col53,
+            input_limb_53_col54,
+            input_limb_54_col55,
+            input_limb_55_col56,
+            input_limb_56_col57,
+            input_limb_57_col58,
+            input_limb_58_col59,
+            input_limb_59_col60,
+            input_limb_60_col61,
+            input_limb_61_col62,
+            input_limb_62_col63,
+            input_limb_63_col64,
+            input_limb_64_col65,
+            input_limb_65_col66,
+            input_limb_66_col67,
+            input_limb_67_col68,
+            input_limb_68_col69,
+            input_limb_69_col70,
+            input_limb_70_col71,
+            input_limb_71_col72,
+            input_limb_72_col73,
+            input_limb_73_col74,
+            input_limb_74_col75,
+            input_limb_75_col76,
+            input_limb_76_col77,
+            input_limb_77_col78,
+            input_limb_78_col79,
+            input_limb_79_col80,
+            input_limb_80_col81,
+            input_limb_81_col82,
+            input_limb_82_col83,
+            input_limb_83_col84,
+            input_limb_84_col85,
+            input_limb_85_col86,
+            pedersen_points_table_window_bits_9_output_limb_0_col87,
+            pedersen_points_table_window_bits_9_output_limb_1_col88,
+            pedersen_points_table_window_bits_9_output_limb_2_col89,
+            pedersen_points_table_window_bits_9_output_limb_3_col90,
+            pedersen_points_table_window_bits_9_output_limb_4_col91,
+            pedersen_points_table_window_bits_9_output_limb_5_col92,
+            pedersen_points_table_window_bits_9_output_limb_6_col93,
+            pedersen_points_table_window_bits_9_output_limb_7_col94,
+            pedersen_points_table_window_bits_9_output_limb_8_col95,
+            pedersen_points_table_window_bits_9_output_limb_9_col96,
+            pedersen_points_table_window_bits_9_output_limb_10_col97,
+            pedersen_points_table_window_bits_9_output_limb_11_col98,
+            pedersen_points_table_window_bits_9_output_limb_12_col99,
+            pedersen_points_table_window_bits_9_output_limb_13_col100,
+            pedersen_points_table_window_bits_9_output_limb_14_col101,
+            pedersen_points_table_window_bits_9_output_limb_15_col102,
+            pedersen_points_table_window_bits_9_output_limb_16_col103,
+            pedersen_points_table_window_bits_9_output_limb_17_col104,
+            pedersen_points_table_window_bits_9_output_limb_18_col105,
+            pedersen_points_table_window_bits_9_output_limb_19_col106,
+            pedersen_points_table_window_bits_9_output_limb_20_col107,
+            pedersen_points_table_window_bits_9_output_limb_21_col108,
+            pedersen_points_table_window_bits_9_output_limb_22_col109,
+            pedersen_points_table_window_bits_9_output_limb_23_col110,
+            pedersen_points_table_window_bits_9_output_limb_24_col111,
+            pedersen_points_table_window_bits_9_output_limb_25_col112,
+            pedersen_points_table_window_bits_9_output_limb_26_col113,
+            pedersen_points_table_window_bits_9_output_limb_27_col114,
+            pedersen_points_table_window_bits_9_output_limb_28_col115,
+            pedersen_points_table_window_bits_9_output_limb_29_col116,
+            pedersen_points_table_window_bits_9_output_limb_30_col117,
+            pedersen_points_table_window_bits_9_output_limb_31_col118,
+            pedersen_points_table_window_bits_9_output_limb_32_col119,
+            pedersen_points_table_window_bits_9_output_limb_33_col120,
+            pedersen_points_table_window_bits_9_output_limb_34_col121,
+            pedersen_points_table_window_bits_9_output_limb_35_col122,
+            pedersen_points_table_window_bits_9_output_limb_36_col123,
+            pedersen_points_table_window_bits_9_output_limb_37_col124,
+            pedersen_points_table_window_bits_9_output_limb_38_col125,
+            pedersen_points_table_window_bits_9_output_limb_39_col126,
+            pedersen_points_table_window_bits_9_output_limb_40_col127,
+            pedersen_points_table_window_bits_9_output_limb_41_col128,
+            pedersen_points_table_window_bits_9_output_limb_42_col129,
+            pedersen_points_table_window_bits_9_output_limb_43_col130,
+            pedersen_points_table_window_bits_9_output_limb_44_col131,
+            pedersen_points_table_window_bits_9_output_limb_45_col132,
+            pedersen_points_table_window_bits_9_output_limb_46_col133,
+            pedersen_points_table_window_bits_9_output_limb_47_col134,
+            pedersen_points_table_window_bits_9_output_limb_48_col135,
+            pedersen_points_table_window_bits_9_output_limb_49_col136,
+            pedersen_points_table_window_bits_9_output_limb_50_col137,
+            pedersen_points_table_window_bits_9_output_limb_51_col138,
+            pedersen_points_table_window_bits_9_output_limb_52_col139,
+            pedersen_points_table_window_bits_9_output_limb_53_col140,
+            pedersen_points_table_window_bits_9_output_limb_54_col141,
+            pedersen_points_table_window_bits_9_output_limb_55_col142,
+            slope_limb_0_col143,
+            slope_limb_1_col144,
+            slope_limb_2_col145,
+            slope_limb_3_col146,
+            slope_limb_4_col147,
+            slope_limb_5_col148,
+            slope_limb_6_col149,
+            slope_limb_7_col150,
+            slope_limb_8_col151,
+            slope_limb_9_col152,
+            slope_limb_10_col153,
+            slope_limb_11_col154,
+            slope_limb_12_col155,
+            slope_limb_13_col156,
+            slope_limb_14_col157,
+            slope_limb_15_col158,
+            slope_limb_16_col159,
+            slope_limb_17_col160,
+            slope_limb_18_col161,
+            slope_limb_19_col162,
+            slope_limb_20_col163,
+            slope_limb_21_col164,
+            slope_limb_22_col165,
+            slope_limb_23_col166,
+            slope_limb_24_col167,
+            slope_limb_25_col168,
+            slope_limb_26_col169,
+            slope_limb_27_col170,
+            k_col171,
+            carry_0_col172,
+            carry_1_col173,
+            carry_2_col174,
+            carry_3_col175,
+            carry_4_col176,
+            carry_5_col177,
+            carry_6_col178,
+            carry_7_col179,
+            carry_8_col180,
+            carry_9_col181,
+            carry_10_col182,
+            carry_11_col183,
+            carry_12_col184,
+            carry_13_col185,
+            carry_14_col186,
+            carry_15_col187,
+            carry_16_col188,
+            carry_17_col189,
+            carry_18_col190,
+            carry_19_col191,
+            carry_20_col192,
+            carry_21_col193,
+            carry_22_col194,
+            carry_23_col195,
+            carry_24_col196,
+            carry_25_col197,
+            carry_26_col198,
+            result_x_limb_0_col199,
+            result_x_limb_1_col200,
+            result_x_limb_2_col201,
+            result_x_limb_3_col202,
+            result_x_limb_4_col203,
+            result_x_limb_5_col204,
+            result_x_limb_6_col205,
+            result_x_limb_7_col206,
+            result_x_limb_8_col207,
+            result_x_limb_9_col208,
+            result_x_limb_10_col209,
+            result_x_limb_11_col210,
+            result_x_limb_12_col211,
+            result_x_limb_13_col212,
+            result_x_limb_14_col213,
+            result_x_limb_15_col214,
+            result_x_limb_16_col215,
+            result_x_limb_17_col216,
+            result_x_limb_18_col217,
+            result_x_limb_19_col218,
+            result_x_limb_20_col219,
+            result_x_limb_21_col220,
+            result_x_limb_22_col221,
+            result_x_limb_23_col222,
+            result_x_limb_24_col223,
+            result_x_limb_25_col224,
+            result_x_limb_26_col225,
+            result_x_limb_27_col226,
+            k_col227,
+            carry_0_col228,
+            carry_1_col229,
+            carry_2_col230,
+            carry_3_col231,
+            carry_4_col232,
+            carry_5_col233,
+            carry_6_col234,
+            carry_7_col235,
+            carry_8_col236,
+            carry_9_col237,
+            carry_10_col238,
+            carry_11_col239,
+            carry_12_col240,
+            carry_13_col241,
+            carry_14_col242,
+            carry_15_col243,
+            carry_16_col244,
+            carry_17_col245,
+            carry_18_col246,
+            carry_19_col247,
+            carry_20_col248,
+            carry_21_col249,
+            carry_22_col250,
+            carry_23_col251,
+            carry_24_col252,
+            carry_25_col253,
+            carry_26_col254,
+            result_y_limb_0_col255,
+            result_y_limb_1_col256,
+            result_y_limb_2_col257,
+            result_y_limb_3_col258,
+            result_y_limb_4_col259,
+            result_y_limb_5_col260,
+            result_y_limb_6_col261,
+            result_y_limb_7_col262,
+            result_y_limb_8_col263,
+            result_y_limb_9_col264,
+            result_y_limb_10_col265,
+            result_y_limb_11_col266,
+            result_y_limb_12_col267,
+            result_y_limb_13_col268,
+            result_y_limb_14_col269,
+            result_y_limb_15_col270,
+            result_y_limb_16_col271,
+            result_y_limb_17_col272,
+            result_y_limb_18_col273,
+            result_y_limb_19_col274,
+            result_y_limb_20_col275,
+            result_y_limb_21_col276,
+            result_y_limb_22_col277,
+            result_y_limb_23_col278,
+            result_y_limb_24_col279,
+            result_y_limb_25_col280,
+            result_y_limb_26_col281,
+            result_y_limb_27_col282,
+            k_col283,
+            carry_0_col284,
+            carry_1_col285,
+            carry_2_col286,
+            carry_3_col287,
+            carry_4_col288,
+            carry_5_col289,
+            carry_6_col290,
+            carry_7_col291,
+            carry_8_col292,
+            carry_9_col293,
+            carry_10_col294,
+            carry_11_col295,
+            carry_12_col296,
+            carry_13_col297,
+            carry_14_col298,
+            carry_15_col299,
+            carry_16_col300,
+            carry_17_col301,
+            carry_18_col302,
+            carry_19_col303,
+            carry_20_col304,
+            carry_21_col305,
+            carry_22_col306,
+            carry_23_col307,
+            carry_24_col308,
+            carry_25_col309,
+            carry_26_col310,
         ]: [Span<QM31>; 311] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
             .unbox();
-        let [input_limb_0_col0]: [QM31; 1] = (*input_limb_0_col0.try_into().unwrap()).unbox();
-        let [input_limb_1_col1]: [QM31; 1] = (*input_limb_1_col1.try_into().unwrap()).unbox();
-        let [input_limb_2_col2]: [QM31; 1] = (*input_limb_2_col2.try_into().unwrap()).unbox();
-        let [input_limb_3_col3]: [QM31; 1] = (*input_limb_3_col3.try_into().unwrap()).unbox();
-        let [input_limb_4_col4]: [QM31; 1] = (*input_limb_4_col4.try_into().unwrap()).unbox();
-        let [input_limb_5_col5]: [QM31; 1] = (*input_limb_5_col5.try_into().unwrap()).unbox();
-        let [input_limb_6_col6]: [QM31; 1] = (*input_limb_6_col6.try_into().unwrap()).unbox();
-        let [input_limb_7_col7]: [QM31; 1] = (*input_limb_7_col7.try_into().unwrap()).unbox();
-        let [input_limb_8_col8]: [QM31; 1] = (*input_limb_8_col8.try_into().unwrap()).unbox();
-        let [input_limb_9_col9]: [QM31; 1] = (*input_limb_9_col9.try_into().unwrap()).unbox();
-        let [input_limb_10_col10]: [QM31; 1] = (*input_limb_10_col10.try_into().unwrap()).unbox();
-        let [input_limb_11_col11]: [QM31; 1] = (*input_limb_11_col11.try_into().unwrap()).unbox();
-        let [input_limb_12_col12]: [QM31; 1] = (*input_limb_12_col12.try_into().unwrap()).unbox();
-        let [input_limb_13_col13]: [QM31; 1] = (*input_limb_13_col13.try_into().unwrap()).unbox();
-        let [input_limb_14_col14]: [QM31; 1] = (*input_limb_14_col14.try_into().unwrap()).unbox();
-        let [input_limb_15_col15]: [QM31; 1] = (*input_limb_15_col15.try_into().unwrap()).unbox();
-        let [input_limb_16_col16]: [QM31; 1] = (*input_limb_16_col16.try_into().unwrap()).unbox();
-        let [input_limb_17_col17]: [QM31; 1] = (*input_limb_17_col17.try_into().unwrap()).unbox();
-        let [input_limb_18_col18]: [QM31; 1] = (*input_limb_18_col18.try_into().unwrap()).unbox();
-        let [input_limb_19_col19]: [QM31; 1] = (*input_limb_19_col19.try_into().unwrap()).unbox();
-        let [input_limb_20_col20]: [QM31; 1] = (*input_limb_20_col20.try_into().unwrap()).unbox();
-        let [input_limb_21_col21]: [QM31; 1] = (*input_limb_21_col21.try_into().unwrap()).unbox();
-        let [input_limb_22_col22]: [QM31; 1] = (*input_limb_22_col22.try_into().unwrap()).unbox();
-        let [input_limb_23_col23]: [QM31; 1] = (*input_limb_23_col23.try_into().unwrap()).unbox();
-        let [input_limb_24_col24]: [QM31; 1] = (*input_limb_24_col24.try_into().unwrap()).unbox();
-        let [input_limb_25_col25]: [QM31; 1] = (*input_limb_25_col25.try_into().unwrap()).unbox();
-        let [input_limb_26_col26]: [QM31; 1] = (*input_limb_26_col26.try_into().unwrap()).unbox();
-        let [input_limb_27_col27]: [QM31; 1] = (*input_limb_27_col27.try_into().unwrap()).unbox();
-        let [input_limb_28_col28]: [QM31; 1] = (*input_limb_28_col28.try_into().unwrap()).unbox();
-        let [input_limb_29_col29]: [QM31; 1] = (*input_limb_29_col29.try_into().unwrap()).unbox();
-        let [input_limb_30_col30]: [QM31; 1] = (*input_limb_30_col30.try_into().unwrap()).unbox();
-        let [input_limb_31_col31]: [QM31; 1] = (*input_limb_31_col31.try_into().unwrap()).unbox();
-        let [input_limb_32_col32]: [QM31; 1] = (*input_limb_32_col32.try_into().unwrap()).unbox();
-        let [input_limb_33_col33]: [QM31; 1] = (*input_limb_33_col33.try_into().unwrap()).unbox();
-        let [input_limb_34_col34]: [QM31; 1] = (*input_limb_34_col34.try_into().unwrap()).unbox();
-        let [input_limb_35_col35]: [QM31; 1] = (*input_limb_35_col35.try_into().unwrap()).unbox();
-        let [input_limb_36_col36]: [QM31; 1] = (*input_limb_36_col36.try_into().unwrap()).unbox();
-        let [input_limb_37_col37]: [QM31; 1] = (*input_limb_37_col37.try_into().unwrap()).unbox();
-        let [input_limb_38_col38]: [QM31; 1] = (*input_limb_38_col38.try_into().unwrap()).unbox();
-        let [input_limb_39_col39]: [QM31; 1] = (*input_limb_39_col39.try_into().unwrap()).unbox();
-        let [input_limb_40_col40]: [QM31; 1] = (*input_limb_40_col40.try_into().unwrap()).unbox();
-        let [input_limb_41_col41]: [QM31; 1] = (*input_limb_41_col41.try_into().unwrap()).unbox();
-        let [input_limb_42_col42]: [QM31; 1] = (*input_limb_42_col42.try_into().unwrap()).unbox();
-        let [input_limb_43_col43]: [QM31; 1] = (*input_limb_43_col43.try_into().unwrap()).unbox();
-        let [input_limb_44_col44]: [QM31; 1] = (*input_limb_44_col44.try_into().unwrap()).unbox();
-        let [input_limb_45_col45]: [QM31; 1] = (*input_limb_45_col45.try_into().unwrap()).unbox();
-        let [input_limb_46_col46]: [QM31; 1] = (*input_limb_46_col46.try_into().unwrap()).unbox();
-        let [input_limb_47_col47]: [QM31; 1] = (*input_limb_47_col47.try_into().unwrap()).unbox();
-        let [input_limb_48_col48]: [QM31; 1] = (*input_limb_48_col48.try_into().unwrap()).unbox();
-        let [input_limb_49_col49]: [QM31; 1] = (*input_limb_49_col49.try_into().unwrap()).unbox();
-        let [input_limb_50_col50]: [QM31; 1] = (*input_limb_50_col50.try_into().unwrap()).unbox();
-        let [input_limb_51_col51]: [QM31; 1] = (*input_limb_51_col51.try_into().unwrap()).unbox();
-        let [input_limb_52_col52]: [QM31; 1] = (*input_limb_52_col52.try_into().unwrap()).unbox();
-        let [input_limb_53_col53]: [QM31; 1] = (*input_limb_53_col53.try_into().unwrap()).unbox();
-        let [input_limb_54_col54]: [QM31; 1] = (*input_limb_54_col54.try_into().unwrap()).unbox();
-        let [input_limb_55_col55]: [QM31; 1] = (*input_limb_55_col55.try_into().unwrap()).unbox();
-        let [input_limb_56_col56]: [QM31; 1] = (*input_limb_56_col56.try_into().unwrap()).unbox();
-        let [input_limb_57_col57]: [QM31; 1] = (*input_limb_57_col57.try_into().unwrap()).unbox();
-        let [input_limb_58_col58]: [QM31; 1] = (*input_limb_58_col58.try_into().unwrap()).unbox();
-        let [input_limb_59_col59]: [QM31; 1] = (*input_limb_59_col59.try_into().unwrap()).unbox();
-        let [input_limb_60_col60]: [QM31; 1] = (*input_limb_60_col60.try_into().unwrap()).unbox();
-        let [input_limb_61_col61]: [QM31; 1] = (*input_limb_61_col61.try_into().unwrap()).unbox();
-        let [input_limb_62_col62]: [QM31; 1] = (*input_limb_62_col62.try_into().unwrap()).unbox();
-        let [input_limb_63_col63]: [QM31; 1] = (*input_limb_63_col63.try_into().unwrap()).unbox();
-        let [input_limb_64_col64]: [QM31; 1] = (*input_limb_64_col64.try_into().unwrap()).unbox();
-        let [input_limb_65_col65]: [QM31; 1] = (*input_limb_65_col65.try_into().unwrap()).unbox();
-        let [input_limb_66_col66]: [QM31; 1] = (*input_limb_66_col66.try_into().unwrap()).unbox();
-        let [input_limb_67_col67]: [QM31; 1] = (*input_limb_67_col67.try_into().unwrap()).unbox();
-        let [input_limb_68_col68]: [QM31; 1] = (*input_limb_68_col68.try_into().unwrap()).unbox();
-        let [input_limb_69_col69]: [QM31; 1] = (*input_limb_69_col69.try_into().unwrap()).unbox();
-        let [input_limb_70_col70]: [QM31; 1] = (*input_limb_70_col70.try_into().unwrap()).unbox();
-        let [input_limb_71_col71]: [QM31; 1] = (*input_limb_71_col71.try_into().unwrap()).unbox();
-        let [input_limb_72_col72]: [QM31; 1] = (*input_limb_72_col72.try_into().unwrap()).unbox();
-        let [input_limb_73_col73]: [QM31; 1] = (*input_limb_73_col73.try_into().unwrap()).unbox();
-        let [input_limb_74_col74]: [QM31; 1] = (*input_limb_74_col74.try_into().unwrap()).unbox();
-        let [input_limb_75_col75]: [QM31; 1] = (*input_limb_75_col75.try_into().unwrap()).unbox();
-        let [input_limb_76_col76]: [QM31; 1] = (*input_limb_76_col76.try_into().unwrap()).unbox();
-        let [input_limb_77_col77]: [QM31; 1] = (*input_limb_77_col77.try_into().unwrap()).unbox();
-        let [input_limb_78_col78]: [QM31; 1] = (*input_limb_78_col78.try_into().unwrap()).unbox();
-        let [input_limb_79_col79]: [QM31; 1] = (*input_limb_79_col79.try_into().unwrap()).unbox();
-        let [input_limb_80_col80]: [QM31; 1] = (*input_limb_80_col80.try_into().unwrap()).unbox();
-        let [input_limb_81_col81]: [QM31; 1] = (*input_limb_81_col81.try_into().unwrap()).unbox();
-        let [input_limb_82_col82]: [QM31; 1] = (*input_limb_82_col82.try_into().unwrap()).unbox();
-        let [input_limb_83_col83]: [QM31; 1] = (*input_limb_83_col83.try_into().unwrap()).unbox();
-        let [input_limb_84_col84]: [QM31; 1] = (*input_limb_84_col84.try_into().unwrap()).unbox();
-        let [input_limb_85_col85]: [QM31; 1] = (*input_limb_85_col85.try_into().unwrap()).unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_0_col86]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_0_col86
+        let [enabler_col0]: [QM31; 1] = (*enabler_col0.try_into().unwrap()).unbox();
+        let [input_limb_0_col1]: [QM31; 1] = (*input_limb_0_col1.try_into().unwrap()).unbox();
+        let [input_limb_1_col2]: [QM31; 1] = (*input_limb_1_col2.try_into().unwrap()).unbox();
+        let [input_limb_2_col3]: [QM31; 1] = (*input_limb_2_col3.try_into().unwrap()).unbox();
+        let [input_limb_3_col4]: [QM31; 1] = (*input_limb_3_col4.try_into().unwrap()).unbox();
+        let [input_limb_4_col5]: [QM31; 1] = (*input_limb_4_col5.try_into().unwrap()).unbox();
+        let [input_limb_5_col6]: [QM31; 1] = (*input_limb_5_col6.try_into().unwrap()).unbox();
+        let [input_limb_6_col7]: [QM31; 1] = (*input_limb_6_col7.try_into().unwrap()).unbox();
+        let [input_limb_7_col8]: [QM31; 1] = (*input_limb_7_col8.try_into().unwrap()).unbox();
+        let [input_limb_8_col9]: [QM31; 1] = (*input_limb_8_col9.try_into().unwrap()).unbox();
+        let [input_limb_9_col10]: [QM31; 1] = (*input_limb_9_col10.try_into().unwrap()).unbox();
+        let [input_limb_10_col11]: [QM31; 1] = (*input_limb_10_col11.try_into().unwrap()).unbox();
+        let [input_limb_11_col12]: [QM31; 1] = (*input_limb_11_col12.try_into().unwrap()).unbox();
+        let [input_limb_12_col13]: [QM31; 1] = (*input_limb_12_col13.try_into().unwrap()).unbox();
+        let [input_limb_13_col14]: [QM31; 1] = (*input_limb_13_col14.try_into().unwrap()).unbox();
+        let [input_limb_14_col15]: [QM31; 1] = (*input_limb_14_col15.try_into().unwrap()).unbox();
+        let [input_limb_15_col16]: [QM31; 1] = (*input_limb_15_col16.try_into().unwrap()).unbox();
+        let [input_limb_16_col17]: [QM31; 1] = (*input_limb_16_col17.try_into().unwrap()).unbox();
+        let [input_limb_17_col18]: [QM31; 1] = (*input_limb_17_col18.try_into().unwrap()).unbox();
+        let [input_limb_18_col19]: [QM31; 1] = (*input_limb_18_col19.try_into().unwrap()).unbox();
+        let [input_limb_19_col20]: [QM31; 1] = (*input_limb_19_col20.try_into().unwrap()).unbox();
+        let [input_limb_20_col21]: [QM31; 1] = (*input_limb_20_col21.try_into().unwrap()).unbox();
+        let [input_limb_21_col22]: [QM31; 1] = (*input_limb_21_col22.try_into().unwrap()).unbox();
+        let [input_limb_22_col23]: [QM31; 1] = (*input_limb_22_col23.try_into().unwrap()).unbox();
+        let [input_limb_23_col24]: [QM31; 1] = (*input_limb_23_col24.try_into().unwrap()).unbox();
+        let [input_limb_24_col25]: [QM31; 1] = (*input_limb_24_col25.try_into().unwrap()).unbox();
+        let [input_limb_25_col26]: [QM31; 1] = (*input_limb_25_col26.try_into().unwrap()).unbox();
+        let [input_limb_26_col27]: [QM31; 1] = (*input_limb_26_col27.try_into().unwrap()).unbox();
+        let [input_limb_27_col28]: [QM31; 1] = (*input_limb_27_col28.try_into().unwrap()).unbox();
+        let [input_limb_28_col29]: [QM31; 1] = (*input_limb_28_col29.try_into().unwrap()).unbox();
+        let [input_limb_29_col30]: [QM31; 1] = (*input_limb_29_col30.try_into().unwrap()).unbox();
+        let [input_limb_30_col31]: [QM31; 1] = (*input_limb_30_col31.try_into().unwrap()).unbox();
+        let [input_limb_31_col32]: [QM31; 1] = (*input_limb_31_col32.try_into().unwrap()).unbox();
+        let [input_limb_32_col33]: [QM31; 1] = (*input_limb_32_col33.try_into().unwrap()).unbox();
+        let [input_limb_33_col34]: [QM31; 1] = (*input_limb_33_col34.try_into().unwrap()).unbox();
+        let [input_limb_34_col35]: [QM31; 1] = (*input_limb_34_col35.try_into().unwrap()).unbox();
+        let [input_limb_35_col36]: [QM31; 1] = (*input_limb_35_col36.try_into().unwrap()).unbox();
+        let [input_limb_36_col37]: [QM31; 1] = (*input_limb_36_col37.try_into().unwrap()).unbox();
+        let [input_limb_37_col38]: [QM31; 1] = (*input_limb_37_col38.try_into().unwrap()).unbox();
+        let [input_limb_38_col39]: [QM31; 1] = (*input_limb_38_col39.try_into().unwrap()).unbox();
+        let [input_limb_39_col40]: [QM31; 1] = (*input_limb_39_col40.try_into().unwrap()).unbox();
+        let [input_limb_40_col41]: [QM31; 1] = (*input_limb_40_col41.try_into().unwrap()).unbox();
+        let [input_limb_41_col42]: [QM31; 1] = (*input_limb_41_col42.try_into().unwrap()).unbox();
+        let [input_limb_42_col43]: [QM31; 1] = (*input_limb_42_col43.try_into().unwrap()).unbox();
+        let [input_limb_43_col44]: [QM31; 1] = (*input_limb_43_col44.try_into().unwrap()).unbox();
+        let [input_limb_44_col45]: [QM31; 1] = (*input_limb_44_col45.try_into().unwrap()).unbox();
+        let [input_limb_45_col46]: [QM31; 1] = (*input_limb_45_col46.try_into().unwrap()).unbox();
+        let [input_limb_46_col47]: [QM31; 1] = (*input_limb_46_col47.try_into().unwrap()).unbox();
+        let [input_limb_47_col48]: [QM31; 1] = (*input_limb_47_col48.try_into().unwrap()).unbox();
+        let [input_limb_48_col49]: [QM31; 1] = (*input_limb_48_col49.try_into().unwrap()).unbox();
+        let [input_limb_49_col50]: [QM31; 1] = (*input_limb_49_col50.try_into().unwrap()).unbox();
+        let [input_limb_50_col51]: [QM31; 1] = (*input_limb_50_col51.try_into().unwrap()).unbox();
+        let [input_limb_51_col52]: [QM31; 1] = (*input_limb_51_col52.try_into().unwrap()).unbox();
+        let [input_limb_52_col53]: [QM31; 1] = (*input_limb_52_col53.try_into().unwrap()).unbox();
+        let [input_limb_53_col54]: [QM31; 1] = (*input_limb_53_col54.try_into().unwrap()).unbox();
+        let [input_limb_54_col55]: [QM31; 1] = (*input_limb_54_col55.try_into().unwrap()).unbox();
+        let [input_limb_55_col56]: [QM31; 1] = (*input_limb_55_col56.try_into().unwrap()).unbox();
+        let [input_limb_56_col57]: [QM31; 1] = (*input_limb_56_col57.try_into().unwrap()).unbox();
+        let [input_limb_57_col58]: [QM31; 1] = (*input_limb_57_col58.try_into().unwrap()).unbox();
+        let [input_limb_58_col59]: [QM31; 1] = (*input_limb_58_col59.try_into().unwrap()).unbox();
+        let [input_limb_59_col60]: [QM31; 1] = (*input_limb_59_col60.try_into().unwrap()).unbox();
+        let [input_limb_60_col61]: [QM31; 1] = (*input_limb_60_col61.try_into().unwrap()).unbox();
+        let [input_limb_61_col62]: [QM31; 1] = (*input_limb_61_col62.try_into().unwrap()).unbox();
+        let [input_limb_62_col63]: [QM31; 1] = (*input_limb_62_col63.try_into().unwrap()).unbox();
+        let [input_limb_63_col64]: [QM31; 1] = (*input_limb_63_col64.try_into().unwrap()).unbox();
+        let [input_limb_64_col65]: [QM31; 1] = (*input_limb_64_col65.try_into().unwrap()).unbox();
+        let [input_limb_65_col66]: [QM31; 1] = (*input_limb_65_col66.try_into().unwrap()).unbox();
+        let [input_limb_66_col67]: [QM31; 1] = (*input_limb_66_col67.try_into().unwrap()).unbox();
+        let [input_limb_67_col68]: [QM31; 1] = (*input_limb_67_col68.try_into().unwrap()).unbox();
+        let [input_limb_68_col69]: [QM31; 1] = (*input_limb_68_col69.try_into().unwrap()).unbox();
+        let [input_limb_69_col70]: [QM31; 1] = (*input_limb_69_col70.try_into().unwrap()).unbox();
+        let [input_limb_70_col71]: [QM31; 1] = (*input_limb_70_col71.try_into().unwrap()).unbox();
+        let [input_limb_71_col72]: [QM31; 1] = (*input_limb_71_col72.try_into().unwrap()).unbox();
+        let [input_limb_72_col73]: [QM31; 1] = (*input_limb_72_col73.try_into().unwrap()).unbox();
+        let [input_limb_73_col74]: [QM31; 1] = (*input_limb_73_col74.try_into().unwrap()).unbox();
+        let [input_limb_74_col75]: [QM31; 1] = (*input_limb_74_col75.try_into().unwrap()).unbox();
+        let [input_limb_75_col76]: [QM31; 1] = (*input_limb_75_col76.try_into().unwrap()).unbox();
+        let [input_limb_76_col77]: [QM31; 1] = (*input_limb_76_col77.try_into().unwrap()).unbox();
+        let [input_limb_77_col78]: [QM31; 1] = (*input_limb_77_col78.try_into().unwrap()).unbox();
+        let [input_limb_78_col79]: [QM31; 1] = (*input_limb_78_col79.try_into().unwrap()).unbox();
+        let [input_limb_79_col80]: [QM31; 1] = (*input_limb_79_col80.try_into().unwrap()).unbox();
+        let [input_limb_80_col81]: [QM31; 1] = (*input_limb_80_col81.try_into().unwrap()).unbox();
+        let [input_limb_81_col82]: [QM31; 1] = (*input_limb_81_col82.try_into().unwrap()).unbox();
+        let [input_limb_82_col83]: [QM31; 1] = (*input_limb_82_col83.try_into().unwrap()).unbox();
+        let [input_limb_83_col84]: [QM31; 1] = (*input_limb_83_col84.try_into().unwrap()).unbox();
+        let [input_limb_84_col85]: [QM31; 1] = (*input_limb_84_col85.try_into().unwrap()).unbox();
+        let [input_limb_85_col86]: [QM31; 1] = (*input_limb_85_col86.try_into().unwrap()).unbox();
+        let [pedersen_points_table_window_bits_9_output_limb_0_col87]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_0_col87
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_1_col87]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_1_col87
+        let [pedersen_points_table_window_bits_9_output_limb_1_col88]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_1_col88
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_2_col88]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_2_col88
+        let [pedersen_points_table_window_bits_9_output_limb_2_col89]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_2_col89
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_3_col89]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_3_col89
+        let [pedersen_points_table_window_bits_9_output_limb_3_col90]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_3_col90
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_4_col90]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_4_col90
+        let [pedersen_points_table_window_bits_9_output_limb_4_col91]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_4_col91
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_5_col91]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_5_col91
+        let [pedersen_points_table_window_bits_9_output_limb_5_col92]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_5_col92
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_6_col92]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_6_col92
+        let [pedersen_points_table_window_bits_9_output_limb_6_col93]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_6_col93
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_7_col93]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_7_col93
+        let [pedersen_points_table_window_bits_9_output_limb_7_col94]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_7_col94
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_8_col94]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_8_col94
+        let [pedersen_points_table_window_bits_9_output_limb_8_col95]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_8_col95
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_9_col95]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_9_col95
+        let [pedersen_points_table_window_bits_9_output_limb_9_col96]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_9_col96
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_10_col96]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_10_col96
+        let [pedersen_points_table_window_bits_9_output_limb_10_col97]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_10_col97
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_11_col97]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_11_col97
+        let [pedersen_points_table_window_bits_9_output_limb_11_col98]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_11_col98
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_12_col98]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_12_col98
+        let [pedersen_points_table_window_bits_9_output_limb_12_col99]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_12_col99
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_13_col99]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_13_col99
+        let [pedersen_points_table_window_bits_9_output_limb_13_col100]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_13_col100
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_14_col100]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_14_col100
+        let [pedersen_points_table_window_bits_9_output_limb_14_col101]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_14_col101
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_15_col101]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_15_col101
+        let [pedersen_points_table_window_bits_9_output_limb_15_col102]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_15_col102
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_16_col102]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_16_col102
+        let [pedersen_points_table_window_bits_9_output_limb_16_col103]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_16_col103
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_17_col103]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_17_col103
+        let [pedersen_points_table_window_bits_9_output_limb_17_col104]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_17_col104
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_18_col104]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_18_col104
+        let [pedersen_points_table_window_bits_9_output_limb_18_col105]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_18_col105
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_19_col105]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_19_col105
+        let [pedersen_points_table_window_bits_9_output_limb_19_col106]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_19_col106
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_20_col106]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_20_col106
+        let [pedersen_points_table_window_bits_9_output_limb_20_col107]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_20_col107
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_21_col107]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_21_col107
+        let [pedersen_points_table_window_bits_9_output_limb_21_col108]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_21_col108
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_22_col108]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_22_col108
+        let [pedersen_points_table_window_bits_9_output_limb_22_col109]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_22_col109
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_23_col109]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_23_col109
+        let [pedersen_points_table_window_bits_9_output_limb_23_col110]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_23_col110
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_24_col110]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_24_col110
+        let [pedersen_points_table_window_bits_9_output_limb_24_col111]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_24_col111
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_25_col111]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_25_col111
+        let [pedersen_points_table_window_bits_9_output_limb_25_col112]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_25_col112
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_26_col112]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_26_col112
+        let [pedersen_points_table_window_bits_9_output_limb_26_col113]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_26_col113
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_27_col113]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_27_col113
+        let [pedersen_points_table_window_bits_9_output_limb_27_col114]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_27_col114
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_28_col114]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_28_col114
+        let [pedersen_points_table_window_bits_9_output_limb_28_col115]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_28_col115
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_29_col115]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_29_col115
+        let [pedersen_points_table_window_bits_9_output_limb_29_col116]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_29_col116
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_30_col116]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_30_col116
+        let [pedersen_points_table_window_bits_9_output_limb_30_col117]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_30_col117
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_31_col117]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_31_col117
+        let [pedersen_points_table_window_bits_9_output_limb_31_col118]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_31_col118
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_32_col118]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_32_col118
+        let [pedersen_points_table_window_bits_9_output_limb_32_col119]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_32_col119
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_33_col119]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_33_col119
+        let [pedersen_points_table_window_bits_9_output_limb_33_col120]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_33_col120
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_34_col120]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_34_col120
+        let [pedersen_points_table_window_bits_9_output_limb_34_col121]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_34_col121
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_35_col121]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_35_col121
+        let [pedersen_points_table_window_bits_9_output_limb_35_col122]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_35_col122
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_36_col122]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_36_col122
+        let [pedersen_points_table_window_bits_9_output_limb_36_col123]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_36_col123
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_37_col123]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_37_col123
+        let [pedersen_points_table_window_bits_9_output_limb_37_col124]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_37_col124
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_38_col124]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_38_col124
+        let [pedersen_points_table_window_bits_9_output_limb_38_col125]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_38_col125
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_39_col125]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_39_col125
+        let [pedersen_points_table_window_bits_9_output_limb_39_col126]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_39_col126
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_40_col126]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_40_col126
+        let [pedersen_points_table_window_bits_9_output_limb_40_col127]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_40_col127
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_41_col127]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_41_col127
+        let [pedersen_points_table_window_bits_9_output_limb_41_col128]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_41_col128
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_42_col128]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_42_col128
+        let [pedersen_points_table_window_bits_9_output_limb_42_col129]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_42_col129
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_43_col129]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_43_col129
+        let [pedersen_points_table_window_bits_9_output_limb_43_col130]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_43_col130
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_44_col130]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_44_col130
+        let [pedersen_points_table_window_bits_9_output_limb_44_col131]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_44_col131
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_45_col131]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_45_col131
+        let [pedersen_points_table_window_bits_9_output_limb_45_col132]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_45_col132
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_46_col132]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_46_col132
+        let [pedersen_points_table_window_bits_9_output_limb_46_col133]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_46_col133
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_47_col133]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_47_col133
+        let [pedersen_points_table_window_bits_9_output_limb_47_col134]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_47_col134
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_48_col134]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_48_col134
+        let [pedersen_points_table_window_bits_9_output_limb_48_col135]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_48_col135
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_49_col135]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_49_col135
+        let [pedersen_points_table_window_bits_9_output_limb_49_col136]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_49_col136
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_50_col136]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_50_col136
+        let [pedersen_points_table_window_bits_9_output_limb_50_col137]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_50_col137
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_51_col137]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_51_col137
+        let [pedersen_points_table_window_bits_9_output_limb_51_col138]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_51_col138
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_52_col138]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_52_col138
+        let [pedersen_points_table_window_bits_9_output_limb_52_col139]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_52_col139
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_53_col139]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_53_col139
+        let [pedersen_points_table_window_bits_9_output_limb_53_col140]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_53_col140
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_54_col140]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_54_col140
+        let [pedersen_points_table_window_bits_9_output_limb_54_col141]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_54_col141
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_window_bits_9_output_limb_55_col141]: [QM31; 1] =
-            (*pedersen_points_table_window_bits_9_output_limb_55_col141
+        let [pedersen_points_table_window_bits_9_output_limb_55_col142]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_9_output_limb_55_col142
             .try_into()
             .unwrap())
             .unbox();
-        let [slope_limb_0_col142]: [QM31; 1] = (*slope_limb_0_col142.try_into().unwrap()).unbox();
-        let [slope_limb_1_col143]: [QM31; 1] = (*slope_limb_1_col143.try_into().unwrap()).unbox();
-        let [slope_limb_2_col144]: [QM31; 1] = (*slope_limb_2_col144.try_into().unwrap()).unbox();
-        let [slope_limb_3_col145]: [QM31; 1] = (*slope_limb_3_col145.try_into().unwrap()).unbox();
-        let [slope_limb_4_col146]: [QM31; 1] = (*slope_limb_4_col146.try_into().unwrap()).unbox();
-        let [slope_limb_5_col147]: [QM31; 1] = (*slope_limb_5_col147.try_into().unwrap()).unbox();
-        let [slope_limb_6_col148]: [QM31; 1] = (*slope_limb_6_col148.try_into().unwrap()).unbox();
-        let [slope_limb_7_col149]: [QM31; 1] = (*slope_limb_7_col149.try_into().unwrap()).unbox();
-        let [slope_limb_8_col150]: [QM31; 1] = (*slope_limb_8_col150.try_into().unwrap()).unbox();
-        let [slope_limb_9_col151]: [QM31; 1] = (*slope_limb_9_col151.try_into().unwrap()).unbox();
-        let [slope_limb_10_col152]: [QM31; 1] = (*slope_limb_10_col152.try_into().unwrap()).unbox();
-        let [slope_limb_11_col153]: [QM31; 1] = (*slope_limb_11_col153.try_into().unwrap()).unbox();
-        let [slope_limb_12_col154]: [QM31; 1] = (*slope_limb_12_col154.try_into().unwrap()).unbox();
-        let [slope_limb_13_col155]: [QM31; 1] = (*slope_limb_13_col155.try_into().unwrap()).unbox();
-        let [slope_limb_14_col156]: [QM31; 1] = (*slope_limb_14_col156.try_into().unwrap()).unbox();
-        let [slope_limb_15_col157]: [QM31; 1] = (*slope_limb_15_col157.try_into().unwrap()).unbox();
-        let [slope_limb_16_col158]: [QM31; 1] = (*slope_limb_16_col158.try_into().unwrap()).unbox();
-        let [slope_limb_17_col159]: [QM31; 1] = (*slope_limb_17_col159.try_into().unwrap()).unbox();
-        let [slope_limb_18_col160]: [QM31; 1] = (*slope_limb_18_col160.try_into().unwrap()).unbox();
-        let [slope_limb_19_col161]: [QM31; 1] = (*slope_limb_19_col161.try_into().unwrap()).unbox();
-        let [slope_limb_20_col162]: [QM31; 1] = (*slope_limb_20_col162.try_into().unwrap()).unbox();
-        let [slope_limb_21_col163]: [QM31; 1] = (*slope_limb_21_col163.try_into().unwrap()).unbox();
-        let [slope_limb_22_col164]: [QM31; 1] = (*slope_limb_22_col164.try_into().unwrap()).unbox();
-        let [slope_limb_23_col165]: [QM31; 1] = (*slope_limb_23_col165.try_into().unwrap()).unbox();
-        let [slope_limb_24_col166]: [QM31; 1] = (*slope_limb_24_col166.try_into().unwrap()).unbox();
-        let [slope_limb_25_col167]: [QM31; 1] = (*slope_limb_25_col167.try_into().unwrap()).unbox();
-        let [slope_limb_26_col168]: [QM31; 1] = (*slope_limb_26_col168.try_into().unwrap()).unbox();
-        let [slope_limb_27_col169]: [QM31; 1] = (*slope_limb_27_col169.try_into().unwrap()).unbox();
-        let [k_col170]: [QM31; 1] = (*k_col170.try_into().unwrap()).unbox();
-        let [carry_0_col171]: [QM31; 1] = (*carry_0_col171.try_into().unwrap()).unbox();
-        let [carry_1_col172]: [QM31; 1] = (*carry_1_col172.try_into().unwrap()).unbox();
-        let [carry_2_col173]: [QM31; 1] = (*carry_2_col173.try_into().unwrap()).unbox();
-        let [carry_3_col174]: [QM31; 1] = (*carry_3_col174.try_into().unwrap()).unbox();
-        let [carry_4_col175]: [QM31; 1] = (*carry_4_col175.try_into().unwrap()).unbox();
-        let [carry_5_col176]: [QM31; 1] = (*carry_5_col176.try_into().unwrap()).unbox();
-        let [carry_6_col177]: [QM31; 1] = (*carry_6_col177.try_into().unwrap()).unbox();
-        let [carry_7_col178]: [QM31; 1] = (*carry_7_col178.try_into().unwrap()).unbox();
-        let [carry_8_col179]: [QM31; 1] = (*carry_8_col179.try_into().unwrap()).unbox();
-        let [carry_9_col180]: [QM31; 1] = (*carry_9_col180.try_into().unwrap()).unbox();
-        let [carry_10_col181]: [QM31; 1] = (*carry_10_col181.try_into().unwrap()).unbox();
-        let [carry_11_col182]: [QM31; 1] = (*carry_11_col182.try_into().unwrap()).unbox();
-        let [carry_12_col183]: [QM31; 1] = (*carry_12_col183.try_into().unwrap()).unbox();
-        let [carry_13_col184]: [QM31; 1] = (*carry_13_col184.try_into().unwrap()).unbox();
-        let [carry_14_col185]: [QM31; 1] = (*carry_14_col185.try_into().unwrap()).unbox();
-        let [carry_15_col186]: [QM31; 1] = (*carry_15_col186.try_into().unwrap()).unbox();
-        let [carry_16_col187]: [QM31; 1] = (*carry_16_col187.try_into().unwrap()).unbox();
-        let [carry_17_col188]: [QM31; 1] = (*carry_17_col188.try_into().unwrap()).unbox();
-        let [carry_18_col189]: [QM31; 1] = (*carry_18_col189.try_into().unwrap()).unbox();
-        let [carry_19_col190]: [QM31; 1] = (*carry_19_col190.try_into().unwrap()).unbox();
-        let [carry_20_col191]: [QM31; 1] = (*carry_20_col191.try_into().unwrap()).unbox();
-        let [carry_21_col192]: [QM31; 1] = (*carry_21_col192.try_into().unwrap()).unbox();
-        let [carry_22_col193]: [QM31; 1] = (*carry_22_col193.try_into().unwrap()).unbox();
-        let [carry_23_col194]: [QM31; 1] = (*carry_23_col194.try_into().unwrap()).unbox();
-        let [carry_24_col195]: [QM31; 1] = (*carry_24_col195.try_into().unwrap()).unbox();
-        let [carry_25_col196]: [QM31; 1] = (*carry_25_col196.try_into().unwrap()).unbox();
-        let [carry_26_col197]: [QM31; 1] = (*carry_26_col197.try_into().unwrap()).unbox();
-        let [result_x_limb_0_col198]: [QM31; 1] = (*result_x_limb_0_col198.try_into().unwrap())
+        let [slope_limb_0_col143]: [QM31; 1] = (*slope_limb_0_col143.try_into().unwrap()).unbox();
+        let [slope_limb_1_col144]: [QM31; 1] = (*slope_limb_1_col144.try_into().unwrap()).unbox();
+        let [slope_limb_2_col145]: [QM31; 1] = (*slope_limb_2_col145.try_into().unwrap()).unbox();
+        let [slope_limb_3_col146]: [QM31; 1] = (*slope_limb_3_col146.try_into().unwrap()).unbox();
+        let [slope_limb_4_col147]: [QM31; 1] = (*slope_limb_4_col147.try_into().unwrap()).unbox();
+        let [slope_limb_5_col148]: [QM31; 1] = (*slope_limb_5_col148.try_into().unwrap()).unbox();
+        let [slope_limb_6_col149]: [QM31; 1] = (*slope_limb_6_col149.try_into().unwrap()).unbox();
+        let [slope_limb_7_col150]: [QM31; 1] = (*slope_limb_7_col150.try_into().unwrap()).unbox();
+        let [slope_limb_8_col151]: [QM31; 1] = (*slope_limb_8_col151.try_into().unwrap()).unbox();
+        let [slope_limb_9_col152]: [QM31; 1] = (*slope_limb_9_col152.try_into().unwrap()).unbox();
+        let [slope_limb_10_col153]: [QM31; 1] = (*slope_limb_10_col153.try_into().unwrap()).unbox();
+        let [slope_limb_11_col154]: [QM31; 1] = (*slope_limb_11_col154.try_into().unwrap()).unbox();
+        let [slope_limb_12_col155]: [QM31; 1] = (*slope_limb_12_col155.try_into().unwrap()).unbox();
+        let [slope_limb_13_col156]: [QM31; 1] = (*slope_limb_13_col156.try_into().unwrap()).unbox();
+        let [slope_limb_14_col157]: [QM31; 1] = (*slope_limb_14_col157.try_into().unwrap()).unbox();
+        let [slope_limb_15_col158]: [QM31; 1] = (*slope_limb_15_col158.try_into().unwrap()).unbox();
+        let [slope_limb_16_col159]: [QM31; 1] = (*slope_limb_16_col159.try_into().unwrap()).unbox();
+        let [slope_limb_17_col160]: [QM31; 1] = (*slope_limb_17_col160.try_into().unwrap()).unbox();
+        let [slope_limb_18_col161]: [QM31; 1] = (*slope_limb_18_col161.try_into().unwrap()).unbox();
+        let [slope_limb_19_col162]: [QM31; 1] = (*slope_limb_19_col162.try_into().unwrap()).unbox();
+        let [slope_limb_20_col163]: [QM31; 1] = (*slope_limb_20_col163.try_into().unwrap()).unbox();
+        let [slope_limb_21_col164]: [QM31; 1] = (*slope_limb_21_col164.try_into().unwrap()).unbox();
+        let [slope_limb_22_col165]: [QM31; 1] = (*slope_limb_22_col165.try_into().unwrap()).unbox();
+        let [slope_limb_23_col166]: [QM31; 1] = (*slope_limb_23_col166.try_into().unwrap()).unbox();
+        let [slope_limb_24_col167]: [QM31; 1] = (*slope_limb_24_col167.try_into().unwrap()).unbox();
+        let [slope_limb_25_col168]: [QM31; 1] = (*slope_limb_25_col168.try_into().unwrap()).unbox();
+        let [slope_limb_26_col169]: [QM31; 1] = (*slope_limb_26_col169.try_into().unwrap()).unbox();
+        let [slope_limb_27_col170]: [QM31; 1] = (*slope_limb_27_col170.try_into().unwrap()).unbox();
+        let [k_col171]: [QM31; 1] = (*k_col171.try_into().unwrap()).unbox();
+        let [carry_0_col172]: [QM31; 1] = (*carry_0_col172.try_into().unwrap()).unbox();
+        let [carry_1_col173]: [QM31; 1] = (*carry_1_col173.try_into().unwrap()).unbox();
+        let [carry_2_col174]: [QM31; 1] = (*carry_2_col174.try_into().unwrap()).unbox();
+        let [carry_3_col175]: [QM31; 1] = (*carry_3_col175.try_into().unwrap()).unbox();
+        let [carry_4_col176]: [QM31; 1] = (*carry_4_col176.try_into().unwrap()).unbox();
+        let [carry_5_col177]: [QM31; 1] = (*carry_5_col177.try_into().unwrap()).unbox();
+        let [carry_6_col178]: [QM31; 1] = (*carry_6_col178.try_into().unwrap()).unbox();
+        let [carry_7_col179]: [QM31; 1] = (*carry_7_col179.try_into().unwrap()).unbox();
+        let [carry_8_col180]: [QM31; 1] = (*carry_8_col180.try_into().unwrap()).unbox();
+        let [carry_9_col181]: [QM31; 1] = (*carry_9_col181.try_into().unwrap()).unbox();
+        let [carry_10_col182]: [QM31; 1] = (*carry_10_col182.try_into().unwrap()).unbox();
+        let [carry_11_col183]: [QM31; 1] = (*carry_11_col183.try_into().unwrap()).unbox();
+        let [carry_12_col184]: [QM31; 1] = (*carry_12_col184.try_into().unwrap()).unbox();
+        let [carry_13_col185]: [QM31; 1] = (*carry_13_col185.try_into().unwrap()).unbox();
+        let [carry_14_col186]: [QM31; 1] = (*carry_14_col186.try_into().unwrap()).unbox();
+        let [carry_15_col187]: [QM31; 1] = (*carry_15_col187.try_into().unwrap()).unbox();
+        let [carry_16_col188]: [QM31; 1] = (*carry_16_col188.try_into().unwrap()).unbox();
+        let [carry_17_col189]: [QM31; 1] = (*carry_17_col189.try_into().unwrap()).unbox();
+        let [carry_18_col190]: [QM31; 1] = (*carry_18_col190.try_into().unwrap()).unbox();
+        let [carry_19_col191]: [QM31; 1] = (*carry_19_col191.try_into().unwrap()).unbox();
+        let [carry_20_col192]: [QM31; 1] = (*carry_20_col192.try_into().unwrap()).unbox();
+        let [carry_21_col193]: [QM31; 1] = (*carry_21_col193.try_into().unwrap()).unbox();
+        let [carry_22_col194]: [QM31; 1] = (*carry_22_col194.try_into().unwrap()).unbox();
+        let [carry_23_col195]: [QM31; 1] = (*carry_23_col195.try_into().unwrap()).unbox();
+        let [carry_24_col196]: [QM31; 1] = (*carry_24_col196.try_into().unwrap()).unbox();
+        let [carry_25_col197]: [QM31; 1] = (*carry_25_col197.try_into().unwrap()).unbox();
+        let [carry_26_col198]: [QM31; 1] = (*carry_26_col198.try_into().unwrap()).unbox();
+        let [result_x_limb_0_col199]: [QM31; 1] = (*result_x_limb_0_col199.try_into().unwrap())
             .unbox();
-        let [result_x_limb_1_col199]: [QM31; 1] = (*result_x_limb_1_col199.try_into().unwrap())
+        let [result_x_limb_1_col200]: [QM31; 1] = (*result_x_limb_1_col200.try_into().unwrap())
             .unbox();
-        let [result_x_limb_2_col200]: [QM31; 1] = (*result_x_limb_2_col200.try_into().unwrap())
+        let [result_x_limb_2_col201]: [QM31; 1] = (*result_x_limb_2_col201.try_into().unwrap())
             .unbox();
-        let [result_x_limb_3_col201]: [QM31; 1] = (*result_x_limb_3_col201.try_into().unwrap())
+        let [result_x_limb_3_col202]: [QM31; 1] = (*result_x_limb_3_col202.try_into().unwrap())
             .unbox();
-        let [result_x_limb_4_col202]: [QM31; 1] = (*result_x_limb_4_col202.try_into().unwrap())
+        let [result_x_limb_4_col203]: [QM31; 1] = (*result_x_limb_4_col203.try_into().unwrap())
             .unbox();
-        let [result_x_limb_5_col203]: [QM31; 1] = (*result_x_limb_5_col203.try_into().unwrap())
+        let [result_x_limb_5_col204]: [QM31; 1] = (*result_x_limb_5_col204.try_into().unwrap())
             .unbox();
-        let [result_x_limb_6_col204]: [QM31; 1] = (*result_x_limb_6_col204.try_into().unwrap())
+        let [result_x_limb_6_col205]: [QM31; 1] = (*result_x_limb_6_col205.try_into().unwrap())
             .unbox();
-        let [result_x_limb_7_col205]: [QM31; 1] = (*result_x_limb_7_col205.try_into().unwrap())
+        let [result_x_limb_7_col206]: [QM31; 1] = (*result_x_limb_7_col206.try_into().unwrap())
             .unbox();
-        let [result_x_limb_8_col206]: [QM31; 1] = (*result_x_limb_8_col206.try_into().unwrap())
+        let [result_x_limb_8_col207]: [QM31; 1] = (*result_x_limb_8_col207.try_into().unwrap())
             .unbox();
-        let [result_x_limb_9_col207]: [QM31; 1] = (*result_x_limb_9_col207.try_into().unwrap())
+        let [result_x_limb_9_col208]: [QM31; 1] = (*result_x_limb_9_col208.try_into().unwrap())
             .unbox();
-        let [result_x_limb_10_col208]: [QM31; 1] = (*result_x_limb_10_col208.try_into().unwrap())
+        let [result_x_limb_10_col209]: [QM31; 1] = (*result_x_limb_10_col209.try_into().unwrap())
             .unbox();
-        let [result_x_limb_11_col209]: [QM31; 1] = (*result_x_limb_11_col209.try_into().unwrap())
+        let [result_x_limb_11_col210]: [QM31; 1] = (*result_x_limb_11_col210.try_into().unwrap())
             .unbox();
-        let [result_x_limb_12_col210]: [QM31; 1] = (*result_x_limb_12_col210.try_into().unwrap())
+        let [result_x_limb_12_col211]: [QM31; 1] = (*result_x_limb_12_col211.try_into().unwrap())
             .unbox();
-        let [result_x_limb_13_col211]: [QM31; 1] = (*result_x_limb_13_col211.try_into().unwrap())
+        let [result_x_limb_13_col212]: [QM31; 1] = (*result_x_limb_13_col212.try_into().unwrap())
             .unbox();
-        let [result_x_limb_14_col212]: [QM31; 1] = (*result_x_limb_14_col212.try_into().unwrap())
+        let [result_x_limb_14_col213]: [QM31; 1] = (*result_x_limb_14_col213.try_into().unwrap())
             .unbox();
-        let [result_x_limb_15_col213]: [QM31; 1] = (*result_x_limb_15_col213.try_into().unwrap())
+        let [result_x_limb_15_col214]: [QM31; 1] = (*result_x_limb_15_col214.try_into().unwrap())
             .unbox();
-        let [result_x_limb_16_col214]: [QM31; 1] = (*result_x_limb_16_col214.try_into().unwrap())
+        let [result_x_limb_16_col215]: [QM31; 1] = (*result_x_limb_16_col215.try_into().unwrap())
             .unbox();
-        let [result_x_limb_17_col215]: [QM31; 1] = (*result_x_limb_17_col215.try_into().unwrap())
+        let [result_x_limb_17_col216]: [QM31; 1] = (*result_x_limb_17_col216.try_into().unwrap())
             .unbox();
-        let [result_x_limb_18_col216]: [QM31; 1] = (*result_x_limb_18_col216.try_into().unwrap())
+        let [result_x_limb_18_col217]: [QM31; 1] = (*result_x_limb_18_col217.try_into().unwrap())
             .unbox();
-        let [result_x_limb_19_col217]: [QM31; 1] = (*result_x_limb_19_col217.try_into().unwrap())
+        let [result_x_limb_19_col218]: [QM31; 1] = (*result_x_limb_19_col218.try_into().unwrap())
             .unbox();
-        let [result_x_limb_20_col218]: [QM31; 1] = (*result_x_limb_20_col218.try_into().unwrap())
+        let [result_x_limb_20_col219]: [QM31; 1] = (*result_x_limb_20_col219.try_into().unwrap())
             .unbox();
-        let [result_x_limb_21_col219]: [QM31; 1] = (*result_x_limb_21_col219.try_into().unwrap())
+        let [result_x_limb_21_col220]: [QM31; 1] = (*result_x_limb_21_col220.try_into().unwrap())
             .unbox();
-        let [result_x_limb_22_col220]: [QM31; 1] = (*result_x_limb_22_col220.try_into().unwrap())
+        let [result_x_limb_22_col221]: [QM31; 1] = (*result_x_limb_22_col221.try_into().unwrap())
             .unbox();
-        let [result_x_limb_23_col221]: [QM31; 1] = (*result_x_limb_23_col221.try_into().unwrap())
+        let [result_x_limb_23_col222]: [QM31; 1] = (*result_x_limb_23_col222.try_into().unwrap())
             .unbox();
-        let [result_x_limb_24_col222]: [QM31; 1] = (*result_x_limb_24_col222.try_into().unwrap())
+        let [result_x_limb_24_col223]: [QM31; 1] = (*result_x_limb_24_col223.try_into().unwrap())
             .unbox();
-        let [result_x_limb_25_col223]: [QM31; 1] = (*result_x_limb_25_col223.try_into().unwrap())
+        let [result_x_limb_25_col224]: [QM31; 1] = (*result_x_limb_25_col224.try_into().unwrap())
             .unbox();
-        let [result_x_limb_26_col224]: [QM31; 1] = (*result_x_limb_26_col224.try_into().unwrap())
+        let [result_x_limb_26_col225]: [QM31; 1] = (*result_x_limb_26_col225.try_into().unwrap())
             .unbox();
-        let [result_x_limb_27_col225]: [QM31; 1] = (*result_x_limb_27_col225.try_into().unwrap())
+        let [result_x_limb_27_col226]: [QM31; 1] = (*result_x_limb_27_col226.try_into().unwrap())
             .unbox();
-        let [k_col226]: [QM31; 1] = (*k_col226.try_into().unwrap()).unbox();
-        let [carry_0_col227]: [QM31; 1] = (*carry_0_col227.try_into().unwrap()).unbox();
-        let [carry_1_col228]: [QM31; 1] = (*carry_1_col228.try_into().unwrap()).unbox();
-        let [carry_2_col229]: [QM31; 1] = (*carry_2_col229.try_into().unwrap()).unbox();
-        let [carry_3_col230]: [QM31; 1] = (*carry_3_col230.try_into().unwrap()).unbox();
-        let [carry_4_col231]: [QM31; 1] = (*carry_4_col231.try_into().unwrap()).unbox();
-        let [carry_5_col232]: [QM31; 1] = (*carry_5_col232.try_into().unwrap()).unbox();
-        let [carry_6_col233]: [QM31; 1] = (*carry_6_col233.try_into().unwrap()).unbox();
-        let [carry_7_col234]: [QM31; 1] = (*carry_7_col234.try_into().unwrap()).unbox();
-        let [carry_8_col235]: [QM31; 1] = (*carry_8_col235.try_into().unwrap()).unbox();
-        let [carry_9_col236]: [QM31; 1] = (*carry_9_col236.try_into().unwrap()).unbox();
-        let [carry_10_col237]: [QM31; 1] = (*carry_10_col237.try_into().unwrap()).unbox();
-        let [carry_11_col238]: [QM31; 1] = (*carry_11_col238.try_into().unwrap()).unbox();
-        let [carry_12_col239]: [QM31; 1] = (*carry_12_col239.try_into().unwrap()).unbox();
-        let [carry_13_col240]: [QM31; 1] = (*carry_13_col240.try_into().unwrap()).unbox();
-        let [carry_14_col241]: [QM31; 1] = (*carry_14_col241.try_into().unwrap()).unbox();
-        let [carry_15_col242]: [QM31; 1] = (*carry_15_col242.try_into().unwrap()).unbox();
-        let [carry_16_col243]: [QM31; 1] = (*carry_16_col243.try_into().unwrap()).unbox();
-        let [carry_17_col244]: [QM31; 1] = (*carry_17_col244.try_into().unwrap()).unbox();
-        let [carry_18_col245]: [QM31; 1] = (*carry_18_col245.try_into().unwrap()).unbox();
-        let [carry_19_col246]: [QM31; 1] = (*carry_19_col246.try_into().unwrap()).unbox();
-        let [carry_20_col247]: [QM31; 1] = (*carry_20_col247.try_into().unwrap()).unbox();
-        let [carry_21_col248]: [QM31; 1] = (*carry_21_col248.try_into().unwrap()).unbox();
-        let [carry_22_col249]: [QM31; 1] = (*carry_22_col249.try_into().unwrap()).unbox();
-        let [carry_23_col250]: [QM31; 1] = (*carry_23_col250.try_into().unwrap()).unbox();
-        let [carry_24_col251]: [QM31; 1] = (*carry_24_col251.try_into().unwrap()).unbox();
-        let [carry_25_col252]: [QM31; 1] = (*carry_25_col252.try_into().unwrap()).unbox();
-        let [carry_26_col253]: [QM31; 1] = (*carry_26_col253.try_into().unwrap()).unbox();
-        let [result_y_limb_0_col254]: [QM31; 1] = (*result_y_limb_0_col254.try_into().unwrap())
+        let [k_col227]: [QM31; 1] = (*k_col227.try_into().unwrap()).unbox();
+        let [carry_0_col228]: [QM31; 1] = (*carry_0_col228.try_into().unwrap()).unbox();
+        let [carry_1_col229]: [QM31; 1] = (*carry_1_col229.try_into().unwrap()).unbox();
+        let [carry_2_col230]: [QM31; 1] = (*carry_2_col230.try_into().unwrap()).unbox();
+        let [carry_3_col231]: [QM31; 1] = (*carry_3_col231.try_into().unwrap()).unbox();
+        let [carry_4_col232]: [QM31; 1] = (*carry_4_col232.try_into().unwrap()).unbox();
+        let [carry_5_col233]: [QM31; 1] = (*carry_5_col233.try_into().unwrap()).unbox();
+        let [carry_6_col234]: [QM31; 1] = (*carry_6_col234.try_into().unwrap()).unbox();
+        let [carry_7_col235]: [QM31; 1] = (*carry_7_col235.try_into().unwrap()).unbox();
+        let [carry_8_col236]: [QM31; 1] = (*carry_8_col236.try_into().unwrap()).unbox();
+        let [carry_9_col237]: [QM31; 1] = (*carry_9_col237.try_into().unwrap()).unbox();
+        let [carry_10_col238]: [QM31; 1] = (*carry_10_col238.try_into().unwrap()).unbox();
+        let [carry_11_col239]: [QM31; 1] = (*carry_11_col239.try_into().unwrap()).unbox();
+        let [carry_12_col240]: [QM31; 1] = (*carry_12_col240.try_into().unwrap()).unbox();
+        let [carry_13_col241]: [QM31; 1] = (*carry_13_col241.try_into().unwrap()).unbox();
+        let [carry_14_col242]: [QM31; 1] = (*carry_14_col242.try_into().unwrap()).unbox();
+        let [carry_15_col243]: [QM31; 1] = (*carry_15_col243.try_into().unwrap()).unbox();
+        let [carry_16_col244]: [QM31; 1] = (*carry_16_col244.try_into().unwrap()).unbox();
+        let [carry_17_col245]: [QM31; 1] = (*carry_17_col245.try_into().unwrap()).unbox();
+        let [carry_18_col246]: [QM31; 1] = (*carry_18_col246.try_into().unwrap()).unbox();
+        let [carry_19_col247]: [QM31; 1] = (*carry_19_col247.try_into().unwrap()).unbox();
+        let [carry_20_col248]: [QM31; 1] = (*carry_20_col248.try_into().unwrap()).unbox();
+        let [carry_21_col249]: [QM31; 1] = (*carry_21_col249.try_into().unwrap()).unbox();
+        let [carry_22_col250]: [QM31; 1] = (*carry_22_col250.try_into().unwrap()).unbox();
+        let [carry_23_col251]: [QM31; 1] = (*carry_23_col251.try_into().unwrap()).unbox();
+        let [carry_24_col252]: [QM31; 1] = (*carry_24_col252.try_into().unwrap()).unbox();
+        let [carry_25_col253]: [QM31; 1] = (*carry_25_col253.try_into().unwrap()).unbox();
+        let [carry_26_col254]: [QM31; 1] = (*carry_26_col254.try_into().unwrap()).unbox();
+        let [result_y_limb_0_col255]: [QM31; 1] = (*result_y_limb_0_col255.try_into().unwrap())
             .unbox();
-        let [result_y_limb_1_col255]: [QM31; 1] = (*result_y_limb_1_col255.try_into().unwrap())
+        let [result_y_limb_1_col256]: [QM31; 1] = (*result_y_limb_1_col256.try_into().unwrap())
             .unbox();
-        let [result_y_limb_2_col256]: [QM31; 1] = (*result_y_limb_2_col256.try_into().unwrap())
+        let [result_y_limb_2_col257]: [QM31; 1] = (*result_y_limb_2_col257.try_into().unwrap())
             .unbox();
-        let [result_y_limb_3_col257]: [QM31; 1] = (*result_y_limb_3_col257.try_into().unwrap())
+        let [result_y_limb_3_col258]: [QM31; 1] = (*result_y_limb_3_col258.try_into().unwrap())
             .unbox();
-        let [result_y_limb_4_col258]: [QM31; 1] = (*result_y_limb_4_col258.try_into().unwrap())
+        let [result_y_limb_4_col259]: [QM31; 1] = (*result_y_limb_4_col259.try_into().unwrap())
             .unbox();
-        let [result_y_limb_5_col259]: [QM31; 1] = (*result_y_limb_5_col259.try_into().unwrap())
+        let [result_y_limb_5_col260]: [QM31; 1] = (*result_y_limb_5_col260.try_into().unwrap())
             .unbox();
-        let [result_y_limb_6_col260]: [QM31; 1] = (*result_y_limb_6_col260.try_into().unwrap())
+        let [result_y_limb_6_col261]: [QM31; 1] = (*result_y_limb_6_col261.try_into().unwrap())
             .unbox();
-        let [result_y_limb_7_col261]: [QM31; 1] = (*result_y_limb_7_col261.try_into().unwrap())
+        let [result_y_limb_7_col262]: [QM31; 1] = (*result_y_limb_7_col262.try_into().unwrap())
             .unbox();
-        let [result_y_limb_8_col262]: [QM31; 1] = (*result_y_limb_8_col262.try_into().unwrap())
+        let [result_y_limb_8_col263]: [QM31; 1] = (*result_y_limb_8_col263.try_into().unwrap())
             .unbox();
-        let [result_y_limb_9_col263]: [QM31; 1] = (*result_y_limb_9_col263.try_into().unwrap())
+        let [result_y_limb_9_col264]: [QM31; 1] = (*result_y_limb_9_col264.try_into().unwrap())
             .unbox();
-        let [result_y_limb_10_col264]: [QM31; 1] = (*result_y_limb_10_col264.try_into().unwrap())
+        let [result_y_limb_10_col265]: [QM31; 1] = (*result_y_limb_10_col265.try_into().unwrap())
             .unbox();
-        let [result_y_limb_11_col265]: [QM31; 1] = (*result_y_limb_11_col265.try_into().unwrap())
+        let [result_y_limb_11_col266]: [QM31; 1] = (*result_y_limb_11_col266.try_into().unwrap())
             .unbox();
-        let [result_y_limb_12_col266]: [QM31; 1] = (*result_y_limb_12_col266.try_into().unwrap())
+        let [result_y_limb_12_col267]: [QM31; 1] = (*result_y_limb_12_col267.try_into().unwrap())
             .unbox();
-        let [result_y_limb_13_col267]: [QM31; 1] = (*result_y_limb_13_col267.try_into().unwrap())
+        let [result_y_limb_13_col268]: [QM31; 1] = (*result_y_limb_13_col268.try_into().unwrap())
             .unbox();
-        let [result_y_limb_14_col268]: [QM31; 1] = (*result_y_limb_14_col268.try_into().unwrap())
+        let [result_y_limb_14_col269]: [QM31; 1] = (*result_y_limb_14_col269.try_into().unwrap())
             .unbox();
-        let [result_y_limb_15_col269]: [QM31; 1] = (*result_y_limb_15_col269.try_into().unwrap())
+        let [result_y_limb_15_col270]: [QM31; 1] = (*result_y_limb_15_col270.try_into().unwrap())
             .unbox();
-        let [result_y_limb_16_col270]: [QM31; 1] = (*result_y_limb_16_col270.try_into().unwrap())
+        let [result_y_limb_16_col271]: [QM31; 1] = (*result_y_limb_16_col271.try_into().unwrap())
             .unbox();
-        let [result_y_limb_17_col271]: [QM31; 1] = (*result_y_limb_17_col271.try_into().unwrap())
+        let [result_y_limb_17_col272]: [QM31; 1] = (*result_y_limb_17_col272.try_into().unwrap())
             .unbox();
-        let [result_y_limb_18_col272]: [QM31; 1] = (*result_y_limb_18_col272.try_into().unwrap())
+        let [result_y_limb_18_col273]: [QM31; 1] = (*result_y_limb_18_col273.try_into().unwrap())
             .unbox();
-        let [result_y_limb_19_col273]: [QM31; 1] = (*result_y_limb_19_col273.try_into().unwrap())
+        let [result_y_limb_19_col274]: [QM31; 1] = (*result_y_limb_19_col274.try_into().unwrap())
             .unbox();
-        let [result_y_limb_20_col274]: [QM31; 1] = (*result_y_limb_20_col274.try_into().unwrap())
+        let [result_y_limb_20_col275]: [QM31; 1] = (*result_y_limb_20_col275.try_into().unwrap())
             .unbox();
-        let [result_y_limb_21_col275]: [QM31; 1] = (*result_y_limb_21_col275.try_into().unwrap())
+        let [result_y_limb_21_col276]: [QM31; 1] = (*result_y_limb_21_col276.try_into().unwrap())
             .unbox();
-        let [result_y_limb_22_col276]: [QM31; 1] = (*result_y_limb_22_col276.try_into().unwrap())
+        let [result_y_limb_22_col277]: [QM31; 1] = (*result_y_limb_22_col277.try_into().unwrap())
             .unbox();
-        let [result_y_limb_23_col277]: [QM31; 1] = (*result_y_limb_23_col277.try_into().unwrap())
+        let [result_y_limb_23_col278]: [QM31; 1] = (*result_y_limb_23_col278.try_into().unwrap())
             .unbox();
-        let [result_y_limb_24_col278]: [QM31; 1] = (*result_y_limb_24_col278.try_into().unwrap())
+        let [result_y_limb_24_col279]: [QM31; 1] = (*result_y_limb_24_col279.try_into().unwrap())
             .unbox();
-        let [result_y_limb_25_col279]: [QM31; 1] = (*result_y_limb_25_col279.try_into().unwrap())
+        let [result_y_limb_25_col280]: [QM31; 1] = (*result_y_limb_25_col280.try_into().unwrap())
             .unbox();
-        let [result_y_limb_26_col280]: [QM31; 1] = (*result_y_limb_26_col280.try_into().unwrap())
+        let [result_y_limb_26_col281]: [QM31; 1] = (*result_y_limb_26_col281.try_into().unwrap())
             .unbox();
-        let [result_y_limb_27_col281]: [QM31; 1] = (*result_y_limb_27_col281.try_into().unwrap())
+        let [result_y_limb_27_col282]: [QM31; 1] = (*result_y_limb_27_col282.try_into().unwrap())
             .unbox();
-        let [k_col282]: [QM31; 1] = (*k_col282.try_into().unwrap()).unbox();
-        let [carry_0_col283]: [QM31; 1] = (*carry_0_col283.try_into().unwrap()).unbox();
-        let [carry_1_col284]: [QM31; 1] = (*carry_1_col284.try_into().unwrap()).unbox();
-        let [carry_2_col285]: [QM31; 1] = (*carry_2_col285.try_into().unwrap()).unbox();
-        let [carry_3_col286]: [QM31; 1] = (*carry_3_col286.try_into().unwrap()).unbox();
-        let [carry_4_col287]: [QM31; 1] = (*carry_4_col287.try_into().unwrap()).unbox();
-        let [carry_5_col288]: [QM31; 1] = (*carry_5_col288.try_into().unwrap()).unbox();
-        let [carry_6_col289]: [QM31; 1] = (*carry_6_col289.try_into().unwrap()).unbox();
-        let [carry_7_col290]: [QM31; 1] = (*carry_7_col290.try_into().unwrap()).unbox();
-        let [carry_8_col291]: [QM31; 1] = (*carry_8_col291.try_into().unwrap()).unbox();
-        let [carry_9_col292]: [QM31; 1] = (*carry_9_col292.try_into().unwrap()).unbox();
-        let [carry_10_col293]: [QM31; 1] = (*carry_10_col293.try_into().unwrap()).unbox();
-        let [carry_11_col294]: [QM31; 1] = (*carry_11_col294.try_into().unwrap()).unbox();
-        let [carry_12_col295]: [QM31; 1] = (*carry_12_col295.try_into().unwrap()).unbox();
-        let [carry_13_col296]: [QM31; 1] = (*carry_13_col296.try_into().unwrap()).unbox();
-        let [carry_14_col297]: [QM31; 1] = (*carry_14_col297.try_into().unwrap()).unbox();
-        let [carry_15_col298]: [QM31; 1] = (*carry_15_col298.try_into().unwrap()).unbox();
-        let [carry_16_col299]: [QM31; 1] = (*carry_16_col299.try_into().unwrap()).unbox();
-        let [carry_17_col300]: [QM31; 1] = (*carry_17_col300.try_into().unwrap()).unbox();
-        let [carry_18_col301]: [QM31; 1] = (*carry_18_col301.try_into().unwrap()).unbox();
-        let [carry_19_col302]: [QM31; 1] = (*carry_19_col302.try_into().unwrap()).unbox();
-        let [carry_20_col303]: [QM31; 1] = (*carry_20_col303.try_into().unwrap()).unbox();
-        let [carry_21_col304]: [QM31; 1] = (*carry_21_col304.try_into().unwrap()).unbox();
-        let [carry_22_col305]: [QM31; 1] = (*carry_22_col305.try_into().unwrap()).unbox();
-        let [carry_23_col306]: [QM31; 1] = (*carry_23_col306.try_into().unwrap()).unbox();
-        let [carry_24_col307]: [QM31; 1] = (*carry_24_col307.try_into().unwrap()).unbox();
-        let [carry_25_col308]: [QM31; 1] = (*carry_25_col308.try_into().unwrap()).unbox();
-        let [carry_26_col309]: [QM31; 1] = (*carry_26_col309.try_into().unwrap()).unbox();
-        let [enabler_col310]: [QM31; 1] = (*enabler_col310.try_into().unwrap()).unbox();
+        let [k_col283]: [QM31; 1] = (*k_col283.try_into().unwrap()).unbox();
+        let [carry_0_col284]: [QM31; 1] = (*carry_0_col284.try_into().unwrap()).unbox();
+        let [carry_1_col285]: [QM31; 1] = (*carry_1_col285.try_into().unwrap()).unbox();
+        let [carry_2_col286]: [QM31; 1] = (*carry_2_col286.try_into().unwrap()).unbox();
+        let [carry_3_col287]: [QM31; 1] = (*carry_3_col287.try_into().unwrap()).unbox();
+        let [carry_4_col288]: [QM31; 1] = (*carry_4_col288.try_into().unwrap()).unbox();
+        let [carry_5_col289]: [QM31; 1] = (*carry_5_col289.try_into().unwrap()).unbox();
+        let [carry_6_col290]: [QM31; 1] = (*carry_6_col290.try_into().unwrap()).unbox();
+        let [carry_7_col291]: [QM31; 1] = (*carry_7_col291.try_into().unwrap()).unbox();
+        let [carry_8_col292]: [QM31; 1] = (*carry_8_col292.try_into().unwrap()).unbox();
+        let [carry_9_col293]: [QM31; 1] = (*carry_9_col293.try_into().unwrap()).unbox();
+        let [carry_10_col294]: [QM31; 1] = (*carry_10_col294.try_into().unwrap()).unbox();
+        let [carry_11_col295]: [QM31; 1] = (*carry_11_col295.try_into().unwrap()).unbox();
+        let [carry_12_col296]: [QM31; 1] = (*carry_12_col296.try_into().unwrap()).unbox();
+        let [carry_13_col297]: [QM31; 1] = (*carry_13_col297.try_into().unwrap()).unbox();
+        let [carry_14_col298]: [QM31; 1] = (*carry_14_col298.try_into().unwrap()).unbox();
+        let [carry_15_col299]: [QM31; 1] = (*carry_15_col299.try_into().unwrap()).unbox();
+        let [carry_16_col300]: [QM31; 1] = (*carry_16_col300.try_into().unwrap()).unbox();
+        let [carry_17_col301]: [QM31; 1] = (*carry_17_col301.try_into().unwrap()).unbox();
+        let [carry_18_col302]: [QM31; 1] = (*carry_18_col302.try_into().unwrap()).unbox();
+        let [carry_19_col303]: [QM31; 1] = (*carry_19_col303.try_into().unwrap()).unbox();
+        let [carry_20_col304]: [QM31; 1] = (*carry_20_col304.try_into().unwrap()).unbox();
+        let [carry_21_col305]: [QM31; 1] = (*carry_21_col305.try_into().unwrap()).unbox();
+        let [carry_22_col306]: [QM31; 1] = (*carry_22_col306.try_into().unwrap()).unbox();
+        let [carry_23_col307]: [QM31; 1] = (*carry_23_col307.try_into().unwrap()).unbox();
+        let [carry_24_col308]: [QM31; 1] = (*carry_24_col308.try_into().unwrap()).unbox();
+        let [carry_25_col309]: [QM31; 1] = (*carry_25_col309.try_into().unwrap()).unbox();
+        let [carry_26_col310]: [QM31; 1] = (*carry_26_col310.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
+
+        // Constraint - Enabler is a bit
+        let constraint_quotient = (((enabler_col0 * enabler_col0) - enabler_col0));
+        sum = sum * random_coeff + constraint_quotient;
 
         pedersen_points_table_window_bits_9_sum_0 = self
             .common_lookup_elements
             .combine_qm31(
                 [
                     qm31_const::<1791500038, 0, 0, 0>(),
-                    ((qm31_const::<512, 0, 0, 0>() * input_limb_1_col1) + input_limb_2_col2),
-                    pedersen_points_table_window_bits_9_output_limb_0_col86,
-                    pedersen_points_table_window_bits_9_output_limb_1_col87,
-                    pedersen_points_table_window_bits_9_output_limb_2_col88,
-                    pedersen_points_table_window_bits_9_output_limb_3_col89,
-                    pedersen_points_table_window_bits_9_output_limb_4_col90,
-                    pedersen_points_table_window_bits_9_output_limb_5_col91,
-                    pedersen_points_table_window_bits_9_output_limb_6_col92,
-                    pedersen_points_table_window_bits_9_output_limb_7_col93,
-                    pedersen_points_table_window_bits_9_output_limb_8_col94,
-                    pedersen_points_table_window_bits_9_output_limb_9_col95,
-                    pedersen_points_table_window_bits_9_output_limb_10_col96,
-                    pedersen_points_table_window_bits_9_output_limb_11_col97,
-                    pedersen_points_table_window_bits_9_output_limb_12_col98,
-                    pedersen_points_table_window_bits_9_output_limb_13_col99,
-                    pedersen_points_table_window_bits_9_output_limb_14_col100,
-                    pedersen_points_table_window_bits_9_output_limb_15_col101,
-                    pedersen_points_table_window_bits_9_output_limb_16_col102,
-                    pedersen_points_table_window_bits_9_output_limb_17_col103,
-                    pedersen_points_table_window_bits_9_output_limb_18_col104,
-                    pedersen_points_table_window_bits_9_output_limb_19_col105,
-                    pedersen_points_table_window_bits_9_output_limb_20_col106,
-                    pedersen_points_table_window_bits_9_output_limb_21_col107,
-                    pedersen_points_table_window_bits_9_output_limb_22_col108,
-                    pedersen_points_table_window_bits_9_output_limb_23_col109,
-                    pedersen_points_table_window_bits_9_output_limb_24_col110,
-                    pedersen_points_table_window_bits_9_output_limb_25_col111,
-                    pedersen_points_table_window_bits_9_output_limb_26_col112,
-                    pedersen_points_table_window_bits_9_output_limb_27_col113,
-                    pedersen_points_table_window_bits_9_output_limb_28_col114,
-                    pedersen_points_table_window_bits_9_output_limb_29_col115,
-                    pedersen_points_table_window_bits_9_output_limb_30_col116,
-                    pedersen_points_table_window_bits_9_output_limb_31_col117,
-                    pedersen_points_table_window_bits_9_output_limb_32_col118,
-                    pedersen_points_table_window_bits_9_output_limb_33_col119,
-                    pedersen_points_table_window_bits_9_output_limb_34_col120,
-                    pedersen_points_table_window_bits_9_output_limb_35_col121,
-                    pedersen_points_table_window_bits_9_output_limb_36_col122,
-                    pedersen_points_table_window_bits_9_output_limb_37_col123,
-                    pedersen_points_table_window_bits_9_output_limb_38_col124,
-                    pedersen_points_table_window_bits_9_output_limb_39_col125,
-                    pedersen_points_table_window_bits_9_output_limb_40_col126,
-                    pedersen_points_table_window_bits_9_output_limb_41_col127,
-                    pedersen_points_table_window_bits_9_output_limb_42_col128,
-                    pedersen_points_table_window_bits_9_output_limb_43_col129,
-                    pedersen_points_table_window_bits_9_output_limb_44_col130,
-                    pedersen_points_table_window_bits_9_output_limb_45_col131,
-                    pedersen_points_table_window_bits_9_output_limb_46_col132,
-                    pedersen_points_table_window_bits_9_output_limb_47_col133,
-                    pedersen_points_table_window_bits_9_output_limb_48_col134,
-                    pedersen_points_table_window_bits_9_output_limb_49_col135,
-                    pedersen_points_table_window_bits_9_output_limb_50_col136,
-                    pedersen_points_table_window_bits_9_output_limb_51_col137,
-                    pedersen_points_table_window_bits_9_output_limb_52_col138,
-                    pedersen_points_table_window_bits_9_output_limb_53_col139,
-                    pedersen_points_table_window_bits_9_output_limb_54_col140,
-                    pedersen_points_table_window_bits_9_output_limb_55_col141,
+                    ((qm31_const::<512, 0, 0, 0>() * input_limb_1_col2) + input_limb_2_col3),
+                    pedersen_points_table_window_bits_9_output_limb_0_col87,
+                    pedersen_points_table_window_bits_9_output_limb_1_col88,
+                    pedersen_points_table_window_bits_9_output_limb_2_col89,
+                    pedersen_points_table_window_bits_9_output_limb_3_col90,
+                    pedersen_points_table_window_bits_9_output_limb_4_col91,
+                    pedersen_points_table_window_bits_9_output_limb_5_col92,
+                    pedersen_points_table_window_bits_9_output_limb_6_col93,
+                    pedersen_points_table_window_bits_9_output_limb_7_col94,
+                    pedersen_points_table_window_bits_9_output_limb_8_col95,
+                    pedersen_points_table_window_bits_9_output_limb_9_col96,
+                    pedersen_points_table_window_bits_9_output_limb_10_col97,
+                    pedersen_points_table_window_bits_9_output_limb_11_col98,
+                    pedersen_points_table_window_bits_9_output_limb_12_col99,
+                    pedersen_points_table_window_bits_9_output_limb_13_col100,
+                    pedersen_points_table_window_bits_9_output_limb_14_col101,
+                    pedersen_points_table_window_bits_9_output_limb_15_col102,
+                    pedersen_points_table_window_bits_9_output_limb_16_col103,
+                    pedersen_points_table_window_bits_9_output_limb_17_col104,
+                    pedersen_points_table_window_bits_9_output_limb_18_col105,
+                    pedersen_points_table_window_bits_9_output_limb_19_col106,
+                    pedersen_points_table_window_bits_9_output_limb_20_col107,
+                    pedersen_points_table_window_bits_9_output_limb_21_col108,
+                    pedersen_points_table_window_bits_9_output_limb_22_col109,
+                    pedersen_points_table_window_bits_9_output_limb_23_col110,
+                    pedersen_points_table_window_bits_9_output_limb_24_col111,
+                    pedersen_points_table_window_bits_9_output_limb_25_col112,
+                    pedersen_points_table_window_bits_9_output_limb_26_col113,
+                    pedersen_points_table_window_bits_9_output_limb_27_col114,
+                    pedersen_points_table_window_bits_9_output_limb_28_col115,
+                    pedersen_points_table_window_bits_9_output_limb_29_col116,
+                    pedersen_points_table_window_bits_9_output_limb_30_col117,
+                    pedersen_points_table_window_bits_9_output_limb_31_col118,
+                    pedersen_points_table_window_bits_9_output_limb_32_col119,
+                    pedersen_points_table_window_bits_9_output_limb_33_col120,
+                    pedersen_points_table_window_bits_9_output_limb_34_col121,
+                    pedersen_points_table_window_bits_9_output_limb_35_col122,
+                    pedersen_points_table_window_bits_9_output_limb_36_col123,
+                    pedersen_points_table_window_bits_9_output_limb_37_col124,
+                    pedersen_points_table_window_bits_9_output_limb_38_col125,
+                    pedersen_points_table_window_bits_9_output_limb_39_col126,
+                    pedersen_points_table_window_bits_9_output_limb_40_col127,
+                    pedersen_points_table_window_bits_9_output_limb_41_col128,
+                    pedersen_points_table_window_bits_9_output_limb_42_col129,
+                    pedersen_points_table_window_bits_9_output_limb_43_col130,
+                    pedersen_points_table_window_bits_9_output_limb_44_col131,
+                    pedersen_points_table_window_bits_9_output_limb_45_col132,
+                    pedersen_points_table_window_bits_9_output_limb_46_col133,
+                    pedersen_points_table_window_bits_9_output_limb_47_col134,
+                    pedersen_points_table_window_bits_9_output_limb_48_col135,
+                    pedersen_points_table_window_bits_9_output_limb_49_col136,
+                    pedersen_points_table_window_bits_9_output_limb_50_col137,
+                    pedersen_points_table_window_bits_9_output_limb_51_col138,
+                    pedersen_points_table_window_bits_9_output_limb_52_col139,
+                    pedersen_points_table_window_bits_9_output_limb_53_col140,
+                    pedersen_points_table_window_bits_9_output_limb_54_col141,
+                    pedersen_points_table_window_bits_9_output_limb_55_col142,
                 ]
                     .span(),
             );
-        numerator_0 = qm31_const::<1, 0, 0, 0>();
+        numerator_0 = enabler_col0;
         ec_add_evaluate(
             [
-                input_limb_30_col30, input_limb_31_col31, input_limb_32_col32, input_limb_33_col33,
-                input_limb_34_col34, input_limb_35_col35, input_limb_36_col36, input_limb_37_col37,
-                input_limb_38_col38, input_limb_39_col39, input_limb_40_col40, input_limb_41_col41,
-                input_limb_42_col42, input_limb_43_col43, input_limb_44_col44, input_limb_45_col45,
-                input_limb_46_col46, input_limb_47_col47, input_limb_48_col48, input_limb_49_col49,
-                input_limb_50_col50, input_limb_51_col51, input_limb_52_col52, input_limb_53_col53,
-                input_limb_54_col54, input_limb_55_col55, input_limb_56_col56, input_limb_57_col57,
-                input_limb_58_col58, input_limb_59_col59, input_limb_60_col60, input_limb_61_col61,
-                input_limb_62_col62, input_limb_63_col63, input_limb_64_col64, input_limb_65_col65,
-                input_limb_66_col66, input_limb_67_col67, input_limb_68_col68, input_limb_69_col69,
-                input_limb_70_col70, input_limb_71_col71, input_limb_72_col72, input_limb_73_col73,
-                input_limb_74_col74, input_limb_75_col75, input_limb_76_col76, input_limb_77_col77,
-                input_limb_78_col78, input_limb_79_col79, input_limb_80_col80, input_limb_81_col81,
-                input_limb_82_col82, input_limb_83_col83, input_limb_84_col84, input_limb_85_col85,
-                pedersen_points_table_window_bits_9_output_limb_0_col86,
-                pedersen_points_table_window_bits_9_output_limb_1_col87,
-                pedersen_points_table_window_bits_9_output_limb_2_col88,
-                pedersen_points_table_window_bits_9_output_limb_3_col89,
-                pedersen_points_table_window_bits_9_output_limb_4_col90,
-                pedersen_points_table_window_bits_9_output_limb_5_col91,
-                pedersen_points_table_window_bits_9_output_limb_6_col92,
-                pedersen_points_table_window_bits_9_output_limb_7_col93,
-                pedersen_points_table_window_bits_9_output_limb_8_col94,
-                pedersen_points_table_window_bits_9_output_limb_9_col95,
-                pedersen_points_table_window_bits_9_output_limb_10_col96,
-                pedersen_points_table_window_bits_9_output_limb_11_col97,
-                pedersen_points_table_window_bits_9_output_limb_12_col98,
-                pedersen_points_table_window_bits_9_output_limb_13_col99,
-                pedersen_points_table_window_bits_9_output_limb_14_col100,
-                pedersen_points_table_window_bits_9_output_limb_15_col101,
-                pedersen_points_table_window_bits_9_output_limb_16_col102,
-                pedersen_points_table_window_bits_9_output_limb_17_col103,
-                pedersen_points_table_window_bits_9_output_limb_18_col104,
-                pedersen_points_table_window_bits_9_output_limb_19_col105,
-                pedersen_points_table_window_bits_9_output_limb_20_col106,
-                pedersen_points_table_window_bits_9_output_limb_21_col107,
-                pedersen_points_table_window_bits_9_output_limb_22_col108,
-                pedersen_points_table_window_bits_9_output_limb_23_col109,
-                pedersen_points_table_window_bits_9_output_limb_24_col110,
-                pedersen_points_table_window_bits_9_output_limb_25_col111,
-                pedersen_points_table_window_bits_9_output_limb_26_col112,
-                pedersen_points_table_window_bits_9_output_limb_27_col113,
-                pedersen_points_table_window_bits_9_output_limb_28_col114,
-                pedersen_points_table_window_bits_9_output_limb_29_col115,
-                pedersen_points_table_window_bits_9_output_limb_30_col116,
-                pedersen_points_table_window_bits_9_output_limb_31_col117,
-                pedersen_points_table_window_bits_9_output_limb_32_col118,
-                pedersen_points_table_window_bits_9_output_limb_33_col119,
-                pedersen_points_table_window_bits_9_output_limb_34_col120,
-                pedersen_points_table_window_bits_9_output_limb_35_col121,
-                pedersen_points_table_window_bits_9_output_limb_36_col122,
-                pedersen_points_table_window_bits_9_output_limb_37_col123,
-                pedersen_points_table_window_bits_9_output_limb_38_col124,
-                pedersen_points_table_window_bits_9_output_limb_39_col125,
-                pedersen_points_table_window_bits_9_output_limb_40_col126,
-                pedersen_points_table_window_bits_9_output_limb_41_col127,
-                pedersen_points_table_window_bits_9_output_limb_42_col128,
-                pedersen_points_table_window_bits_9_output_limb_43_col129,
-                pedersen_points_table_window_bits_9_output_limb_44_col130,
-                pedersen_points_table_window_bits_9_output_limb_45_col131,
-                pedersen_points_table_window_bits_9_output_limb_46_col132,
-                pedersen_points_table_window_bits_9_output_limb_47_col133,
-                pedersen_points_table_window_bits_9_output_limb_48_col134,
-                pedersen_points_table_window_bits_9_output_limb_49_col135,
-                pedersen_points_table_window_bits_9_output_limb_50_col136,
-                pedersen_points_table_window_bits_9_output_limb_51_col137,
-                pedersen_points_table_window_bits_9_output_limb_52_col138,
-                pedersen_points_table_window_bits_9_output_limb_53_col139,
-                pedersen_points_table_window_bits_9_output_limb_54_col140,
-                pedersen_points_table_window_bits_9_output_limb_55_col141,
+                input_limb_30_col31, input_limb_31_col32, input_limb_32_col33, input_limb_33_col34,
+                input_limb_34_col35, input_limb_35_col36, input_limb_36_col37, input_limb_37_col38,
+                input_limb_38_col39, input_limb_39_col40, input_limb_40_col41, input_limb_41_col42,
+                input_limb_42_col43, input_limb_43_col44, input_limb_44_col45, input_limb_45_col46,
+                input_limb_46_col47, input_limb_47_col48, input_limb_48_col49, input_limb_49_col50,
+                input_limb_50_col51, input_limb_51_col52, input_limb_52_col53, input_limb_53_col54,
+                input_limb_54_col55, input_limb_55_col56, input_limb_56_col57, input_limb_57_col58,
+                input_limb_58_col59, input_limb_59_col60, input_limb_60_col61, input_limb_61_col62,
+                input_limb_62_col63, input_limb_63_col64, input_limb_64_col65, input_limb_65_col66,
+                input_limb_66_col67, input_limb_67_col68, input_limb_68_col69, input_limb_69_col70,
+                input_limb_70_col71, input_limb_71_col72, input_limb_72_col73, input_limb_73_col74,
+                input_limb_74_col75, input_limb_75_col76, input_limb_76_col77, input_limb_77_col78,
+                input_limb_78_col79, input_limb_79_col80, input_limb_80_col81, input_limb_81_col82,
+                input_limb_82_col83, input_limb_83_col84, input_limb_84_col85, input_limb_85_col86,
+                pedersen_points_table_window_bits_9_output_limb_0_col87,
+                pedersen_points_table_window_bits_9_output_limb_1_col88,
+                pedersen_points_table_window_bits_9_output_limb_2_col89,
+                pedersen_points_table_window_bits_9_output_limb_3_col90,
+                pedersen_points_table_window_bits_9_output_limb_4_col91,
+                pedersen_points_table_window_bits_9_output_limb_5_col92,
+                pedersen_points_table_window_bits_9_output_limb_6_col93,
+                pedersen_points_table_window_bits_9_output_limb_7_col94,
+                pedersen_points_table_window_bits_9_output_limb_8_col95,
+                pedersen_points_table_window_bits_9_output_limb_9_col96,
+                pedersen_points_table_window_bits_9_output_limb_10_col97,
+                pedersen_points_table_window_bits_9_output_limb_11_col98,
+                pedersen_points_table_window_bits_9_output_limb_12_col99,
+                pedersen_points_table_window_bits_9_output_limb_13_col100,
+                pedersen_points_table_window_bits_9_output_limb_14_col101,
+                pedersen_points_table_window_bits_9_output_limb_15_col102,
+                pedersen_points_table_window_bits_9_output_limb_16_col103,
+                pedersen_points_table_window_bits_9_output_limb_17_col104,
+                pedersen_points_table_window_bits_9_output_limb_18_col105,
+                pedersen_points_table_window_bits_9_output_limb_19_col106,
+                pedersen_points_table_window_bits_9_output_limb_20_col107,
+                pedersen_points_table_window_bits_9_output_limb_21_col108,
+                pedersen_points_table_window_bits_9_output_limb_22_col109,
+                pedersen_points_table_window_bits_9_output_limb_23_col110,
+                pedersen_points_table_window_bits_9_output_limb_24_col111,
+                pedersen_points_table_window_bits_9_output_limb_25_col112,
+                pedersen_points_table_window_bits_9_output_limb_26_col113,
+                pedersen_points_table_window_bits_9_output_limb_27_col114,
+                pedersen_points_table_window_bits_9_output_limb_28_col115,
+                pedersen_points_table_window_bits_9_output_limb_29_col116,
+                pedersen_points_table_window_bits_9_output_limb_30_col117,
+                pedersen_points_table_window_bits_9_output_limb_31_col118,
+                pedersen_points_table_window_bits_9_output_limb_32_col119,
+                pedersen_points_table_window_bits_9_output_limb_33_col120,
+                pedersen_points_table_window_bits_9_output_limb_34_col121,
+                pedersen_points_table_window_bits_9_output_limb_35_col122,
+                pedersen_points_table_window_bits_9_output_limb_36_col123,
+                pedersen_points_table_window_bits_9_output_limb_37_col124,
+                pedersen_points_table_window_bits_9_output_limb_38_col125,
+                pedersen_points_table_window_bits_9_output_limb_39_col126,
+                pedersen_points_table_window_bits_9_output_limb_40_col127,
+                pedersen_points_table_window_bits_9_output_limb_41_col128,
+                pedersen_points_table_window_bits_9_output_limb_42_col129,
+                pedersen_points_table_window_bits_9_output_limb_43_col130,
+                pedersen_points_table_window_bits_9_output_limb_44_col131,
+                pedersen_points_table_window_bits_9_output_limb_45_col132,
+                pedersen_points_table_window_bits_9_output_limb_46_col133,
+                pedersen_points_table_window_bits_9_output_limb_47_col134,
+                pedersen_points_table_window_bits_9_output_limb_48_col135,
+                pedersen_points_table_window_bits_9_output_limb_49_col136,
+                pedersen_points_table_window_bits_9_output_limb_50_col137,
+                pedersen_points_table_window_bits_9_output_limb_51_col138,
+                pedersen_points_table_window_bits_9_output_limb_52_col139,
+                pedersen_points_table_window_bits_9_output_limb_53_col140,
+                pedersen_points_table_window_bits_9_output_limb_54_col141,
+                pedersen_points_table_window_bits_9_output_limb_55_col142,
             ],
-            slope_limb_0_col142,
-            slope_limb_1_col143,
-            slope_limb_2_col144,
-            slope_limb_3_col145,
-            slope_limb_4_col146,
-            slope_limb_5_col147,
-            slope_limb_6_col148,
-            slope_limb_7_col149,
-            slope_limb_8_col150,
-            slope_limb_9_col151,
-            slope_limb_10_col152,
-            slope_limb_11_col153,
-            slope_limb_12_col154,
-            slope_limb_13_col155,
-            slope_limb_14_col156,
-            slope_limb_15_col157,
-            slope_limb_16_col158,
-            slope_limb_17_col159,
-            slope_limb_18_col160,
-            slope_limb_19_col161,
-            slope_limb_20_col162,
-            slope_limb_21_col163,
-            slope_limb_22_col164,
-            slope_limb_23_col165,
-            slope_limb_24_col166,
-            slope_limb_25_col167,
-            slope_limb_26_col168,
-            slope_limb_27_col169,
-            k_col170,
-            carry_0_col171,
-            carry_1_col172,
-            carry_2_col173,
-            carry_3_col174,
-            carry_4_col175,
-            carry_5_col176,
-            carry_6_col177,
-            carry_7_col178,
-            carry_8_col179,
-            carry_9_col180,
-            carry_10_col181,
-            carry_11_col182,
-            carry_12_col183,
-            carry_13_col184,
-            carry_14_col185,
-            carry_15_col186,
-            carry_16_col187,
-            carry_17_col188,
-            carry_18_col189,
-            carry_19_col190,
-            carry_20_col191,
-            carry_21_col192,
-            carry_22_col193,
-            carry_23_col194,
-            carry_24_col195,
-            carry_25_col196,
-            carry_26_col197,
-            result_x_limb_0_col198,
-            result_x_limb_1_col199,
-            result_x_limb_2_col200,
-            result_x_limb_3_col201,
-            result_x_limb_4_col202,
-            result_x_limb_5_col203,
-            result_x_limb_6_col204,
-            result_x_limb_7_col205,
-            result_x_limb_8_col206,
-            result_x_limb_9_col207,
-            result_x_limb_10_col208,
-            result_x_limb_11_col209,
-            result_x_limb_12_col210,
-            result_x_limb_13_col211,
-            result_x_limb_14_col212,
-            result_x_limb_15_col213,
-            result_x_limb_16_col214,
-            result_x_limb_17_col215,
-            result_x_limb_18_col216,
-            result_x_limb_19_col217,
-            result_x_limb_20_col218,
-            result_x_limb_21_col219,
-            result_x_limb_22_col220,
-            result_x_limb_23_col221,
-            result_x_limb_24_col222,
-            result_x_limb_25_col223,
-            result_x_limb_26_col224,
-            result_x_limb_27_col225,
-            k_col226,
-            carry_0_col227,
-            carry_1_col228,
-            carry_2_col229,
-            carry_3_col230,
-            carry_4_col231,
-            carry_5_col232,
-            carry_6_col233,
-            carry_7_col234,
-            carry_8_col235,
-            carry_9_col236,
-            carry_10_col237,
-            carry_11_col238,
-            carry_12_col239,
-            carry_13_col240,
-            carry_14_col241,
-            carry_15_col242,
-            carry_16_col243,
-            carry_17_col244,
-            carry_18_col245,
-            carry_19_col246,
-            carry_20_col247,
-            carry_21_col248,
-            carry_22_col249,
-            carry_23_col250,
-            carry_24_col251,
-            carry_25_col252,
-            carry_26_col253,
-            result_y_limb_0_col254,
-            result_y_limb_1_col255,
-            result_y_limb_2_col256,
-            result_y_limb_3_col257,
-            result_y_limb_4_col258,
-            result_y_limb_5_col259,
-            result_y_limb_6_col260,
-            result_y_limb_7_col261,
-            result_y_limb_8_col262,
-            result_y_limb_9_col263,
-            result_y_limb_10_col264,
-            result_y_limb_11_col265,
-            result_y_limb_12_col266,
-            result_y_limb_13_col267,
-            result_y_limb_14_col268,
-            result_y_limb_15_col269,
-            result_y_limb_16_col270,
-            result_y_limb_17_col271,
-            result_y_limb_18_col272,
-            result_y_limb_19_col273,
-            result_y_limb_20_col274,
-            result_y_limb_21_col275,
-            result_y_limb_22_col276,
-            result_y_limb_23_col277,
-            result_y_limb_24_col278,
-            result_y_limb_25_col279,
-            result_y_limb_26_col280,
-            result_y_limb_27_col281,
-            k_col282,
-            carry_0_col283,
-            carry_1_col284,
-            carry_2_col285,
-            carry_3_col286,
-            carry_4_col287,
-            carry_5_col288,
-            carry_6_col289,
-            carry_7_col290,
-            carry_8_col291,
-            carry_9_col292,
-            carry_10_col293,
-            carry_11_col294,
-            carry_12_col295,
-            carry_13_col296,
-            carry_14_col297,
-            carry_15_col298,
-            carry_16_col299,
-            carry_17_col300,
-            carry_18_col301,
-            carry_19_col302,
-            carry_20_col303,
-            carry_21_col304,
-            carry_22_col305,
-            carry_23_col306,
-            carry_24_col307,
-            carry_25_col308,
-            carry_26_col309,
+            enabler_col0,
+            slope_limb_0_col143,
+            slope_limb_1_col144,
+            slope_limb_2_col145,
+            slope_limb_3_col146,
+            slope_limb_4_col147,
+            slope_limb_5_col148,
+            slope_limb_6_col149,
+            slope_limb_7_col150,
+            slope_limb_8_col151,
+            slope_limb_9_col152,
+            slope_limb_10_col153,
+            slope_limb_11_col154,
+            slope_limb_12_col155,
+            slope_limb_13_col156,
+            slope_limb_14_col157,
+            slope_limb_15_col158,
+            slope_limb_16_col159,
+            slope_limb_17_col160,
+            slope_limb_18_col161,
+            slope_limb_19_col162,
+            slope_limb_20_col163,
+            slope_limb_21_col164,
+            slope_limb_22_col165,
+            slope_limb_23_col166,
+            slope_limb_24_col167,
+            slope_limb_25_col168,
+            slope_limb_26_col169,
+            slope_limb_27_col170,
+            k_col171,
+            carry_0_col172,
+            carry_1_col173,
+            carry_2_col174,
+            carry_3_col175,
+            carry_4_col176,
+            carry_5_col177,
+            carry_6_col178,
+            carry_7_col179,
+            carry_8_col180,
+            carry_9_col181,
+            carry_10_col182,
+            carry_11_col183,
+            carry_12_col184,
+            carry_13_col185,
+            carry_14_col186,
+            carry_15_col187,
+            carry_16_col188,
+            carry_17_col189,
+            carry_18_col190,
+            carry_19_col191,
+            carry_20_col192,
+            carry_21_col193,
+            carry_22_col194,
+            carry_23_col195,
+            carry_24_col196,
+            carry_25_col197,
+            carry_26_col198,
+            result_x_limb_0_col199,
+            result_x_limb_1_col200,
+            result_x_limb_2_col201,
+            result_x_limb_3_col202,
+            result_x_limb_4_col203,
+            result_x_limb_5_col204,
+            result_x_limb_6_col205,
+            result_x_limb_7_col206,
+            result_x_limb_8_col207,
+            result_x_limb_9_col208,
+            result_x_limb_10_col209,
+            result_x_limb_11_col210,
+            result_x_limb_12_col211,
+            result_x_limb_13_col212,
+            result_x_limb_14_col213,
+            result_x_limb_15_col214,
+            result_x_limb_16_col215,
+            result_x_limb_17_col216,
+            result_x_limb_18_col217,
+            result_x_limb_19_col218,
+            result_x_limb_20_col219,
+            result_x_limb_21_col220,
+            result_x_limb_22_col221,
+            result_x_limb_23_col222,
+            result_x_limb_24_col223,
+            result_x_limb_25_col224,
+            result_x_limb_26_col225,
+            result_x_limb_27_col226,
+            k_col227,
+            carry_0_col228,
+            carry_1_col229,
+            carry_2_col230,
+            carry_3_col231,
+            carry_4_col232,
+            carry_5_col233,
+            carry_6_col234,
+            carry_7_col235,
+            carry_8_col236,
+            carry_9_col237,
+            carry_10_col238,
+            carry_11_col239,
+            carry_12_col240,
+            carry_13_col241,
+            carry_14_col242,
+            carry_15_col243,
+            carry_16_col244,
+            carry_17_col245,
+            carry_18_col246,
+            carry_19_col247,
+            carry_20_col248,
+            carry_21_col249,
+            carry_22_col250,
+            carry_23_col251,
+            carry_24_col252,
+            carry_25_col253,
+            carry_26_col254,
+            result_y_limb_0_col255,
+            result_y_limb_1_col256,
+            result_y_limb_2_col257,
+            result_y_limb_3_col258,
+            result_y_limb_4_col259,
+            result_y_limb_5_col260,
+            result_y_limb_6_col261,
+            result_y_limb_7_col262,
+            result_y_limb_8_col263,
+            result_y_limb_9_col264,
+            result_y_limb_10_col265,
+            result_y_limb_11_col266,
+            result_y_limb_12_col267,
+            result_y_limb_13_col268,
+            result_y_limb_14_col269,
+            result_y_limb_15_col270,
+            result_y_limb_16_col271,
+            result_y_limb_17_col272,
+            result_y_limb_18_col273,
+            result_y_limb_19_col274,
+            result_y_limb_20_col275,
+            result_y_limb_21_col276,
+            result_y_limb_22_col277,
+            result_y_limb_23_col278,
+            result_y_limb_24_col279,
+            result_y_limb_25_col280,
+            result_y_limb_26_col281,
+            result_y_limb_27_col282,
+            k_col283,
+            carry_0_col284,
+            carry_1_col285,
+            carry_2_col286,
+            carry_3_col287,
+            carry_4_col288,
+            carry_5_col289,
+            carry_6_col290,
+            carry_7_col291,
+            carry_8_col292,
+            carry_9_col293,
+            carry_10_col294,
+            carry_11_col295,
+            carry_12_col296,
+            carry_13_col297,
+            carry_14_col298,
+            carry_15_col299,
+            carry_16_col300,
+            carry_17_col301,
+            carry_18_col302,
+            carry_19_col303,
+            carry_20_col304,
+            carry_21_col305,
+            carry_22_col306,
+            carry_23_col307,
+            carry_24_col308,
+            carry_25_col309,
+            carry_26_col310,
             self.common_lookup_elements,
             ref range_check_9_9_sum_1,
             ref numerator_1,
@@ -1821,85 +1826,81 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
 
-        // Constraint - Enabler is a bit
-        let constraint_quotient = (((enabler_col310 * enabler_col310) - enabler_col310));
-        sum = sum * random_coeff + constraint_quotient;
-
         partial_ec_mul_window_bits_9_sum_127 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<2038149019, 0, 0, 0>(), input_limb_0_col0, input_limb_1_col1,
-                    input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5,
-                    input_limb_6_col6, input_limb_7_col7, input_limb_8_col8, input_limb_9_col9,
-                    input_limb_10_col10, input_limb_11_col11, input_limb_12_col12,
-                    input_limb_13_col13, input_limb_14_col14, input_limb_15_col15,
-                    input_limb_16_col16, input_limb_17_col17, input_limb_18_col18,
-                    input_limb_19_col19, input_limb_20_col20, input_limb_21_col21,
-                    input_limb_22_col22, input_limb_23_col23, input_limb_24_col24,
-                    input_limb_25_col25, input_limb_26_col26, input_limb_27_col27,
-                    input_limb_28_col28, input_limb_29_col29, input_limb_30_col30,
-                    input_limb_31_col31, input_limb_32_col32, input_limb_33_col33,
-                    input_limb_34_col34, input_limb_35_col35, input_limb_36_col36,
-                    input_limb_37_col37, input_limb_38_col38, input_limb_39_col39,
-                    input_limb_40_col40, input_limb_41_col41, input_limb_42_col42,
-                    input_limb_43_col43, input_limb_44_col44, input_limb_45_col45,
-                    input_limb_46_col46, input_limb_47_col47, input_limb_48_col48,
-                    input_limb_49_col49, input_limb_50_col50, input_limb_51_col51,
-                    input_limb_52_col52, input_limb_53_col53, input_limb_54_col54,
-                    input_limb_55_col55, input_limb_56_col56, input_limb_57_col57,
-                    input_limb_58_col58, input_limb_59_col59, input_limb_60_col60,
-                    input_limb_61_col61, input_limb_62_col62, input_limb_63_col63,
-                    input_limb_64_col64, input_limb_65_col65, input_limb_66_col66,
-                    input_limb_67_col67, input_limb_68_col68, input_limb_69_col69,
-                    input_limb_70_col70, input_limb_71_col71, input_limb_72_col72,
-                    input_limb_73_col73, input_limb_74_col74, input_limb_75_col75,
-                    input_limb_76_col76, input_limb_77_col77, input_limb_78_col78,
-                    input_limb_79_col79, input_limb_80_col80, input_limb_81_col81,
-                    input_limb_82_col82, input_limb_83_col83, input_limb_84_col84,
-                    input_limb_85_col85,
+                    qm31_const::<2038149019, 0, 0, 0>(), input_limb_0_col1, input_limb_1_col2,
+                    input_limb_2_col3, input_limb_3_col4, input_limb_4_col5, input_limb_5_col6,
+                    input_limb_6_col7, input_limb_7_col8, input_limb_8_col9, input_limb_9_col10,
+                    input_limb_10_col11, input_limb_11_col12, input_limb_12_col13,
+                    input_limb_13_col14, input_limb_14_col15, input_limb_15_col16,
+                    input_limb_16_col17, input_limb_17_col18, input_limb_18_col19,
+                    input_limb_19_col20, input_limb_20_col21, input_limb_21_col22,
+                    input_limb_22_col23, input_limb_23_col24, input_limb_24_col25,
+                    input_limb_25_col26, input_limb_26_col27, input_limb_27_col28,
+                    input_limb_28_col29, input_limb_29_col30, input_limb_30_col31,
+                    input_limb_31_col32, input_limb_32_col33, input_limb_33_col34,
+                    input_limb_34_col35, input_limb_35_col36, input_limb_36_col37,
+                    input_limb_37_col38, input_limb_38_col39, input_limb_39_col40,
+                    input_limb_40_col41, input_limb_41_col42, input_limb_42_col43,
+                    input_limb_43_col44, input_limb_44_col45, input_limb_45_col46,
+                    input_limb_46_col47, input_limb_47_col48, input_limb_48_col49,
+                    input_limb_49_col50, input_limb_50_col51, input_limb_51_col52,
+                    input_limb_52_col53, input_limb_53_col54, input_limb_54_col55,
+                    input_limb_55_col56, input_limb_56_col57, input_limb_57_col58,
+                    input_limb_58_col59, input_limb_59_col60, input_limb_60_col61,
+                    input_limb_61_col62, input_limb_62_col63, input_limb_63_col64,
+                    input_limb_64_col65, input_limb_65_col66, input_limb_66_col67,
+                    input_limb_67_col68, input_limb_68_col69, input_limb_69_col70,
+                    input_limb_70_col71, input_limb_71_col72, input_limb_72_col73,
+                    input_limb_73_col74, input_limb_74_col75, input_limb_75_col76,
+                    input_limb_76_col77, input_limb_77_col78, input_limb_78_col79,
+                    input_limb_79_col80, input_limb_80_col81, input_limb_81_col82,
+                    input_limb_82_col83, input_limb_83_col84, input_limb_84_col85,
+                    input_limb_85_col86,
                 ]
                     .span(),
             );
-        numerator_127 = enabler_col310;
+        numerator_127 = enabler_col0;
 
         partial_ec_mul_window_bits_9_sum_128 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<2038149019, 0, 0, 0>(), input_limb_0_col0,
-                    (input_limb_1_col1 + qm31_const::<1, 0, 0, 0>()), input_limb_3_col3,
-                    input_limb_4_col4, input_limb_5_col5, input_limb_6_col6, input_limb_7_col7,
-                    input_limb_8_col8, input_limb_9_col9, input_limb_10_col10, input_limb_11_col11,
-                    input_limb_12_col12, input_limb_13_col13, input_limb_14_col14,
-                    input_limb_15_col15, input_limb_16_col16, input_limb_17_col17,
-                    input_limb_18_col18, input_limb_19_col19, input_limb_20_col20,
-                    input_limb_21_col21, input_limb_22_col22, input_limb_23_col23,
-                    input_limb_24_col24, input_limb_25_col25, input_limb_26_col26,
-                    input_limb_27_col27, input_limb_28_col28, input_limb_29_col29,
-                    qm31_const::<0, 0, 0, 0>(), result_x_limb_0_col198, result_x_limb_1_col199,
-                    result_x_limb_2_col200, result_x_limb_3_col201, result_x_limb_4_col202,
-                    result_x_limb_5_col203, result_x_limb_6_col204, result_x_limb_7_col205,
-                    result_x_limb_8_col206, result_x_limb_9_col207, result_x_limb_10_col208,
-                    result_x_limb_11_col209, result_x_limb_12_col210, result_x_limb_13_col211,
-                    result_x_limb_14_col212, result_x_limb_15_col213, result_x_limb_16_col214,
-                    result_x_limb_17_col215, result_x_limb_18_col216, result_x_limb_19_col217,
-                    result_x_limb_20_col218, result_x_limb_21_col219, result_x_limb_22_col220,
-                    result_x_limb_23_col221, result_x_limb_24_col222, result_x_limb_25_col223,
-                    result_x_limb_26_col224, result_x_limb_27_col225, result_y_limb_0_col254,
-                    result_y_limb_1_col255, result_y_limb_2_col256, result_y_limb_3_col257,
-                    result_y_limb_4_col258, result_y_limb_5_col259, result_y_limb_6_col260,
-                    result_y_limb_7_col261, result_y_limb_8_col262, result_y_limb_9_col263,
-                    result_y_limb_10_col264, result_y_limb_11_col265, result_y_limb_12_col266,
-                    result_y_limb_13_col267, result_y_limb_14_col268, result_y_limb_15_col269,
-                    result_y_limb_16_col270, result_y_limb_17_col271, result_y_limb_18_col272,
-                    result_y_limb_19_col273, result_y_limb_20_col274, result_y_limb_21_col275,
-                    result_y_limb_22_col276, result_y_limb_23_col277, result_y_limb_24_col278,
-                    result_y_limb_25_col279, result_y_limb_26_col280, result_y_limb_27_col281,
+                    qm31_const::<2038149019, 0, 0, 0>(), input_limb_0_col1,
+                    (input_limb_1_col2 + qm31_const::<1, 0, 0, 0>()), input_limb_3_col4,
+                    input_limb_4_col5, input_limb_5_col6, input_limb_6_col7, input_limb_7_col8,
+                    input_limb_8_col9, input_limb_9_col10, input_limb_10_col11, input_limb_11_col12,
+                    input_limb_12_col13, input_limb_13_col14, input_limb_14_col15,
+                    input_limb_15_col16, input_limb_16_col17, input_limb_17_col18,
+                    input_limb_18_col19, input_limb_19_col20, input_limb_20_col21,
+                    input_limb_21_col22, input_limb_22_col23, input_limb_23_col24,
+                    input_limb_24_col25, input_limb_25_col26, input_limb_26_col27,
+                    input_limb_27_col28, input_limb_28_col29, input_limb_29_col30,
+                    qm31_const::<0, 0, 0, 0>(), result_x_limb_0_col199, result_x_limb_1_col200,
+                    result_x_limb_2_col201, result_x_limb_3_col202, result_x_limb_4_col203,
+                    result_x_limb_5_col204, result_x_limb_6_col205, result_x_limb_7_col206,
+                    result_x_limb_8_col207, result_x_limb_9_col208, result_x_limb_10_col209,
+                    result_x_limb_11_col210, result_x_limb_12_col211, result_x_limb_13_col212,
+                    result_x_limb_14_col213, result_x_limb_15_col214, result_x_limb_16_col215,
+                    result_x_limb_17_col216, result_x_limb_18_col217, result_x_limb_19_col218,
+                    result_x_limb_20_col219, result_x_limb_21_col220, result_x_limb_22_col221,
+                    result_x_limb_23_col222, result_x_limb_24_col223, result_x_limb_25_col224,
+                    result_x_limb_26_col225, result_x_limb_27_col226, result_y_limb_0_col255,
+                    result_y_limb_1_col256, result_y_limb_2_col257, result_y_limb_3_col258,
+                    result_y_limb_4_col259, result_y_limb_5_col260, result_y_limb_6_col261,
+                    result_y_limb_7_col262, result_y_limb_8_col263, result_y_limb_9_col264,
+                    result_y_limb_10_col265, result_y_limb_11_col266, result_y_limb_12_col267,
+                    result_y_limb_13_col268, result_y_limb_14_col269, result_y_limb_15_col270,
+                    result_y_limb_16_col271, result_y_limb_17_col272, result_y_limb_18_col273,
+                    result_y_limb_19_col274, result_y_limb_20_col275, result_y_limb_21_col276,
+                    result_y_limb_22_col277, result_y_limb_23_col278, result_y_limb_24_col279,
+                    result_y_limb_25_col280, result_y_limb_26_col281, result_y_limb_27_col282,
                 ]
                     .span(),
             );
-        numerator_128 = enabler_col310;
+        numerator_128 = enabler_col0;
 
         lookup_constraints(
             ref sum,

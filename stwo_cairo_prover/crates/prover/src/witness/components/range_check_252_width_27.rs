@@ -30,40 +30,41 @@ impl ClaimGenerator {
         InteractionClaimGenerator,
     ) {
         let mut packed_inputs = self.packed_inputs.into_inner().unwrap();
+        let remainder_inputs = self.remainder_inputs.into_inner().unwrap();
+        let n_active_rows = packed_inputs.len() * N_LANES + remainder_inputs.len();
+        add_remainder(&mut packed_inputs, &remainder_inputs);
         assert!(!packed_inputs.is_empty());
-        assert!(self.remainder_inputs.lock().unwrap().is_empty());
         let n_vec_rows = packed_inputs.len();
-        let n_rows = n_vec_rows * N_LANES;
         let packed_size = n_vec_rows.next_power_of_two();
         let log_size = packed_size.ilog2() + LOG_N_LANES;
         packed_inputs.resize(packed_size, *packed_inputs.first().unwrap());
 
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
             packed_inputs,
-            n_rows,
+            n_active_rows,
             range_check_9_9_state,
             range_check_18_state,
         );
         for inputs in sub_component_inputs.range_check_9_9 {
-            add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 0);
+            add_inputs(range_check_9_9_state, &inputs, n_active_rows, 0);
         }
         for inputs in sub_component_inputs.range_check_18 {
-            add_inputs(range_check_18_state, &inputs, inputs.len() * N_LANES, 0);
+            add_inputs(range_check_18_state, &inputs, n_active_rows, 0);
         }
         for inputs in sub_component_inputs.range_check_9_9_b {
-            add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 1);
+            add_inputs(range_check_9_9_state, &inputs, n_active_rows, 1);
         }
         for inputs in sub_component_inputs.range_check_18_b {
-            add_inputs(range_check_18_state, &inputs, inputs.len() * N_LANES, 1);
+            add_inputs(range_check_18_state, &inputs, n_active_rows, 1);
         }
         for inputs in sub_component_inputs.range_check_9_9_c {
-            add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 2);
+            add_inputs(range_check_9_9_state, &inputs, n_active_rows, 2);
         }
         for inputs in sub_component_inputs.range_check_9_9_d {
-            add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 3);
+            add_inputs(range_check_9_9_state, &inputs, n_active_rows, 3);
         }
         for inputs in sub_component_inputs.range_check_9_9_e {
-            add_inputs(range_check_9_9_state, &inputs, inputs.len() * N_LANES, 4);
+            add_inputs(range_check_9_9_state, &inputs, n_active_rows, 4);
         }
 
         (
@@ -124,7 +125,6 @@ fn write_trace_simd(
         )
     };
 
-    let M31_1 = PackedM31::broadcast(M31::from(1));
     let M31_1090315331 = PackedM31::broadcast(M31::from(1090315331));
     let M31_1109051422 = PackedM31::broadcast(M31::from(1109051422));
     let M31_1424798916 = PackedM31::broadcast(M31::from(1424798916));
@@ -150,146 +150,145 @@ fn write_trace_simd(
                 row_index,
                 (row, lookup_data, sub_component_inputs, range_check_252_width_27_input),
             )| {
-                let input_limb_0_col0 = range_check_252_width_27_input.get_m31(0);
-                *row[0] = input_limb_0_col0;
-                let input_limb_1_col1 = range_check_252_width_27_input.get_m31(1);
-                *row[1] = input_limb_1_col1;
-                let input_limb_2_col2 = range_check_252_width_27_input.get_m31(2);
-                *row[2] = input_limb_2_col2;
-                let input_limb_3_col3 = range_check_252_width_27_input.get_m31(3);
-                *row[3] = input_limb_3_col3;
-                let input_limb_4_col4 = range_check_252_width_27_input.get_m31(4);
-                *row[4] = input_limb_4_col4;
-                let input_limb_5_col5 = range_check_252_width_27_input.get_m31(5);
-                *row[5] = input_limb_5_col5;
-                let input_limb_6_col6 = range_check_252_width_27_input.get_m31(6);
-                *row[6] = input_limb_6_col6;
-                let input_limb_7_col7 = range_check_252_width_27_input.get_m31(7);
-                *row[7] = input_limb_7_col7;
-                let input_limb_8_col8 = range_check_252_width_27_input.get_m31(8);
-                *row[8] = input_limb_8_col8;
-                let input_limb_9_col9 = range_check_252_width_27_input.get_m31(9);
-                *row[9] = input_limb_9_col9;
+                let enabler_col0 = enabler_col.packed_at(row_index);
+                *row[0] = enabler_col0;
+                let input_limb_0_col1 = range_check_252_width_27_input.get_m31(0);
+                *row[1] = input_limb_0_col1;
+                let input_limb_1_col2 = range_check_252_width_27_input.get_m31(1);
+                *row[2] = input_limb_1_col2;
+                let input_limb_2_col3 = range_check_252_width_27_input.get_m31(2);
+                *row[3] = input_limb_2_col3;
+                let input_limb_3_col4 = range_check_252_width_27_input.get_m31(3);
+                *row[4] = input_limb_3_col4;
+                let input_limb_4_col5 = range_check_252_width_27_input.get_m31(4);
+                *row[5] = input_limb_4_col5;
+                let input_limb_5_col6 = range_check_252_width_27_input.get_m31(5);
+                *row[6] = input_limb_5_col6;
+                let input_limb_6_col7 = range_check_252_width_27_input.get_m31(6);
+                *row[7] = input_limb_6_col7;
+                let input_limb_7_col8 = range_check_252_width_27_input.get_m31(7);
+                *row[8] = input_limb_7_col8;
+                let input_limb_8_col9 = range_check_252_width_27_input.get_m31(8);
+                *row[9] = input_limb_8_col9;
+                let input_limb_9_col10 = range_check_252_width_27_input.get_m31(9);
+                *row[10] = input_limb_9_col10;
                 let input_as_felt252_tmp_6d30a_0 =
                     PackedFelt252::from_packed_felt252width27(range_check_252_width_27_input);
-                let limb_0_high_part_col10 = input_as_felt252_tmp_6d30a_0.get_m31(2);
-                *row[10] = limb_0_high_part_col10;
-                let limb_1_low_part_col11 = input_as_felt252_tmp_6d30a_0.get_m31(3);
-                *row[11] = limb_1_low_part_col11;
+                let limb_0_high_part_col11 = input_as_felt252_tmp_6d30a_0.get_m31(2);
+                *row[11] = limb_0_high_part_col11;
+                let limb_1_low_part_col12 = input_as_felt252_tmp_6d30a_0.get_m31(3);
+                *row[12] = limb_1_low_part_col12;
                 *sub_component_inputs.range_check_9_9[0] =
-                    [limb_0_high_part_col10, limb_1_low_part_col11];
+                    [limb_0_high_part_col11, limb_1_low_part_col12];
                 *lookup_data.range_check_9_9_0 =
-                    [M31_517791011, limb_0_high_part_col10, limb_1_low_part_col11];
+                    [M31_517791011, limb_0_high_part_col11, limb_1_low_part_col12];
                 *sub_component_inputs.range_check_18[0] =
-                    [((input_limb_0_col0) - ((limb_0_high_part_col10) * (M31_262144)))];
+                    [((input_limb_0_col1) - ((limb_0_high_part_col11) * (M31_262144)))];
                 *lookup_data.range_check_18_1 = [
                     M31_1109051422,
-                    ((input_limb_0_col0) - ((limb_0_high_part_col10) * (M31_262144))),
+                    ((input_limb_0_col1) - ((limb_0_high_part_col11) * (M31_262144))),
                 ];
                 *sub_component_inputs.range_check_18[1] =
-                    [(((input_limb_1_col1) - (limb_1_low_part_col11)) * (M31_4194304))];
+                    [(((input_limb_1_col2) - (limb_1_low_part_col12)) * (M31_4194304))];
                 *lookup_data.range_check_18_2 = [
                     M31_1109051422,
-                    (((input_limb_1_col1) - (limb_1_low_part_col11)) * (M31_4194304)),
+                    (((input_limb_1_col2) - (limb_1_low_part_col12)) * (M31_4194304)),
                 ];
-                let limb_2_high_part_col12 = input_as_felt252_tmp_6d30a_0.get_m31(8);
-                *row[12] = limb_2_high_part_col12;
-                let limb_3_low_part_col13 = input_as_felt252_tmp_6d30a_0.get_m31(9);
-                *row[13] = limb_3_low_part_col13;
+                let limb_2_high_part_col13 = input_as_felt252_tmp_6d30a_0.get_m31(8);
+                *row[13] = limb_2_high_part_col13;
+                let limb_3_low_part_col14 = input_as_felt252_tmp_6d30a_0.get_m31(9);
+                *row[14] = limb_3_low_part_col14;
                 *sub_component_inputs.range_check_9_9_b[0] =
-                    [limb_2_high_part_col12, limb_3_low_part_col13];
+                    [limb_2_high_part_col13, limb_3_low_part_col14];
                 *lookup_data.range_check_9_9_b_3 = [
                     M31_1897792095,
-                    limb_2_high_part_col12,
-                    limb_3_low_part_col13,
+                    limb_2_high_part_col13,
+                    limb_3_low_part_col14,
                 ];
                 *sub_component_inputs.range_check_18_b[0] =
-                    [((input_limb_2_col2) - ((limb_2_high_part_col12) * (M31_262144)))];
+                    [((input_limb_2_col3) - ((limb_2_high_part_col13) * (M31_262144)))];
                 *lookup_data.range_check_18_b_4 = [
                     M31_1424798916,
-                    ((input_limb_2_col2) - ((limb_2_high_part_col12) * (M31_262144))),
+                    ((input_limb_2_col3) - ((limb_2_high_part_col13) * (M31_262144))),
                 ];
                 *sub_component_inputs.range_check_18[2] =
-                    [(((input_limb_3_col3) - (limb_3_low_part_col13)) * (M31_4194304))];
+                    [(((input_limb_3_col4) - (limb_3_low_part_col14)) * (M31_4194304))];
                 *lookup_data.range_check_18_5 = [
                     M31_1109051422,
-                    (((input_limb_3_col3) - (limb_3_low_part_col13)) * (M31_4194304)),
+                    (((input_limb_3_col4) - (limb_3_low_part_col14)) * (M31_4194304)),
                 ];
-                let limb_4_high_part_col14 = input_as_felt252_tmp_6d30a_0.get_m31(14);
-                *row[14] = limb_4_high_part_col14;
-                let limb_5_low_part_col15 = input_as_felt252_tmp_6d30a_0.get_m31(15);
-                *row[15] = limb_5_low_part_col15;
+                let limb_4_high_part_col15 = input_as_felt252_tmp_6d30a_0.get_m31(14);
+                *row[15] = limb_4_high_part_col15;
+                let limb_5_low_part_col16 = input_as_felt252_tmp_6d30a_0.get_m31(15);
+                *row[16] = limb_5_low_part_col16;
                 *sub_component_inputs.range_check_9_9_c[0] =
-                    [limb_4_high_part_col14, limb_5_low_part_col15];
+                    [limb_4_high_part_col15, limb_5_low_part_col16];
                 *lookup_data.range_check_9_9_c_6 = [
                     M31_1881014476,
-                    limb_4_high_part_col14,
-                    limb_5_low_part_col15,
+                    limb_4_high_part_col15,
+                    limb_5_low_part_col16,
                 ];
                 *sub_component_inputs.range_check_18[3] =
-                    [((input_limb_4_col4) - ((limb_4_high_part_col14) * (M31_262144)))];
+                    [((input_limb_4_col5) - ((limb_4_high_part_col15) * (M31_262144)))];
                 *lookup_data.range_check_18_7 = [
                     M31_1109051422,
-                    ((input_limb_4_col4) - ((limb_4_high_part_col14) * (M31_262144))),
+                    ((input_limb_4_col5) - ((limb_4_high_part_col15) * (M31_262144))),
                 ];
                 *sub_component_inputs.range_check_18[4] =
-                    [(((input_limb_5_col5) - (limb_5_low_part_col15)) * (M31_4194304))];
+                    [(((input_limb_5_col6) - (limb_5_low_part_col16)) * (M31_4194304))];
                 *lookup_data.range_check_18_8 = [
                     M31_1109051422,
-                    (((input_limb_5_col5) - (limb_5_low_part_col15)) * (M31_4194304)),
+                    (((input_limb_5_col6) - (limb_5_low_part_col16)) * (M31_4194304)),
                 ];
-                let limb_6_high_part_col16 = input_as_felt252_tmp_6d30a_0.get_m31(20);
-                *row[16] = limb_6_high_part_col16;
-                let limb_7_low_part_col17 = input_as_felt252_tmp_6d30a_0.get_m31(21);
-                *row[17] = limb_7_low_part_col17;
+                let limb_6_high_part_col17 = input_as_felt252_tmp_6d30a_0.get_m31(20);
+                *row[17] = limb_6_high_part_col17;
+                let limb_7_low_part_col18 = input_as_felt252_tmp_6d30a_0.get_m31(21);
+                *row[18] = limb_7_low_part_col18;
                 *sub_component_inputs.range_check_9_9_d[0] =
-                    [limb_6_high_part_col16, limb_7_low_part_col17];
+                    [limb_6_high_part_col17, limb_7_low_part_col18];
                 *lookup_data.range_check_9_9_d_9 = [
                     M31_1864236857,
-                    limb_6_high_part_col16,
-                    limb_7_low_part_col17,
+                    limb_6_high_part_col17,
+                    limb_7_low_part_col18,
                 ];
                 *sub_component_inputs.range_check_18_b[1] =
-                    [((input_limb_6_col6) - ((limb_6_high_part_col16) * (M31_262144)))];
+                    [((input_limb_6_col7) - ((limb_6_high_part_col17) * (M31_262144)))];
                 *lookup_data.range_check_18_b_10 = [
                     M31_1424798916,
-                    ((input_limb_6_col6) - ((limb_6_high_part_col16) * (M31_262144))),
+                    ((input_limb_6_col7) - ((limb_6_high_part_col17) * (M31_262144))),
                 ];
                 *sub_component_inputs.range_check_18[5] =
-                    [(((input_limb_7_col7) - (limb_7_low_part_col17)) * (M31_4194304))];
+                    [(((input_limb_7_col8) - (limb_7_low_part_col18)) * (M31_4194304))];
                 *lookup_data.range_check_18_11 = [
                     M31_1109051422,
-                    (((input_limb_7_col7) - (limb_7_low_part_col17)) * (M31_4194304)),
+                    (((input_limb_7_col8) - (limb_7_low_part_col18)) * (M31_4194304)),
                 ];
-                let limb_8_high_part_col18 = input_as_felt252_tmp_6d30a_0.get_m31(26);
-                *row[18] = limb_8_high_part_col18;
+                let limb_8_high_part_col19 = input_as_felt252_tmp_6d30a_0.get_m31(26);
+                *row[19] = limb_8_high_part_col19;
                 *sub_component_inputs.range_check_9_9_e[0] =
-                    [limb_8_high_part_col18, input_limb_9_col9];
+                    [limb_8_high_part_col19, input_limb_9_col10];
                 *lookup_data.range_check_9_9_e_12 =
-                    [M31_1847459238, limb_8_high_part_col18, input_limb_9_col9];
+                    [M31_1847459238, limb_8_high_part_col19, input_limb_9_col10];
                 *sub_component_inputs.range_check_18[6] =
-                    [((input_limb_8_col8) - ((limb_8_high_part_col18) * (M31_262144)))];
+                    [((input_limb_8_col9) - ((limb_8_high_part_col19) * (M31_262144)))];
                 *lookup_data.range_check_18_13 = [
                     M31_1109051422,
-                    ((input_limb_8_col8) - ((limb_8_high_part_col18) * (M31_262144))),
+                    ((input_limb_8_col9) - ((limb_8_high_part_col19) * (M31_262144))),
                 ];
-                let enabler_col19 = enabler_col.packed_at(row_index);
-                *row[19] = enabler_col19;
                 *lookup_data.range_check_252_width_27_14 = [
                     M31_1090315331,
-                    input_limb_0_col0,
-                    input_limb_1_col1,
-                    input_limb_2_col2,
-                    input_limb_3_col3,
-                    input_limb_4_col4,
-                    input_limb_5_col5,
-                    input_limb_6_col6,
-                    input_limb_7_col7,
-                    input_limb_8_col8,
-                    input_limb_9_col9,
+                    input_limb_0_col1,
+                    input_limb_1_col2,
+                    input_limb_2_col3,
+                    input_limb_3_col4,
+                    input_limb_4_col5,
+                    input_limb_5_col6,
+                    input_limb_6_col7,
+                    input_limb_7_col8,
+                    input_limb_8_col9,
+                    input_limb_9_col10,
                 ];
-                *lookup_data.mults_0 = M31_1;
-                *lookup_data.mults_1 = enabler_col19;
+                *lookup_data.mults_0 = enabler_col0;
             },
         );
 
@@ -314,7 +313,6 @@ struct LookupData {
     range_check_18_13: Vec<[PackedM31; 2]>,
     range_check_252_width_27_14: Vec<[PackedM31; 11]>,
     mults_0: Vec<PackedM31>,
-    mults_1: Vec<PackedM31>,
 }
 
 pub struct InteractionClaimGenerator {
@@ -449,7 +447,7 @@ impl InteractionClaimGenerator {
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_252_width_27_14,
-            self.lookup_data.mults_1,
+            self.lookup_data.mults_0,
         )
             .into_par_iter()
             .for_each(|(writer, values, mult)| {

@@ -14,6 +14,7 @@ impl VerifyReduced252 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [verify_reduced_252_input_limb_0, verify_reduced_252_input_limb_1, verify_reduced_252_input_limb_2, verify_reduced_252_input_limb_3, verify_reduced_252_input_limb_4, verify_reduced_252_input_limb_5, verify_reduced_252_input_limb_6, verify_reduced_252_input_limb_7, verify_reduced_252_input_limb_8, verify_reduced_252_input_limb_9, verify_reduced_252_input_limb_10, verify_reduced_252_input_limb_11, verify_reduced_252_input_limb_12, verify_reduced_252_input_limb_13, verify_reduced_252_input_limb_14, verify_reduced_252_input_limb_15, verify_reduced_252_input_limb_16, verify_reduced_252_input_limb_17, verify_reduced_252_input_limb_18, verify_reduced_252_input_limb_19, verify_reduced_252_input_limb_20, verify_reduced_252_input_limb_21, verify_reduced_252_input_limb_22, verify_reduced_252_input_limb_23, verify_reduced_252_input_limb_24, verify_reduced_252_input_limb_25, verify_reduced_252_input_limb_26, verify_reduced_252_input_limb_27]: [E::F; 28],
+        enabler: E::F,
         ms_limb_is_max_col0: E::F,
         ms_and_mid_limbs_are_max_col1: E::F,
         rc_input_col2: E::F,
@@ -35,7 +36,7 @@ impl VerifyReduced252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1420243005.clone(),
                 (verify_reduced_252_input_limb_27.clone() - ms_limb_is_max_col0.clone()),
@@ -60,7 +61,7 @@ impl VerifyReduced252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[M31_1420243005.clone(), rc_input_col2.clone()],
         ));
 

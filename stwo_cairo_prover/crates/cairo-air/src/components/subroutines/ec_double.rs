@@ -18,6 +18,7 @@ impl EcDouble {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [ec_double_input_x_limb_0, ec_double_input_x_limb_1, ec_double_input_x_limb_2, ec_double_input_x_limb_3, ec_double_input_x_limb_4, ec_double_input_x_limb_5, ec_double_input_x_limb_6, ec_double_input_x_limb_7, ec_double_input_x_limb_8, ec_double_input_x_limb_9, ec_double_input_x_limb_10, ec_double_input_x_limb_11, ec_double_input_x_limb_12, ec_double_input_x_limb_13, ec_double_input_x_limb_14, ec_double_input_x_limb_15, ec_double_input_x_limb_16, ec_double_input_x_limb_17, ec_double_input_x_limb_18, ec_double_input_x_limb_19, ec_double_input_x_limb_20, ec_double_input_x_limb_21, ec_double_input_x_limb_22, ec_double_input_x_limb_23, ec_double_input_x_limb_24, ec_double_input_x_limb_25, ec_double_input_x_limb_26, ec_double_input_x_limb_27, ec_double_input_y_limb_0, ec_double_input_y_limb_1, ec_double_input_y_limb_2, ec_double_input_y_limb_3, ec_double_input_y_limb_4, ec_double_input_y_limb_5, ec_double_input_y_limb_6, ec_double_input_y_limb_7, ec_double_input_y_limb_8, ec_double_input_y_limb_9, ec_double_input_y_limb_10, ec_double_input_y_limb_11, ec_double_input_y_limb_12, ec_double_input_y_limb_13, ec_double_input_y_limb_14, ec_double_input_y_limb_15, ec_double_input_y_limb_16, ec_double_input_y_limb_17, ec_double_input_y_limb_18, ec_double_input_y_limb_19, ec_double_input_y_limb_20, ec_double_input_y_limb_21, ec_double_input_y_limb_22, ec_double_input_y_limb_23, ec_double_input_y_limb_24, ec_double_input_y_limb_25, ec_double_input_y_limb_26, ec_double_input_y_limb_27]: [E::F; 56],
+        enabler: E::F,
         mul_res_limb_0_col0: E::F,
         mul_res_limb_1_col1: E::F,
         mul_res_limb_2_col2: E::F,
@@ -336,6 +337,7 @@ impl EcDouble {
                 ec_double_input_x_limb_26.clone(),
                 ec_double_input_x_limb_27.clone(),
             ],
+            enabler.clone(),
             mul_res_limb_0_col0.clone(),
             mul_res_limb_1_col1.clone(),
             mul_res_limb_2_col2.clone(),
@@ -454,6 +456,7 @@ impl EcDouble {
                 ec_double_input_y_limb_26.clone(),
                 ec_double_input_y_limb_27.clone(),
             ],
+            enabler.clone(),
             add_res_limb_0_col56.clone(),
             add_res_limb_1_col57.clone(),
             add_res_limb_2_col58.clone(),
@@ -517,6 +520,7 @@ impl EcDouble {
                 slope_limb_26_col111.clone(),
                 slope_limb_27_col112.clone(),
             ],
+            enabler.clone(),
             common_lookup_elements,
             eval,
         );
@@ -663,6 +667,7 @@ impl EcDouble {
                 numerator_26_tmp_abe44_62.clone(),
                 numerator_27_tmp_abe44_63.clone(),
             ],
+            enabler.clone(),
             k_col113.clone(),
             carry_0_col114.clone(),
             carry_1_col115.clone(),
@@ -725,6 +730,7 @@ impl EcDouble {
                 result_x_limb_26_col167.clone(),
                 result_x_limb_27_col168.clone(),
             ],
+            enabler.clone(),
             common_lookup_elements,
             eval,
         );
@@ -927,6 +933,7 @@ impl EcDouble {
                 x_sum_26_tmp_abe44_112.clone(),
                 x_sum_27_tmp_abe44_113.clone(),
             ],
+            enabler.clone(),
             k_col169.clone(),
             carry_0_col170.clone(),
             carry_1_col171.clone(),
@@ -989,6 +996,7 @@ impl EcDouble {
                 result_y_limb_26_col223.clone(),
                 result_y_limb_27_col224.clone(),
             ],
+            enabler.clone(),
             common_lookup_elements,
             eval,
         );
@@ -1227,6 +1235,7 @@ impl EcDouble {
                 y_sum_26_tmp_abe44_190.clone(),
                 y_sum_27_tmp_abe44_191.clone(),
             ],
+            enabler.clone(),
             k_col225.clone(),
             carry_0_col226.clone(),
             carry_1_col227.clone(),

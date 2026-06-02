@@ -63,64 +63,64 @@ impl FrameworkEval for Eval {
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1 = E::F::from(M31::from(1));
         let M31_428564188 = E::F::from(M31::from(428564188));
-        let input_pc_col0 = eval.next_trace_mask();
-        let input_ap_col1 = eval.next_trace_mask();
-        let input_fp_col2 = eval.next_trace_mask();
-        let ap_update_add_1_col3 = eval.next_trace_mask();
-        let next_pc_id_col4 = eval.next_trace_mask();
-        let msb_col5 = eval.next_trace_mask();
-        let mid_limbs_set_col6 = eval.next_trace_mask();
-        let next_pc_limb_0_col7 = eval.next_trace_mask();
-        let next_pc_limb_1_col8 = eval.next_trace_mask();
-        let next_pc_limb_2_col9 = eval.next_trace_mask();
-        let remainder_bits_col10 = eval.next_trace_mask();
-        let partial_limb_msb_col11 = eval.next_trace_mask();
-        let enabler_col12 = eval.next_trace_mask();
+        let enabler_col0 = eval.next_trace_mask();
+        let input_pc_col1 = eval.next_trace_mask();
+        let input_ap_col2 = eval.next_trace_mask();
+        let input_fp_col3 = eval.next_trace_mask();
+        let ap_update_add_1_col4 = eval.next_trace_mask();
+        let next_pc_id_col5 = eval.next_trace_mask();
+        let msb_col6 = eval.next_trace_mask();
+        let mid_limbs_set_col7 = eval.next_trace_mask();
+        let next_pc_limb_0_col8 = eval.next_trace_mask();
+        let next_pc_limb_1_col9 = eval.next_trace_mask();
+        let next_pc_limb_2_col10 = eval.next_trace_mask();
+        let remainder_bits_col11 = eval.next_trace_mask();
+        let partial_limb_msb_col12 = eval.next_trace_mask();
 
+        // Enabler is a bit.
+        eval.add_constraint(((enabler_col0.clone() * enabler_col0.clone()) - enabler_col0.clone()));
         DecodeInstruction7Dcb2::evaluate(
-            [input_pc_col0.clone()],
-            ap_update_add_1_col3.clone(),
+            [input_pc_col1.clone()],
+            enabler_col0.clone(),
+            ap_update_add_1_col4.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [read_small_output_tmp_78364_13_limb_0] = ReadSmall::evaluate(
-            [(input_pc_col0.clone() + M31_1.clone())],
-            next_pc_id_col4.clone(),
-            msb_col5.clone(),
-            mid_limbs_set_col6.clone(),
-            next_pc_limb_0_col7.clone(),
-            next_pc_limb_1_col8.clone(),
-            next_pc_limb_2_col9.clone(),
-            remainder_bits_col10.clone(),
-            partial_limb_msb_col11.clone(),
+            [(input_pc_col1.clone() + M31_1.clone())],
+            enabler_col0.clone(),
+            next_pc_id_col5.clone(),
+            msb_col6.clone(),
+            mid_limbs_set_col7.clone(),
+            next_pc_limb_0_col8.clone(),
+            next_pc_limb_1_col9.clone(),
+            next_pc_limb_2_col10.clone(),
+            remainder_bits_col11.clone(),
+            partial_limb_msb_col12.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
-        // Enabler is a bit.
-        eval.add_constraint(
-            ((enabler_col12.clone() * enabler_col12.clone()) - enabler_col12.clone()),
-        );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::from(enabler_col12.clone()),
+            E::EF::from(enabler_col0.clone()),
             &[
                 M31_428564188.clone(),
-                input_pc_col0.clone(),
-                input_ap_col1.clone(),
-                input_fp_col2.clone(),
+                input_pc_col1.clone(),
+                input_ap_col2.clone(),
+                input_fp_col3.clone(),
             ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler_col12.clone()),
+            -E::EF::from(enabler_col0.clone()),
             &[
                 M31_428564188.clone(),
-                (input_pc_col0.clone() + read_small_output_tmp_78364_13_limb_0.clone()),
-                (input_ap_col1.clone() + ap_update_add_1_col3.clone()),
-                input_fp_col2.clone(),
+                (input_pc_col1.clone() + read_small_output_tmp_78364_13_limb_0.clone()),
+                (input_ap_col2.clone() + ap_update_add_1_col4.clone()),
+                input_fp_col3.clone(),
             ],
         ));
 

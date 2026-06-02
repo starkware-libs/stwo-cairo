@@ -16,6 +16,7 @@ impl EcAdd {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [ec_add_input_x1_limb_0, ec_add_input_x1_limb_1, ec_add_input_x1_limb_2, ec_add_input_x1_limb_3, ec_add_input_x1_limb_4, ec_add_input_x1_limb_5, ec_add_input_x1_limb_6, ec_add_input_x1_limb_7, ec_add_input_x1_limb_8, ec_add_input_x1_limb_9, ec_add_input_x1_limb_10, ec_add_input_x1_limb_11, ec_add_input_x1_limb_12, ec_add_input_x1_limb_13, ec_add_input_x1_limb_14, ec_add_input_x1_limb_15, ec_add_input_x1_limb_16, ec_add_input_x1_limb_17, ec_add_input_x1_limb_18, ec_add_input_x1_limb_19, ec_add_input_x1_limb_20, ec_add_input_x1_limb_21, ec_add_input_x1_limb_22, ec_add_input_x1_limb_23, ec_add_input_x1_limb_24, ec_add_input_x1_limb_25, ec_add_input_x1_limb_26, ec_add_input_x1_limb_27, ec_add_input_y1_limb_0, ec_add_input_y1_limb_1, ec_add_input_y1_limb_2, ec_add_input_y1_limb_3, ec_add_input_y1_limb_4, ec_add_input_y1_limb_5, ec_add_input_y1_limb_6, ec_add_input_y1_limb_7, ec_add_input_y1_limb_8, ec_add_input_y1_limb_9, ec_add_input_y1_limb_10, ec_add_input_y1_limb_11, ec_add_input_y1_limb_12, ec_add_input_y1_limb_13, ec_add_input_y1_limb_14, ec_add_input_y1_limb_15, ec_add_input_y1_limb_16, ec_add_input_y1_limb_17, ec_add_input_y1_limb_18, ec_add_input_y1_limb_19, ec_add_input_y1_limb_20, ec_add_input_y1_limb_21, ec_add_input_y1_limb_22, ec_add_input_y1_limb_23, ec_add_input_y1_limb_24, ec_add_input_y1_limb_25, ec_add_input_y1_limb_26, ec_add_input_y1_limb_27, ec_add_input_x2_limb_0, ec_add_input_x2_limb_1, ec_add_input_x2_limb_2, ec_add_input_x2_limb_3, ec_add_input_x2_limb_4, ec_add_input_x2_limb_5, ec_add_input_x2_limb_6, ec_add_input_x2_limb_7, ec_add_input_x2_limb_8, ec_add_input_x2_limb_9, ec_add_input_x2_limb_10, ec_add_input_x2_limb_11, ec_add_input_x2_limb_12, ec_add_input_x2_limb_13, ec_add_input_x2_limb_14, ec_add_input_x2_limb_15, ec_add_input_x2_limb_16, ec_add_input_x2_limb_17, ec_add_input_x2_limb_18, ec_add_input_x2_limb_19, ec_add_input_x2_limb_20, ec_add_input_x2_limb_21, ec_add_input_x2_limb_22, ec_add_input_x2_limb_23, ec_add_input_x2_limb_24, ec_add_input_x2_limb_25, ec_add_input_x2_limb_26, ec_add_input_x2_limb_27, ec_add_input_y2_limb_0, ec_add_input_y2_limb_1, ec_add_input_y2_limb_2, ec_add_input_y2_limb_3, ec_add_input_y2_limb_4, ec_add_input_y2_limb_5, ec_add_input_y2_limb_6, ec_add_input_y2_limb_7, ec_add_input_y2_limb_8, ec_add_input_y2_limb_9, ec_add_input_y2_limb_10, ec_add_input_y2_limb_11, ec_add_input_y2_limb_12, ec_add_input_y2_limb_13, ec_add_input_y2_limb_14, ec_add_input_y2_limb_15, ec_add_input_y2_limb_16, ec_add_input_y2_limb_17, ec_add_input_y2_limb_18, ec_add_input_y2_limb_19, ec_add_input_y2_limb_20, ec_add_input_y2_limb_21, ec_add_input_y2_limb_22, ec_add_input_y2_limb_23, ec_add_input_y2_limb_24, ec_add_input_y2_limb_25, ec_add_input_y2_limb_26, ec_add_input_y2_limb_27]: [E::F; 112],
+        enabler: E::F,
         slope_limb_0_col0: E::F,
         slope_limb_1_col1: E::F,
         slope_limb_2_col2: E::F,
@@ -218,6 +219,7 @@ impl EcAdd {
                 slope_limb_26_col26.clone(),
                 slope_limb_27_col27.clone(),
             ],
+            enabler.clone(),
             common_lookup_elements,
             eval,
         );
@@ -420,6 +422,7 @@ impl EcAdd {
                 y_diff_26_tmp_17c8d_55.clone(),
                 y_diff_27_tmp_17c8d_56.clone(),
             ],
+            enabler.clone(),
             k_col28.clone(),
             carry_0_col29.clone(),
             carry_1_col30.clone(),
@@ -482,6 +485,7 @@ impl EcAdd {
                 result_x_limb_26_col82.clone(),
                 result_x_limb_27_col83.clone(),
             ],
+            enabler.clone(),
             common_lookup_elements,
             eval,
         );
@@ -684,6 +688,7 @@ impl EcAdd {
                 x_sum_26_tmp_17c8d_105.clone(),
                 x_sum_27_tmp_17c8d_106.clone(),
             ],
+            enabler.clone(),
             k_col84.clone(),
             carry_0_col85.clone(),
             carry_1_col86.clone(),
@@ -746,6 +751,7 @@ impl EcAdd {
                 result_y_limb_26_col138.clone(),
                 result_y_limb_27_col139.clone(),
             ],
+            enabler.clone(),
             common_lookup_elements,
             eval,
         );
@@ -948,6 +954,7 @@ impl EcAdd {
                 y_sum_26_tmp_17c8d_183.clone(),
                 y_sum_27_tmp_17c8d_184.clone(),
             ],
+            enabler.clone(),
             k_col140.clone(),
             carry_0_col141.clone(),
             carry_1_col142.clone(),

@@ -14,16 +14,16 @@ impl BitwiseXorNumBits4 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [bitwise_xor_num_bits_4_input_limb_0, bitwise_xor_num_bits_4_input_limb_1]: [E::F; 2],
+        enabler: E::F,
         xor_col0: E::F,
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
-        let M31_1 = E::F::from(M31::from(1));
         let M31_45448144 = E::F::from(M31::from(45448144));
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_45448144.clone(),
                 bitwise_xor_num_bits_4_input_limb_0.clone(),

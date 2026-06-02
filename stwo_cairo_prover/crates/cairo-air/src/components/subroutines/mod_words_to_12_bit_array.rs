@@ -14,6 +14,7 @@ impl ModWordsTo12BitArray {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [mod_words_to_12_bit_array_input_limb_0, mod_words_to_12_bit_array_input_limb_1, mod_words_to_12_bit_array_input_limb_2, mod_words_to_12_bit_array_input_limb_3, mod_words_to_12_bit_array_input_limb_4, mod_words_to_12_bit_array_input_limb_5, mod_words_to_12_bit_array_input_limb_6, mod_words_to_12_bit_array_input_limb_7, mod_words_to_12_bit_array_input_limb_8, mod_words_to_12_bit_array_input_limb_9, mod_words_to_12_bit_array_input_limb_10, mod_words_to_12_bit_array_input_limb_28, mod_words_to_12_bit_array_input_limb_29, mod_words_to_12_bit_array_input_limb_30, mod_words_to_12_bit_array_input_limb_31, mod_words_to_12_bit_array_input_limb_32, mod_words_to_12_bit_array_input_limb_33, mod_words_to_12_bit_array_input_limb_34, mod_words_to_12_bit_array_input_limb_35, mod_words_to_12_bit_array_input_limb_36, mod_words_to_12_bit_array_input_limb_37, mod_words_to_12_bit_array_input_limb_38]: [E::F; 22],
+        enabler: E::F,
         limb1b_0_col0: E::F,
         limb2b_0_col1: E::F,
         limb5b_0_col2: E::F,
@@ -27,7 +28,6 @@ impl ModWordsTo12BitArray {
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 16] {
-        let M31_1 = E::F::from(M31::from(1));
         let M31_1005786011 = E::F::from(M31::from(1005786011));
         let M31_512 = E::F::from(M31::from(512));
         let M31_64 = E::F::from(M31::from(64));
@@ -43,7 +43,7 @@ impl ModWordsTo12BitArray {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1005786011.clone(),
                 limb1a_0_tmp_2aff4_1.clone(),
@@ -63,7 +63,7 @@ impl ModWordsTo12BitArray {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1005786011.clone(),
                 limb5a_0_tmp_2aff4_5.clone(),
@@ -87,7 +87,7 @@ impl ModWordsTo12BitArray {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1005786011.clone(),
                 limb1a_1_tmp_2aff4_11.clone(),
@@ -107,7 +107,7 @@ impl ModWordsTo12BitArray {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1005786011.clone(),
                 limb5a_1_tmp_2aff4_15.clone(),
@@ -123,7 +123,7 @@ impl ModWordsTo12BitArray {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1005786011.clone(),
                 limb9a_0_tmp_2aff4_9.clone(),

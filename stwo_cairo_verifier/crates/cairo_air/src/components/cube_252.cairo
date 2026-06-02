@@ -3,6 +3,7 @@ use crate::components::subroutines::mul_252::mul_252_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 141;
+pub const N_INTERACTION_COLUMNS: usize = 200;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 16] = [
     ('RangeCheck_9_9', 6), ('RangeCheck_9_9_B', 6), ('RangeCheck_9_9_C', 6),
     ('RangeCheck_9_9_D', 6), ('RangeCheck_9_9_E', 6), ('RangeCheck_9_9_F', 6),
@@ -21,7 +22,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; 200].span();
+        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -284,386 +285,390 @@ pub impl AirComponentImpl of AirComponent<Component> {
         let mut numerator_98: QM31 = Zero::zero();
 
         let [
-            input_limb_0_col0,
-            input_limb_1_col1,
-            input_limb_2_col2,
-            input_limb_3_col3,
-            input_limb_4_col4,
-            input_limb_5_col5,
-            input_limb_6_col6,
-            input_limb_7_col7,
-            input_limb_8_col8,
-            input_limb_9_col9,
-            unpacked_limb_0_col10,
-            unpacked_limb_1_col11,
-            unpacked_limb_3_col12,
-            unpacked_limb_4_col13,
-            unpacked_limb_6_col14,
-            unpacked_limb_7_col15,
-            unpacked_limb_9_col16,
-            unpacked_limb_10_col17,
-            unpacked_limb_12_col18,
-            unpacked_limb_13_col19,
-            unpacked_limb_15_col20,
-            unpacked_limb_16_col21,
-            unpacked_limb_18_col22,
-            unpacked_limb_19_col23,
-            unpacked_limb_21_col24,
-            unpacked_limb_22_col25,
-            unpacked_limb_24_col26,
-            unpacked_limb_25_col27,
-            mul_res_limb_0_col28,
-            mul_res_limb_1_col29,
-            mul_res_limb_2_col30,
-            mul_res_limb_3_col31,
-            mul_res_limb_4_col32,
-            mul_res_limb_5_col33,
-            mul_res_limb_6_col34,
-            mul_res_limb_7_col35,
-            mul_res_limb_8_col36,
-            mul_res_limb_9_col37,
-            mul_res_limb_10_col38,
-            mul_res_limb_11_col39,
-            mul_res_limb_12_col40,
-            mul_res_limb_13_col41,
-            mul_res_limb_14_col42,
-            mul_res_limb_15_col43,
-            mul_res_limb_16_col44,
-            mul_res_limb_17_col45,
-            mul_res_limb_18_col46,
-            mul_res_limb_19_col47,
-            mul_res_limb_20_col48,
-            mul_res_limb_21_col49,
-            mul_res_limb_22_col50,
-            mul_res_limb_23_col51,
-            mul_res_limb_24_col52,
-            mul_res_limb_25_col53,
-            mul_res_limb_26_col54,
-            mul_res_limb_27_col55,
-            k_col56,
-            carry_0_col57,
-            carry_1_col58,
-            carry_2_col59,
-            carry_3_col60,
-            carry_4_col61,
-            carry_5_col62,
-            carry_6_col63,
-            carry_7_col64,
-            carry_8_col65,
-            carry_9_col66,
-            carry_10_col67,
-            carry_11_col68,
-            carry_12_col69,
-            carry_13_col70,
-            carry_14_col71,
-            carry_15_col72,
-            carry_16_col73,
-            carry_17_col74,
-            carry_18_col75,
-            carry_19_col76,
-            carry_20_col77,
-            carry_21_col78,
-            carry_22_col79,
-            carry_23_col80,
-            carry_24_col81,
-            carry_25_col82,
-            carry_26_col83,
-            mul_res_limb_0_col84,
-            mul_res_limb_1_col85,
-            mul_res_limb_2_col86,
-            mul_res_limb_3_col87,
-            mul_res_limb_4_col88,
-            mul_res_limb_5_col89,
-            mul_res_limb_6_col90,
-            mul_res_limb_7_col91,
-            mul_res_limb_8_col92,
-            mul_res_limb_9_col93,
-            mul_res_limb_10_col94,
-            mul_res_limb_11_col95,
-            mul_res_limb_12_col96,
-            mul_res_limb_13_col97,
-            mul_res_limb_14_col98,
-            mul_res_limb_15_col99,
-            mul_res_limb_16_col100,
-            mul_res_limb_17_col101,
-            mul_res_limb_18_col102,
-            mul_res_limb_19_col103,
-            mul_res_limb_20_col104,
-            mul_res_limb_21_col105,
-            mul_res_limb_22_col106,
-            mul_res_limb_23_col107,
-            mul_res_limb_24_col108,
-            mul_res_limb_25_col109,
-            mul_res_limb_26_col110,
-            mul_res_limb_27_col111,
-            k_col112,
-            carry_0_col113,
-            carry_1_col114,
-            carry_2_col115,
-            carry_3_col116,
-            carry_4_col117,
-            carry_5_col118,
-            carry_6_col119,
-            carry_7_col120,
-            carry_8_col121,
-            carry_9_col122,
-            carry_10_col123,
-            carry_11_col124,
-            carry_12_col125,
-            carry_13_col126,
-            carry_14_col127,
-            carry_15_col128,
-            carry_16_col129,
-            carry_17_col130,
-            carry_18_col131,
-            carry_19_col132,
-            carry_20_col133,
-            carry_21_col134,
-            carry_22_col135,
-            carry_23_col136,
-            carry_24_col137,
-            carry_25_col138,
-            carry_26_col139,
-            enabler_col140,
+            enabler_col0,
+            input_limb_0_col1,
+            input_limb_1_col2,
+            input_limb_2_col3,
+            input_limb_3_col4,
+            input_limb_4_col5,
+            input_limb_5_col6,
+            input_limb_6_col7,
+            input_limb_7_col8,
+            input_limb_8_col9,
+            input_limb_9_col10,
+            unpacked_limb_0_col11,
+            unpacked_limb_1_col12,
+            unpacked_limb_3_col13,
+            unpacked_limb_4_col14,
+            unpacked_limb_6_col15,
+            unpacked_limb_7_col16,
+            unpacked_limb_9_col17,
+            unpacked_limb_10_col18,
+            unpacked_limb_12_col19,
+            unpacked_limb_13_col20,
+            unpacked_limb_15_col21,
+            unpacked_limb_16_col22,
+            unpacked_limb_18_col23,
+            unpacked_limb_19_col24,
+            unpacked_limb_21_col25,
+            unpacked_limb_22_col26,
+            unpacked_limb_24_col27,
+            unpacked_limb_25_col28,
+            mul_res_limb_0_col29,
+            mul_res_limb_1_col30,
+            mul_res_limb_2_col31,
+            mul_res_limb_3_col32,
+            mul_res_limb_4_col33,
+            mul_res_limb_5_col34,
+            mul_res_limb_6_col35,
+            mul_res_limb_7_col36,
+            mul_res_limb_8_col37,
+            mul_res_limb_9_col38,
+            mul_res_limb_10_col39,
+            mul_res_limb_11_col40,
+            mul_res_limb_12_col41,
+            mul_res_limb_13_col42,
+            mul_res_limb_14_col43,
+            mul_res_limb_15_col44,
+            mul_res_limb_16_col45,
+            mul_res_limb_17_col46,
+            mul_res_limb_18_col47,
+            mul_res_limb_19_col48,
+            mul_res_limb_20_col49,
+            mul_res_limb_21_col50,
+            mul_res_limb_22_col51,
+            mul_res_limb_23_col52,
+            mul_res_limb_24_col53,
+            mul_res_limb_25_col54,
+            mul_res_limb_26_col55,
+            mul_res_limb_27_col56,
+            k_col57,
+            carry_0_col58,
+            carry_1_col59,
+            carry_2_col60,
+            carry_3_col61,
+            carry_4_col62,
+            carry_5_col63,
+            carry_6_col64,
+            carry_7_col65,
+            carry_8_col66,
+            carry_9_col67,
+            carry_10_col68,
+            carry_11_col69,
+            carry_12_col70,
+            carry_13_col71,
+            carry_14_col72,
+            carry_15_col73,
+            carry_16_col74,
+            carry_17_col75,
+            carry_18_col76,
+            carry_19_col77,
+            carry_20_col78,
+            carry_21_col79,
+            carry_22_col80,
+            carry_23_col81,
+            carry_24_col82,
+            carry_25_col83,
+            carry_26_col84,
+            mul_res_limb_0_col85,
+            mul_res_limb_1_col86,
+            mul_res_limb_2_col87,
+            mul_res_limb_3_col88,
+            mul_res_limb_4_col89,
+            mul_res_limb_5_col90,
+            mul_res_limb_6_col91,
+            mul_res_limb_7_col92,
+            mul_res_limb_8_col93,
+            mul_res_limb_9_col94,
+            mul_res_limb_10_col95,
+            mul_res_limb_11_col96,
+            mul_res_limb_12_col97,
+            mul_res_limb_13_col98,
+            mul_res_limb_14_col99,
+            mul_res_limb_15_col100,
+            mul_res_limb_16_col101,
+            mul_res_limb_17_col102,
+            mul_res_limb_18_col103,
+            mul_res_limb_19_col104,
+            mul_res_limb_20_col105,
+            mul_res_limb_21_col106,
+            mul_res_limb_22_col107,
+            mul_res_limb_23_col108,
+            mul_res_limb_24_col109,
+            mul_res_limb_25_col110,
+            mul_res_limb_26_col111,
+            mul_res_limb_27_col112,
+            k_col113,
+            carry_0_col114,
+            carry_1_col115,
+            carry_2_col116,
+            carry_3_col117,
+            carry_4_col118,
+            carry_5_col119,
+            carry_6_col120,
+            carry_7_col121,
+            carry_8_col122,
+            carry_9_col123,
+            carry_10_col124,
+            carry_11_col125,
+            carry_12_col126,
+            carry_13_col127,
+            carry_14_col128,
+            carry_15_col129,
+            carry_16_col130,
+            carry_17_col131,
+            carry_18_col132,
+            carry_19_col133,
+            carry_20_col134,
+            carry_21_col135,
+            carry_22_col136,
+            carry_23_col137,
+            carry_24_col138,
+            carry_25_col139,
+            carry_26_col140,
         ]: [Span<QM31>; 141] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
             .unbox();
-        let [input_limb_0_col0]: [QM31; 1] = (*input_limb_0_col0.try_into().unwrap()).unbox();
-        let [input_limb_1_col1]: [QM31; 1] = (*input_limb_1_col1.try_into().unwrap()).unbox();
-        let [input_limb_2_col2]: [QM31; 1] = (*input_limb_2_col2.try_into().unwrap()).unbox();
-        let [input_limb_3_col3]: [QM31; 1] = (*input_limb_3_col3.try_into().unwrap()).unbox();
-        let [input_limb_4_col4]: [QM31; 1] = (*input_limb_4_col4.try_into().unwrap()).unbox();
-        let [input_limb_5_col5]: [QM31; 1] = (*input_limb_5_col5.try_into().unwrap()).unbox();
-        let [input_limb_6_col6]: [QM31; 1] = (*input_limb_6_col6.try_into().unwrap()).unbox();
-        let [input_limb_7_col7]: [QM31; 1] = (*input_limb_7_col7.try_into().unwrap()).unbox();
-        let [input_limb_8_col8]: [QM31; 1] = (*input_limb_8_col8.try_into().unwrap()).unbox();
-        let [input_limb_9_col9]: [QM31; 1] = (*input_limb_9_col9.try_into().unwrap()).unbox();
-        let [unpacked_limb_0_col10]: [QM31; 1] = (*unpacked_limb_0_col10.try_into().unwrap())
+        let [enabler_col0]: [QM31; 1] = (*enabler_col0.try_into().unwrap()).unbox();
+        let [input_limb_0_col1]: [QM31; 1] = (*input_limb_0_col1.try_into().unwrap()).unbox();
+        let [input_limb_1_col2]: [QM31; 1] = (*input_limb_1_col2.try_into().unwrap()).unbox();
+        let [input_limb_2_col3]: [QM31; 1] = (*input_limb_2_col3.try_into().unwrap()).unbox();
+        let [input_limb_3_col4]: [QM31; 1] = (*input_limb_3_col4.try_into().unwrap()).unbox();
+        let [input_limb_4_col5]: [QM31; 1] = (*input_limb_4_col5.try_into().unwrap()).unbox();
+        let [input_limb_5_col6]: [QM31; 1] = (*input_limb_5_col6.try_into().unwrap()).unbox();
+        let [input_limb_6_col7]: [QM31; 1] = (*input_limb_6_col7.try_into().unwrap()).unbox();
+        let [input_limb_7_col8]: [QM31; 1] = (*input_limb_7_col8.try_into().unwrap()).unbox();
+        let [input_limb_8_col9]: [QM31; 1] = (*input_limb_8_col9.try_into().unwrap()).unbox();
+        let [input_limb_9_col10]: [QM31; 1] = (*input_limb_9_col10.try_into().unwrap()).unbox();
+        let [unpacked_limb_0_col11]: [QM31; 1] = (*unpacked_limb_0_col11.try_into().unwrap())
             .unbox();
-        let [unpacked_limb_1_col11]: [QM31; 1] = (*unpacked_limb_1_col11.try_into().unwrap())
+        let [unpacked_limb_1_col12]: [QM31; 1] = (*unpacked_limb_1_col12.try_into().unwrap())
             .unbox();
-        let [unpacked_limb_3_col12]: [QM31; 1] = (*unpacked_limb_3_col12.try_into().unwrap())
+        let [unpacked_limb_3_col13]: [QM31; 1] = (*unpacked_limb_3_col13.try_into().unwrap())
             .unbox();
-        let [unpacked_limb_4_col13]: [QM31; 1] = (*unpacked_limb_4_col13.try_into().unwrap())
+        let [unpacked_limb_4_col14]: [QM31; 1] = (*unpacked_limb_4_col14.try_into().unwrap())
             .unbox();
-        let [unpacked_limb_6_col14]: [QM31; 1] = (*unpacked_limb_6_col14.try_into().unwrap())
+        let [unpacked_limb_6_col15]: [QM31; 1] = (*unpacked_limb_6_col15.try_into().unwrap())
             .unbox();
-        let [unpacked_limb_7_col15]: [QM31; 1] = (*unpacked_limb_7_col15.try_into().unwrap())
+        let [unpacked_limb_7_col16]: [QM31; 1] = (*unpacked_limb_7_col16.try_into().unwrap())
             .unbox();
-        let [unpacked_limb_9_col16]: [QM31; 1] = (*unpacked_limb_9_col16.try_into().unwrap())
+        let [unpacked_limb_9_col17]: [QM31; 1] = (*unpacked_limb_9_col17.try_into().unwrap())
             .unbox();
-        let [unpacked_limb_10_col17]: [QM31; 1] = (*unpacked_limb_10_col17.try_into().unwrap())
+        let [unpacked_limb_10_col18]: [QM31; 1] = (*unpacked_limb_10_col18.try_into().unwrap())
             .unbox();
-        let [unpacked_limb_12_col18]: [QM31; 1] = (*unpacked_limb_12_col18.try_into().unwrap())
+        let [unpacked_limb_12_col19]: [QM31; 1] = (*unpacked_limb_12_col19.try_into().unwrap())
             .unbox();
-        let [unpacked_limb_13_col19]: [QM31; 1] = (*unpacked_limb_13_col19.try_into().unwrap())
+        let [unpacked_limb_13_col20]: [QM31; 1] = (*unpacked_limb_13_col20.try_into().unwrap())
             .unbox();
-        let [unpacked_limb_15_col20]: [QM31; 1] = (*unpacked_limb_15_col20.try_into().unwrap())
+        let [unpacked_limb_15_col21]: [QM31; 1] = (*unpacked_limb_15_col21.try_into().unwrap())
             .unbox();
-        let [unpacked_limb_16_col21]: [QM31; 1] = (*unpacked_limb_16_col21.try_into().unwrap())
+        let [unpacked_limb_16_col22]: [QM31; 1] = (*unpacked_limb_16_col22.try_into().unwrap())
             .unbox();
-        let [unpacked_limb_18_col22]: [QM31; 1] = (*unpacked_limb_18_col22.try_into().unwrap())
+        let [unpacked_limb_18_col23]: [QM31; 1] = (*unpacked_limb_18_col23.try_into().unwrap())
             .unbox();
-        let [unpacked_limb_19_col23]: [QM31; 1] = (*unpacked_limb_19_col23.try_into().unwrap())
+        let [unpacked_limb_19_col24]: [QM31; 1] = (*unpacked_limb_19_col24.try_into().unwrap())
             .unbox();
-        let [unpacked_limb_21_col24]: [QM31; 1] = (*unpacked_limb_21_col24.try_into().unwrap())
+        let [unpacked_limb_21_col25]: [QM31; 1] = (*unpacked_limb_21_col25.try_into().unwrap())
             .unbox();
-        let [unpacked_limb_22_col25]: [QM31; 1] = (*unpacked_limb_22_col25.try_into().unwrap())
+        let [unpacked_limb_22_col26]: [QM31; 1] = (*unpacked_limb_22_col26.try_into().unwrap())
             .unbox();
-        let [unpacked_limb_24_col26]: [QM31; 1] = (*unpacked_limb_24_col26.try_into().unwrap())
+        let [unpacked_limb_24_col27]: [QM31; 1] = (*unpacked_limb_24_col27.try_into().unwrap())
             .unbox();
-        let [unpacked_limb_25_col27]: [QM31; 1] = (*unpacked_limb_25_col27.try_into().unwrap())
+        let [unpacked_limb_25_col28]: [QM31; 1] = (*unpacked_limb_25_col28.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_0_col28]: [QM31; 1] = (*mul_res_limb_0_col28.try_into().unwrap()).unbox();
-        let [mul_res_limb_1_col29]: [QM31; 1] = (*mul_res_limb_1_col29.try_into().unwrap()).unbox();
-        let [mul_res_limb_2_col30]: [QM31; 1] = (*mul_res_limb_2_col30.try_into().unwrap()).unbox();
-        let [mul_res_limb_3_col31]: [QM31; 1] = (*mul_res_limb_3_col31.try_into().unwrap()).unbox();
-        let [mul_res_limb_4_col32]: [QM31; 1] = (*mul_res_limb_4_col32.try_into().unwrap()).unbox();
-        let [mul_res_limb_5_col33]: [QM31; 1] = (*mul_res_limb_5_col33.try_into().unwrap()).unbox();
-        let [mul_res_limb_6_col34]: [QM31; 1] = (*mul_res_limb_6_col34.try_into().unwrap()).unbox();
-        let [mul_res_limb_7_col35]: [QM31; 1] = (*mul_res_limb_7_col35.try_into().unwrap()).unbox();
-        let [mul_res_limb_8_col36]: [QM31; 1] = (*mul_res_limb_8_col36.try_into().unwrap()).unbox();
-        let [mul_res_limb_9_col37]: [QM31; 1] = (*mul_res_limb_9_col37.try_into().unwrap()).unbox();
-        let [mul_res_limb_10_col38]: [QM31; 1] = (*mul_res_limb_10_col38.try_into().unwrap())
+        let [mul_res_limb_0_col29]: [QM31; 1] = (*mul_res_limb_0_col29.try_into().unwrap()).unbox();
+        let [mul_res_limb_1_col30]: [QM31; 1] = (*mul_res_limb_1_col30.try_into().unwrap()).unbox();
+        let [mul_res_limb_2_col31]: [QM31; 1] = (*mul_res_limb_2_col31.try_into().unwrap()).unbox();
+        let [mul_res_limb_3_col32]: [QM31; 1] = (*mul_res_limb_3_col32.try_into().unwrap()).unbox();
+        let [mul_res_limb_4_col33]: [QM31; 1] = (*mul_res_limb_4_col33.try_into().unwrap()).unbox();
+        let [mul_res_limb_5_col34]: [QM31; 1] = (*mul_res_limb_5_col34.try_into().unwrap()).unbox();
+        let [mul_res_limb_6_col35]: [QM31; 1] = (*mul_res_limb_6_col35.try_into().unwrap()).unbox();
+        let [mul_res_limb_7_col36]: [QM31; 1] = (*mul_res_limb_7_col36.try_into().unwrap()).unbox();
+        let [mul_res_limb_8_col37]: [QM31; 1] = (*mul_res_limb_8_col37.try_into().unwrap()).unbox();
+        let [mul_res_limb_9_col38]: [QM31; 1] = (*mul_res_limb_9_col38.try_into().unwrap()).unbox();
+        let [mul_res_limb_10_col39]: [QM31; 1] = (*mul_res_limb_10_col39.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_11_col39]: [QM31; 1] = (*mul_res_limb_11_col39.try_into().unwrap())
+        let [mul_res_limb_11_col40]: [QM31; 1] = (*mul_res_limb_11_col40.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_12_col40]: [QM31; 1] = (*mul_res_limb_12_col40.try_into().unwrap())
+        let [mul_res_limb_12_col41]: [QM31; 1] = (*mul_res_limb_12_col41.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_13_col41]: [QM31; 1] = (*mul_res_limb_13_col41.try_into().unwrap())
+        let [mul_res_limb_13_col42]: [QM31; 1] = (*mul_res_limb_13_col42.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_14_col42]: [QM31; 1] = (*mul_res_limb_14_col42.try_into().unwrap())
+        let [mul_res_limb_14_col43]: [QM31; 1] = (*mul_res_limb_14_col43.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_15_col43]: [QM31; 1] = (*mul_res_limb_15_col43.try_into().unwrap())
+        let [mul_res_limb_15_col44]: [QM31; 1] = (*mul_res_limb_15_col44.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_16_col44]: [QM31; 1] = (*mul_res_limb_16_col44.try_into().unwrap())
+        let [mul_res_limb_16_col45]: [QM31; 1] = (*mul_res_limb_16_col45.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_17_col45]: [QM31; 1] = (*mul_res_limb_17_col45.try_into().unwrap())
+        let [mul_res_limb_17_col46]: [QM31; 1] = (*mul_res_limb_17_col46.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_18_col46]: [QM31; 1] = (*mul_res_limb_18_col46.try_into().unwrap())
+        let [mul_res_limb_18_col47]: [QM31; 1] = (*mul_res_limb_18_col47.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_19_col47]: [QM31; 1] = (*mul_res_limb_19_col47.try_into().unwrap())
+        let [mul_res_limb_19_col48]: [QM31; 1] = (*mul_res_limb_19_col48.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_20_col48]: [QM31; 1] = (*mul_res_limb_20_col48.try_into().unwrap())
+        let [mul_res_limb_20_col49]: [QM31; 1] = (*mul_res_limb_20_col49.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_21_col49]: [QM31; 1] = (*mul_res_limb_21_col49.try_into().unwrap())
+        let [mul_res_limb_21_col50]: [QM31; 1] = (*mul_res_limb_21_col50.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_22_col50]: [QM31; 1] = (*mul_res_limb_22_col50.try_into().unwrap())
+        let [mul_res_limb_22_col51]: [QM31; 1] = (*mul_res_limb_22_col51.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_23_col51]: [QM31; 1] = (*mul_res_limb_23_col51.try_into().unwrap())
+        let [mul_res_limb_23_col52]: [QM31; 1] = (*mul_res_limb_23_col52.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_24_col52]: [QM31; 1] = (*mul_res_limb_24_col52.try_into().unwrap())
+        let [mul_res_limb_24_col53]: [QM31; 1] = (*mul_res_limb_24_col53.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_25_col53]: [QM31; 1] = (*mul_res_limb_25_col53.try_into().unwrap())
+        let [mul_res_limb_25_col54]: [QM31; 1] = (*mul_res_limb_25_col54.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_26_col54]: [QM31; 1] = (*mul_res_limb_26_col54.try_into().unwrap())
+        let [mul_res_limb_26_col55]: [QM31; 1] = (*mul_res_limb_26_col55.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_27_col55]: [QM31; 1] = (*mul_res_limb_27_col55.try_into().unwrap())
+        let [mul_res_limb_27_col56]: [QM31; 1] = (*mul_res_limb_27_col56.try_into().unwrap())
             .unbox();
-        let [k_col56]: [QM31; 1] = (*k_col56.try_into().unwrap()).unbox();
-        let [carry_0_col57]: [QM31; 1] = (*carry_0_col57.try_into().unwrap()).unbox();
-        let [carry_1_col58]: [QM31; 1] = (*carry_1_col58.try_into().unwrap()).unbox();
-        let [carry_2_col59]: [QM31; 1] = (*carry_2_col59.try_into().unwrap()).unbox();
-        let [carry_3_col60]: [QM31; 1] = (*carry_3_col60.try_into().unwrap()).unbox();
-        let [carry_4_col61]: [QM31; 1] = (*carry_4_col61.try_into().unwrap()).unbox();
-        let [carry_5_col62]: [QM31; 1] = (*carry_5_col62.try_into().unwrap()).unbox();
-        let [carry_6_col63]: [QM31; 1] = (*carry_6_col63.try_into().unwrap()).unbox();
-        let [carry_7_col64]: [QM31; 1] = (*carry_7_col64.try_into().unwrap()).unbox();
-        let [carry_8_col65]: [QM31; 1] = (*carry_8_col65.try_into().unwrap()).unbox();
-        let [carry_9_col66]: [QM31; 1] = (*carry_9_col66.try_into().unwrap()).unbox();
-        let [carry_10_col67]: [QM31; 1] = (*carry_10_col67.try_into().unwrap()).unbox();
-        let [carry_11_col68]: [QM31; 1] = (*carry_11_col68.try_into().unwrap()).unbox();
-        let [carry_12_col69]: [QM31; 1] = (*carry_12_col69.try_into().unwrap()).unbox();
-        let [carry_13_col70]: [QM31; 1] = (*carry_13_col70.try_into().unwrap()).unbox();
-        let [carry_14_col71]: [QM31; 1] = (*carry_14_col71.try_into().unwrap()).unbox();
-        let [carry_15_col72]: [QM31; 1] = (*carry_15_col72.try_into().unwrap()).unbox();
-        let [carry_16_col73]: [QM31; 1] = (*carry_16_col73.try_into().unwrap()).unbox();
-        let [carry_17_col74]: [QM31; 1] = (*carry_17_col74.try_into().unwrap()).unbox();
-        let [carry_18_col75]: [QM31; 1] = (*carry_18_col75.try_into().unwrap()).unbox();
-        let [carry_19_col76]: [QM31; 1] = (*carry_19_col76.try_into().unwrap()).unbox();
-        let [carry_20_col77]: [QM31; 1] = (*carry_20_col77.try_into().unwrap()).unbox();
-        let [carry_21_col78]: [QM31; 1] = (*carry_21_col78.try_into().unwrap()).unbox();
-        let [carry_22_col79]: [QM31; 1] = (*carry_22_col79.try_into().unwrap()).unbox();
-        let [carry_23_col80]: [QM31; 1] = (*carry_23_col80.try_into().unwrap()).unbox();
-        let [carry_24_col81]: [QM31; 1] = (*carry_24_col81.try_into().unwrap()).unbox();
-        let [carry_25_col82]: [QM31; 1] = (*carry_25_col82.try_into().unwrap()).unbox();
-        let [carry_26_col83]: [QM31; 1] = (*carry_26_col83.try_into().unwrap()).unbox();
-        let [mul_res_limb_0_col84]: [QM31; 1] = (*mul_res_limb_0_col84.try_into().unwrap()).unbox();
-        let [mul_res_limb_1_col85]: [QM31; 1] = (*mul_res_limb_1_col85.try_into().unwrap()).unbox();
-        let [mul_res_limb_2_col86]: [QM31; 1] = (*mul_res_limb_2_col86.try_into().unwrap()).unbox();
-        let [mul_res_limb_3_col87]: [QM31; 1] = (*mul_res_limb_3_col87.try_into().unwrap()).unbox();
-        let [mul_res_limb_4_col88]: [QM31; 1] = (*mul_res_limb_4_col88.try_into().unwrap()).unbox();
-        let [mul_res_limb_5_col89]: [QM31; 1] = (*mul_res_limb_5_col89.try_into().unwrap()).unbox();
-        let [mul_res_limb_6_col90]: [QM31; 1] = (*mul_res_limb_6_col90.try_into().unwrap()).unbox();
-        let [mul_res_limb_7_col91]: [QM31; 1] = (*mul_res_limb_7_col91.try_into().unwrap()).unbox();
-        let [mul_res_limb_8_col92]: [QM31; 1] = (*mul_res_limb_8_col92.try_into().unwrap()).unbox();
-        let [mul_res_limb_9_col93]: [QM31; 1] = (*mul_res_limb_9_col93.try_into().unwrap()).unbox();
-        let [mul_res_limb_10_col94]: [QM31; 1] = (*mul_res_limb_10_col94.try_into().unwrap())
+        let [k_col57]: [QM31; 1] = (*k_col57.try_into().unwrap()).unbox();
+        let [carry_0_col58]: [QM31; 1] = (*carry_0_col58.try_into().unwrap()).unbox();
+        let [carry_1_col59]: [QM31; 1] = (*carry_1_col59.try_into().unwrap()).unbox();
+        let [carry_2_col60]: [QM31; 1] = (*carry_2_col60.try_into().unwrap()).unbox();
+        let [carry_3_col61]: [QM31; 1] = (*carry_3_col61.try_into().unwrap()).unbox();
+        let [carry_4_col62]: [QM31; 1] = (*carry_4_col62.try_into().unwrap()).unbox();
+        let [carry_5_col63]: [QM31; 1] = (*carry_5_col63.try_into().unwrap()).unbox();
+        let [carry_6_col64]: [QM31; 1] = (*carry_6_col64.try_into().unwrap()).unbox();
+        let [carry_7_col65]: [QM31; 1] = (*carry_7_col65.try_into().unwrap()).unbox();
+        let [carry_8_col66]: [QM31; 1] = (*carry_8_col66.try_into().unwrap()).unbox();
+        let [carry_9_col67]: [QM31; 1] = (*carry_9_col67.try_into().unwrap()).unbox();
+        let [carry_10_col68]: [QM31; 1] = (*carry_10_col68.try_into().unwrap()).unbox();
+        let [carry_11_col69]: [QM31; 1] = (*carry_11_col69.try_into().unwrap()).unbox();
+        let [carry_12_col70]: [QM31; 1] = (*carry_12_col70.try_into().unwrap()).unbox();
+        let [carry_13_col71]: [QM31; 1] = (*carry_13_col71.try_into().unwrap()).unbox();
+        let [carry_14_col72]: [QM31; 1] = (*carry_14_col72.try_into().unwrap()).unbox();
+        let [carry_15_col73]: [QM31; 1] = (*carry_15_col73.try_into().unwrap()).unbox();
+        let [carry_16_col74]: [QM31; 1] = (*carry_16_col74.try_into().unwrap()).unbox();
+        let [carry_17_col75]: [QM31; 1] = (*carry_17_col75.try_into().unwrap()).unbox();
+        let [carry_18_col76]: [QM31; 1] = (*carry_18_col76.try_into().unwrap()).unbox();
+        let [carry_19_col77]: [QM31; 1] = (*carry_19_col77.try_into().unwrap()).unbox();
+        let [carry_20_col78]: [QM31; 1] = (*carry_20_col78.try_into().unwrap()).unbox();
+        let [carry_21_col79]: [QM31; 1] = (*carry_21_col79.try_into().unwrap()).unbox();
+        let [carry_22_col80]: [QM31; 1] = (*carry_22_col80.try_into().unwrap()).unbox();
+        let [carry_23_col81]: [QM31; 1] = (*carry_23_col81.try_into().unwrap()).unbox();
+        let [carry_24_col82]: [QM31; 1] = (*carry_24_col82.try_into().unwrap()).unbox();
+        let [carry_25_col83]: [QM31; 1] = (*carry_25_col83.try_into().unwrap()).unbox();
+        let [carry_26_col84]: [QM31; 1] = (*carry_26_col84.try_into().unwrap()).unbox();
+        let [mul_res_limb_0_col85]: [QM31; 1] = (*mul_res_limb_0_col85.try_into().unwrap()).unbox();
+        let [mul_res_limb_1_col86]: [QM31; 1] = (*mul_res_limb_1_col86.try_into().unwrap()).unbox();
+        let [mul_res_limb_2_col87]: [QM31; 1] = (*mul_res_limb_2_col87.try_into().unwrap()).unbox();
+        let [mul_res_limb_3_col88]: [QM31; 1] = (*mul_res_limb_3_col88.try_into().unwrap()).unbox();
+        let [mul_res_limb_4_col89]: [QM31; 1] = (*mul_res_limb_4_col89.try_into().unwrap()).unbox();
+        let [mul_res_limb_5_col90]: [QM31; 1] = (*mul_res_limb_5_col90.try_into().unwrap()).unbox();
+        let [mul_res_limb_6_col91]: [QM31; 1] = (*mul_res_limb_6_col91.try_into().unwrap()).unbox();
+        let [mul_res_limb_7_col92]: [QM31; 1] = (*mul_res_limb_7_col92.try_into().unwrap()).unbox();
+        let [mul_res_limb_8_col93]: [QM31; 1] = (*mul_res_limb_8_col93.try_into().unwrap()).unbox();
+        let [mul_res_limb_9_col94]: [QM31; 1] = (*mul_res_limb_9_col94.try_into().unwrap()).unbox();
+        let [mul_res_limb_10_col95]: [QM31; 1] = (*mul_res_limb_10_col95.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_11_col95]: [QM31; 1] = (*mul_res_limb_11_col95.try_into().unwrap())
+        let [mul_res_limb_11_col96]: [QM31; 1] = (*mul_res_limb_11_col96.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_12_col96]: [QM31; 1] = (*mul_res_limb_12_col96.try_into().unwrap())
+        let [mul_res_limb_12_col97]: [QM31; 1] = (*mul_res_limb_12_col97.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_13_col97]: [QM31; 1] = (*mul_res_limb_13_col97.try_into().unwrap())
+        let [mul_res_limb_13_col98]: [QM31; 1] = (*mul_res_limb_13_col98.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_14_col98]: [QM31; 1] = (*mul_res_limb_14_col98.try_into().unwrap())
+        let [mul_res_limb_14_col99]: [QM31; 1] = (*mul_res_limb_14_col99.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_15_col99]: [QM31; 1] = (*mul_res_limb_15_col99.try_into().unwrap())
+        let [mul_res_limb_15_col100]: [QM31; 1] = (*mul_res_limb_15_col100.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_16_col100]: [QM31; 1] = (*mul_res_limb_16_col100.try_into().unwrap())
+        let [mul_res_limb_16_col101]: [QM31; 1] = (*mul_res_limb_16_col101.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_17_col101]: [QM31; 1] = (*mul_res_limb_17_col101.try_into().unwrap())
+        let [mul_res_limb_17_col102]: [QM31; 1] = (*mul_res_limb_17_col102.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_18_col102]: [QM31; 1] = (*mul_res_limb_18_col102.try_into().unwrap())
+        let [mul_res_limb_18_col103]: [QM31; 1] = (*mul_res_limb_18_col103.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_19_col103]: [QM31; 1] = (*mul_res_limb_19_col103.try_into().unwrap())
+        let [mul_res_limb_19_col104]: [QM31; 1] = (*mul_res_limb_19_col104.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_20_col104]: [QM31; 1] = (*mul_res_limb_20_col104.try_into().unwrap())
+        let [mul_res_limb_20_col105]: [QM31; 1] = (*mul_res_limb_20_col105.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_21_col105]: [QM31; 1] = (*mul_res_limb_21_col105.try_into().unwrap())
+        let [mul_res_limb_21_col106]: [QM31; 1] = (*mul_res_limb_21_col106.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_22_col106]: [QM31; 1] = (*mul_res_limb_22_col106.try_into().unwrap())
+        let [mul_res_limb_22_col107]: [QM31; 1] = (*mul_res_limb_22_col107.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_23_col107]: [QM31; 1] = (*mul_res_limb_23_col107.try_into().unwrap())
+        let [mul_res_limb_23_col108]: [QM31; 1] = (*mul_res_limb_23_col108.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_24_col108]: [QM31; 1] = (*mul_res_limb_24_col108.try_into().unwrap())
+        let [mul_res_limb_24_col109]: [QM31; 1] = (*mul_res_limb_24_col109.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_25_col109]: [QM31; 1] = (*mul_res_limb_25_col109.try_into().unwrap())
+        let [mul_res_limb_25_col110]: [QM31; 1] = (*mul_res_limb_25_col110.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_26_col110]: [QM31; 1] = (*mul_res_limb_26_col110.try_into().unwrap())
+        let [mul_res_limb_26_col111]: [QM31; 1] = (*mul_res_limb_26_col111.try_into().unwrap())
             .unbox();
-        let [mul_res_limb_27_col111]: [QM31; 1] = (*mul_res_limb_27_col111.try_into().unwrap())
+        let [mul_res_limb_27_col112]: [QM31; 1] = (*mul_res_limb_27_col112.try_into().unwrap())
             .unbox();
-        let [k_col112]: [QM31; 1] = (*k_col112.try_into().unwrap()).unbox();
-        let [carry_0_col113]: [QM31; 1] = (*carry_0_col113.try_into().unwrap()).unbox();
-        let [carry_1_col114]: [QM31; 1] = (*carry_1_col114.try_into().unwrap()).unbox();
-        let [carry_2_col115]: [QM31; 1] = (*carry_2_col115.try_into().unwrap()).unbox();
-        let [carry_3_col116]: [QM31; 1] = (*carry_3_col116.try_into().unwrap()).unbox();
-        let [carry_4_col117]: [QM31; 1] = (*carry_4_col117.try_into().unwrap()).unbox();
-        let [carry_5_col118]: [QM31; 1] = (*carry_5_col118.try_into().unwrap()).unbox();
-        let [carry_6_col119]: [QM31; 1] = (*carry_6_col119.try_into().unwrap()).unbox();
-        let [carry_7_col120]: [QM31; 1] = (*carry_7_col120.try_into().unwrap()).unbox();
-        let [carry_8_col121]: [QM31; 1] = (*carry_8_col121.try_into().unwrap()).unbox();
-        let [carry_9_col122]: [QM31; 1] = (*carry_9_col122.try_into().unwrap()).unbox();
-        let [carry_10_col123]: [QM31; 1] = (*carry_10_col123.try_into().unwrap()).unbox();
-        let [carry_11_col124]: [QM31; 1] = (*carry_11_col124.try_into().unwrap()).unbox();
-        let [carry_12_col125]: [QM31; 1] = (*carry_12_col125.try_into().unwrap()).unbox();
-        let [carry_13_col126]: [QM31; 1] = (*carry_13_col126.try_into().unwrap()).unbox();
-        let [carry_14_col127]: [QM31; 1] = (*carry_14_col127.try_into().unwrap()).unbox();
-        let [carry_15_col128]: [QM31; 1] = (*carry_15_col128.try_into().unwrap()).unbox();
-        let [carry_16_col129]: [QM31; 1] = (*carry_16_col129.try_into().unwrap()).unbox();
-        let [carry_17_col130]: [QM31; 1] = (*carry_17_col130.try_into().unwrap()).unbox();
-        let [carry_18_col131]: [QM31; 1] = (*carry_18_col131.try_into().unwrap()).unbox();
-        let [carry_19_col132]: [QM31; 1] = (*carry_19_col132.try_into().unwrap()).unbox();
-        let [carry_20_col133]: [QM31; 1] = (*carry_20_col133.try_into().unwrap()).unbox();
-        let [carry_21_col134]: [QM31; 1] = (*carry_21_col134.try_into().unwrap()).unbox();
-        let [carry_22_col135]: [QM31; 1] = (*carry_22_col135.try_into().unwrap()).unbox();
-        let [carry_23_col136]: [QM31; 1] = (*carry_23_col136.try_into().unwrap()).unbox();
-        let [carry_24_col137]: [QM31; 1] = (*carry_24_col137.try_into().unwrap()).unbox();
-        let [carry_25_col138]: [QM31; 1] = (*carry_25_col138.try_into().unwrap()).unbox();
-        let [carry_26_col139]: [QM31; 1] = (*carry_26_col139.try_into().unwrap()).unbox();
-        let [enabler_col140]: [QM31; 1] = (*enabler_col140.try_into().unwrap()).unbox();
+        let [k_col113]: [QM31; 1] = (*k_col113.try_into().unwrap()).unbox();
+        let [carry_0_col114]: [QM31; 1] = (*carry_0_col114.try_into().unwrap()).unbox();
+        let [carry_1_col115]: [QM31; 1] = (*carry_1_col115.try_into().unwrap()).unbox();
+        let [carry_2_col116]: [QM31; 1] = (*carry_2_col116.try_into().unwrap()).unbox();
+        let [carry_3_col117]: [QM31; 1] = (*carry_3_col117.try_into().unwrap()).unbox();
+        let [carry_4_col118]: [QM31; 1] = (*carry_4_col118.try_into().unwrap()).unbox();
+        let [carry_5_col119]: [QM31; 1] = (*carry_5_col119.try_into().unwrap()).unbox();
+        let [carry_6_col120]: [QM31; 1] = (*carry_6_col120.try_into().unwrap()).unbox();
+        let [carry_7_col121]: [QM31; 1] = (*carry_7_col121.try_into().unwrap()).unbox();
+        let [carry_8_col122]: [QM31; 1] = (*carry_8_col122.try_into().unwrap()).unbox();
+        let [carry_9_col123]: [QM31; 1] = (*carry_9_col123.try_into().unwrap()).unbox();
+        let [carry_10_col124]: [QM31; 1] = (*carry_10_col124.try_into().unwrap()).unbox();
+        let [carry_11_col125]: [QM31; 1] = (*carry_11_col125.try_into().unwrap()).unbox();
+        let [carry_12_col126]: [QM31; 1] = (*carry_12_col126.try_into().unwrap()).unbox();
+        let [carry_13_col127]: [QM31; 1] = (*carry_13_col127.try_into().unwrap()).unbox();
+        let [carry_14_col128]: [QM31; 1] = (*carry_14_col128.try_into().unwrap()).unbox();
+        let [carry_15_col129]: [QM31; 1] = (*carry_15_col129.try_into().unwrap()).unbox();
+        let [carry_16_col130]: [QM31; 1] = (*carry_16_col130.try_into().unwrap()).unbox();
+        let [carry_17_col131]: [QM31; 1] = (*carry_17_col131.try_into().unwrap()).unbox();
+        let [carry_18_col132]: [QM31; 1] = (*carry_18_col132.try_into().unwrap()).unbox();
+        let [carry_19_col133]: [QM31; 1] = (*carry_19_col133.try_into().unwrap()).unbox();
+        let [carry_20_col134]: [QM31; 1] = (*carry_20_col134.try_into().unwrap()).unbox();
+        let [carry_21_col135]: [QM31; 1] = (*carry_21_col135.try_into().unwrap()).unbox();
+        let [carry_22_col136]: [QM31; 1] = (*carry_22_col136.try_into().unwrap()).unbox();
+        let [carry_23_col137]: [QM31; 1] = (*carry_23_col137.try_into().unwrap()).unbox();
+        let [carry_24_col138]: [QM31; 1] = (*carry_24_col138.try_into().unwrap()).unbox();
+        let [carry_25_col139]: [QM31; 1] = (*carry_25_col139.try_into().unwrap()).unbox();
+        let [carry_26_col140]: [QM31; 1] = (*carry_26_col140.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
+        // Constraint - Enabler is a bit
+        let constraint_quotient = (((enabler_col0 * enabler_col0) - enabler_col0));
+        sum = sum * random_coeff + constraint_quotient;
         let [
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_2,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_5,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_8,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_11,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_14,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_17,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_20,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_23,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_26,
-            _felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_27,
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_2,
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_5,
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_8,
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_11,
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_14,
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_17,
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_20,
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_23,
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_26,
+            _felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_27,
         ] =
             felt_252_unpack_from_27_range_check_output_evaluate(
             [
-                input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, input_limb_3_col3,
-                input_limb_4_col4, input_limb_5_col5, input_limb_6_col6, input_limb_7_col7,
-                input_limb_8_col8, input_limb_9_col9,
+                input_limb_0_col1, input_limb_1_col2, input_limb_2_col3, input_limb_3_col4,
+                input_limb_4_col5, input_limb_5_col6, input_limb_6_col7, input_limb_7_col8,
+                input_limb_8_col9, input_limb_9_col10,
             ],
-            unpacked_limb_0_col10,
-            unpacked_limb_1_col11,
-            unpacked_limb_3_col12,
-            unpacked_limb_4_col13,
-            unpacked_limb_6_col14,
-            unpacked_limb_7_col15,
-            unpacked_limb_9_col16,
-            unpacked_limb_10_col17,
-            unpacked_limb_12_col18,
-            unpacked_limb_13_col19,
-            unpacked_limb_15_col20,
-            unpacked_limb_16_col21,
-            unpacked_limb_18_col22,
-            unpacked_limb_19_col23,
-            unpacked_limb_21_col24,
-            unpacked_limb_22_col25,
-            unpacked_limb_24_col26,
-            unpacked_limb_25_col27,
+            enabler_col0,
+            unpacked_limb_0_col11,
+            unpacked_limb_1_col12,
+            unpacked_limb_3_col13,
+            unpacked_limb_4_col14,
+            unpacked_limb_6_col15,
+            unpacked_limb_7_col16,
+            unpacked_limb_9_col17,
+            unpacked_limb_10_col18,
+            unpacked_limb_12_col19,
+            unpacked_limb_13_col20,
+            unpacked_limb_15_col21,
+            unpacked_limb_16_col22,
+            unpacked_limb_18_col23,
+            unpacked_limb_19_col24,
+            unpacked_limb_21_col25,
+            unpacked_limb_22_col26,
+            unpacked_limb_24_col27,
+            unpacked_limb_25_col28,
             self.common_lookup_elements,
             ref range_check_9_9_sum_0,
             ref numerator_0,
@@ -698,100 +703,101 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         mul_252_evaluate(
             [
-                unpacked_limb_0_col10, unpacked_limb_1_col11,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_2,
-                unpacked_limb_3_col12, unpacked_limb_4_col13,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_5,
-                unpacked_limb_6_col14, unpacked_limb_7_col15,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_8,
-                unpacked_limb_9_col16, unpacked_limb_10_col17,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_11,
-                unpacked_limb_12_col18, unpacked_limb_13_col19,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_14,
-                unpacked_limb_15_col20, unpacked_limb_16_col21,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_17,
-                unpacked_limb_18_col22, unpacked_limb_19_col23,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_20,
-                unpacked_limb_21_col24, unpacked_limb_22_col25,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_23,
-                unpacked_limb_24_col26, unpacked_limb_25_col27,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_26,
-                input_limb_9_col9, unpacked_limb_0_col10, unpacked_limb_1_col11,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_2,
-                unpacked_limb_3_col12, unpacked_limb_4_col13,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_5,
-                unpacked_limb_6_col14, unpacked_limb_7_col15,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_8,
-                unpacked_limb_9_col16, unpacked_limb_10_col17,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_11,
-                unpacked_limb_12_col18, unpacked_limb_13_col19,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_14,
-                unpacked_limb_15_col20, unpacked_limb_16_col21,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_17,
-                unpacked_limb_18_col22, unpacked_limb_19_col23,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_20,
-                unpacked_limb_21_col24, unpacked_limb_22_col25,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_23,
-                unpacked_limb_24_col26, unpacked_limb_25_col27,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_26,
-                input_limb_9_col9,
+                unpacked_limb_0_col11, unpacked_limb_1_col12,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_2,
+                unpacked_limb_3_col13, unpacked_limb_4_col14,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_5,
+                unpacked_limb_6_col15, unpacked_limb_7_col16,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_8,
+                unpacked_limb_9_col17, unpacked_limb_10_col18,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_11,
+                unpacked_limb_12_col19, unpacked_limb_13_col20,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_14,
+                unpacked_limb_15_col21, unpacked_limb_16_col22,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_17,
+                unpacked_limb_18_col23, unpacked_limb_19_col24,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_20,
+                unpacked_limb_21_col25, unpacked_limb_22_col26,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_23,
+                unpacked_limb_24_col27, unpacked_limb_25_col28,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_26,
+                input_limb_9_col10, unpacked_limb_0_col11, unpacked_limb_1_col12,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_2,
+                unpacked_limb_3_col13, unpacked_limb_4_col14,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_5,
+                unpacked_limb_6_col15, unpacked_limb_7_col16,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_8,
+                unpacked_limb_9_col17, unpacked_limb_10_col18,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_11,
+                unpacked_limb_12_col19, unpacked_limb_13_col20,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_14,
+                unpacked_limb_15_col21, unpacked_limb_16_col22,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_17,
+                unpacked_limb_18_col23, unpacked_limb_19_col24,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_20,
+                unpacked_limb_21_col25, unpacked_limb_22_col26,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_23,
+                unpacked_limb_24_col27, unpacked_limb_25_col28,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_26,
+                input_limb_9_col10,
             ],
-            mul_res_limb_0_col28,
-            mul_res_limb_1_col29,
-            mul_res_limb_2_col30,
-            mul_res_limb_3_col31,
-            mul_res_limb_4_col32,
-            mul_res_limb_5_col33,
-            mul_res_limb_6_col34,
-            mul_res_limb_7_col35,
-            mul_res_limb_8_col36,
-            mul_res_limb_9_col37,
-            mul_res_limb_10_col38,
-            mul_res_limb_11_col39,
-            mul_res_limb_12_col40,
-            mul_res_limb_13_col41,
-            mul_res_limb_14_col42,
-            mul_res_limb_15_col43,
-            mul_res_limb_16_col44,
-            mul_res_limb_17_col45,
-            mul_res_limb_18_col46,
-            mul_res_limb_19_col47,
-            mul_res_limb_20_col48,
-            mul_res_limb_21_col49,
-            mul_res_limb_22_col50,
-            mul_res_limb_23_col51,
-            mul_res_limb_24_col52,
-            mul_res_limb_25_col53,
-            mul_res_limb_26_col54,
-            mul_res_limb_27_col55,
-            k_col56,
-            carry_0_col57,
-            carry_1_col58,
-            carry_2_col59,
-            carry_3_col60,
-            carry_4_col61,
-            carry_5_col62,
-            carry_6_col63,
-            carry_7_col64,
-            carry_8_col65,
-            carry_9_col66,
-            carry_10_col67,
-            carry_11_col68,
-            carry_12_col69,
-            carry_13_col70,
-            carry_14_col71,
-            carry_15_col72,
-            carry_16_col73,
-            carry_17_col74,
-            carry_18_col75,
-            carry_19_col76,
-            carry_20_col77,
-            carry_21_col78,
-            carry_22_col79,
-            carry_23_col80,
-            carry_24_col81,
-            carry_25_col82,
-            carry_26_col83,
+            enabler_col0,
+            mul_res_limb_0_col29,
+            mul_res_limb_1_col30,
+            mul_res_limb_2_col31,
+            mul_res_limb_3_col32,
+            mul_res_limb_4_col33,
+            mul_res_limb_5_col34,
+            mul_res_limb_6_col35,
+            mul_res_limb_7_col36,
+            mul_res_limb_8_col37,
+            mul_res_limb_9_col38,
+            mul_res_limb_10_col39,
+            mul_res_limb_11_col40,
+            mul_res_limb_12_col41,
+            mul_res_limb_13_col42,
+            mul_res_limb_14_col43,
+            mul_res_limb_15_col44,
+            mul_res_limb_16_col45,
+            mul_res_limb_17_col46,
+            mul_res_limb_18_col47,
+            mul_res_limb_19_col48,
+            mul_res_limb_20_col49,
+            mul_res_limb_21_col50,
+            mul_res_limb_22_col51,
+            mul_res_limb_23_col52,
+            mul_res_limb_24_col53,
+            mul_res_limb_25_col54,
+            mul_res_limb_26_col55,
+            mul_res_limb_27_col56,
+            k_col57,
+            carry_0_col58,
+            carry_1_col59,
+            carry_2_col60,
+            carry_3_col61,
+            carry_4_col62,
+            carry_5_col63,
+            carry_6_col64,
+            carry_7_col65,
+            carry_8_col66,
+            carry_9_col67,
+            carry_10_col68,
+            carry_11_col69,
+            carry_12_col70,
+            carry_13_col71,
+            carry_14_col72,
+            carry_15_col73,
+            carry_16_col74,
+            carry_17_col75,
+            carry_18_col76,
+            carry_19_col77,
+            carry_20_col78,
+            carry_21_col79,
+            carry_22_col80,
+            carry_23_col81,
+            carry_24_col82,
+            carry_25_col83,
+            carry_26_col84,
             self.common_lookup_elements,
             ref range_check_9_9_sum_14,
             ref numerator_14,
@@ -882,91 +888,92 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         mul_252_evaluate(
             [
-                unpacked_limb_0_col10, unpacked_limb_1_col11,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_2,
-                unpacked_limb_3_col12, unpacked_limb_4_col13,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_5,
-                unpacked_limb_6_col14, unpacked_limb_7_col15,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_8,
-                unpacked_limb_9_col16, unpacked_limb_10_col17,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_11,
-                unpacked_limb_12_col18, unpacked_limb_13_col19,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_14,
-                unpacked_limb_15_col20, unpacked_limb_16_col21,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_17,
-                unpacked_limb_18_col22, unpacked_limb_19_col23,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_20,
-                unpacked_limb_21_col24, unpacked_limb_22_col25,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_23,
-                unpacked_limb_24_col26, unpacked_limb_25_col27,
-                felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_26,
-                input_limb_9_col9, mul_res_limb_0_col28, mul_res_limb_1_col29, mul_res_limb_2_col30,
-                mul_res_limb_3_col31, mul_res_limb_4_col32, mul_res_limb_5_col33,
-                mul_res_limb_6_col34, mul_res_limb_7_col35, mul_res_limb_8_col36,
-                mul_res_limb_9_col37, mul_res_limb_10_col38, mul_res_limb_11_col39,
-                mul_res_limb_12_col40, mul_res_limb_13_col41, mul_res_limb_14_col42,
-                mul_res_limb_15_col43, mul_res_limb_16_col44, mul_res_limb_17_col45,
-                mul_res_limb_18_col46, mul_res_limb_19_col47, mul_res_limb_20_col48,
-                mul_res_limb_21_col49, mul_res_limb_22_col50, mul_res_limb_23_col51,
-                mul_res_limb_24_col52, mul_res_limb_25_col53, mul_res_limb_26_col54,
-                mul_res_limb_27_col55,
+                unpacked_limb_0_col11, unpacked_limb_1_col12,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_2,
+                unpacked_limb_3_col13, unpacked_limb_4_col14,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_5,
+                unpacked_limb_6_col15, unpacked_limb_7_col16,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_8,
+                unpacked_limb_9_col17, unpacked_limb_10_col18,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_11,
+                unpacked_limb_12_col19, unpacked_limb_13_col20,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_14,
+                unpacked_limb_15_col21, unpacked_limb_16_col22,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_17,
+                unpacked_limb_18_col23, unpacked_limb_19_col24,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_20,
+                unpacked_limb_21_col25, unpacked_limb_22_col26,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_23,
+                unpacked_limb_24_col27, unpacked_limb_25_col28,
+                felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_26,
+                input_limb_9_col10, mul_res_limb_0_col29, mul_res_limb_1_col30,
+                mul_res_limb_2_col31, mul_res_limb_3_col32, mul_res_limb_4_col33,
+                mul_res_limb_5_col34, mul_res_limb_6_col35, mul_res_limb_7_col36,
+                mul_res_limb_8_col37, mul_res_limb_9_col38, mul_res_limb_10_col39,
+                mul_res_limb_11_col40, mul_res_limb_12_col41, mul_res_limb_13_col42,
+                mul_res_limb_14_col43, mul_res_limb_15_col44, mul_res_limb_16_col45,
+                mul_res_limb_17_col46, mul_res_limb_18_col47, mul_res_limb_19_col48,
+                mul_res_limb_20_col49, mul_res_limb_21_col50, mul_res_limb_22_col51,
+                mul_res_limb_23_col52, mul_res_limb_24_col53, mul_res_limb_25_col54,
+                mul_res_limb_26_col55, mul_res_limb_27_col56,
             ],
-            mul_res_limb_0_col84,
-            mul_res_limb_1_col85,
-            mul_res_limb_2_col86,
-            mul_res_limb_3_col87,
-            mul_res_limb_4_col88,
-            mul_res_limb_5_col89,
-            mul_res_limb_6_col90,
-            mul_res_limb_7_col91,
-            mul_res_limb_8_col92,
-            mul_res_limb_9_col93,
-            mul_res_limb_10_col94,
-            mul_res_limb_11_col95,
-            mul_res_limb_12_col96,
-            mul_res_limb_13_col97,
-            mul_res_limb_14_col98,
-            mul_res_limb_15_col99,
-            mul_res_limb_16_col100,
-            mul_res_limb_17_col101,
-            mul_res_limb_18_col102,
-            mul_res_limb_19_col103,
-            mul_res_limb_20_col104,
-            mul_res_limb_21_col105,
-            mul_res_limb_22_col106,
-            mul_res_limb_23_col107,
-            mul_res_limb_24_col108,
-            mul_res_limb_25_col109,
-            mul_res_limb_26_col110,
-            mul_res_limb_27_col111,
-            k_col112,
-            carry_0_col113,
-            carry_1_col114,
-            carry_2_col115,
-            carry_3_col116,
-            carry_4_col117,
-            carry_5_col118,
-            carry_6_col119,
-            carry_7_col120,
-            carry_8_col121,
-            carry_9_col122,
-            carry_10_col123,
-            carry_11_col124,
-            carry_12_col125,
-            carry_13_col126,
-            carry_14_col127,
-            carry_15_col128,
-            carry_16_col129,
-            carry_17_col130,
-            carry_18_col131,
-            carry_19_col132,
-            carry_20_col133,
-            carry_21_col134,
-            carry_22_col135,
-            carry_23_col136,
-            carry_24_col137,
-            carry_25_col138,
-            carry_26_col139,
+            enabler_col0,
+            mul_res_limb_0_col85,
+            mul_res_limb_1_col86,
+            mul_res_limb_2_col87,
+            mul_res_limb_3_col88,
+            mul_res_limb_4_col89,
+            mul_res_limb_5_col90,
+            mul_res_limb_6_col91,
+            mul_res_limb_7_col92,
+            mul_res_limb_8_col93,
+            mul_res_limb_9_col94,
+            mul_res_limb_10_col95,
+            mul_res_limb_11_col96,
+            mul_res_limb_12_col97,
+            mul_res_limb_13_col98,
+            mul_res_limb_14_col99,
+            mul_res_limb_15_col100,
+            mul_res_limb_16_col101,
+            mul_res_limb_17_col102,
+            mul_res_limb_18_col103,
+            mul_res_limb_19_col104,
+            mul_res_limb_20_col105,
+            mul_res_limb_21_col106,
+            mul_res_limb_22_col107,
+            mul_res_limb_23_col108,
+            mul_res_limb_24_col109,
+            mul_res_limb_25_col110,
+            mul_res_limb_26_col111,
+            mul_res_limb_27_col112,
+            k_col113,
+            carry_0_col114,
+            carry_1_col115,
+            carry_2_col116,
+            carry_3_col117,
+            carry_4_col118,
+            carry_5_col119,
+            carry_6_col120,
+            carry_7_col121,
+            carry_8_col122,
+            carry_9_col123,
+            carry_10_col124,
+            carry_11_col125,
+            carry_12_col126,
+            carry_13_col127,
+            carry_14_col128,
+            carry_15_col129,
+            carry_16_col130,
+            carry_17_col131,
+            carry_18_col132,
+            carry_19_col133,
+            carry_20_col134,
+            carry_21_col135,
+            carry_22_col136,
+            carry_23_col137,
+            carry_24_col138,
+            carry_25_col139,
+            carry_26_col140,
             self.common_lookup_elements,
             ref range_check_9_9_sum_56,
             ref numerator_56,
@@ -1056,45 +1063,41 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
 
-        // Constraint - Enabler is a bit
-        let constraint_quotient = (((enabler_col140 * enabler_col140) - enabler_col140));
-        sum = sum * random_coeff + constraint_quotient;
-
         cube_252_sum_98 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1987997202, 0, 0, 0>(), input_limb_0_col0, input_limb_1_col1,
-                    input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5,
-                    input_limb_6_col6, input_limb_7_col7, input_limb_8_col8, input_limb_9_col9,
-                    ((mul_res_limb_0_col84 + (mul_res_limb_1_col85 * qm31_const::<512, 0, 0, 0>()))
-                        + (mul_res_limb_2_col86 * qm31_const::<262144, 0, 0, 0>())),
-                    ((mul_res_limb_3_col87 + (mul_res_limb_4_col88 * qm31_const::<512, 0, 0, 0>()))
-                        + (mul_res_limb_5_col89 * qm31_const::<262144, 0, 0, 0>())),
-                    ((mul_res_limb_6_col90 + (mul_res_limb_7_col91 * qm31_const::<512, 0, 0, 0>()))
-                        + (mul_res_limb_8_col92 * qm31_const::<262144, 0, 0, 0>())),
-                    ((mul_res_limb_9_col93 + (mul_res_limb_10_col94 * qm31_const::<512, 0, 0, 0>()))
-                        + (mul_res_limb_11_col95 * qm31_const::<262144, 0, 0, 0>())),
-                    ((mul_res_limb_12_col96
-                        + (mul_res_limb_13_col97 * qm31_const::<512, 0, 0, 0>()))
-                        + (mul_res_limb_14_col98 * qm31_const::<262144, 0, 0, 0>())),
-                    ((mul_res_limb_15_col99
-                        + (mul_res_limb_16_col100 * qm31_const::<512, 0, 0, 0>()))
-                        + (mul_res_limb_17_col101 * qm31_const::<262144, 0, 0, 0>())),
-                    ((mul_res_limb_18_col102
-                        + (mul_res_limb_19_col103 * qm31_const::<512, 0, 0, 0>()))
-                        + (mul_res_limb_20_col104 * qm31_const::<262144, 0, 0, 0>())),
-                    ((mul_res_limb_21_col105
-                        + (mul_res_limb_22_col106 * qm31_const::<512, 0, 0, 0>()))
-                        + (mul_res_limb_23_col107 * qm31_const::<262144, 0, 0, 0>())),
-                    ((mul_res_limb_24_col108
-                        + (mul_res_limb_25_col109 * qm31_const::<512, 0, 0, 0>()))
-                        + (mul_res_limb_26_col110 * qm31_const::<262144, 0, 0, 0>())),
-                    mul_res_limb_27_col111,
+                    qm31_const::<1987997202, 0, 0, 0>(), input_limb_0_col1, input_limb_1_col2,
+                    input_limb_2_col3, input_limb_3_col4, input_limb_4_col5, input_limb_5_col6,
+                    input_limb_6_col7, input_limb_7_col8, input_limb_8_col9, input_limb_9_col10,
+                    ((mul_res_limb_0_col85 + (mul_res_limb_1_col86 * qm31_const::<512, 0, 0, 0>()))
+                        + (mul_res_limb_2_col87 * qm31_const::<262144, 0, 0, 0>())),
+                    ((mul_res_limb_3_col88 + (mul_res_limb_4_col89 * qm31_const::<512, 0, 0, 0>()))
+                        + (mul_res_limb_5_col90 * qm31_const::<262144, 0, 0, 0>())),
+                    ((mul_res_limb_6_col91 + (mul_res_limb_7_col92 * qm31_const::<512, 0, 0, 0>()))
+                        + (mul_res_limb_8_col93 * qm31_const::<262144, 0, 0, 0>())),
+                    ((mul_res_limb_9_col94 + (mul_res_limb_10_col95 * qm31_const::<512, 0, 0, 0>()))
+                        + (mul_res_limb_11_col96 * qm31_const::<262144, 0, 0, 0>())),
+                    ((mul_res_limb_12_col97
+                        + (mul_res_limb_13_col98 * qm31_const::<512, 0, 0, 0>()))
+                        + (mul_res_limb_14_col99 * qm31_const::<262144, 0, 0, 0>())),
+                    ((mul_res_limb_15_col100
+                        + (mul_res_limb_16_col101 * qm31_const::<512, 0, 0, 0>()))
+                        + (mul_res_limb_17_col102 * qm31_const::<262144, 0, 0, 0>())),
+                    ((mul_res_limb_18_col103
+                        + (mul_res_limb_19_col104 * qm31_const::<512, 0, 0, 0>()))
+                        + (mul_res_limb_20_col105 * qm31_const::<262144, 0, 0, 0>())),
+                    ((mul_res_limb_21_col106
+                        + (mul_res_limb_22_col107 * qm31_const::<512, 0, 0, 0>()))
+                        + (mul_res_limb_23_col108 * qm31_const::<262144, 0, 0, 0>())),
+                    ((mul_res_limb_24_col109
+                        + (mul_res_limb_25_col110 * qm31_const::<512, 0, 0, 0>()))
+                        + (mul_res_limb_26_col111 * qm31_const::<262144, 0, 0, 0>())),
+                    mul_res_limb_27_col112,
                 ]
                     .span(),
             );
-        numerator_98 = enabler_col140;
+        numerator_98 = enabler_col0;
 
         lookup_constraints(
             ref sum,
@@ -2547,6 +2550,7 @@ mod tests {
                 qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
+        let public_params = [].span();
         let mut sum: QM31 = Zero::zero();
 
         let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
@@ -2750,7 +2754,6 @@ mod tests {
         let mut interaction_columns = make_interaction_trace(
             interaction_values, qm31_const::<1115374022, 1127856551, 489657863, 643630026>(),
         );
-        let public_params = [].span();
         component
             .evaluate_constraints_at_point(
                 ref sum,

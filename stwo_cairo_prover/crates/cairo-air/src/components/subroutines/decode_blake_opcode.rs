@@ -17,6 +17,7 @@ impl DecodeBlakeOpcode {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [decode_blake_opcode_input_pc, decode_blake_opcode_input_ap, decode_blake_opcode_input_fp]: [E::F; 3],
+        enabler: E::F,
         offset0_col0: E::F,
         offset1_col1: E::F,
         offset2_col2: E::F,
@@ -64,6 +65,7 @@ impl DecodeBlakeOpcode {
         let [decode_instruction_30129_output_tmp_c2bd8_9_offset0, decode_instruction_30129_output_tmp_c2bd8_9_offset1, decode_instruction_30129_output_tmp_c2bd8_9_offset2, decode_instruction_30129_output_tmp_c2bd8_9_op1_base_ap] =
             DecodeInstruction30129::evaluate(
                 [decode_blake_opcode_input_pc.clone()],
+                enabler.clone(),
                 offset0_col0.clone(),
                 offset1_col1.clone(),
                 offset2_col2.clone(),
@@ -90,6 +92,7 @@ impl DecodeBlakeOpcode {
         ReadPositiveNumBits29::evaluate(
             [(mem0_base_col8.clone()
                 + decode_instruction_30129_output_tmp_c2bd8_9_offset1.clone())],
+            enabler.clone(),
             op0_id_col9.clone(),
             op0_limb_0_col10.clone(),
             op0_limb_1_col11.clone(),
@@ -109,6 +112,7 @@ impl DecodeBlakeOpcode {
         ReadPositiveNumBits29::evaluate(
             [(mem1_base_col15.clone()
                 + decode_instruction_30129_output_tmp_c2bd8_9_offset2.clone())],
+            enabler.clone(),
             op1_id_col16.clone(),
             op1_limb_0_col17.clone(),
             op1_limb_1_col18.clone(),
@@ -120,6 +124,7 @@ impl DecodeBlakeOpcode {
         );
         ReadPositiveNumBits29::evaluate(
             [decode_blake_opcode_input_ap.clone()],
+            enabler.clone(),
             ap_id_col22.clone(),
             ap_limb_0_col23.clone(),
             ap_limb_1_col24.clone(),
@@ -139,6 +144,7 @@ impl DecodeBlakeOpcode {
         ReadU32::evaluate(
             [(mem_dst_base_col28.clone()
                 + decode_instruction_30129_output_tmp_c2bd8_9_offset0.clone())],
+            enabler.clone(),
             low_16_bits_col29.clone(),
             high_16_bits_col30.clone(),
             low_7_ms_bits_col31.clone(),

@@ -7,6 +7,7 @@ use crate::prelude::*;
 
 pub fn mul_252_evaluate(
     input: [QM31; 56],
+    enabler: QM31,
     mul_res_limb_0_col0: QM31,
     mul_res_limb_1_col1: QM31,
     mul_res_limb_2_col2: QM31,
@@ -222,6 +223,7 @@ pub fn mul_252_evaluate(
             mul_res_limb_24_col24, mul_res_limb_25_col25, mul_res_limb_26_col26,
             mul_res_limb_27_col27,
         ],
+        enabler,
         common_lookup_elements,
         ref range_check_9_9_sum_0,
         ref numerator_0,
@@ -285,6 +287,7 @@ pub fn mul_252_evaluate(
             mul_res_limb_24_col24, mul_res_limb_25_col25, mul_res_limb_26_col26,
             mul_res_limb_27_col27,
         ],
+        enabler,
         k_col28,
         carry_0_col29,
         carry_1_col30,

@@ -6,6 +6,7 @@ use crate::prelude::*;
 
 pub fn read_u_32_evaluate(
     input: QM31,
+    enabler: QM31,
     low_16_bits_col0: QM31,
     high_16_bits_col1: QM31,
     low_7_ms_bits_col2: QM31,
@@ -25,6 +26,7 @@ pub fn read_u_32_evaluate(
     let read_u_32_input = input;
     verify_u_32_evaluate(
         [read_u_32_input, low_16_bits_col0, high_16_bits_col1],
+        enabler,
         low_7_ms_bits_col2,
         high_14_ms_bits_col3,
         high_5_ms_bits_col4,
