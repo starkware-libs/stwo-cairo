@@ -1,5 +1,5 @@
 {
-  "air_version": "421f5077",
+  "air_version": "0099c2c2",
   "canonical_ppt_n_trace_cells": 543100528,
   "canonical_without_pedersen_ppt_n_trace_cells": 73338480,
   "canonical_small_ppt_n_trace_cells": 10161776,
@@ -13,6 +13,7 @@
         "MemoryAddressToId": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 6,
       "trace_cells_upper_bound": 6,
@@ -37,6 +38,7 @@
         "RangeCheck_9_9_H": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 24,
       "trace_cells_upper_bound": 24,
@@ -72,6 +74,7 @@
         "RangeCheck_9_9_G": 1,
         "RangeCheck_9_9_H": 1
       },
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 61,
       "trace_cells_upper_bound": 61,
@@ -98,6 +101,7 @@
         "VerifyBitwiseXor_9": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
@@ -116,6 +120,7 @@
         "VerifyBitwiseXor_8_B": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 6,
       "trace_cells_upper_bound": 6,
@@ -141,6 +146,7 @@
         "VerifyBitwiseXor_9": 27,
         "VerifyBitwiseXor_8": 1
       },
+      "direct_rows": {},
       "padding_type": "None",
       "total_num_trace_cols": 165,
       "trace_cells_upper_bound": 165,
@@ -174,6 +180,7 @@
         "MemoryAddressToId": 1,
         "MemoryIdToBig": 1
       },
+      "direct_rows": {},
       "padding_type": "None",
       "total_num_trace_cols": 21,
       "trace_cells_upper_bound": 21,
@@ -201,6 +208,7 @@
         "RangeCheck_6": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
@@ -224,6 +232,7 @@
         "RangeCheck_6": 1,
         "MemoryIdToBig": 1
       },
+      "direct_rows": {},
       "padding_type": "None",
       "total_num_trace_cols": 20,
       "trace_cells_upper_bound": 20,
@@ -256,6 +265,7 @@
         "MemoryAddressToId": 29,
         "MemoryIdToBig": 24
       },
+      "direct_rows": {},
       "padding_type": "None",
       "total_num_trace_cols": 375,
       "trace_cells_upper_bound": 375,
@@ -283,6 +293,7 @@
         "RangeCheck_12": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
@@ -300,6 +311,7 @@
         "RangeCheck_3_6_6_3": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
@@ -318,6 +330,7 @@
         "RangeCheck_18_B": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 6,
       "trace_cells_upper_bound": 6,
@@ -345,6 +358,7 @@
         "RangeCheck_3_6_6_3": 40,
         "RangeCheck_18": 62
       },
+      "direct_rows": {},
       "padding_type": "None",
       "total_num_trace_cols": 802,
       "trace_cells_upper_bound": 802,
@@ -382,6 +396,7 @@
         "RangeCheck_20_H": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 24,
       "trace_cells_upper_bound": 24,
@@ -433,6 +448,7 @@
         "RangeCheck_20_G": 6,
         "RangeCheck_20_H": 6
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 341,
       "trace_cells_upper_bound": 341,
@@ -467,6 +483,7 @@
         "PoseidonRoundKeys": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
@@ -484,6 +501,7 @@
         "RangeCheck_3_3_3_3_3": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
@@ -509,6 +527,9 @@
         "Cube252": 3,
         "PoseidonRoundKeys": 1,
         "RangeCheck_3_3_3_3_3": 6
+      },
+      "direct_rows": {
+        "cube_252": 3
       },
       "padding_type": "Enabler",
       "total_num_trace_cols": 150,
@@ -564,6 +585,7 @@
         "RangeCheck_9_9_D": 1,
         "RangeCheck_9_9_E": 1
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 52,
       "trace_cells_upper_bound": 52,
@@ -589,6 +611,7 @@
         "RangeCheck_4_4_4_4": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
@@ -606,6 +629,7 @@
         "RangeCheck_4_4": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
@@ -635,6 +659,10 @@
         "RangeCheck_4_4_4_4": 6,
         "RangeCheck_4_4": 3,
         "RangeCheck252Width27": 3
+      },
+      "direct_rows": {
+        "cube_252": 3,
+        "range_check_252_width_27": 3
       },
       "padding_type": "Enabler",
       "total_num_trace_cols": 205,
@@ -698,6 +726,12 @@
         "RangeCheck_4_4": 3,
         "Poseidon3PartialRoundsChain": 27
       },
+      "direct_rows": {
+        "poseidon_full_round_chain": 8,
+        "range_check_252_width_27": 2,
+        "cube_252": 2,
+        "poseidon_3_partial_rounds_chain": 27
+      },
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 398,
       "trace_cells_upper_bound": 70160,
@@ -747,6 +781,9 @@
         "MemoryAddressToId": 6,
         "PoseidonAggregator": 1
       },
+      "direct_rows": {
+        "poseidon_aggregator": 1
+      },
       "padding_type": "None",
       "total_num_trace_cols": 22,
       "trace_cells_upper_bound": 70182,
@@ -794,6 +831,7 @@
         "RangeCheck_8": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
@@ -811,6 +849,7 @@
         "PedersenPointsTableWindowBits18": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
@@ -865,6 +904,7 @@
         "RangeCheck_20_G": 9,
         "RangeCheck_20_H": 9
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 557,
       "trace_cells_upper_bound": 557,
@@ -909,6 +949,9 @@
         "RangeCheck_8": 4,
         "PartialEcMulWindowBits18": 28
       },
+      "direct_rows": {
+        "partial_ec_mul_window_bits_18": 28
+      },
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 230,
       "trace_cells_upper_bound": 18054,
@@ -951,6 +994,9 @@
         "MemoryAddressToId": 3,
         "PedersenAggregatorWindowBits18": 1
       },
+      "direct_rows": {
+        "pedersen_aggregator_window_bits_18": 1
+      },
       "padding_type": "None",
       "total_num_trace_cols": 11,
       "trace_cells_upper_bound": 18065,
@@ -991,6 +1037,7 @@
         "PedersenPointsTableWindowBits9": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
@@ -1045,6 +1092,7 @@
         "RangeCheck_20_G": 9,
         "RangeCheck_20_H": 9
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 571,
       "trace_cells_upper_bound": 571,
@@ -1089,6 +1137,9 @@
         "RangeCheck_8": 4,
         "PartialEcMulWindowBits9": 56
       },
+      "direct_rows": {
+        "partial_ec_mul_window_bits_9": 56
+      },
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 258,
       "trace_cells_upper_bound": 36802,
@@ -1130,6 +1181,9 @@
       "lookup_rows": {
         "MemoryAddressToId": 3,
         "PedersenAggregatorWindowBits9": 1
+      },
+      "direct_rows": {
+        "pedersen_aggregator_window_bits_9": 1
       },
       "padding_type": "None",
       "total_num_trace_cols": 11,
@@ -1208,6 +1262,7 @@
         "RangeCheck_20_G": 21,
         "RangeCheck_20_H": 21
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 1252,
       "trace_cells_upper_bound": 1252,
@@ -1253,6 +1308,9 @@
         "RangeCheck_8": 2,
         "PartialEcMulGeneric": 252
       },
+      "direct_rows": {
+        "partial_ec_mul_generic": 252
+      },
       "padding_type": "None",
       "total_num_trace_cols": 309,
       "trace_cells_upper_bound": 320821,
@@ -1291,6 +1349,7 @@
         "RangeCheck_7_2_5": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
@@ -1308,6 +1367,7 @@
         "RangeCheck_4_3": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
@@ -1335,6 +1395,7 @@
         "MemoryAddressToId": 1,
         "MemoryIdToBig": 1
       },
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 29,
       "trace_cells_upper_bound": 29,
@@ -1364,6 +1425,7 @@
         "RangeCheck_11": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
@@ -1426,6 +1488,7 @@
         "RangeCheck_18": 1,
         "RangeCheck_11": 1
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 379,
       "trace_cells_upper_bound": 379,
@@ -1478,6 +1541,7 @@
         "RangeCheck_18": 1,
         "RangeCheck_11": 1
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 33,
       "trace_cells_upper_bound": 33,
@@ -1518,6 +1582,7 @@
         "MemoryAddressToId": 3,
         "MemoryIdToBig": 3
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 59,
       "trace_cells_upper_bound": 59,
@@ -1556,6 +1621,7 @@
         "MemoryAddressToId": 3,
         "MemoryIdToBig": 3
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 123,
       "trace_cells_upper_bound": 123,
@@ -1592,6 +1658,7 @@
         "VerifyInstruction": 1,
         "MemoryAddressToId": 2
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 24,
       "trace_cells_upper_bound": 24,
@@ -1630,6 +1697,7 @@
         "MemoryAddressToId": 3,
         "MemoryIdToBig": 1
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 35,
       "trace_cells_upper_bound": 35,
@@ -1666,6 +1734,7 @@
         "VerifyInstruction": 1,
         "MemoryAddressToId": 2
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 21,
       "trace_cells_upper_bound": 21,
@@ -1704,6 +1773,7 @@
         "MemoryAddressToId": 3,
         "MemoryIdToBig": 3
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 45,
       "trace_cells_upper_bound": 45,
@@ -1742,6 +1812,7 @@
         "MemoryAddressToId": 3,
         "MemoryIdToBig": 3
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 44,
       "trace_cells_upper_bound": 44,
@@ -1780,6 +1851,7 @@
         "MemoryAddressToId": 2,
         "MemoryIdToBig": 2
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 63,
       "trace_cells_upper_bound": 63,
@@ -1818,6 +1890,7 @@
         "MemoryAddressToId": 1,
         "MemoryIdToBig": 1
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 21,
       "trace_cells_upper_bound": 21,
@@ -1856,6 +1929,7 @@
         "MemoryAddressToId": 1,
         "MemoryIdToBig": 1
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 25,
       "trace_cells_upper_bound": 25,
@@ -1894,6 +1968,7 @@
         "MemoryAddressToId": 1,
         "MemoryIdToBig": 1
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 28,
       "trace_cells_upper_bound": 28,
@@ -1932,6 +2007,7 @@
         "MemoryAddressToId": 2,
         "MemoryIdToBig": 2
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 37,
       "trace_cells_upper_bound": 37,
@@ -1970,6 +2046,7 @@
         "MemoryAddressToId": 1,
         "MemoryIdToBig": 1
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 26,
       "trace_cells_upper_bound": 26,
@@ -2010,6 +2087,7 @@
         "MemoryIdToBig": 3,
         "RangeCheck_11": 3
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 61,
       "trace_cells_upper_bound": 61,
@@ -2065,6 +2143,7 @@
         "RangeCheck_20_G": 3,
         "RangeCheck_20_H": 3
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 206,
       "trace_cells_upper_bound": 206,
@@ -2111,6 +2190,7 @@
         "MemoryAddressToId": 2,
         "MemoryIdToBig": 2
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 32,
       "trace_cells_upper_bound": 32,
@@ -2151,6 +2231,7 @@
         "MemoryIdToBig": 3,
         "RangeCheck_4_4_4_4": 3
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 97,
       "trace_cells_upper_bound": 97,
@@ -2181,6 +2262,7 @@
         "BlakeRoundSigma": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
@@ -2198,6 +2280,7 @@
         "VerifyBitwiseXor_12": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
@@ -2215,6 +2298,7 @@
         "VerifyBitwiseXor_4": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
@@ -2232,6 +2316,7 @@
         "VerifyBitwiseXor_7": 1
       },
       "lookup_rows": {},
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
@@ -2263,6 +2348,7 @@
         "VerifyBitwiseXor_7": 2,
         "VerifyBitwiseXor_9": 2
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 89,
       "trace_cells_upper_bound": 89,
@@ -2299,6 +2385,9 @@
         "MemoryAddressToId": 16,
         "MemoryIdToBig": 16,
         "BlakeG": 8
+      },
+      "direct_rows": {
+        "blake_g": 8
       },
       "padding_type": "Enabler",
       "total_num_trace_cols": 332,
@@ -2343,6 +2432,7 @@
         "VerifyBitwiseXor_8": 4,
         "VerifyBitwiseXor_8_B": 4
       },
+      "direct_rows": {},
       "padding_type": "Enabler",
       "total_num_trace_cols": 41,
       "trace_cells_upper_bound": 41,
@@ -2380,6 +2470,10 @@
         "VerifyBitwiseXor_8": 4,
         "BlakeRound": 10,
         "TripleXor32": 8
+      },
+      "direct_rows": {
+        "blake_round": 10,
+        "triple_xor_32": 8
       },
       "padding_type": "Enabler",
       "total_num_trace_cols": 322,
@@ -2431,6 +2525,7 @@
         "RangeCheck_9_9_C": 1,
         "RangeCheck_9_9_D": 1
       },
+      "direct_rows": {},
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 21,
       "trace_cells_upper_bound": 21,
