@@ -1266,10 +1266,8 @@ impl CairoInteractionClaim {
         if let Some(c) = self.memory_address_to_id {
             claimed_sums.push(c.claimed_sum);
         }
-        let memory_id_to_big::InteractionClaim {
-            big_claimed_sums,
-            claimed_sum: _,
-        } = self.memory_id_to_big.as_ref().unwrap();
+        let memory_id_to_big::InteractionClaim { big_claimed_sums } =
+            self.memory_id_to_big.as_ref().unwrap();
         assert!(big_claimed_sums.len() <= MEMORY_ADDRESS_TO_ID_SPLIT);
         for claimed_sum in big_claimed_sums {
             claimed_sums.push(*claimed_sum);
@@ -1562,9 +1560,13 @@ pub fn lookup_sum(
         .inspect(|ic| {
             sum += ic.claimed_sum;
         });
+
     interaction_claim.memory_id_to_big.as_ref().inspect(|ic| {
-        sum += ic.claimed_sum;
+        for claimed_sum in &ic.big_claimed_sums {
+            sum += *claimed_sum;
+        }
     });
+
     interaction_claim.memory_id_to_small.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
