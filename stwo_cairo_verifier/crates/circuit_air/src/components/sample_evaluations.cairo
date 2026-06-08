@@ -1,4 +1,4 @@
-// AIR version de791eb0
+// AIR version 82fd180a
 use stwo_verifier_core::fields::m31::M31;
 pub const BLAKE_G_GATE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 29058099 }, M31 { inner: 2109881126 }, M31 { inner: 476797340 },
