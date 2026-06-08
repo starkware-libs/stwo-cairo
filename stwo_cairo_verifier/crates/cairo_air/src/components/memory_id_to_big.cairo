@@ -82,7 +82,6 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
 #[derive(Drop, Serde)]
 pub struct InteractionClaim {
     pub big_claimed_sums: Array<QM31>,
-    pub claimed_sum: QM31,
 }
 
 #[generate_trait]
