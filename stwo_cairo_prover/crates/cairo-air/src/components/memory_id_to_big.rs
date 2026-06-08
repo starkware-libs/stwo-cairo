@@ -278,7 +278,6 @@ impl Claim {
 #[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct InteractionClaim {
     pub big_claimed_sums: Vec<SecureField>,
-    pub claimed_sum: SecureField,
 }
 impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
