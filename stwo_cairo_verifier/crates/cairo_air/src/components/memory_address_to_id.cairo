@@ -24,6 +24,8 @@ pub const N_TRACE_COLUMNS: usize = MEMORY_ADDRESS_TO_ID_SPLIT * N_ID_AND_MULT_CO
 // Each QM31 column is implemented as 4 M31 columns.
 pub const N_INTERACTION_TRACE_QM31_COLUMNS: usize = (MEMORY_ADDRESS_TO_ID_SPLIT / 2);
 
+pub const N_INTERACTION_COLUMNS: usize = N_INTERACTION_TRACE_QM31_COLUMNS * QM31_EXTENSION_DEGREE;
+
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 0] = [];
 
 #[derive(Drop, Serde, Copy)]
