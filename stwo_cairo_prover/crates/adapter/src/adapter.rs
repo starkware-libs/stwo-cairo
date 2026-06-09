@@ -41,8 +41,8 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
     // TODO(spapini): Add output builtin to public memory.
     let (memory, inst_cache) = memory.build();
 
-    // TODO(Ohad): take this from the input.
-    let public_segment_context = PublicSegmentContext::bootloader_context();
+    let public_segment_context =
+        PublicSegmentContext::new(runner.get_program_builtins());
 
     Ok(ProverInput {
         state_transitions,
