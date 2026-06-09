@@ -7,7 +7,6 @@ use crate::components::subroutines::verify_u_32::verify_u_32_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 174;
-pub const N_INTERACTION_COLUMNS: usize = 148;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 8] = [
     ('VerifyInstruction', 1), ('MemoryAddressToId', 20), ('MemoryIdToBig', 20),
     ('RangeCheck_7_2_5', 17), ('VerifyBitwiseXor_8', 4), ('BlakeRound', 1), ('TripleXor32', 8),
@@ -24,7 +23,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
+        let interaction_log_sizes = [log_size; 148].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -82,7 +81,6 @@ pub impl AirComponentImpl of AirComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        public_params: Span<u32>,
     ) {
         let log_size = *(self.claim.log_size);
         let claimed_sum = *self.interaction_claim.claimed_sum;
@@ -780,10 +778,10 @@ pub impl AirComponentImpl of AirComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         let [
-            decode_blake_opcode_output_tmp_40cd9_42_limb_0,
-            decode_blake_opcode_output_tmp_40cd9_42_limb_1,
-            decode_blake_opcode_output_tmp_40cd9_42_limb_2,
-            decode_blake_opcode_output_tmp_40cd9_42_limb_6,
+            decode_blake_opcode_output_tmp_53f39_42_limb_0,
+            decode_blake_opcode_output_tmp_53f39_42_limb_1,
+            decode_blake_opcode_output_tmp_53f39_42_limb_2,
+            decode_blake_opcode_output_tmp_53f39_42_limb_6,
         ] =
             decode_blake_opcode_evaluate(
             [input_pc_col0, input_ap_col1, input_fp_col2],
@@ -847,15 +845,15 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         let [
-            create_blake_round_input_output_tmp_40cd9_143_limb_24,
-            create_blake_round_input_output_tmp_40cd9_143_limb_25,
-            create_blake_round_input_output_tmp_40cd9_143_limb_28,
-            create_blake_round_input_output_tmp_40cd9_143_limb_29,
+            create_blake_round_input_output_tmp_53f39_143_limb_24,
+            create_blake_round_input_output_tmp_53f39_143_limb_25,
+            create_blake_round_input_output_tmp_53f39_143_limb_28,
+            create_blake_round_input_output_tmp_53f39_143_limb_29,
         ] =
             create_blake_round_input_evaluate(
             [
-                decode_blake_opcode_output_tmp_40cd9_42_limb_0, low_16_bits_col32,
-                high_16_bits_col33, decode_blake_opcode_output_tmp_40cd9_42_limb_6,
+                decode_blake_opcode_output_tmp_53f39_42_limb_0, low_16_bits_col32,
+                high_16_bits_col33, decode_blake_opcode_output_tmp_53f39_42_limb_6,
             ],
             low_16_bits_col38,
             high_16_bits_col39,
@@ -985,13 +983,13 @@ pub impl AirComponentImpl of AirComponent<Component> {
                     qm31_const::<44677, 0, 0, 0>(), qm31_const::<47975, 0, 0, 0>(),
                     qm31_const::<62322, 0, 0, 0>(), qm31_const::<15470, 0, 0, 0>(),
                     qm31_const::<62778, 0, 0, 0>(), qm31_const::<42319, 0, 0, 0>(),
-                    create_blake_round_input_output_tmp_40cd9_143_limb_24,
-                    create_blake_round_input_output_tmp_40cd9_143_limb_25,
+                    create_blake_round_input_output_tmp_53f39_143_limb_24,
+                    create_blake_round_input_output_tmp_53f39_143_limb_25,
                     qm31_const::<26764, 0, 0, 0>(), qm31_const::<39685, 0, 0, 0>(),
-                    create_blake_round_input_output_tmp_40cd9_143_limb_28,
-                    create_blake_round_input_output_tmp_40cd9_143_limb_29,
+                    create_blake_round_input_output_tmp_53f39_143_limb_28,
+                    create_blake_round_input_output_tmp_53f39_143_limb_29,
                     qm31_const::<52505, 0, 0, 0>(), qm31_const::<23520, 0, 0, 0>(),
-                    decode_blake_opcode_output_tmp_40cd9_42_limb_1,
+                    decode_blake_opcode_output_tmp_53f39_42_limb_1,
                 ]
                     .span(),
             );
@@ -1084,7 +1082,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         verify_u_32_evaluate(
             [
-                decode_blake_opcode_output_tmp_40cd9_42_limb_2, triple_xor_32_output_limb_0_col125,
+                decode_blake_opcode_output_tmp_53f39_42_limb_2, triple_xor_32_output_limb_0_col125,
                 triple_xor_32_output_limb_1_col126,
             ],
             low_7_ms_bits_col141,
@@ -1103,7 +1101,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         verify_u_32_evaluate(
             [
-                (decode_blake_opcode_output_tmp_40cd9_42_limb_2 + qm31_const::<1, 0, 0, 0>()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2 + qm31_const::<1, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col127, triple_xor_32_output_limb_1_col128,
             ],
             low_7_ms_bits_col145,
@@ -1122,7 +1120,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         verify_u_32_evaluate(
             [
-                (decode_blake_opcode_output_tmp_40cd9_42_limb_2 + qm31_const::<2, 0, 0, 0>()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2 + qm31_const::<2, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col129, triple_xor_32_output_limb_1_col130,
             ],
             low_7_ms_bits_col149,
@@ -1141,7 +1139,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         verify_u_32_evaluate(
             [
-                (decode_blake_opcode_output_tmp_40cd9_42_limb_2 + qm31_const::<3, 0, 0, 0>()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2 + qm31_const::<3, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col131, triple_xor_32_output_limb_1_col132,
             ],
             low_7_ms_bits_col153,
@@ -1160,7 +1158,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         verify_u_32_evaluate(
             [
-                (decode_blake_opcode_output_tmp_40cd9_42_limb_2 + qm31_const::<4, 0, 0, 0>()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2 + qm31_const::<4, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col133, triple_xor_32_output_limb_1_col134,
             ],
             low_7_ms_bits_col157,
@@ -1179,7 +1177,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         verify_u_32_evaluate(
             [
-                (decode_blake_opcode_output_tmp_40cd9_42_limb_2 + qm31_const::<5, 0, 0, 0>()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2 + qm31_const::<5, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col135, triple_xor_32_output_limb_1_col136,
             ],
             low_7_ms_bits_col161,
@@ -1198,7 +1196,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         verify_u_32_evaluate(
             [
-                (decode_blake_opcode_output_tmp_40cd9_42_limb_2 + qm31_const::<6, 0, 0, 0>()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2 + qm31_const::<6, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col137, triple_xor_32_output_limb_1_col138,
             ],
             low_7_ms_bits_col165,
@@ -1217,7 +1215,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         verify_u_32_evaluate(
             [
-                (decode_blake_opcode_output_tmp_40cd9_42_limb_2 + qm31_const::<7, 0, 0, 0>()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2 + qm31_const::<7, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col139, triple_xor_32_output_limb_1_col140,
             ],
             low_7_ms_bits_col169,
@@ -2352,7 +2350,6 @@ mod tests {
                 qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
-        let public_params = [].span();
         let mut sum: QM31 = Zero::zero();
 
         let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
@@ -2588,7 +2585,6 @@ mod tests {
                 ref trace_columns,
                 ref interaction_columns,
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
-                public_params,
             );
         preprocessed_trace.validate_usage();
         assert_eq!(sum, QM31Trait::from_fixed_array(BLAKE_COMPRESS_OPCODE_SAMPLE_EVAL_RESULT))

@@ -5,7 +5,6 @@ use crate::components::subroutines::verify_reduced_252::verify_reduced_252_evalu
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 234;
-pub const N_INTERACTION_COLUMNS: usize = 24;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 3] = [
     ('MemoryIdToBig', 3), ('RangeCheck_8', 4), ('PartialEcMulWindowBits9', 2),
 ];
@@ -20,7 +19,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
+        let interaction_log_sizes = [log_size; 24].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -78,7 +77,6 @@ pub impl AirComponentImpl of AirComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        public_params: Span<u32>,
     ) {
         let log_size = *(self.claim.log_size);
         let claimed_sum = *self.interaction_claim.claimed_sum;
@@ -1380,7 +1378,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let partial_ec_mul_window_bits_9_chain_tmp_tmp_e17b2_8: QM31 = (seq
+        let partial_ec_mul_window_bits_9_chain_tmp_tmp_344c0_8: QM31 = (seq
             * qm31_const::<2, 0, 0, 0>());
 
         partial_ec_mul_window_bits_9_sum_6 = self
@@ -1388,7 +1386,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             .combine_qm31(
                 [
                     qm31_const::<2038149019, 0, 0, 0>(),
-                    partial_ec_mul_window_bits_9_chain_tmp_tmp_e17b2_8, qm31_const::<0, 0, 0, 0>(),
+                    partial_ec_mul_window_bits_9_chain_tmp_tmp_344c0_8, qm31_const::<0, 0, 0, 0>(),
                     value_limb_0_col3, value_limb_1_col4, value_limb_2_col5, value_limb_3_col6,
                     value_limb_4_col7, value_limb_5_col8, value_limb_6_col9, value_limb_7_col10,
                     value_limb_8_col11, value_limb_9_col12, value_limb_10_col13,
@@ -1436,7 +1434,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             .combine_qm31(
                 [
                     qm31_const::<2038149019, 0, 0, 0>(),
-                    partial_ec_mul_window_bits_9_chain_tmp_tmp_e17b2_8, qm31_const::<28, 0, 0, 0>(),
+                    partial_ec_mul_window_bits_9_chain_tmp_tmp_344c0_8, qm31_const::<28, 0, 0, 0>(),
                     partial_ec_mul_window_bits_9_output_limb_0_col65,
                     partial_ec_mul_window_bits_9_output_limb_1_col66,
                     partial_ec_mul_window_bits_9_output_limb_2_col67,
@@ -1525,8 +1523,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
                     .span(),
             );
         numerator_7 = qm31_const::<1, 0, 0, 0>();
-        let partial_ec_mul_window_bits_9_chain_id_tmp_e17b2_37: QM31 =
-            (partial_ec_mul_window_bits_9_chain_tmp_tmp_e17b2_8
+        let partial_ec_mul_window_bits_9_chain_id_tmp_344c0_37: QM31 =
+            (partial_ec_mul_window_bits_9_chain_tmp_tmp_344c0_8
             + qm31_const::<1, 0, 0, 0>());
 
         partial_ec_mul_window_bits_9_sum_8 = self
@@ -1534,7 +1532,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             .combine_qm31(
                 [
                     qm31_const::<2038149019, 0, 0, 0>(),
-                    partial_ec_mul_window_bits_9_chain_id_tmp_e17b2_37, qm31_const::<28, 0, 0, 0>(),
+                    partial_ec_mul_window_bits_9_chain_id_tmp_344c0_37, qm31_const::<28, 0, 0, 0>(),
                     value_limb_0_col31, value_limb_1_col32, value_limb_2_col33, value_limb_3_col34,
                     value_limb_4_col35, value_limb_5_col36, value_limb_6_col37, value_limb_7_col38,
                     value_limb_8_col39, value_limb_9_col40, value_limb_10_col41,
@@ -1610,7 +1608,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             .combine_qm31(
                 [
                     qm31_const::<2038149019, 0, 0, 0>(),
-                    partial_ec_mul_window_bits_9_chain_id_tmp_e17b2_37, qm31_const::<56, 0, 0, 0>(),
+                    partial_ec_mul_window_bits_9_chain_id_tmp_344c0_37, qm31_const::<56, 0, 0, 0>(),
                     partial_ec_mul_window_bits_9_output_limb_0_col149,
                     partial_ec_mul_window_bits_9_output_limb_1_col150,
                     partial_ec_mul_window_bits_9_output_limb_2_col151,
@@ -1972,7 +1970,6 @@ mod tests {
                 qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
-        let public_params = [].span();
         let mut sum: QM31 = Zero::zero();
 
         let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
@@ -2237,7 +2234,6 @@ mod tests {
                 ref trace_columns,
                 ref interaction_columns,
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
-                public_params,
             );
         preprocessed_trace.validate_usage();
         assert_eq!(

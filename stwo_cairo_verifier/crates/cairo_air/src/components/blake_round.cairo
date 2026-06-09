@@ -4,7 +4,6 @@ use crate::components::subroutines::read_u_32::read_u_32_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 212;
-pub const N_INTERACTION_COLUMNS: usize = 120;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 6] = [
     ('BlakeRoundSigma', 1), ('RangeCheck_7_2_5', 16), ('MemoryAddressToId', 16),
     ('MemoryIdToBig', 16), ('BlakeG', 8), ('BlakeRound', 1),
@@ -20,7 +19,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
+        let interaction_log_sizes = [log_size; 120].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -78,7 +77,6 @@ pub impl AirComponentImpl of AirComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        public_params: Span<u32>,
     ) {
         let log_size = *(self.claim.log_size);
         let claimed_sum = *self.interaction_claim.claimed_sum;
@@ -2336,7 +2334,6 @@ mod tests {
                 qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
-        let public_params = [].span();
         let mut sum: QM31 = Zero::zero();
 
         let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
@@ -2598,7 +2595,6 @@ mod tests {
                 ref trace_columns,
                 ref interaction_columns,
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
-                public_params,
             );
         preprocessed_trace.validate_usage();
         assert_eq!(sum, QM31Trait::from_fixed_array(BLAKE_ROUND_SAMPLE_EVAL_RESULT))

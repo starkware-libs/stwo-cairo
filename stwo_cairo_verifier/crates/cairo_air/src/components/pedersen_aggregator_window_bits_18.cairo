@@ -5,7 +5,6 @@ use crate::components::subroutines::verify_reduced_252::verify_reduced_252_evalu
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 206;
-pub const N_INTERACTION_COLUMNS: usize = 24;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 3] = [
     ('MemoryIdToBig', 3), ('RangeCheck_8', 4), ('PartialEcMulWindowBits18', 2),
 ];
@@ -20,7 +19,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
+        let interaction_log_sizes = [log_size; 24].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -78,7 +77,6 @@ pub impl AirComponentImpl of AirComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        public_params: Span<u32>,
     ) {
         let log_size = *(self.claim.log_size);
         let claimed_sum = *self.interaction_claim.claimed_sum;
@@ -1212,7 +1210,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let partial_ec_mul_window_bits_18_chain_tmp_tmp_9e218_8: QM31 = (seq
+        let partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8: QM31 = (seq
             * qm31_const::<2, 0, 0, 0>());
 
         partial_ec_mul_window_bits_18_sum_6 = self
@@ -1220,7 +1218,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             .combine_qm31(
                 [
                     qm31_const::<1621226978, 0, 0, 0>(),
-                    partial_ec_mul_window_bits_18_chain_tmp_tmp_9e218_8, qm31_const::<0, 0, 0, 0>(),
+                    partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8, qm31_const::<0, 0, 0, 0>(),
                     (value_limb_0_col3 + (value_limb_1_col4 * qm31_const::<512, 0, 0, 0>())),
                     (value_limb_2_col5 + (value_limb_3_col6 * qm31_const::<512, 0, 0, 0>())),
                     (value_limb_4_col7 + (value_limb_5_col8 * qm31_const::<512, 0, 0, 0>())),
@@ -1273,7 +1271,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             .combine_qm31(
                 [
                     qm31_const::<1621226978, 0, 0, 0>(),
-                    partial_ec_mul_window_bits_18_chain_tmp_tmp_9e218_8,
+                    partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8,
                     qm31_const::<14, 0, 0, 0>(), partial_ec_mul_window_bits_18_output_limb_0_col65,
                     partial_ec_mul_window_bits_18_output_limb_1_col66,
                     partial_ec_mul_window_bits_18_output_limb_2_col67,
@@ -1348,8 +1346,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
                     .span(),
             );
         numerator_7 = qm31_const::<1, 0, 0, 0>();
-        let partial_ec_mul_window_bits_18_chain_id_tmp_9e218_23: QM31 =
-            (partial_ec_mul_window_bits_18_chain_tmp_tmp_9e218_8
+        let partial_ec_mul_window_bits_18_chain_id_tmp_94cb4_23: QM31 =
+            (partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8
             + qm31_const::<1, 0, 0, 0>());
 
         partial_ec_mul_window_bits_18_sum_8 = self
@@ -1357,7 +1355,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             .combine_qm31(
                 [
                     qm31_const::<1621226978, 0, 0, 0>(),
-                    partial_ec_mul_window_bits_18_chain_id_tmp_9e218_23,
+                    partial_ec_mul_window_bits_18_chain_id_tmp_94cb4_23,
                     qm31_const::<14, 0, 0, 0>(),
                     (value_limb_0_col31 + (value_limb_1_col32 * qm31_const::<512, 0, 0, 0>())),
                     (value_limb_2_col33 + (value_limb_3_col34 * qm31_const::<512, 0, 0, 0>())),
@@ -1439,7 +1437,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             .combine_qm31(
                 [
                     qm31_const::<1621226978, 0, 0, 0>(),
-                    partial_ec_mul_window_bits_18_chain_id_tmp_9e218_23,
+                    partial_ec_mul_window_bits_18_chain_id_tmp_94cb4_23,
                     qm31_const::<28, 0, 0, 0>(), partial_ec_mul_window_bits_18_output_limb_0_col135,
                     partial_ec_mul_window_bits_18_output_limb_1_col136,
                     partial_ec_mul_window_bits_18_output_limb_2_col137,
@@ -1787,7 +1785,6 @@ mod tests {
                 qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
-        let public_params = [].span();
         let mut sum: QM31 = Zero::zero();
 
         let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
@@ -2024,7 +2021,6 @@ mod tests {
                 ref trace_columns,
                 ref interaction_columns,
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
-                public_params,
             );
         preprocessed_trace.validate_usage();
         assert_eq!(

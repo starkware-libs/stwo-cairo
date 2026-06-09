@@ -8,7 +8,6 @@ use crate::components::subroutines::xor_rot_32_r_8::xor_rot_32_r_8_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 53;
-pub const N_INTERACTION_COLUMNS: usize = 36;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 6] = [
     ('VerifyBitwiseXor_8', 4), ('VerifyBitwiseXor_8_B', 4), ('VerifyBitwiseXor_12', 2),
     ('VerifyBitwiseXor_4', 2), ('VerifyBitwiseXor_7', 2), ('VerifyBitwiseXor_9', 2),
@@ -24,7 +23,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
+        let interaction_log_sizes = [log_size; 36].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -82,7 +81,6 @@ pub impl AirComponentImpl of AirComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        public_params: Span<u32>,
     ) {
         let log_size = *(self.claim.log_size);
         let claimed_sum = *self.interaction_claim.claimed_sum;
@@ -273,7 +271,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         let [
-            xor_rot_32_r_16_output_tmp_4da06_21_limb_0, xor_rot_32_r_16_output_tmp_4da06_21_limb_1,
+            xor_rot_32_r_16_output_tmp_f72c8_21_limb_0, xor_rot_32_r_16_output_tmp_f72c8_21_limb_1,
         ] =
             xor_rot_32_r_16_evaluate(
             [
@@ -302,8 +300,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         triple_sum_32_evaluate(
             [
-                input_limb_4_col4, input_limb_5_col5, xor_rot_32_r_16_output_tmp_4da06_21_limb_0,
-                xor_rot_32_r_16_output_tmp_4da06_21_limb_1, qm31_const::<0, 0, 0, 0>(),
+                input_limb_4_col4, input_limb_5_col5, xor_rot_32_r_16_output_tmp_f72c8_21_limb_0,
+                xor_rot_32_r_16_output_tmp_f72c8_21_limb_1, qm31_const::<0, 0, 0, 0>(),
                 qm31_const::<0, 0, 0, 0>(),
             ],
             triple_sum32_res_limb_0_col22,
@@ -313,7 +311,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         let [
-            xor_rot_32_r_12_output_tmp_4da06_43_limb_0, xor_rot_32_r_12_output_tmp_4da06_43_limb_1,
+            xor_rot_32_r_12_output_tmp_f72c8_43_limb_0, xor_rot_32_r_12_output_tmp_f72c8_43_limb_1,
         ] =
             xor_rot_32_r_12_evaluate(
             [
@@ -343,8 +341,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         triple_sum_32_evaluate(
             [
                 triple_sum32_res_limb_0_col12, triple_sum32_res_limb_1_col13,
-                xor_rot_32_r_12_output_tmp_4da06_43_limb_0,
-                xor_rot_32_r_12_output_tmp_4da06_43_limb_1, input_limb_10_col10,
+                xor_rot_32_r_12_output_tmp_f72c8_43_limb_0,
+                xor_rot_32_r_12_output_tmp_f72c8_43_limb_1, input_limb_10_col10,
                 input_limb_11_col11,
             ],
             triple_sum32_res_limb_0_col32,
@@ -353,12 +351,12 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let [xor_rot_32_r_8_output_tmp_4da06_65_limb_0, xor_rot_32_r_8_output_tmp_4da06_65_limb_1] =
+        let [xor_rot_32_r_8_output_tmp_f72c8_65_limb_0, xor_rot_32_r_8_output_tmp_f72c8_65_limb_1] =
             xor_rot_32_r_8_evaluate(
             [
                 triple_sum32_res_limb_0_col32, triple_sum32_res_limb_1_col33,
-                xor_rot_32_r_16_output_tmp_4da06_21_limb_0,
-                xor_rot_32_r_16_output_tmp_4da06_21_limb_1,
+                xor_rot_32_r_16_output_tmp_f72c8_21_limb_0,
+                xor_rot_32_r_16_output_tmp_f72c8_21_limb_1,
             ],
             ms_8_bits_col34,
             ms_8_bits_col35,
@@ -383,8 +381,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         triple_sum_32_evaluate(
             [
                 triple_sum32_res_limb_0_col22, triple_sum32_res_limb_1_col23,
-                xor_rot_32_r_8_output_tmp_4da06_65_limb_0,
-                xor_rot_32_r_8_output_tmp_4da06_65_limb_1, qm31_const::<0, 0, 0, 0>(),
+                xor_rot_32_r_8_output_tmp_f72c8_65_limb_0,
+                xor_rot_32_r_8_output_tmp_f72c8_65_limb_1, qm31_const::<0, 0, 0, 0>(),
                 qm31_const::<0, 0, 0, 0>(),
             ],
             triple_sum32_res_limb_0_col42,
@@ -393,11 +391,11 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let [xor_rot_32_r_7_output_tmp_4da06_87_limb_0, xor_rot_32_r_7_output_tmp_4da06_87_limb_1] =
+        let [xor_rot_32_r_7_output_tmp_f72c8_87_limb_0, xor_rot_32_r_7_output_tmp_f72c8_87_limb_1] =
             xor_rot_32_r_7_evaluate(
             [
-                xor_rot_32_r_12_output_tmp_4da06_43_limb_0,
-                xor_rot_32_r_12_output_tmp_4da06_43_limb_1, triple_sum32_res_limb_0_col42,
+                xor_rot_32_r_12_output_tmp_f72c8_43_limb_0,
+                xor_rot_32_r_12_output_tmp_f72c8_43_limb_1, triple_sum32_res_limb_0_col42,
                 triple_sum32_res_limb_1_col43,
             ],
             ms_9_bits_col44,
@@ -433,10 +431,10 @@ pub impl AirComponentImpl of AirComponent<Component> {
                     input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5,
                     input_limb_6_col6, input_limb_7_col7, input_limb_8_col8, input_limb_9_col9,
                     input_limb_10_col10, input_limb_11_col11, triple_sum32_res_limb_0_col32,
-                    triple_sum32_res_limb_1_col33, xor_rot_32_r_7_output_tmp_4da06_87_limb_0,
-                    xor_rot_32_r_7_output_tmp_4da06_87_limb_1, triple_sum32_res_limb_0_col42,
-                    triple_sum32_res_limb_1_col43, xor_rot_32_r_8_output_tmp_4da06_65_limb_0,
-                    xor_rot_32_r_8_output_tmp_4da06_65_limb_1,
+                    triple_sum32_res_limb_1_col33, xor_rot_32_r_7_output_tmp_f72c8_87_limb_0,
+                    xor_rot_32_r_7_output_tmp_f72c8_87_limb_1, triple_sum32_res_limb_0_col42,
+                    triple_sum32_res_limb_1_col43, xor_rot_32_r_8_output_tmp_f72c8_65_limb_0,
+                    xor_rot_32_r_8_output_tmp_f72c8_65_limb_1,
                 ]
                     .span(),
             );
@@ -743,7 +741,6 @@ mod tests {
                 qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
-        let public_params = [].span();
         let mut sum: QM31 = Zero::zero();
 
         let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
@@ -825,7 +822,6 @@ mod tests {
                 ref trace_columns,
                 ref interaction_columns,
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
-                public_params,
             );
         preprocessed_trace.validate_usage();
         assert_eq!(sum, QM31Trait::from_fixed_array(BLAKE_G_SAMPLE_EVAL_RESULT))

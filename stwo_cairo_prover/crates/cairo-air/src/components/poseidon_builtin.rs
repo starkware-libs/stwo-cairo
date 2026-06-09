@@ -18,12 +18,12 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 2] = [
 pub struct Eval {
     pub claim: Claim,
     pub common_lookup_elements: relations::CommonLookupElements,
-    pub poseidon_builtin_segment_start: u32,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Claim {
     pub log_size: u32,
+    pub poseidon_builtin_segment_start: u32,
 }
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
@@ -68,42 +68,42 @@ impl FrameworkEval for Eval {
         let output_state_1_id_col4 = eval.next_trace_mask();
         let output_state_2_id_col5 = eval.next_trace_mask();
 
-        let instance_addr_tmp_a172e_0 = eval.add_intermediate(
+        let instance_addr_tmp_51986_0 = eval.add_intermediate(
             ((seq.clone() * M31_6.clone())
-                + E::F::from(M31::from(self.poseidon_builtin_segment_start))),
+                + E::F::from(M31::from(self.claim.poseidon_builtin_segment_start))),
         );
         ReadId::evaluate(
-            [instance_addr_tmp_a172e_0.clone()],
+            [instance_addr_tmp_51986_0.clone()],
             input_state_0_id_col0.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         ReadId::evaluate(
-            [(instance_addr_tmp_a172e_0.clone() + M31_1.clone())],
+            [(instance_addr_tmp_51986_0.clone() + M31_1.clone())],
             input_state_1_id_col1.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         ReadId::evaluate(
-            [(instance_addr_tmp_a172e_0.clone() + M31_2.clone())],
+            [(instance_addr_tmp_51986_0.clone() + M31_2.clone())],
             input_state_2_id_col2.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         ReadId::evaluate(
-            [(instance_addr_tmp_a172e_0.clone() + M31_3.clone())],
+            [(instance_addr_tmp_51986_0.clone() + M31_3.clone())],
             output_state_0_id_col3.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         ReadId::evaluate(
-            [(instance_addr_tmp_a172e_0.clone() + M31_4.clone())],
+            [(instance_addr_tmp_51986_0.clone() + M31_4.clone())],
             output_state_1_id_col4.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         ReadId::evaluate(
-            [(instance_addr_tmp_a172e_0.clone() + M31_5.clone())],
+            [(instance_addr_tmp_51986_0.clone() + M31_5.clone())],
             output_state_2_id_col5.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -142,9 +142,11 @@ mod tests {
     fn poseidon_builtin_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
-            claim: Claim { log_size: 4 },
+            claim: Claim {
+                log_size: 4,
+                poseidon_builtin_segment_start: rng.gen::<u32>(),
+            },
             common_lookup_elements: relations::CommonLookupElements::dummy(),
-            poseidon_builtin_segment_start: rng.gen::<u32>(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

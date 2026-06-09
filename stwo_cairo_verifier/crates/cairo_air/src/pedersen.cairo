@@ -5,11 +5,11 @@ use components::pedersen_points_table_window_bits_18::InteractionClaimImpl as Pe
 #[cfg(not(feature: "poseidon252_verifier"))]
 use core::array::Span;
 #[cfg(not(feature: "poseidon252_verifier"))]
-use stwo_cairo_air::claims::{CairoClaim, CairoInteractionClaim};
+use stwo_cairo_air::claims::CairoClaim;
 use stwo_cairo_air::components;
 use stwo_constraint_framework::PreprocessedMaskValuesImpl;
 #[cfg(not(feature: "poseidon252_verifier"))]
-use stwo_constraint_framework::{AirComponent, CommonLookupElements, PreprocessedMaskValues};
+use stwo_constraint_framework::{AirComponent, CommonLookupElements, PreprocessedMaskValues, pop_claimed_sum};
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::ColumnSpan;
 #[cfg(not(feature: "poseidon252_verifier"))]
@@ -27,22 +27,19 @@ pub impl PedersenContextComponentsImpl of PedersenContextComponentsTrait {
     fn new(
         cairo_claim: @CairoClaim,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @CairoInteractionClaim,
+        ref claimed_sums: Span<QM31>,
     ) -> PedersenContextComponents {
         if let Some(_) = cairo_claim.pedersen_aggregator_window_bits_18 {
             PedersenContextComponents {
                 components: Some(
                     PedersenComponentsImpl::new(
-                        cairo_claim, common_lookup_elements, interaction_claim,
+                        cairo_claim, common_lookup_elements, ref claimed_sums,
                     ),
                 ),
             }
         } else {
             assert!(cairo_claim.partial_ec_mul_window_bits_18.is_none());
             assert!(cairo_claim.pedersen_points_table_window_bits_18.is_none());
-            assert!(interaction_claim.pedersen_aggregator_window_bits_18.is_none());
-            assert!(interaction_claim.partial_ec_mul_window_bits_18.is_none());
-            assert!(interaction_claim.pedersen_points_table_window_bits_18.is_none());
             PedersenContextComponents { components: None }
         }
     }
@@ -82,12 +79,39 @@ pub impl PedersenComponentsImpl of PedersenComponentsTrait {
     fn new(
         cairo_claim: @CairoClaim,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @CairoInteractionClaim,
+        ref claimed_sums: Span<QM31>,
     ) -> PedersenComponents {
+        let interaction_claim_pedersen_aggregator = match pop_claimed_sum(ref claimed_sums) {
+            Some(claimed_sum) => {
+                Some(
+                    components::pedersen_aggregator_window_bits_18::InteractionClaim {
+                        claimed_sum,
+                    },
+                )
+            },
+            None => None,
+        };
+        let interaction_claim_partial_ec_mul = match pop_claimed_sum(ref claimed_sums) {
+            Some(claimed_sum) => {
+                Some(components::partial_ec_mul_window_bits_18::InteractionClaim { claimed_sum })
+            },
+            None => None,
+        };
+        let interaction_claim_pedersen_points_table = match pop_claimed_sum(ref claimed_sums) {
+            Some(claimed_sum) => {
+                Some(
+                    components::pedersen_points_table_window_bits_18::InteractionClaim {
+                        claimed_sum,
+                    },
+                )
+            },
+            None => None,
+        };
+
         let pedersen_aggregator_component =
             components::pedersen_aggregator_window_bits_18::NewComponentImpl::try_new(
             cairo_claim.pedersen_aggregator_window_bits_18,
-            interaction_claim.pedersen_aggregator_window_bits_18,
+            @interaction_claim_pedersen_aggregator,
             common_lookup_elements,
         )
             .unwrap();
@@ -95,7 +119,7 @@ pub impl PedersenComponentsImpl of PedersenComponentsTrait {
         let partial_ec_mul_component =
             components::partial_ec_mul_window_bits_18::NewComponentImpl::try_new(
             cairo_claim.partial_ec_mul_window_bits_18,
-            interaction_claim.partial_ec_mul_window_bits_18,
+            @interaction_claim_partial_ec_mul,
             common_lookup_elements,
         )
             .unwrap();
@@ -103,7 +127,7 @@ pub impl PedersenComponentsImpl of PedersenComponentsTrait {
         let pedersen_points_table_component =
             components::pedersen_points_table_window_bits_18::NewComponentImpl::try_new(
             cairo_claim.pedersen_points_table_window_bits_18,
-            interaction_claim.pedersen_points_table_window_bits_18,
+            @interaction_claim_pedersen_points_table,
             common_lookup_elements,
         )
             .unwrap();

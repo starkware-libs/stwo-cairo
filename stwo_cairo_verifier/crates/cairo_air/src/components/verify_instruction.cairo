@@ -5,7 +5,6 @@ use crate::components::subroutines::mem_verify::mem_verify_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 17;
-pub const N_INTERACTION_COLUMNS: usize = 12;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
     ('RangeCheck_7_2_5', 1), ('RangeCheck_4_3', 1), ('MemoryAddressToId', 1), ('MemoryIdToBig', 1),
 ];
@@ -20,7 +19,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
+        let interaction_log_sizes = [log_size; 12].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -78,7 +77,6 @@ pub impl AirComponentImpl of AirComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        public_params: Span<u32>,
     ) {
         let log_size = *(self.claim.log_size);
         let claimed_sum = *self.interaction_claim.claimed_sum;
@@ -144,7 +142,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        let [encode_offsets_output_tmp_40a8f_8_limb_1, encode_offsets_output_tmp_40a8f_8_limb_3] =
+        let [encode_offsets_output_tmp_16a4f_8_limb_1, encode_offsets_output_tmp_16a4f_8_limb_3] =
             encode_offsets_evaluate(
             [input_offset0_col1, input_offset1_col2, input_offset2_col3],
             offset0_low_col7,
@@ -165,8 +163,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         mem_verify_evaluate(
             [
-                input_pc_col0, offset0_low_col7, encode_offsets_output_tmp_40a8f_8_limb_1,
-                offset1_mid_col10, encode_offsets_output_tmp_40a8f_8_limb_3, offset2_mid_col13,
+                input_pc_col0, offset0_low_col7, encode_offsets_output_tmp_16a4f_8_limb_1,
+                offset1_mid_col10, encode_offsets_output_tmp_16a4f_8_limb_3, offset2_mid_col13,
                 (offset2_high_col14 + input_inst_felt5_high_col4), input_inst_felt6_col5,
                 input_opcode_extension_col6, qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
                 qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
@@ -333,7 +331,6 @@ mod tests {
                 qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
-        let public_params = [].span();
         let mut sum: QM31 = Zero::zero();
 
         let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
@@ -373,7 +370,6 @@ mod tests {
                 ref trace_columns,
                 ref interaction_columns,
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
-                public_params,
             );
         preprocessed_trace.validate_usage();
         assert_eq!(sum, QM31Trait::from_fixed_array(VERIFY_INSTRUCTION_SAMPLE_EVAL_RESULT))

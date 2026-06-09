@@ -7,7 +7,6 @@ use crate::components::subroutines::update_registers::update_registers_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 243;
-pub const N_INTERACTION_COLUMNS: usize = 136;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 22] = [
     ('VerifyInstruction', 1), ('MemoryAddressToId', 3), ('MemoryIdToBig', 3), ('RangeCheck_9_9', 4),
     ('RangeCheck_9_9_B', 4), ('RangeCheck_9_9_C', 4), ('RangeCheck_9_9_D', 4),
@@ -27,7 +26,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
+        let interaction_log_sizes = [log_size; 136].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -85,7 +84,6 @@ pub impl AirComponentImpl of AirComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        public_params: Span<u32>,
     ) {
         let log_size = *(self.claim.log_size);
         let claimed_sum = *self.interaction_claim.claimed_sum;
@@ -795,14 +793,14 @@ pub impl AirComponentImpl of AirComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         let [
-            decode_generic_instruction_output_tmp_c8168_26_op1_base_op0,
-            decode_generic_instruction_output_tmp_c8168_26_res_op1,
-            decode_generic_instruction_output_tmp_c8168_26_pc_update_regular,
-            decode_generic_instruction_output_tmp_c8168_26_fp_update_regular,
-            decode_generic_instruction_output_tmp_c8168_26_instruction_size,
-            decode_generic_instruction_output_tmp_c8168_26_offset0,
-            decode_generic_instruction_output_tmp_c8168_26_offset1,
-            decode_generic_instruction_output_tmp_c8168_26_offset2,
+            decode_generic_instruction_output_tmp_57455_26_op1_base_op0,
+            decode_generic_instruction_output_tmp_57455_26_res_op1,
+            decode_generic_instruction_output_tmp_57455_26_pc_update_regular,
+            decode_generic_instruction_output_tmp_57455_26_fp_update_regular,
+            decode_generic_instruction_output_tmp_57455_26_instruction_size,
+            decode_generic_instruction_output_tmp_57455_26_offset0,
+            decode_generic_instruction_output_tmp_57455_26_offset1,
+            decode_generic_instruction_output_tmp_57455_26_offset2,
         ] =
             decode_generic_instruction_evaluate(
             input_pc_col0,
@@ -834,11 +832,11 @@ pub impl AirComponentImpl of AirComponent<Component> {
             [
                 input_pc_col0, input_ap_col1, input_fp_col2, dst_base_fp_col6, op0_base_fp_col7,
                 op1_imm_col8, op1_base_fp_col9, op1_base_ap_col10, res_add_col11, res_mul_col12,
-                pc_update_jnz_col15, decode_generic_instruction_output_tmp_c8168_26_op1_base_op0,
-                decode_generic_instruction_output_tmp_c8168_26_res_op1,
-                decode_generic_instruction_output_tmp_c8168_26_offset0,
-                decode_generic_instruction_output_tmp_c8168_26_offset1,
-                decode_generic_instruction_output_tmp_c8168_26_offset2,
+                pc_update_jnz_col15, decode_generic_instruction_output_tmp_57455_26_op1_base_op0,
+                decode_generic_instruction_output_tmp_57455_26_res_op1,
+                decode_generic_instruction_output_tmp_57455_26_offset0,
+                decode_generic_instruction_output_tmp_57455_26_offset1,
+                decode_generic_instruction_output_tmp_57455_26_offset2,
             ],
             dst_src_col21,
             dst_id_col22,
@@ -1176,11 +1174,11 @@ pub impl AirComponentImpl of AirComponent<Component> {
             [
                 input_pc_col0, input_fp_col2, dst_base_fp_col6, op0_base_fp_col7, op1_base_fp_col9,
                 pc_update_jump_col13, opcode_call_col18, opcode_ret_col19, opcode_assert_eq_col20,
-                decode_generic_instruction_output_tmp_c8168_26_res_op1,
-                decode_generic_instruction_output_tmp_c8168_26_instruction_size,
-                decode_generic_instruction_output_tmp_c8168_26_offset0,
-                decode_generic_instruction_output_tmp_c8168_26_offset1,
-                decode_generic_instruction_output_tmp_c8168_26_offset2, dst_limb_0_col23,
+                decode_generic_instruction_output_tmp_57455_26_res_op1,
+                decode_generic_instruction_output_tmp_57455_26_instruction_size,
+                decode_generic_instruction_output_tmp_57455_26_offset0,
+                decode_generic_instruction_output_tmp_57455_26_offset1,
+                decode_generic_instruction_output_tmp_57455_26_offset2, dst_limb_0_col23,
                 dst_limb_1_col24, dst_limb_2_col25, dst_limb_3_col26, dst_limb_4_col27,
                 dst_limb_5_col28, dst_limb_6_col29, dst_limb_7_col30, dst_limb_8_col31,
                 dst_limb_9_col32, dst_limb_10_col33, dst_limb_11_col34, dst_limb_12_col35,
@@ -1214,9 +1212,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
                 input_pc_col0, input_ap_col1, input_fp_col2, pc_update_jump_col13,
                 pc_update_jump_rel_col14, pc_update_jnz_col15, ap_update_add_col16,
                 ap_update_add_1_col17, opcode_call_col18, opcode_ret_col19,
-                decode_generic_instruction_output_tmp_c8168_26_pc_update_regular,
-                decode_generic_instruction_output_tmp_c8168_26_fp_update_regular,
-                decode_generic_instruction_output_tmp_c8168_26_instruction_size, dst_limb_0_col23,
+                decode_generic_instruction_output_tmp_57455_26_pc_update_regular,
+                decode_generic_instruction_output_tmp_57455_26_fp_update_regular,
+                decode_generic_instruction_output_tmp_57455_26_instruction_size, dst_limb_0_col23,
                 dst_limb_1_col24, dst_limb_2_col25, dst_limb_3_col26, dst_limb_4_col27,
                 dst_limb_5_col28, dst_limb_6_col29, dst_limb_7_col30, dst_limb_8_col31,
                 dst_limb_9_col32, dst_limb_10_col33, dst_limb_11_col34, dst_limb_12_col35,
@@ -2286,7 +2284,6 @@ mod tests {
                 qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
-        let public_params = [].span();
         let mut sum: QM31 = Zero::zero();
 
         let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
@@ -2583,7 +2580,6 @@ mod tests {
                 ref trace_columns,
                 ref interaction_columns,
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
-                public_params,
             );
         preprocessed_trace.validate_usage();
         assert_eq!(sum, QM31Trait::from_fixed_array(GENERIC_OPCODE_SAMPLE_EVAL_RESULT))

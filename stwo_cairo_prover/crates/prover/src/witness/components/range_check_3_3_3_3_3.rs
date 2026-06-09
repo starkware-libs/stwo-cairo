@@ -127,8 +127,6 @@ fn write_trace_simd(
                 range_check_3_3_3_3_3_column_3.packed_at(row_index);
             let range_check_3_3_3_3_3_column_4 =
                 range_check_3_3_3_3_3_column_4.packed_at(row_index);
-            let multiplicity_0_col0 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
-            *row[0] = multiplicity_0_col0;
             *lookup_data.range_check_3_3_3_3_3_0 = [
                 M31_502259093,
                 range_check_3_3_3_3_3_column_0,
@@ -137,7 +135,10 @@ fn write_trace_simd(
                 range_check_3_3_3_3_3_column_3,
                 range_check_3_3_3_3_3_column_4,
             ];
-            *lookup_data.mults_0 = multiplicity_0_col0;
+            let mult = &mults[0];
+            let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
+            *row[0] = mult_at_row;
+            *lookup_data.mults_0 = mult_at_row;
         });
 
     (trace, lookup_data)
@@ -170,9 +171,9 @@ impl InteractionClaimGenerator {
             self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values, mult)| {
+            .for_each(|(writer, values, mults_0)| {
                 let denom = common_lookup_elements.combine(values);
-                writer.write_frac((-mult).into(), denom);
+                writer.write_frac(-PackedQM31::one() * mults_0, denom);
             });
         col_gen.finalize_col();
 

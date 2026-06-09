@@ -1,11 +1,10 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::decode_instruction_a4d88::decode_instruction_a4d88_evaluate;
+use crate::components::subroutines::decode_instruction_15a61::decode_instruction_15a61_evaluate;
 use crate::components::subroutines::read_positive_num_bits_29::read_positive_num_bits_29_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 16;
-pub const N_INTERACTION_COLUMNS: usize = 16;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
     ('VerifyInstruction', 1), ('MemoryAddressToId', 2), ('MemoryIdToBig', 2), ('Opcodes', 1),
 ];
@@ -20,7 +19,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
+        let interaction_log_sizes = [log_size; 16].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -78,7 +77,6 @@ pub impl AirComponentImpl of AirComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        public_params: Span<u32>,
     ) {
         let log_size = *(self.claim.log_size);
         let claimed_sum = *self.interaction_claim.claimed_sum;
@@ -141,7 +139,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        decode_instruction_a4d88_evaluate(
+        decode_instruction_15a61_evaluate(
             input_pc_col0,
             self.common_lookup_elements,
             ref verify_instruction_sum_0,
@@ -374,7 +372,6 @@ mod tests {
                 qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
-        let public_params = [].span();
         let mut sum: QM31 = Zero::zero();
 
         let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
@@ -414,7 +411,6 @@ mod tests {
                 ref trace_columns,
                 ref interaction_columns,
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
-                public_params,
             );
         preprocessed_trace.validate_usage();
         assert_eq!(sum, QM31Trait::from_fixed_array(RET_OPCODE_SAMPLE_EVAL_RESULT))

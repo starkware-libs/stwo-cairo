@@ -1,12 +1,11 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::decode_instruction_ad440::decode_instruction_ad440_evaluate;
+use crate::components::subroutines::decode_instruction_de75a::decode_instruction_de75a_evaluate;
 use crate::components::subroutines::read_positive_num_bits_252::read_positive_num_bits_252_evaluate;
 use crate::components::subroutines::read_small::read_small_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 47;
-pub const N_INTERACTION_COLUMNS: usize = 16;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
     ('VerifyInstruction', 1), ('MemoryAddressToId', 2), ('MemoryIdToBig', 2), ('Opcodes', 1),
 ];
@@ -21,7 +20,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
+        let interaction_log_sizes = [log_size; 16].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -79,7 +78,6 @@ pub impl AirComponentImpl of AirComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        public_params: Span<u32>,
     ) {
         let log_size = *(self.claim.log_size);
         let claimed_sum = *self.interaction_claim.claimed_sum;
@@ -206,8 +204,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        let decode_instruction_ad440_output_tmp_7f087_5_offset0: QM31 =
-            decode_instruction_ad440_evaluate(
+        let decode_instruction_de75a_output_tmp_f51a9_5_offset0: QM31 =
+            decode_instruction_de75a_evaluate(
             input_pc_col0,
             offset0_col3,
             dst_base_fp_col4,
@@ -225,7 +223,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
                 + ((qm31_const::<1, 0, 0, 0>() - dst_base_fp_col4) * input_ap_col1))));
         sum = sum * random_coeff + constraint_quotient;
         read_positive_num_bits_252_evaluate(
-            (mem_dst_base_col6 + decode_instruction_ad440_output_tmp_7f087_5_offset0),
+            (mem_dst_base_col6 + decode_instruction_de75a_output_tmp_f51a9_5_offset0),
             dst_id_col7,
             dst_limb_0_col8,
             dst_limb_1_col9,
@@ -263,7 +261,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let dst_sum_p_zero_tmp_7f087_11: QM31 = ((((((((((((((((((((((((dst_limb_1_col9
+        let dst_sum_p_zero_tmp_f51a9_11: QM31 = ((((((((((((((((((((((((dst_limb_1_col9
             + dst_limb_2_col10)
             + dst_limb_3_col11)
             + dst_limb_4_col12)
@@ -290,24 +288,24 @@ pub impl AirComponentImpl of AirComponent<Component> {
             + dst_limb_26_col34);
 
         // Constraint - dst doesn't equal 0
-        let constraint_quotient = ((((dst_sum_p_zero_tmp_7f087_11
+        let constraint_quotient = ((((dst_sum_p_zero_tmp_f51a9_11
             + ((dst_limb_0_col8 + dst_limb_21_col29) + dst_limb_27_col35))
             * dst_sum_inv_col36)
             - qm31_const::<1, 0, 0, 0>()));
         sum = sum * random_coeff + constraint_quotient;
-        let diff_from_p_tmp_7f087_12: QM31 = (dst_limb_0_col8 - qm31_const::<1, 0, 0, 0>());
-        let diff_from_p_tmp_7f087_13: QM31 = (dst_limb_21_col29 - qm31_const::<136, 0, 0, 0>());
-        let diff_from_p_tmp_7f087_14: QM31 = (dst_limb_27_col35 - qm31_const::<256, 0, 0, 0>());
+        let diff_from_p_tmp_f51a9_12: QM31 = (dst_limb_0_col8 - qm31_const::<1, 0, 0, 0>());
+        let diff_from_p_tmp_f51a9_13: QM31 = (dst_limb_21_col29 - qm31_const::<136, 0, 0, 0>());
+        let diff_from_p_tmp_f51a9_14: QM31 = (dst_limb_27_col35 - qm31_const::<256, 0, 0, 0>());
 
         // Constraint - dst doesn't equal P
-        let constraint_quotient = ((((dst_sum_p_zero_tmp_7f087_11
-            + (((diff_from_p_tmp_7f087_12 * diff_from_p_tmp_7f087_12)
-                + (diff_from_p_tmp_7f087_13 * diff_from_p_tmp_7f087_13))
-                + (diff_from_p_tmp_7f087_14 * diff_from_p_tmp_7f087_14)))
+        let constraint_quotient = ((((dst_sum_p_zero_tmp_f51a9_11
+            + (((diff_from_p_tmp_f51a9_12 * diff_from_p_tmp_f51a9_12)
+                + (diff_from_p_tmp_f51a9_13 * diff_from_p_tmp_f51a9_13))
+                + (diff_from_p_tmp_f51a9_14 * diff_from_p_tmp_f51a9_14)))
             * dst_sum_squares_inv_col37)
             - qm31_const::<1, 0, 0, 0>()));
         sum = sum * random_coeff + constraint_quotient;
-        let read_small_output_tmp_7f087_24_limb_0: QM31 = read_small_evaluate(
+        let read_small_output_tmp_f51a9_24_limb_0: QM31 = read_small_evaluate(
             (input_pc_col0 + qm31_const::<1, 0, 0, 0>()),
             next_pc_id_col38,
             msb_col39,
@@ -343,7 +341,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             .combine_qm31(
                 [
                     qm31_const::<428564188, 0, 0, 0>(),
-                    (input_pc_col0 + read_small_output_tmp_7f087_24_limb_0),
+                    (input_pc_col0 + read_small_output_tmp_f51a9_24_limb_0),
                     (input_ap_col1 + ap_update_add_1_col5), input_fp_col2,
                 ]
                     .span(),
@@ -513,7 +511,6 @@ mod tests {
                 qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
-        let public_params = [].span();
         let mut sum: QM31 = Zero::zero();
 
         let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
@@ -584,7 +581,6 @@ mod tests {
                 ref trace_columns,
                 ref interaction_columns,
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
-                public_params,
             );
         preprocessed_trace.validate_usage();
         assert_eq!(sum, QM31Trait::from_fixed_array(JNZ_OPCODE_TAKEN_SAMPLE_EVAL_RESULT))

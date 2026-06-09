@@ -1,12 +1,11 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::decode_instruction_ed841::decode_instruction_ed841_evaluate;
+use crate::components::subroutines::decode_instruction_cb32b::decode_instruction_cb32b_evaluate;
 use crate::components::subroutines::mem_verify_equal::mem_verify_equal_evaluate;
 use crate::components::subroutines::read_positive_num_bits_29::read_positive_num_bits_29_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 19;
-pub const N_INTERACTION_COLUMNS: usize = 16;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
     ('VerifyInstruction', 1), ('MemoryAddressToId', 3), ('MemoryIdToBig', 1), ('Opcodes', 1),
 ];
@@ -21,7 +20,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
+        let interaction_log_sizes = [log_size; 16].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -79,7 +78,6 @@ pub impl AirComponentImpl of AirComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        public_params: Span<u32>,
     ) {
         let log_size = *(self.claim.log_size);
         let claimed_sum = *self.interaction_claim.claimed_sum;
@@ -152,11 +150,11 @@ pub impl AirComponentImpl of AirComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         let [
-            decode_instruction_ed841_output_tmp_b7bfa_8_offset0,
-            decode_instruction_ed841_output_tmp_b7bfa_8_offset1,
-            decode_instruction_ed841_output_tmp_b7bfa_8_offset2,
+            decode_instruction_cb32b_output_tmp_b1151_8_offset0,
+            decode_instruction_cb32b_output_tmp_b1151_8_offset1,
+            decode_instruction_cb32b_output_tmp_b1151_8_offset2,
         ] =
-            decode_instruction_ed841_evaluate(
+            decode_instruction_cb32b_evaluate(
             input_pc_col0,
             offset0_col3,
             offset1_col4,
@@ -183,7 +181,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
                 + ((qm31_const::<1, 0, 0, 0>() - op0_base_fp_col7) * input_ap_col1))));
         sum = sum * random_coeff + constraint_quotient;
         read_positive_num_bits_29_evaluate(
-            (mem0_base_col10 + decode_instruction_ed841_output_tmp_b7bfa_8_offset1),
+            (mem0_base_col10 + decode_instruction_cb32b_output_tmp_b1151_8_offset1),
             mem1_base_id_col11,
             mem1_base_limb_0_col12,
             mem1_base_limb_1_col13,
@@ -200,12 +198,12 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         mem_verify_equal_evaluate(
             [
-                (mem_dst_base_col9 + decode_instruction_ed841_output_tmp_b7bfa_8_offset0),
+                (mem_dst_base_col9 + decode_instruction_cb32b_output_tmp_b1151_8_offset0),
                 ((((mem1_base_limb_0_col12
                     + (mem1_base_limb_1_col13 * qm31_const::<512, 0, 0, 0>()))
                     + (mem1_base_limb_2_col14 * qm31_const::<262144, 0, 0, 0>()))
                     + (mem1_base_limb_3_col15 * qm31_const::<134217728, 0, 0, 0>()))
-                    + decode_instruction_ed841_output_tmp_b7bfa_8_offset2),
+                    + decode_instruction_cb32b_output_tmp_b1151_8_offset2),
             ],
             dst_id_col17,
             self.common_lookup_elements,
@@ -404,7 +402,6 @@ mod tests {
                 qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
-        let public_params = [].span();
         let mut sum: QM31 = Zero::zero();
 
         let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
@@ -447,7 +444,6 @@ mod tests {
                 ref trace_columns,
                 ref interaction_columns,
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
-                public_params,
             );
         preprocessed_trace.validate_usage();
         assert_eq!(

@@ -59,7 +59,10 @@ impl ClaimGenerator {
 
         (
             trace,
-            Claim { log_size },
+            Claim {
+                log_size,
+                pedersen_builtin_segment_start: self.pedersen_builtin_segment_start,
+            },
             InteractionClaimGenerator {
                 log_size,
                 lookup_data,
@@ -113,45 +116,45 @@ fn write_trace_simd(
         .enumerate()
         .for_each(|(row_index, (row, lookup_data, sub_component_inputs))| {
             let seq = seq.packed_at(row_index);
-            let instance_addr_tmp_364c7_0 = (((seq) * (M31_3))
+            let instance_addr_tmp_adb38_0 = (((seq) * (M31_3))
                 + (PackedM31::broadcast(M31::from(pedersen_builtin_segment_start))));
 
             // Read Id.
 
-            let memory_address_to_id_value_tmp_364c7_1 =
-                memory_address_to_id_state.deduce_output(instance_addr_tmp_364c7_0);
-            let input_state_0_id_col0 = memory_address_to_id_value_tmp_364c7_1;
+            let memory_address_to_id_value_tmp_adb38_1 =
+                memory_address_to_id_state.deduce_output(instance_addr_tmp_adb38_0);
+            let input_state_0_id_col0 = memory_address_to_id_value_tmp_adb38_1;
             *row[0] = input_state_0_id_col0;
-            *sub_component_inputs.memory_address_to_id[0] = instance_addr_tmp_364c7_0;
+            *sub_component_inputs.memory_address_to_id[0] = instance_addr_tmp_adb38_0;
             *lookup_data.memory_address_to_id_0 = [
                 M31_1444891767,
-                instance_addr_tmp_364c7_0,
+                instance_addr_tmp_adb38_0,
                 input_state_0_id_col0,
             ];
 
             // Read Id.
 
-            let memory_address_to_id_value_tmp_364c7_3 =
-                memory_address_to_id_state.deduce_output(((instance_addr_tmp_364c7_0) + (M31_1)));
-            let input_state_1_id_col1 = memory_address_to_id_value_tmp_364c7_3;
+            let memory_address_to_id_value_tmp_adb38_3 =
+                memory_address_to_id_state.deduce_output(((instance_addr_tmp_adb38_0) + (M31_1)));
+            let input_state_1_id_col1 = memory_address_to_id_value_tmp_adb38_3;
             *row[1] = input_state_1_id_col1;
-            *sub_component_inputs.memory_address_to_id[1] = ((instance_addr_tmp_364c7_0) + (M31_1));
+            *sub_component_inputs.memory_address_to_id[1] = ((instance_addr_tmp_adb38_0) + (M31_1));
             *lookup_data.memory_address_to_id_1 = [
                 M31_1444891767,
-                ((instance_addr_tmp_364c7_0) + (M31_1)),
+                ((instance_addr_tmp_adb38_0) + (M31_1)),
                 input_state_1_id_col1,
             ];
 
             // Read Id.
 
-            let memory_address_to_id_value_tmp_364c7_5 =
-                memory_address_to_id_state.deduce_output(((instance_addr_tmp_364c7_0) + (M31_2)));
-            let output_state_id_col2 = memory_address_to_id_value_tmp_364c7_5;
+            let memory_address_to_id_value_tmp_adb38_5 =
+                memory_address_to_id_state.deduce_output(((instance_addr_tmp_adb38_0) + (M31_2)));
+            let output_state_id_col2 = memory_address_to_id_value_tmp_adb38_5;
             *row[2] = output_state_id_col2;
-            *sub_component_inputs.memory_address_to_id[2] = ((instance_addr_tmp_364c7_0) + (M31_2));
+            *sub_component_inputs.memory_address_to_id[2] = ((instance_addr_tmp_adb38_0) + (M31_2));
             *lookup_data.memory_address_to_id_2 = [
                 M31_1444891767,
-                ((instance_addr_tmp_364c7_0) + (M31_2)),
+                ((instance_addr_tmp_adb38_0) + (M31_2)),
                 output_state_id_col2,
             ];
 
@@ -159,13 +162,12 @@ fn write_trace_simd(
                 [input_state_0_id_col0, input_state_1_id_col1],
                 output_state_id_col2,
             );
-            *lookup_data.pedersen_aggregator_window_bits_9_3 = [
+            *lookup_data.pedersen_aggregator_window_bits_9_0 = [
                 M31_194336987,
                 input_state_0_id_col0,
                 input_state_1_id_col1,
                 output_state_id_col2,
             ];
-            *lookup_data.mults_0 = M31_1;
         });
 
     (trace, lookup_data, sub_component_inputs)
@@ -176,8 +178,7 @@ struct LookupData {
     memory_address_to_id_0: Vec<[PackedM31; 3]>,
     memory_address_to_id_1: Vec<[PackedM31; 3]>,
     memory_address_to_id_2: Vec<[PackedM31; 3]>,
-    pedersen_aggregator_window_bits_9_3: Vec<[PackedM31; 4]>,
-    mults_0: Vec<PackedM31>,
+    pedersen_aggregator_window_bits_9_0: Vec<[PackedM31; 4]>,
 }
 
 pub struct InteractionClaimGenerator {
@@ -200,14 +201,12 @@ impl InteractionClaimGenerator {
             col_gen.par_iter_mut(),
             &self.lookup_data.memory_address_to_id_0,
             &self.lookup_data.memory_address_to_id_1,
-            &self.lookup_data.mults_0,
-            &self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1, mult0, mult1)| {
+            .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
@@ -215,15 +214,13 @@ impl InteractionClaimGenerator {
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.memory_address_to_id_2,
-            &self.lookup_data.pedersen_aggregator_window_bits_9_3,
-            &self.lookup_data.mults_0,
-            &self.lookup_data.mults_0,
+            &self.lookup_data.pedersen_aggregator_window_bits_9_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1, mult0, mult1)| {
+            .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 * *mult1 + denom1 * *mult0, denom0 * denom1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 

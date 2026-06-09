@@ -156,8 +156,6 @@ fn write_trace_simd(
             let blake_sigma_13 = blake_sigma_13.packed_at(row_index);
             let blake_sigma_14 = blake_sigma_14.packed_at(row_index);
             let blake_sigma_15 = blake_sigma_15.packed_at(row_index);
-            let multiplicity_0_col0 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
-            *row[0] = multiplicity_0_col0;
             *lookup_data.blake_round_sigma_0 = [
                 M31_1805967942,
                 seq_4,
@@ -178,7 +176,10 @@ fn write_trace_simd(
                 blake_sigma_14,
                 blake_sigma_15,
             ];
-            *lookup_data.mults_0 = multiplicity_0_col0;
+            let mult = &mults[0];
+            let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
+            *row[0] = mult_at_row;
+            *lookup_data.mults_0 = mult_at_row;
         });
 
     (trace, lookup_data)
@@ -211,9 +212,9 @@ impl InteractionClaimGenerator {
             self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values, mult)| {
+            .for_each(|(writer, values, mults_0)| {
                 let denom = common_lookup_elements.combine(values);
-                writer.write_frac((-mult).into(), denom);
+                writer.write_frac(-PackedQM31::one() * mults_0, denom);
             });
         col_gen.finalize_col();
 

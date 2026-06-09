@@ -1,13 +1,12 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::decode_instruction_c630b::decode_instruction_c630b_evaluate;
+use crate::components::subroutines::decode_instruction_4b8cf::decode_instruction_4b8cf_evaluate;
 use crate::components::subroutines::read_positive_num_bits_36::read_positive_num_bits_36_evaluate;
 use crate::components::subroutines::read_positive_num_bits_72::read_positive_num_bits_72_evaluate;
 use crate::components::subroutines::verify_mul_small::verify_mul_small_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 37;
-pub const N_INTERACTION_COLUMNS: usize = 24;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 5] = [
     ('VerifyInstruction', 1), ('MemoryAddressToId', 3), ('MemoryIdToBig', 3), ('RangeCheck_11', 3),
     ('Opcodes', 1),
@@ -23,7 +22,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
+        let interaction_log_sizes = [log_size; 24].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -81,7 +80,6 @@ pub impl AirComponentImpl of AirComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        public_params: Span<u32>,
     ) {
         let log_size = *(self.claim.log_size);
         let claimed_sum = *self.interaction_claim.claimed_sum;
@@ -196,12 +194,12 @@ pub impl AirComponentImpl of AirComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         let [
-            decode_instruction_c630b_output_tmp_3c8b0_11_offset0,
-            decode_instruction_c630b_output_tmp_3c8b0_11_offset1,
-            decode_instruction_c630b_output_tmp_3c8b0_11_offset2,
-            decode_instruction_c630b_output_tmp_3c8b0_11_op1_base_ap,
+            decode_instruction_4b8cf_output_tmp_9d1ad_11_offset0,
+            decode_instruction_4b8cf_output_tmp_9d1ad_11_offset1,
+            decode_instruction_4b8cf_output_tmp_9d1ad_11_offset2,
+            decode_instruction_4b8cf_output_tmp_9d1ad_11_op1_base_ap,
         ] =
-            decode_instruction_c630b_evaluate(
+            decode_instruction_4b8cf_evaluate(
             input_pc_col0,
             offset0_col3,
             offset1_col4,
@@ -220,7 +218,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         // Constraint - if imm then offset2 is 1
         let constraint_quotient = ((op1_imm_col8
-            * (qm31_const::<1, 0, 0, 0>() - decode_instruction_c630b_output_tmp_3c8b0_11_offset2)));
+            * (qm31_const::<1, 0, 0, 0>() - decode_instruction_4b8cf_output_tmp_9d1ad_11_offset2)));
         sum = sum * random_coeff + constraint_quotient;
 
         // Constraint - mem_dst_base
@@ -238,10 +236,10 @@ pub impl AirComponentImpl of AirComponent<Component> {
         // Constraint - mem1_base
         let constraint_quotient = ((mem1_base_col13
             - (((op1_imm_col8 * input_pc_col0) + (op1_base_fp_col9 * input_fp_col2))
-                + (decode_instruction_c630b_output_tmp_3c8b0_11_op1_base_ap * input_ap_col1))));
+                + (decode_instruction_4b8cf_output_tmp_9d1ad_11_op1_base_ap * input_ap_col1))));
         sum = sum * random_coeff + constraint_quotient;
         read_positive_num_bits_72_evaluate(
-            (mem_dst_base_col11 + decode_instruction_c630b_output_tmp_3c8b0_11_offset0),
+            (mem_dst_base_col11 + decode_instruction_4b8cf_output_tmp_9d1ad_11_offset0),
             dst_id_col14,
             dst_limb_0_col15,
             dst_limb_1_col16,
@@ -260,7 +258,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_positive_num_bits_36_evaluate(
-            (mem0_base_col12 + decode_instruction_c630b_output_tmp_3c8b0_11_offset1),
+            (mem0_base_col12 + decode_instruction_4b8cf_output_tmp_9d1ad_11_offset1),
             op0_id_col23,
             op0_limb_0_col24,
             op0_limb_1_col25,
@@ -275,7 +273,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_positive_num_bits_36_evaluate(
-            (mem1_base_col13 + decode_instruction_c630b_output_tmp_3c8b0_11_offset2),
+            (mem1_base_col13 + decode_instruction_4b8cf_output_tmp_9d1ad_11_offset2),
             op1_id_col28,
             op1_limb_0_col29,
             op1_limb_1_col30,
@@ -557,7 +555,6 @@ mod tests {
                 qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
-        let public_params = [].span();
         let mut sum: QM31 = Zero::zero();
 
         let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
@@ -620,7 +617,6 @@ mod tests {
                 ref trace_columns,
                 ref interaction_columns,
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
-                public_params,
             );
         preprocessed_trace.validate_usage();
         assert_eq!(sum, QM31Trait::from_fixed_array(MUL_OPCODE_SMALL_SAMPLE_EVAL_RESULT))

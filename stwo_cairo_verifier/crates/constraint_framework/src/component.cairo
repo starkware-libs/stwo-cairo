@@ -1,6 +1,15 @@
+use core::array::Span;
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::fields::qm31::QM31;
 use crate::{CommonLookupElements, PreprocessedMaskValues};
+
+/// Pops the next claimed sum from the flattened interaction claim span.
+pub fn pop_claimed_sum(ref claimed_sums: Span<QM31>) -> Option<QM31> {
+    match claimed_sums.pop_front() {
+        Some(claimed_sum) => Some(*claimed_sum),
+        None => None,
+    }
+}
 
 /// A component is a set of trace columns of the same sizes along with a set of constraints on them.
 pub trait AirComponent<T> {

@@ -15,10 +15,11 @@ use components::range_check_8::InteractionClaimImpl as RangeCheck_8InteractionCl
 use components::range_check_9_9::InteractionClaimImpl as RangeCheck_9_9InteractionClaimImpl;
 use components::range_check_builtin::InteractionClaimImpl as RangeCheckBuiltinInteractionClaimImpl;
 use core::array::Span;
-use stwo_cairo_air::claims::{CairoClaim, CairoInteractionClaim};
+use stwo_cairo_air::claims::CairoClaim;
 use stwo_cairo_air::components;
 use stwo_constraint_framework::{
     AirComponent, CommonLookupElements, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    pop_claimed_sum,
 };
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::fields::qm31::QM31;
@@ -45,80 +46,143 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
     fn new(
         cairo_claim: @CairoClaim,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @CairoInteractionClaim,
+        ref claimed_sums: Span<QM31>,
     ) -> RangeChecksComponents {
+        let interaction_claim_6 = match pop_claimed_sum(ref claimed_sums) {
+            Some(claimed_sum) => {
+                Some(components::range_check_6::InteractionClaim { claimed_sum })
+            },
+            None => None,
+        };
+        let interaction_claim_8 = match pop_claimed_sum(ref claimed_sums) {
+            Some(claimed_sum) => {
+                Some(components::range_check_8::InteractionClaim { claimed_sum })
+            },
+            None => None,
+        };
+        let interaction_claim_11 = match pop_claimed_sum(ref claimed_sums) {
+            Some(claimed_sum) => {
+                Some(components::range_check_11::InteractionClaim { claimed_sum })
+            },
+            None => None,
+        };
+        let interaction_claim_12 = match pop_claimed_sum(ref claimed_sums) {
+            Some(claimed_sum) => {
+                Some(components::range_check_12::InteractionClaim { claimed_sum })
+            },
+            None => None,
+        };
+        let interaction_claim_18 = match pop_claimed_sum(ref claimed_sums) {
+            Some(claimed_sum) => {
+                Some(components::range_check_18::InteractionClaim { claimed_sum })
+            },
+            None => None,
+        };
+        let interaction_claim_20 = match pop_claimed_sum(ref claimed_sums) {
+            Some(claimed_sum) => {
+                Some(components::range_check_20::InteractionClaim { claimed_sum })
+            },
+            None => None,
+        };
+        let interaction_claim_4_3 = match pop_claimed_sum(ref claimed_sums) {
+            Some(claimed_sum) => {
+                Some(components::range_check_4_3::InteractionClaim { claimed_sum })
+            },
+            None => None,
+        };
+        let interaction_claim_4_4 = match pop_claimed_sum(ref claimed_sums) {
+            Some(claimed_sum) => {
+                Some(components::range_check_4_4::InteractionClaim { claimed_sum })
+            },
+            None => None,
+        };
+        let interaction_claim_9_9 = match pop_claimed_sum(ref claimed_sums) {
+            Some(claimed_sum) => {
+                Some(components::range_check_9_9::InteractionClaim { claimed_sum })
+            },
+            None => None,
+        };
+        let interaction_claim_7_2_5 = match pop_claimed_sum(ref claimed_sums) {
+            Some(claimed_sum) => {
+                Some(components::range_check_7_2_5::InteractionClaim { claimed_sum })
+            },
+            None => None,
+        };
+        let interaction_claim_3_6_6_3 = match pop_claimed_sum(ref claimed_sums) {
+            Some(claimed_sum) => {
+                Some(components::range_check_3_6_6_3::InteractionClaim { claimed_sum })
+            },
+            None => None,
+        };
+        let interaction_claim_4_4_4_4 = match pop_claimed_sum(ref claimed_sums) {
+            Some(claimed_sum) => {
+                Some(components::range_check_4_4_4_4::InteractionClaim { claimed_sum })
+            },
+            None => None,
+        };
+        let interaction_claim_3_3_3_3_3 = match pop_claimed_sum(ref claimed_sums) {
+            Some(claimed_sum) => {
+                Some(components::range_check_3_3_3_3_3::InteractionClaim { claimed_sum })
+            },
+            None => None,
+        };
+
         RangeChecksComponents {
             rc_6: components::range_check_6::NewComponentImpl::try_new(
-                cairo_claim.range_check_6, interaction_claim.range_check_6, common_lookup_elements,
+                cairo_claim.range_check_6, @interaction_claim_6, common_lookup_elements,
             )
                 .unwrap(),
             rc_8: components::range_check_8::NewComponentImpl::try_new(
-                cairo_claim.range_check_8, interaction_claim.range_check_8, common_lookup_elements,
+                cairo_claim.range_check_8, @interaction_claim_8, common_lookup_elements,
             )
                 .unwrap(),
             rc_11: components::range_check_11::NewComponentImpl::try_new(
-                cairo_claim.range_check_11,
-                interaction_claim.range_check_11,
-                common_lookup_elements,
+                cairo_claim.range_check_11, @interaction_claim_11, common_lookup_elements,
             )
                 .unwrap(),
             rc_12: components::range_check_12::NewComponentImpl::try_new(
-                cairo_claim.range_check_12,
-                interaction_claim.range_check_12,
-                common_lookup_elements,
+                cairo_claim.range_check_12, @interaction_claim_12, common_lookup_elements,
             )
                 .unwrap(),
             rc_18: components::range_check_18::NewComponentImpl::try_new(
-                cairo_claim.range_check_18,
-                interaction_claim.range_check_18,
-                common_lookup_elements,
+                cairo_claim.range_check_18, @interaction_claim_18, common_lookup_elements,
             )
                 .unwrap(),
             rc_20: components::range_check_20::NewComponentImpl::try_new(
-                cairo_claim.range_check_20,
-                interaction_claim.range_check_20,
-                common_lookup_elements,
+                cairo_claim.range_check_20, @interaction_claim_20, common_lookup_elements,
             )
                 .unwrap(),
             rc_4_3: components::range_check_4_3::NewComponentImpl::try_new(
-                cairo_claim.range_check_4_3,
-                interaction_claim.range_check_4_3,
-                common_lookup_elements,
+                cairo_claim.range_check_4_3, @interaction_claim_4_3, common_lookup_elements,
             )
                 .unwrap(),
             rc_4_4: components::range_check_4_4::NewComponentImpl::try_new(
-                cairo_claim.range_check_4_4,
-                interaction_claim.range_check_4_4,
-                common_lookup_elements,
+                cairo_claim.range_check_4_4, @interaction_claim_4_4, common_lookup_elements,
             )
                 .unwrap(),
             rc_9_9: components::range_check_9_9::NewComponentImpl::try_new(
-                cairo_claim.range_check_9_9,
-                interaction_claim.range_check_9_9,
-                common_lookup_elements,
+                cairo_claim.range_check_9_9, @interaction_claim_9_9, common_lookup_elements,
             )
                 .unwrap(),
             rc_7_2_5: components::range_check_7_2_5::NewComponentImpl::try_new(
-                cairo_claim.range_check_7_2_5,
-                interaction_claim.range_check_7_2_5,
-                common_lookup_elements,
+                cairo_claim.range_check_7_2_5, @interaction_claim_7_2_5, common_lookup_elements,
             )
                 .unwrap(),
             rc_3_6_6_3: components::range_check_3_6_6_3::NewComponentImpl::try_new(
                 cairo_claim.range_check_3_6_6_3,
-                interaction_claim.range_check_3_6_6_3,
+                @interaction_claim_3_6_6_3,
                 common_lookup_elements,
             )
                 .unwrap(),
             rc_4_4_4_4: components::range_check_4_4_4_4::NewComponentImpl::try_new(
                 cairo_claim.range_check_4_4_4_4,
-                interaction_claim.range_check_4_4_4_4,
+                @interaction_claim_4_4_4_4,
                 common_lookup_elements,
             )
                 .unwrap(),
             rc_3_3_3_3_3: components::range_check_3_3_3_3_3::NewComponentImpl::try_new(
                 cairo_claim.range_check_3_3_3_3_3,
-                interaction_claim.range_check_3_3_3_3_3,
+                @interaction_claim_3_3_3_3_3,
                 common_lookup_elements,
             )
                 .unwrap(),
@@ -265,4 +329,3 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
             );
     }
 }
-

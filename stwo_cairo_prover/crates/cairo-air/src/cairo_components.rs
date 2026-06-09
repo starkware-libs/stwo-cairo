@@ -407,14 +407,6 @@ impl CairoComponents {
                 add_mod_builtin::Eval {
                     claim: add_mod_builtin,
                     common_lookup_elements: common_lookup_elements.clone(),
-                    add_mod_builtin_segment_start: cairo_claim
-                        .public_data
-                        .public_memory
-                        .public_segments
-                        .get_segment_range_by_name("add_mod_builtin")
-                        .unwrap()
-                        .start_ptr
-                        .value,
                 },
                 interaction_claim.add_mod_builtin.unwrap().claimed_sum,
             )
@@ -425,14 +417,6 @@ impl CairoComponents {
                 bitwise_builtin::Eval {
                     claim: bitwise_builtin,
                     common_lookup_elements: common_lookup_elements.clone(),
-                    bitwise_builtin_segment_start: cairo_claim
-                        .public_data
-                        .public_memory
-                        .public_segments
-                        .get_segment_range_by_name("bitwise_builtin")
-                        .unwrap()
-                        .start_ptr
-                        .value,
                 },
                 interaction_claim.bitwise_builtin.unwrap().claimed_sum,
             )
@@ -443,14 +427,6 @@ impl CairoComponents {
                 mul_mod_builtin::Eval {
                     claim: mul_mod_builtin,
                     common_lookup_elements: common_lookup_elements.clone(),
-                    mul_mod_builtin_segment_start: cairo_claim
-                        .public_data
-                        .public_memory
-                        .public_segments
-                        .get_segment_range_by_name("mul_mod_builtin")
-                        .unwrap()
-                        .start_ptr
-                        .value,
                 },
                 interaction_claim.mul_mod_builtin.unwrap().claimed_sum,
             )
@@ -461,14 +437,6 @@ impl CairoComponents {
                 pedersen_builtin::Eval {
                     claim: pedersen_builtin,
                     common_lookup_elements: common_lookup_elements.clone(),
-                    pedersen_builtin_segment_start: cairo_claim
-                        .public_data
-                        .public_memory
-                        .public_segments
-                        .get_segment_range_by_name("pedersen_builtin")
-                        .unwrap()
-                        .start_ptr
-                        .value,
                 },
                 interaction_claim.pedersen_builtin.unwrap().claimed_sum,
             )
@@ -481,14 +449,6 @@ impl CairoComponents {
                     pedersen_builtin_narrow_windows::Eval {
                         claim: pedersen_builtin_narrow_windows,
                         common_lookup_elements: common_lookup_elements.clone(),
-                        pedersen_builtin_segment_start: cairo_claim
-                            .public_data
-                            .public_memory
-                            .public_segments
-                            .get_segment_range_by_name("pedersen_builtin_narrow_windows")
-                            .unwrap()
-                            .start_ptr
-                            .value,
                     },
                     interaction_claim
                         .pedersen_builtin_narrow_windows
@@ -502,14 +462,6 @@ impl CairoComponents {
                 poseidon_builtin::Eval {
                     claim: poseidon_builtin,
                     common_lookup_elements: common_lookup_elements.clone(),
-                    poseidon_builtin_segment_start: cairo_claim
-                        .public_data
-                        .public_memory
-                        .public_segments
-                        .get_segment_range_by_name("poseidon_builtin")
-                        .unwrap()
-                        .start_ptr
-                        .value,
                 },
                 interaction_claim.poseidon_builtin.unwrap().claimed_sum,
             )
@@ -523,14 +475,6 @@ impl CairoComponents {
                         range_check96_builtin::Eval {
                             claim: range_check96_builtin,
                             common_lookup_elements: common_lookup_elements.clone(),
-                            range_check96_builtin_segment_start: cairo_claim
-                                .public_data
-                                .public_memory
-                                .public_segments
-                                .get_segment_range_by_name("range_check96_builtin")
-                                .unwrap()
-                                .start_ptr
-                                .value,
                         },
                         interaction_claim.range_check96_builtin.unwrap().claimed_sum,
                     )
@@ -542,14 +486,6 @@ impl CairoComponents {
                     range_check_builtin::Eval {
                         claim: range_check_builtin,
                         common_lookup_elements: common_lookup_elements.clone(),
-                        range_check_builtin_segment_start: cairo_claim
-                            .public_data
-                            .public_memory
-                            .public_segments
-                            .get_segment_range_by_name("range_check_builtin")
-                            .unwrap()
-                            .start_ptr
-                            .value,
                     },
                     interaction_claim.range_check_builtin.unwrap().claimed_sum,
                 )
@@ -560,14 +496,6 @@ impl CairoComponents {
                 ec_op_builtin::Eval {
                     claim: ec_op_builtin,
                     common_lookup_elements: common_lookup_elements.clone(),
-                    ec_op_builtin_segment_start: cairo_claim
-                        .public_data
-                        .public_memory
-                        .public_segments
-                        .get_segment_range_by_name("ec_op_builtin")
-                        .unwrap()
-                        .start_ptr
-                        .value,
                 },
                 interaction_claim.ec_op_builtin.unwrap().claimed_sum,
             )

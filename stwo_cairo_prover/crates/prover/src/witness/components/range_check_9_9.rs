@@ -106,70 +106,78 @@ fn write_trace_simd(
         .for_each(|(row_index, (row, lookup_data))| {
             let range_check_9_9_column_0 = range_check_9_9_column_0.packed_at(row_index);
             let range_check_9_9_column_1 = range_check_9_9_column_1.packed_at(row_index);
-            let multiplicity_0_col0 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
-            *row[0] = multiplicity_0_col0;
-            let multiplicity_1_col1 = *mults[1].get(row_index).unwrap_or(&PackedM31::zero());
-            *row[1] = multiplicity_1_col1;
-            let multiplicity_2_col2 = *mults[2].get(row_index).unwrap_or(&PackedM31::zero());
-            *row[2] = multiplicity_2_col2;
-            let multiplicity_3_col3 = *mults[3].get(row_index).unwrap_or(&PackedM31::zero());
-            *row[3] = multiplicity_3_col3;
-            let multiplicity_4_col4 = *mults[4].get(row_index).unwrap_or(&PackedM31::zero());
-            *row[4] = multiplicity_4_col4;
-            let multiplicity_5_col5 = *mults[5].get(row_index).unwrap_or(&PackedM31::zero());
-            *row[5] = multiplicity_5_col5;
-            let multiplicity_6_col6 = *mults[6].get(row_index).unwrap_or(&PackedM31::zero());
-            *row[6] = multiplicity_6_col6;
-            let multiplicity_7_col7 = *mults[7].get(row_index).unwrap_or(&PackedM31::zero());
-            *row[7] = multiplicity_7_col7;
             *lookup_data.range_check_9_9_0 = [
                 M31_517791011,
                 range_check_9_9_column_0,
                 range_check_9_9_column_1,
             ];
-            *lookup_data.range_check_9_9_b_1 = [
+            *lookup_data.range_check_9_9_b_0 = [
                 M31_1897792095,
                 range_check_9_9_column_0,
                 range_check_9_9_column_1,
             ];
-            *lookup_data.range_check_9_9_c_2 = [
+            *lookup_data.range_check_9_9_c_0 = [
                 M31_1881014476,
                 range_check_9_9_column_0,
                 range_check_9_9_column_1,
             ];
-            *lookup_data.range_check_9_9_d_3 = [
+            *lookup_data.range_check_9_9_d_0 = [
                 M31_1864236857,
                 range_check_9_9_column_0,
                 range_check_9_9_column_1,
             ];
-            *lookup_data.range_check_9_9_e_4 = [
+            *lookup_data.range_check_9_9_e_0 = [
                 M31_1847459238,
                 range_check_9_9_column_0,
                 range_check_9_9_column_1,
             ];
-            *lookup_data.range_check_9_9_f_5 = [
+            *lookup_data.range_check_9_9_f_0 = [
                 M31_1830681619,
                 range_check_9_9_column_0,
                 range_check_9_9_column_1,
             ];
-            *lookup_data.range_check_9_9_g_6 = [
+            *lookup_data.range_check_9_9_g_0 = [
                 M31_1813904000,
                 range_check_9_9_column_0,
                 range_check_9_9_column_1,
             ];
-            *lookup_data.range_check_9_9_h_7 = [
+            *lookup_data.range_check_9_9_h_0 = [
                 M31_2065568285,
                 range_check_9_9_column_0,
                 range_check_9_9_column_1,
             ];
-            *lookup_data.mults_0 = multiplicity_0_col0;
-            *lookup_data.mults_1 = multiplicity_1_col1;
-            *lookup_data.mults_2 = multiplicity_2_col2;
-            *lookup_data.mults_3 = multiplicity_3_col3;
-            *lookup_data.mults_4 = multiplicity_4_col4;
-            *lookup_data.mults_5 = multiplicity_5_col5;
-            *lookup_data.mults_6 = multiplicity_6_col6;
-            *lookup_data.mults_7 = multiplicity_7_col7;
+            let mult = &mults[0];
+            let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
+            *row[0] = mult_at_row;
+            *lookup_data.mults_0 = mult_at_row;
+            let mult = &mults[1];
+            let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
+            *row[1] = mult_at_row;
+            *lookup_data.mults_1 = mult_at_row;
+            let mult = &mults[2];
+            let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
+            *row[2] = mult_at_row;
+            *lookup_data.mults_2 = mult_at_row;
+            let mult = &mults[3];
+            let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
+            *row[3] = mult_at_row;
+            *lookup_data.mults_3 = mult_at_row;
+            let mult = &mults[4];
+            let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
+            *row[4] = mult_at_row;
+            *lookup_data.mults_4 = mult_at_row;
+            let mult = &mults[5];
+            let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
+            *row[5] = mult_at_row;
+            *lookup_data.mults_5 = mult_at_row;
+            let mult = &mults[6];
+            let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
+            *row[6] = mult_at_row;
+            *lookup_data.mults_6 = mult_at_row;
+            let mult = &mults[7];
+            let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
+            *row[7] = mult_at_row;
+            *lookup_data.mults_7 = mult_at_row;
         });
 
     (trace, lookup_data)
@@ -178,13 +186,13 @@ fn write_trace_simd(
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
     range_check_9_9_0: Vec<[PackedM31; 3]>,
-    range_check_9_9_b_1: Vec<[PackedM31; 3]>,
-    range_check_9_9_c_2: Vec<[PackedM31; 3]>,
-    range_check_9_9_d_3: Vec<[PackedM31; 3]>,
-    range_check_9_9_e_4: Vec<[PackedM31; 3]>,
-    range_check_9_9_f_5: Vec<[PackedM31; 3]>,
-    range_check_9_9_g_6: Vec<[PackedM31; 3]>,
-    range_check_9_9_h_7: Vec<[PackedM31; 3]>,
+    range_check_9_9_b_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_c_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_d_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_e_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_f_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_g_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_h_0: Vec<[PackedM31; 3]>,
     mults_0: Vec<PackedM31>,
     mults_1: Vec<PackedM31>,
     mults_2: Vec<PackedM31>,
@@ -213,63 +221,63 @@ impl InteractionClaimGenerator {
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_0,
-            &self.lookup_data.range_check_9_9_b_1,
-            &self.lookup_data.mults_0,
-            &self.lookup_data.mults_1,
+            &self.lookup_data.range_check_9_9_b_0,
+            self.lookup_data.mults_0,
+            self.lookup_data.mults_1,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1, mult0, mult1)| {
+            .for_each(|(writer, values0, values1, mults_0, mults_1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(-(denom0 * *mult1 + denom1 * *mult0), denom0 * denom1);
+                writer.write_frac(-(denom0 * mults_1 + denom1 * mults_0), denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_c_2,
-            &self.lookup_data.range_check_9_9_d_3,
-            &self.lookup_data.mults_2,
-            &self.lookup_data.mults_3,
+            &self.lookup_data.range_check_9_9_c_0,
+            &self.lookup_data.range_check_9_9_d_0,
+            self.lookup_data.mults_2,
+            self.lookup_data.mults_3,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1, mult0, mult1)| {
+            .for_each(|(writer, values0, values1, mults_2, mults_3)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(-(denom0 * *mult1 + denom1 * *mult0), denom0 * denom1);
+                writer.write_frac(-(denom0 * mults_3 + denom1 * mults_2), denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_e_4,
-            &self.lookup_data.range_check_9_9_f_5,
-            &self.lookup_data.mults_4,
-            &self.lookup_data.mults_5,
+            &self.lookup_data.range_check_9_9_e_0,
+            &self.lookup_data.range_check_9_9_f_0,
+            self.lookup_data.mults_4,
+            self.lookup_data.mults_5,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1, mult0, mult1)| {
+            .for_each(|(writer, values0, values1, mults_4, mults_5)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(-(denom0 * *mult1 + denom1 * *mult0), denom0 * denom1);
+                writer.write_frac(-(denom0 * mults_5 + denom1 * mults_4), denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_g_6,
-            &self.lookup_data.range_check_9_9_h_7,
-            &self.lookup_data.mults_6,
-            &self.lookup_data.mults_7,
+            &self.lookup_data.range_check_9_9_g_0,
+            &self.lookup_data.range_check_9_9_h_0,
+            self.lookup_data.mults_6,
+            self.lookup_data.mults_7,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1, mult0, mult1)| {
+            .for_each(|(writer, values0, values1, mults_6, mults_7)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(-(denom0 * *mult1 + denom1 * *mult0), denom0 * denom1);
+                writer.write_frac(-(denom0 * mults_7 + denom1 * mults_6), denom0 * denom1);
             });
         col_gen.finalize_col();
 

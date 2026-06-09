@@ -6,7 +6,6 @@ use crate::components::subroutines::verify_reduced_252::verify_reduced_252_evalu
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 273;
-pub const N_INTERACTION_COLUMNS: usize = 36;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
     ('MemoryAddressToId', 7), ('MemoryIdToBig', 7), ('RangeCheck_8', 2), ('PartialEcMulGeneric', 1),
 ];
@@ -14,6 +13,7 @@ pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
     pub log_size: u32,
+    pub ec_op_builtin_segment_start: u32,
 }
 
 pub impl ClaimImpl of ClaimTrait<Claim> {
@@ -21,12 +21,13 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
+        let interaction_log_sizes = [log_size; 36].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
     fn mix_into(self: @Claim, ref channel: Channel) {
         channel.mix_u64((*(self.log_size)).into());
+        channel.mix_u64((*self.ec_op_builtin_segment_start).into());
     }
 
     fn accumulate_relation_uses(self: @Claim, ref relation_uses: RelationUsesDict) {
@@ -79,12 +80,13 @@ pub impl AirComponentImpl of AirComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        public_params: Span<u32>,
     ) {
         let log_size = *(self.claim.log_size);
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
-        let ec_op_builtin_segment_start: QM31 = (TryInto::<u32, M31>::try_into((*public_params[0]))
+        let ec_op_builtin_segment_start: QM31 = (TryInto::<
+            u32, M31,
+        >::try_into((*(self.claim.ec_op_builtin_segment_start)))
             .unwrap())
             .into();
         let mut memory_address_to_id_sum_0: QM31 = Zero::zero();
@@ -1177,10 +1179,10 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        let instance_addr_tmp_1b73f_0: QM31 = ((seq * qm31_const::<7, 0, 0, 0>())
+        let instance_addr_tmp_45259_0: QM31 = ((seq * qm31_const::<7, 0, 0, 0>())
             + ec_op_builtin_segment_start);
         read_positive_num_bits_252_evaluate(
-            instance_addr_tmp_1b73f_0,
+            instance_addr_tmp_45259_0,
             p_x_id_col0,
             p_x_limb_0_col1,
             p_x_limb_1_col2,
@@ -1219,7 +1221,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_positive_num_bits_252_evaluate(
-            (instance_addr_tmp_1b73f_0 + qm31_const::<1, 0, 0, 0>()),
+            (instance_addr_tmp_45259_0 + qm31_const::<1, 0, 0, 0>()),
             p_y_id_col29,
             p_y_limb_0_col30,
             p_y_limb_1_col31,
@@ -1258,7 +1260,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_positive_num_bits_252_evaluate(
-            (instance_addr_tmp_1b73f_0 + qm31_const::<2, 0, 0, 0>()),
+            (instance_addr_tmp_45259_0 + qm31_const::<2, 0, 0, 0>()),
             q_x_id_col58,
             q_x_limb_0_col59,
             q_x_limb_1_col60,
@@ -1297,7 +1299,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_positive_num_bits_252_evaluate(
-            (instance_addr_tmp_1b73f_0 + qm31_const::<3, 0, 0, 0>()),
+            (instance_addr_tmp_45259_0 + qm31_const::<3, 0, 0, 0>()),
             q_y_id_col87,
             q_y_limb_0_col88,
             q_y_limb_1_col89,
@@ -1336,7 +1338,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_positive_num_bits_252_evaluate(
-            (instance_addr_tmp_1b73f_0 + qm31_const::<4, 0, 0, 0>()),
+            (instance_addr_tmp_45259_0 + qm31_const::<4, 0, 0, 0>()),
             m_id_col116,
             m_limb_0_col117,
             m_limb_1_col118,
@@ -1591,7 +1593,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
         mem_verify_evaluate(
             [
-                (instance_addr_tmp_1b73f_0 + qm31_const::<5, 0, 0, 0>()),
+                (instance_addr_tmp_45259_0 + qm31_const::<5, 0, 0, 0>()),
                 partial_ec_mul_generic_output_accumulator_x_limb_0_col214,
                 partial_ec_mul_generic_output_accumulator_x_limb_1_col215,
                 partial_ec_mul_generic_output_accumulator_x_limb_2_col216,
@@ -1632,7 +1634,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         mem_verify_evaluate(
             [
-                (instance_addr_tmp_1b73f_0 + qm31_const::<6, 0, 0, 0>()),
+                (instance_addr_tmp_45259_0 + qm31_const::<6, 0, 0, 0>()),
                 partial_ec_mul_generic_output_accumulator_y_limb_0_col242,
                 partial_ec_mul_generic_output_accumulator_y_limb_1_col243,
                 partial_ec_mul_generic_output_accumulator_y_limb_2_col244,
@@ -1970,7 +1972,7 @@ mod tests {
     #[test]
     fn test_evaluation_result() {
         let component = Component {
-            claim: Claim { log_size: 15 },
+            claim: Claim { log_size: 15, ec_op_builtin_segment_start: 1527398616 },
             interaction_claim: InteractionClaim {
                 claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
             },
@@ -1979,7 +1981,6 @@ mod tests {
                 qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
-        let public_params = [1527398616].span();
         let mut sum: QM31 = Zero::zero();
 
         let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
@@ -2286,7 +2287,6 @@ mod tests {
                 ref trace_columns,
                 ref interaction_columns,
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
-                public_params,
             );
         preprocessed_trace.validate_usage();
         assert_eq!(sum, QM31Trait::from_fixed_array(EC_OP_BUILTIN_SAMPLE_EVAL_RESULT))

@@ -108,15 +108,16 @@ fn write_trace_simd(
             let bitwise_xor_7_0 = bitwise_xor_7_0.packed_at(row_index);
             let bitwise_xor_7_1 = bitwise_xor_7_1.packed_at(row_index);
             let bitwise_xor_7_2 = bitwise_xor_7_2.packed_at(row_index);
-            let multiplicity_0_col0 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
-            *row[0] = multiplicity_0_col0;
             *lookup_data.verify_bitwise_xor_7_0 = [
                 M31_62225763,
                 bitwise_xor_7_0,
                 bitwise_xor_7_1,
                 bitwise_xor_7_2,
             ];
-            *lookup_data.mults_0 = multiplicity_0_col0;
+            let mult = &mults[0];
+            let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
+            *row[0] = mult_at_row;
+            *lookup_data.mults_0 = mult_at_row;
         });
 
     (trace, lookup_data)
@@ -149,9 +150,9 @@ impl InteractionClaimGenerator {
             self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values, mult)| {
+            .for_each(|(writer, values, mults_0)| {
                 let denom = common_lookup_elements.combine(values);
-                writer.write_frac((-mult).into(), denom);
+                writer.write_frac(-PackedQM31::one() * mults_0, denom);
             });
         col_gen.finalize_col();
 

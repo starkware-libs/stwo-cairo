@@ -6,7 +6,6 @@ use crate::components::subroutines::split_16_low_part_size_8::split_16_low_part_
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 21;
-pub const N_INTERACTION_COLUMNS: usize = 20;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 2] = [
     ('VerifyBitwiseXor_8', 4), ('VerifyBitwiseXor_8_B', 4),
 ];
@@ -21,7 +20,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; N_INTERACTION_COLUMNS].span();
+        let interaction_log_sizes = [log_size; 20].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -79,7 +78,6 @@ pub impl AirComponentImpl of AirComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        public_params: Span<u32>,
     ) {
         let log_size = *(self.claim.log_size);
         let claimed_sum = *self.interaction_claim.claimed_sum;
@@ -154,34 +152,34 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        let split_16_low_part_size_8_output_tmp_6e2d1_1_limb_0: QM31 =
+        let split_16_low_part_size_8_output_tmp_298db_1_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
             input_limb_0_col0, ms_8_bits_col6, self.common_lookup_elements, ref sum, random_coeff,
         );
-        let split_16_low_part_size_8_output_tmp_6e2d1_3_limb_0: QM31 =
+        let split_16_low_part_size_8_output_tmp_298db_3_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
             input_limb_1_col1, ms_8_bits_col7, self.common_lookup_elements, ref sum, random_coeff,
         );
-        let split_16_low_part_size_8_output_tmp_6e2d1_5_limb_0: QM31 =
+        let split_16_low_part_size_8_output_tmp_298db_5_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
             input_limb_2_col2, ms_8_bits_col8, self.common_lookup_elements, ref sum, random_coeff,
         );
-        let split_16_low_part_size_8_output_tmp_6e2d1_7_limb_0: QM31 =
+        let split_16_low_part_size_8_output_tmp_298db_7_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
             input_limb_3_col3, ms_8_bits_col9, self.common_lookup_elements, ref sum, random_coeff,
         );
-        let split_16_low_part_size_8_output_tmp_6e2d1_9_limb_0: QM31 =
+        let split_16_low_part_size_8_output_tmp_298db_9_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
             input_limb_4_col4, ms_8_bits_col10, self.common_lookup_elements, ref sum, random_coeff,
         );
-        let split_16_low_part_size_8_output_tmp_6e2d1_11_limb_0: QM31 =
+        let split_16_low_part_size_8_output_tmp_298db_11_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
             input_limb_5_col5, ms_8_bits_col11, self.common_lookup_elements, ref sum, random_coeff,
         );
         bitwise_xor_num_bits_8_evaluate(
             [
-                split_16_low_part_size_8_output_tmp_6e2d1_1_limb_0,
-                split_16_low_part_size_8_output_tmp_6e2d1_5_limb_0,
+                split_16_low_part_size_8_output_tmp_298db_1_limb_0,
+                split_16_low_part_size_8_output_tmp_298db_5_limb_0,
             ],
             xor_col12,
             self.common_lookup_elements,
@@ -191,7 +189,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         bitwise_xor_num_bits_8_evaluate(
-            [xor_col12, split_16_low_part_size_8_output_tmp_6e2d1_9_limb_0],
+            [xor_col12, split_16_low_part_size_8_output_tmp_298db_9_limb_0],
             xor_col13,
             self.common_lookup_elements,
             ref verify_bitwise_xor_8_sum_1,
@@ -219,8 +217,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         bitwise_xor_num_bits_8_b_evaluate(
             [
-                split_16_low_part_size_8_output_tmp_6e2d1_3_limb_0,
-                split_16_low_part_size_8_output_tmp_6e2d1_7_limb_0,
+                split_16_low_part_size_8_output_tmp_298db_3_limb_0,
+                split_16_low_part_size_8_output_tmp_298db_7_limb_0,
             ],
             xor_col16,
             self.common_lookup_elements,
@@ -230,7 +228,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         bitwise_xor_num_bits_8_b_evaluate(
-            [xor_col16, split_16_low_part_size_8_output_tmp_6e2d1_11_limb_0],
+            [xor_col16, split_16_low_part_size_8_output_tmp_298db_11_limb_0],
             xor_col17,
             self.common_lookup_elements,
             ref verify_bitwise_xor_8_b_sum_5,
@@ -256,9 +254,9 @@ pub impl AirComponentImpl of AirComponent<Component> {
             ref sum,
             random_coeff,
         );
-        let triple_xor32_output_tmp_6e2d1_28_limb_0: QM31 = (xor_col13
+        let triple_xor32_output_tmp_298db_28_limb_0: QM31 = (xor_col13
             + (xor_col15 * qm31_const::<256, 0, 0, 0>()));
-        let triple_xor32_output_tmp_6e2d1_28_limb_1: QM31 = (xor_col17
+        let triple_xor32_output_tmp_298db_28_limb_1: QM31 = (xor_col17
             + (xor_col19 * qm31_const::<256, 0, 0, 0>()));
 
         // Constraint - Enabler is a bit
@@ -271,8 +269,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
                 [
                     qm31_const::<990559919, 0, 0, 0>(), input_limb_0_col0, input_limb_1_col1,
                     input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5,
-                    triple_xor32_output_tmp_6e2d1_28_limb_0,
-                    triple_xor32_output_tmp_6e2d1_28_limb_1,
+                    triple_xor32_output_tmp_298db_28_limb_0,
+                    triple_xor32_output_tmp_298db_28_limb_1,
                 ]
                     .span(),
             );
@@ -467,7 +465,6 @@ mod tests {
                 qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
-        let public_params = [].span();
         let mut sum: QM31 = Zero::zero();
 
         let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
@@ -513,7 +510,6 @@ mod tests {
                 ref trace_columns,
                 ref interaction_columns,
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
-                public_params,
             );
         preprocessed_trace.validate_usage();
         assert_eq!(sum, QM31Trait::from_fixed_array(TRIPLE_XOR_32_SAMPLE_EVAL_RESULT))

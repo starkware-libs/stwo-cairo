@@ -14,7 +14,7 @@ pub mod component;
 pub mod utils;
 
 pub use claim::ClaimTrait;
-pub use component::{AirComponent, NewComponent};
+pub use component::{AirComponent, NewComponent, pop_claimed_sum};
 pub use utils::tree_array_concat_cols;
 
 /// Represents the value of the prefix sum column at some index.
