@@ -42,7 +42,7 @@ where
 
         CairoSerialize::serialize(claim, output);
         CairoSerialize::serialize(interaction_pow, output);
-        CairoSerialize::serialize(interaction_claim, output);
+        CairoSerialize::serialize(&interaction_claim.flatten_interaction_claim(), output);
         // Serialize the commitment scheme proof.
         CairoSerialize::serialize(config, output);
         CairoSerialize::serialize(commitments.deref(), output);
