@@ -1022,11 +1022,11 @@ impl CairoClaim {
             component_enable_bits.push(false);
         }
 
-        FlatClaim {
+        FlatClaim::new(
             component_enable_bits,
             component_log_sizes,
-            public_data: self.public_data.clone(),
-        }
+            &self.public_data,
+        )
     }
 }
 
