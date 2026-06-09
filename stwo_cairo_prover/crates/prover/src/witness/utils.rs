@@ -137,11 +137,14 @@ pub fn export_preprocessed_roots() {
 
     // Blake2s roots
     for log_blowup_factor in 1..=max_log_blowup_factor {
-        let root = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(
+        let Ok(root) = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(
             log_blowup_factor,
             PreProcessedTraceVariant::Canonical,
             None,
-        );
+        ) else {
+            eprintln!("Failed to generate preprocessed commitment root for log_blowup_factor: {log_blowup_factor}");
+            continue;
+        };
         let root_bytes = root.0;
         let u32s_hex = root_bytes
             .array_chunks::<4>()
@@ -158,11 +161,14 @@ pub fn export_preprocessed_roots() {
         use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
         // Poseidon252 roots.
         for log_blowup_factor in 1..=max_log_blowup_factor {
-            let root = generate_preprocessed_commitment_root::<Poseidon252MerkleChannel>(
+            let Ok(root) = generate_preprocessed_commitment_root::<Poseidon252MerkleChannel>(
                 log_blowup_factor,
                 PreProcessedTraceVariant::CanonicalWithoutPedersen,
                 None,
-            );
+            ) else {
+                eprintln!("Failed to generate preprocessed commitment root for log_blowup_factor: {log_blowup_factor}");
+                continue;
+            };
             println!("log_blowup_factor: {log_blowup_factor}, poseidon root: [{root:#010x}]");
         }
     }
@@ -175,11 +181,14 @@ pub fn export_circuit_cairo_verifier_preprocessed_roots() {
     let max_log_blowup_factor = 3;
 
     for log_blowup_factor in 1..=max_log_blowup_factor {
-        let root = generate_preprocessed_commitment_root::<Blake2sM31MerkleChannel>(
+        let Ok(root) = generate_preprocessed_commitment_root::<Blake2sM31MerkleChannel>(
             log_blowup_factor,
             PreProcessedTraceVariant::CanonicalSmall,
             Some(20 + log_blowup_factor),
-        );
+        ) else {
+            eprintln!("Failed to generate preprocessed commitment root for log_blowup_factor: {log_blowup_factor}");
+            continue;
+        };
 
         let root_bytes = root.0;
         let u32s = root_bytes
