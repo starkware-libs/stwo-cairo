@@ -1,10 +1,11 @@
 // This file was created by the AIR team.
 
+use subroutines::create_blake_output::CreateBlakeOutput;
+use subroutines::create_blake_round_input::CreateBlakeRoundInput;
+use subroutines::decode_blake_opcode::DecodeBlakeOpcode;
+use subroutines::verify_u_32::VerifyU32;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::create_blake_output::CreateBlakeOutput;
-use crate::components::subroutines::create_blake_round_input::CreateBlakeRoundInput;
-use crate::components::subroutines::decode_blake_opcode::DecodeBlakeOpcode;
-use crate::components::subroutines::verify_u_32::VerifyU32;
 
 pub const N_TRACE_COLUMNS: usize = 174;
 pub const RELATION_USES_PER_ROW: [RelationUse; 8] = [
@@ -692,7 +693,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::BLAKE_COMPRESS_OPCODE;
 
     #[test]
     fn blake_compress_opcode_constraints_regression() {
@@ -706,9 +706,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        BLAKE_COMPRESS_OPCODE.assert_debug_eq(&sum);
+        constraints_regression_test_values::BLAKE_COMPRESS_OPCODE.assert_debug_eq(&sum);
     }
 }

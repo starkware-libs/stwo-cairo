@@ -1,4 +1,4 @@
-// AIR version 421f5077
+// AIR version 3ae2f591
 use stwo_verifier_core::fields::m31::M31;
 pub const BLAKE_G_GATE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 29058099 }, M31 { inner: 2109881126 }, M31 { inner: 476797340 },
@@ -9,8 +9,8 @@ pub const M_31_TO_U_32_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 462064706 },
 ];
 pub const QM_31_OPS_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 2064789890 }, M31 { inner: 2068382720 }, M31 { inner: 24618579 },
-    M31 { inner: 2071480927 },
+    M31 { inner: 129009472 }, M31 { inner: 1233759849 }, M31 { inner: 56358031 },
+    M31 { inner: 1784081381 },
 ];
 pub const RANGE_CHECK_16_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1328638141 }, M31 { inner: 302872209 }, M31 { inner: 1035108074 },

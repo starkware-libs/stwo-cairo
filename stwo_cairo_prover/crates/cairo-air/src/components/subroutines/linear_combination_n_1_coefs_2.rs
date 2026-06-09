@@ -2,7 +2,7 @@
 
 use crate::components::prelude::*;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone)]
 pub struct LinearCombinationN1Coefs2 {}
 
 impl LinearCombinationN1Coefs2 {

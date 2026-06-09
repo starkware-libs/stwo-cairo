@@ -294,7 +294,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::PEDERSEN_POINTS_TABLE_WINDOW_BITS_9;
 
     #[test]
     fn pedersen_points_table_window_bits_9_constraints_regression() {
@@ -308,9 +307,10 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        PEDERSEN_POINTS_TABLE_WINDOW_BITS_9.assert_debug_eq(&sum);
+        constraints_regression_test_values::PEDERSEN_POINTS_TABLE_WINDOW_BITS_9
+            .assert_debug_eq(&sum);
     }
 }

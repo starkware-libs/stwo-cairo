@@ -1,10 +1,11 @@
 // This file was created by the AIR team.
 
+use subroutines::bitwise_xor_num_bits_8::BitwiseXorNumBits8;
+use subroutines::bitwise_xor_num_bits_9::BitwiseXorNumBits9;
+use subroutines::mem_verify::MemVerify;
+use subroutines::read_positive_num_bits_252::ReadPositiveNumBits252;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::bitwise_xor_num_bits_8::BitwiseXorNumBits8;
-use crate::components::subroutines::bitwise_xor_num_bits_9::BitwiseXorNumBits9;
-use crate::components::subroutines::mem_verify::MemVerify;
-use crate::components::subroutines::read_positive_num_bits_252::ReadPositiveNumBits252;
 
 pub const N_TRACE_COLUMNS: usize = 89;
 pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
@@ -640,7 +641,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::BITWISE_BUILTIN;
 
     #[test]
     fn bitwise_builtin_constraints_regression() {
@@ -648,16 +648,16 @@ mod tests {
         let eval = Eval {
             claim: Claim { log_size: 4 },
             common_lookup_elements: relations::CommonLookupElements::dummy(),
-            bitwise_builtin_segment_start: rng.gen::<u32>(),
+            bitwise_builtin_segment_start: rng.r#gen::<u32>(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        BITWISE_BUILTIN.assert_debug_eq(&sum);
+        constraints_regression_test_values::BITWISE_BUILTIN.assert_debug_eq(&sum);
     }
 }

@@ -1,7 +1,8 @@
 // This file was created by the AIR team.
 
+use subroutines::poseidon_partial_round::PoseidonPartialRound;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::poseidon_partial_round::PoseidonPartialRound;
 
 pub const N_TRACE_COLUMNS: usize = 169;
 pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
@@ -662,7 +663,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::POSEIDON_3_PARTIAL_ROUNDS_CHAIN;
 
     #[test]
     fn poseidon_3_partial_rounds_chain_constraints_regression() {
@@ -676,9 +676,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        POSEIDON_3_PARTIAL_ROUNDS_CHAIN.assert_debug_eq(&sum);
+        constraints_regression_test_values::POSEIDON_3_PARTIAL_ROUNDS_CHAIN.assert_debug_eq(&sum);
     }
 }

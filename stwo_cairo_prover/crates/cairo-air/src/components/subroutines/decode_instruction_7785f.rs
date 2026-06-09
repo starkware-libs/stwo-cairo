@@ -2,7 +2,7 @@
 
 use crate::components::prelude::*;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone)]
 pub struct DecodeInstruction7785F {}
 
 impl DecodeInstruction7785F {

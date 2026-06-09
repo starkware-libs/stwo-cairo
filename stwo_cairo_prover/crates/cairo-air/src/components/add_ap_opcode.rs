@@ -1,9 +1,10 @@
 // This file was created by the AIR team.
 
+use subroutines::decode_instruction_89ffb::DecodeInstruction89Ffb;
+use subroutines::range_check_29::RangeCheck29;
+use subroutines::read_small::ReadSmall;
+
 use crate::components::prelude::*;
-use crate::components::subroutines::decode_instruction_89ffb::DecodeInstruction89Ffb;
-use crate::components::subroutines::range_check_29::RangeCheck29;
-use crate::components::subroutines::read_small::ReadSmall;
 
 pub const N_TRACE_COLUMNS: usize = 17;
 pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
@@ -179,7 +180,6 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::ADD_AP_OPCODE;
 
     #[test]
     fn add_ap_opcode_constraints_regression() {
@@ -193,9 +193,9 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
         }
 
-        ADD_AP_OPCODE.assert_debug_eq(&sum);
+        constraints_regression_test_values::ADD_AP_OPCODE.assert_debug_eq(&sum);
     }
 }
