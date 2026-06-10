@@ -19,7 +19,7 @@ use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTra
 /// Number of QM31 evaluations packed into a single Merkle leaf when `fold_step > 1`.
 pub const LOG_PACKED_LEAF_SIZE: u32 = 2;
 
-#[derive(Drop, Serde, Copy)]
+#[derive(Drop, Serde, Copy, PartialEq)]
 pub struct FriConfig {
     pub log_blowup_factor: u32,
     pub log_last_layer_degree_bound: u32,

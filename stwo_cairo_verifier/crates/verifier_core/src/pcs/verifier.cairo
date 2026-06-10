@@ -67,13 +67,14 @@ pub struct CommitmentSchemeProof {
 /// The verifier side of a FRI polynomial commitment scheme. See [super].
 #[derive(Drop)]
 pub struct CommitmentSchemeVerifier {
+    pub config: PcsConfig,
     pub trees: TreeArray<MerkleVerifier<MerkleHasher>>,
 }
 
 #[generate_trait]
 pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
-    fn new() -> CommitmentSchemeVerifier {
-        CommitmentSchemeVerifier { trees: array![] }
+    fn new(config: PcsConfig) -> CommitmentSchemeVerifier {
+        CommitmentSchemeVerifier { config, trees: array![] }
     }
 
     /// Returns the column indices grouped by log degree bound (outer), then by tree (inner).
@@ -106,18 +107,22 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         commitment: Hash,
         degree_bound_by_column: ColumnSpan<u32>,
         ref channel: Channel,
-        log_blowup_factor: u32,
     ) {
         // Mix the commitment root into the Fiat-Shamir channel.
         channel.mix_commitment(commitment);
+        let log_blowup_factor = self.config.fri_config.log_blowup_factor;
         let max_log_degree_bound = *degree_bound_by_column.max().unwrap_or_default();
+        let min_tree_height = log_blowup_factor + max_log_degree_bound;
+        // Honor an explicit lifted commitment height when set; otherwise lift to this tree's
+        // largest column domain. A custom lifted height may only lift up — it must not shrink the
+        // tree below the columns' natural LDE size.
+        let tree_height = self.config.lifting_log_size.unwrap_or(min_tree_height);
+        assert!(tree_height >= min_tree_height, "lifting_log_size is too small");
         self
             .trees
             .append(
                 MerkleVerifier {
-                    root: commitment,
-                    tree_height: log_blowup_factor + max_log_degree_bound,
-                    column_log_deg_bounds: degree_bound_by_column,
+                    root: commitment, tree_height, column_log_deg_bounds: degree_bound_by_column,
                 },
             );
     }
@@ -140,6 +145,9 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             proof_of_work_nonce,
             fri_proof,
         } = proof;
+        assert!(
+            config == self.config, "{}", VerificationError::InvalidStructure('Config mismatch'),
+        );
 
         mix_sampled_values(sampled_values, ref channel);
 
@@ -163,7 +171,12 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // Get FRI query positions.
         let queries = fri_verifier.sample_query_positions(ref channel);
         let query_positions = queries.positions;
-        let lifting_log_size = max_log_degree_bound + fri_config.log_blowup_factor;
+        // Honor an explicit lifted domain when set; otherwise lift to the largest column domain. A
+        // custom lifted domain may only lift up — it must not shrink below the natural FRI
+        // domain.
+        let min_lifting_log_size = max_log_degree_bound + fri_config.log_blowup_factor;
+        let lifting_log_size = config.lifting_log_size.unwrap_or(min_lifting_log_size);
+        assert!(lifting_log_size >= min_lifting_log_size, "lifting_log_size is too small");
         // Verify Merkle decommitments.
         let mut tree_index = 0;
         for (tree, (queried_values, decommitment)) in zip_eq(
@@ -190,6 +203,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             query_positions,
             queried_values_per_tree,
             max_log_degree_bound,
+            lifting_log_size,
         );
 
         fri_verifier.decommit(queries, fri_answers);
