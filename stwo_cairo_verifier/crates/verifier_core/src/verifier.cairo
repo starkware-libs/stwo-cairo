@@ -61,6 +61,13 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
 ) {
     let StarkProof { commitment_scheme_proof } = proof;
 
+    // The commitment scheme's config (set at `new`) must match the proof's config.
+    assert!(
+        commitment_scheme.config == commitment_scheme_proof.config,
+        "{}",
+        VerificationError::InvalidStructure('Config mismatch'),
+    );
+
     // Check that there are enough security bits.
     assert!(
         commitment_scheme_proof.config.security_bits() >= min_security_bits,
@@ -79,7 +86,6 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
             composition_commitment,
             [log_trace_degree_bound; COMPOSITION_SPLIT_FACTOR * QM31_EXTENSION_DEGREE].span(),
             ref channel,
-            commitment_scheme_proof.config.fri_config.log_blowup_factor,
         );
 
     // Draw OOD point.
