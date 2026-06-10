@@ -24,7 +24,9 @@ use crate::witness::preprocessed_trace::generate_preprocessed_commitment_root;
 
 pub fn pack_values<T: Pack>(values: &[T]) -> Vec<T::SimdType> {
     values
-        .array_chunks::<N_LANES>()
+        .as_chunks::<N_LANES>()
+        .0
+        .iter()
         .map(|c| T::pack(*c))
         .collect()
 }
@@ -144,7 +146,9 @@ pub fn export_preprocessed_roots() {
         );
         let root_bytes = root.0;
         let u32s_hex = root_bytes
-            .array_chunks::<4>()
+            .as_chunks::<4>()
+            .0
+            .iter()
             .map(|&bytes| format!("{:#010x}", u32::from_le_bytes(bytes)))
             .collect_vec()
             .join(", ");
@@ -183,7 +187,9 @@ pub fn export_circuit_cairo_verifier_preprocessed_roots() {
 
         let root_bytes = root.0;
         let u32s = root_bytes
-            .array_chunks::<4>()
+            .as_chunks::<4>()
+            .0
+            .iter()
             .map(|&bytes| format!("{:}", u32::from_le_bytes(bytes)))
             .collect_vec()
             .join(", ");

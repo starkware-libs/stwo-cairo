@@ -52,7 +52,7 @@ impl AddressToId {
     }
 
     pub fn array_chunks<const N: usize>(&self) -> impl Iterator<Item = &[u32; N]> {
-        self.data.array_chunks::<N>()
+        self.data.as_chunks::<N>().0.iter()
     }
 }
 
