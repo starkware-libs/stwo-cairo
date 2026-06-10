@@ -1,6 +1,7 @@
 //! `stwo_circuit_air`: AIR-specific verifier-side logic written in Cairo for the stwo-circuits
 //! circuit.
 
+pub mod circuit_air;
 pub mod claims;
 pub mod component_indices;
 pub mod components;
