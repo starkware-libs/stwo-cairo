@@ -49,13 +49,11 @@ pub fn fri_answers(
     query_positions: Span<usize>,
     queried_values_per_tree: QueriedValues,
     max_log_degree_bound: u32,
+    lifting_log_size: u32,
 ) -> Span<QM31> {
-    // Note that `log_size` is equal to 1 + largest log size of a trace column (the additional 1
-    // comes from calling `len()` on `column_indices_per_tree_by_degree_bound`).
-    // Check that the largest log size of a trace column is <= `M31_CIRCLE_LOG_ORDER` - 1.
-    assert!(
-        max_log_degree_bound + log_blowup_factor <= M31_CIRCLE_LOG_ORDER, "log_size is too large",
-    );
+    // `lifting_log_size` is the (possibly lifted) FRI domain log size; when no explicit lifting is
+    // set it equals `max_log_degree_bound + log_blowup_factor`. Check it fits the M31 circle.
+    assert!(lifting_log_size <= M31_CIRCLE_LOG_ORDER, "log_size is too large");
     let mut queried_values_per_tree = queried_values_per_tree.span();
     // Add to each sample value the corresponding random coefficient power.
     let samples_with_randomness: Span<Span<Span<(QM31, QM31)>>> = build_samples_with_randomness(
@@ -70,7 +68,6 @@ pub fn fri_answers(
         (Span<ColumnSampleBatch>, Array<u32>, QuotientConstants),
     > =
         array![];
-    let lifting_log_size = max_log_degree_bound + log_blowup_factor;
     let lifting_domain = CanonicCosetImpl::new(lifting_log_size);
     let lifting_domain_step = lifting_domain.coset.step.mul(1).to_point();
 

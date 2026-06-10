@@ -17,7 +17,7 @@ pub mod verifier;
 #[cfg(test)]
 mod verifier_test;
 
-#[derive(Drop, Serde, Copy)]
+#[derive(Drop, Serde, Copy, PartialEq)]
 pub struct PcsConfig {
     pub pow_bits: u32,
     pub fri_config: FriConfig,
