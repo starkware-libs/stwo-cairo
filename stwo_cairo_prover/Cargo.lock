@@ -3372,7 +3372,11 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo"
 version = "2.2.0"
+<<<<<<< HEAD
 source = "git+https://github.com/starkware-libs/stwo?rev=93dd93e0#93dd93e04f42edba48d8984858c8c39ce9f30c8c"
+=======
+source = "git+https://github.com/starkware-libs/stwo?rev=489a0f3e#489a0f3ee44a59e03944ad9aa4f3e5a91a3d3f08"
+>>>>>>> 97460b8f (Build stwo-cairo-prover on Rust 1.94 nightly.)
 dependencies = [
  "blake2",
  "blake3",
@@ -3400,7 +3404,11 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils"
 version = "2.2.0"
+<<<<<<< HEAD
 source = "git+https://github.com/starkware-libs/stwo?rev=93dd93e0#93dd93e04f42edba48d8984858c8c39ce9f30c8c"
+=======
+source = "git+https://github.com/starkware-libs/stwo?rev=489a0f3e#489a0f3ee44a59e03944ad9aa4f3e5a91a3d3f08"
+>>>>>>> 97460b8f (Build stwo-cairo-prover on Rust 1.94 nightly.)
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -3412,7 +3420,11 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "2.2.0"
+<<<<<<< HEAD
 source = "git+https://github.com/starkware-libs/stwo?rev=93dd93e0#93dd93e04f42edba48d8984858c8c39ce9f30c8c"
+=======
+source = "git+https://github.com/starkware-libs/stwo?rev=489a0f3e#489a0f3ee44a59e03944ad9aa4f3e5a91a3d3f08"
+>>>>>>> 97460b8f (Build stwo-cairo-prover on Rust 1.94 nightly.)
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3565,7 +3577,11 @@ dependencies = [
 [[package]]
 name = "stwo-constraint-framework"
 version = "2.2.0"
+<<<<<<< HEAD
 source = "git+https://github.com/starkware-libs/stwo?rev=93dd93e0#93dd93e04f42edba48d8984858c8c39ce9f30c8c"
+=======
+source = "git+https://github.com/starkware-libs/stwo?rev=489a0f3e#489a0f3ee44a59e03944ad9aa4f3e5a91a3d3f08"
+>>>>>>> 97460b8f (Build stwo-cairo-prover on Rust 1.94 nightly.)
 dependencies = [
  "hashbrown 0.15.5",
  "itertools 0.12.1",
