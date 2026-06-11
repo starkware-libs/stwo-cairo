@@ -45,7 +45,7 @@ use stwo_verifier_core::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31T
 use stwo_verifier_core::pcs::PcsConfigTrait;
 use stwo_verifier_core::pcs::verifier::{CommitmentSchemeVerifierImpl, get_trace_lde_log_size};
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pack_into_qm31s, pow2};
-use stwo_verifier_core::verifier::{StarkProof, verify};
+use stwo_verifier_core::verifier::{StarkProof, VerificationError, verify};
 use stwo_verifier_utils::{MemorySection, PubMemoryValue, construct_f252};
 use crate::components::memory_address_to_id::*;
 use crate::components::memory_id_to_big::*;
@@ -226,7 +226,7 @@ pub fn verify_cairo(proof: CairoProof) {
     assert!(
         channel.verify_pow_nonce(INTERACTION_POW_BITS, interaction_pow),
         "{}",
-        CairoVerificationError::InteractionProofOfWork,
+        VerificationError::InteractionProofOfWork,
     );
     channel.mix_u64(interaction_pow);
 
@@ -234,11 +234,12 @@ pub fn verify_cairo(proof: CairoProof) {
     assert!(
         lookup_sum(@claim, @common_lookup_elements, @interaction_claim).is_zero(),
         "{}",
-        CairoVerificationError::InvalidLogupSum,
+        VerificationError::InvalidLogupSum,
     );
 
     interaction_claim.mix_into(ref channel);
-    commitment_scheme.commit(interaction_trace_commitment, interaction_trace_log_sizes, ref channel);
+    commitment_scheme
+        .commit(interaction_trace_commitment, interaction_trace_log_sizes, ref channel);
 
     let trace_lde_log_size = get_trace_lde_log_size(@commitment_scheme.trees);
     let trace_log_degree_bound = trace_lde_log_size - pcs_config.fri_config.log_blowup_factor;
@@ -928,24 +929,5 @@ impl CasmStateImpl of CasmStateTrait {
         channel.mix_u64(pc_u32.into());
         channel.mix_u64(ap_u32.into());
         channel.mix_u64(fp_u32.into());
-    }
-}
-
-#[derive(Drop, Debug)]
-pub enum CairoVerificationError {
-    InteractionProofOfWork,
-    InvalidLogupSum,
-}
-
-impl CairoVerificationErrorDisplay of core::fmt::Display<CairoVerificationError> {
-    fn fmt(
-        self: @CairoVerificationError, ref f: core::fmt::Formatter,
-    ) -> Result<(), core::fmt::Error> {
-        match self {
-            CairoVerificationError::InteractionProofOfWork => write!(
-                f, "Interaction Proof Of Work",
-            ),
-            CairoVerificationError::InvalidLogupSum => write!(f, "Logup sum is not zero"),
-        }
     }
 }
