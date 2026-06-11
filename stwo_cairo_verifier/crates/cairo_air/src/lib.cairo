@@ -194,7 +194,7 @@ pub fn verify_cairo(proof: CairoProof) {
     channel.mix_felts([channel_salt_as_felt].span());
 
     pcs_config.mix_into(ref channel);
-    let mut commitment_scheme = CommitmentSchemeVerifierImpl::new();
+    let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(pcs_config);
 
     // Unpack commitments.
     let commitments: @Box<[Hash; 4]> = stark_proof
@@ -219,11 +219,10 @@ pub fn verify_cairo(proof: CairoProof) {
     // Preprocessed trace.
     let expected_preprocessed_root = preprocessed_root(log_blowup_factor);
     assert!(preprocessed_commitment == expected_preprocessed_root);
-    commitment_scheme
-        .commit(preprocessed_commitment, preprocessed_log_sizes, ref channel, log_blowup_factor);
+    commitment_scheme.commit(preprocessed_commitment, preprocessed_log_sizes, ref channel);
     claim.mix_into(ref channel);
 
-    commitment_scheme.commit(trace_commitment, trace_log_sizes, ref channel, log_blowup_factor);
+    commitment_scheme.commit(trace_commitment, trace_log_sizes, ref channel);
     assert!(
         channel.verify_pow_nonce(INTERACTION_POW_BITS, interaction_pow),
         "{}",
@@ -240,12 +239,7 @@ pub fn verify_cairo(proof: CairoProof) {
 
     interaction_claim.mix_into(ref channel);
     commitment_scheme
-        .commit(
-            interaction_trace_commitment,
-            interaction_trace_log_sizes,
-            ref channel,
-            log_blowup_factor,
-        );
+        .commit(interaction_trace_commitment, interaction_trace_log_sizes, ref channel);
 
     let trace_lde_log_size = get_trace_lde_log_size(@commitment_scheme.trees);
     let trace_log_degree_bound = trace_lde_log_size - pcs_config.fri_config.log_blowup_factor;
