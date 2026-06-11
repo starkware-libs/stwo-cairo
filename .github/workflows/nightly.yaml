@@ -7,7 +7,7 @@ on:
 
 jobs:
   run-tests:
-    runs-on: stwo-cairo-avx-l
+    runs-on: namespace-profile-starkware-libs-stwo-cairo-xlarge-ubuntu-24-04-amd64
     defaults:
       run:
         working-directory: ./stwo_cairo_prover
