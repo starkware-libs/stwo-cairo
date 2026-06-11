@@ -25,7 +25,7 @@ jobs:
           scarb-version: "2.15.0"
       - uses: Swatinem/rust-cache@v2
       - name: Run tests
-        run: cargo test --release --features="nightly"
+        run: exit 1
 
       - name: Notify Slack
         if: always()
