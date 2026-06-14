@@ -48,9 +48,26 @@ pub impl CircuitClaimImpl of CircuitClaimTrait {
 /// Circuit interaction claim, holding every component's `claimed_sum` in `ComponentList`
 /// (i.e. COMPONENT_IDX) order. The circuit is fixed-size, so all components are always
 /// present and the array always has exactly `N_COMPONENTS` entries.
-#[derive(Drop, Serde)]
+#[derive(Drop)]
 pub struct CircuitInteractionClaim {
     pub claimed_sum: Array<QM31>,
+}
+
+/// Manual `Serde` for `N_COMPONENTS` fixed-sized claimed_sum array.
+pub impl CircuitInteractionClaimSerde of Serde<CircuitInteractionClaim> {
+    fn serialize(self: @CircuitInteractionClaim, ref output: Array<felt252>) {
+        for claimed_sum in self.claimed_sum.span() {
+            claimed_sum.serialize(ref output);
+        }
+    }
+
+    fn deserialize(ref serialized: Span<felt252>) -> Option<CircuitInteractionClaim> {
+        let mut claimed_sum = array![];
+        for _ in 0..N_COMPONENTS {
+            claimed_sum.append(Serde::<QM31>::deserialize(ref serialized)?);
+        }
+        Option::Some(CircuitInteractionClaim { claimed_sum })
+    }
 }
 
 #[generate_trait]

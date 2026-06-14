@@ -40,6 +40,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "stwo_circuit_verifier"
+version = "0.1.0"
+dependencies = [
+ "stwo_circuit_air",
+ "stwo_verifier_core",
+]
+
+[[package]]
 name = "stwo_constraint_framework"
 version = "0.1.0"
 dependencies = [
