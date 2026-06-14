@@ -8,7 +8,7 @@ use components::range_check_252_width_27::InteractionClaimImpl as RangeCheckFelt
 #[cfg(not(feature: "poseidon252_verifier"))]
 use core::array::Span;
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
-use stwo_cairo_air::claims::{CairoClaim, CairoInteractionClaim};
+use stwo_cairo_air::claims::CairoClaim;
 use stwo_cairo_air::components;
 use stwo_constraint_framework::PreprocessedMaskValuesImpl;
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
@@ -30,13 +30,13 @@ pub impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
     fn new(
         cairo_claim: @CairoClaim,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @CairoInteractionClaim,
+        ref claimed_sums: Span<QM31>,
     ) -> PoseidonContextComponents {
         if let Some(_) = cairo_claim.poseidon_aggregator {
             PoseidonContextComponents {
                 components: Some(
                     PoseidonComponentsImpl::new(
-                        cairo_claim, common_lookup_elements, interaction_claim,
+                        cairo_claim, common_lookup_elements, ref claimed_sums,
                     ),
                 ),
             }
@@ -46,12 +46,6 @@ pub impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
             assert!(cairo_claim.cube_252.is_none());
             assert!(cairo_claim.poseidon_round_keys.is_none());
             assert!(cairo_claim.range_check_252_width_27.is_none());
-            assert!(interaction_claim.poseidon_aggregator.is_none());
-            assert!(interaction_claim.poseidon_3_partial_rounds_chain.is_none());
-            assert!(interaction_claim.poseidon_full_round_chain.is_none());
-            assert!(interaction_claim.cube_252.is_none());
-            assert!(interaction_claim.poseidon_round_keys.is_none());
-            assert!(interaction_claim.range_check_252_width_27.is_none());
             PoseidonContextComponents { components: None }
         }
     }
@@ -94,50 +88,40 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
     fn new(
         cairo_claim: @CairoClaim,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @CairoInteractionClaim,
+        ref claimed_sums: Span<QM31>,
     ) -> PoseidonComponents {
         let poseidon_aggregator_component =
             components::poseidon_aggregator::NewComponentImpl::try_new(
-            cairo_claim.poseidon_aggregator,
-            interaction_claim.poseidon_aggregator,
-            common_lookup_elements,
+            cairo_claim.poseidon_aggregator, ref claimed_sums, common_lookup_elements,
         )
             .unwrap();
 
         let poseidon_3_partial_rounds_chain_component =
             components::poseidon_3_partial_rounds_chain::NewComponentImpl::try_new(
-            cairo_claim.poseidon_3_partial_rounds_chain,
-            interaction_claim.poseidon_3_partial_rounds_chain,
-            common_lookup_elements,
+            cairo_claim.poseidon_3_partial_rounds_chain, ref claimed_sums, common_lookup_elements,
         )
             .unwrap();
 
         let poseidon_full_round_chain_component =
             components::poseidon_full_round_chain::NewComponentImpl::try_new(
-            cairo_claim.poseidon_full_round_chain,
-            interaction_claim.poseidon_full_round_chain,
-            common_lookup_elements,
+            cairo_claim.poseidon_full_round_chain, ref claimed_sums, common_lookup_elements,
         )
             .unwrap();
 
         let cube_252_component = components::cube_252::NewComponentImpl::try_new(
-            cairo_claim.cube_252, interaction_claim.cube_252, common_lookup_elements,
+            cairo_claim.cube_252, ref claimed_sums, common_lookup_elements,
         )
             .unwrap();
 
         let poseidon_round_keys_component =
             components::poseidon_round_keys::NewComponentImpl::try_new(
-            cairo_claim.poseidon_round_keys,
-            interaction_claim.poseidon_round_keys,
-            common_lookup_elements,
+            cairo_claim.poseidon_round_keys, ref claimed_sums, common_lookup_elements,
         )
             .unwrap();
 
         let range_check_felt_252_width_27_component =
             components::range_check_252_width_27::NewComponentImpl::try_new(
-            cairo_claim.range_check_252_width_27,
-            interaction_claim.range_check_252_width_27,
-            common_lookup_elements,
+            cairo_claim.range_check_252_width_27, ref claimed_sums, common_lookup_elements,
         )
             .unwrap();
 
