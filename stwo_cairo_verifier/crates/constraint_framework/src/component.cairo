@@ -19,7 +19,6 @@ pub trait AirComponent<T> {
 /// A trait for creating a new component.
 pub trait NewComponent<T> {
     type Claim;
-    type InteractionClaim;
 
     fn new(
         claim: @Self::Claim, claimed_sum: QM31, common_lookup_elements: @CommonLookupElements,

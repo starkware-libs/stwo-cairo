@@ -33,37 +33,22 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
     }
 }
 
-#[derive(Drop, Serde, Copy)]
-pub struct InteractionClaim {
-    pub claimed_sum: QM31,
-}
-
-#[generate_trait]
-pub impl InteractionClaimImpl of InteractionClaimTrait {
-    fn mix_into(self: @InteractionClaim, ref channel: Channel) {
-        channel.mix_felts([*self.claimed_sum].span());
-    }
-}
-
 
 #[derive(Drop)]
 pub struct Component {
     pub claim: Claim,
-    pub interaction_claim: InteractionClaim,
+    pub claimed_sum: QM31,
     pub common_lookup_elements: CommonLookupElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
     type Claim = Claim;
-    type InteractionClaim = InteractionClaim;
 
     fn new(
         claim: @Claim, claimed_sum: QM31, common_lookup_elements: @CommonLookupElements,
     ) -> Component {
         Component {
-            claim: *claim,
-            interaction_claim: InteractionClaim { claimed_sum },
-            common_lookup_elements: common_lookup_elements.clone(),
+            claim: *claim, claimed_sum, common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -79,7 +64,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         public_params: Span<u32>,
     ) {
         let log_size = *(self.claim.log_size);
-        let claimed_sum = *self.interaction_claim.claimed_sum;
+        let claimed_sum = *self.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut verify_instruction_sum_0: QM31 = Zero::zero();
         let mut numerator_0: QM31 = Zero::zero();
@@ -495,15 +480,13 @@ mod tests {
     #[allow(unused_imports)]
     use crate::test_utils::{make_interaction_trace, preprocessed_mask_add};
     use crate::utils::*;
-    use super::{Claim, Component, InteractionClaim};
+    use super::{Claim, Component};
 
     #[test]
     fn test_evaluation_result() {
         let component = Component {
             claim: Claim { log_size: 15 },
-            interaction_claim: InteractionClaim {
-                claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
-            },
+            claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
             common_lookup_elements: LookupElementsTrait::from_z_alpha(
                 qm31_const::<445623802, 202571636, 1360224996, 131355117>(),
                 qm31_const::<476823935, 939223384, 62486082, 122423602>(),

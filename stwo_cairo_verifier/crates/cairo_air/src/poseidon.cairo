@@ -1,14 +1,8 @@
-use components::cube_252::InteractionClaimImpl as Cube252InteractionClaimImpl;
-use components::poseidon_3_partial_rounds_chain::InteractionClaimImpl as Poseidon3PartialRoundsChainInteractionClaimImpl;
-use components::poseidon_aggregator::InteractionClaimImpl as PoseidonAggregatorInteractionClaimImpl;
-use components::poseidon_builtin::InteractionClaimImpl as PoseidonBuiltinInteractionClaimImpl;
-use components::poseidon_full_round_chain::InteractionClaimImpl as PoseidonFullRoundChainInteractionClaimImpl;
-use components::poseidon_round_keys::InteractionClaimImpl as PoseidonRoundKeysInteractionClaimImpl;
-use components::range_check_252_width_27::InteractionClaimImpl as RangeCheckFelt252Width27InteractionClaimImpl;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use core::array::Span;
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use stwo_cairo_air::claims::CairoClaim;
+#[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use stwo_cairo_air::components;
 use stwo_constraint_framework::PreprocessedMaskValuesImpl;
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]

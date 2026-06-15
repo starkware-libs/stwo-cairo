@@ -1,10 +1,3 @@
-use components::add_mod_builtin::InteractionClaimImpl as AddModBuiltinInteractionClaimImpl;
-use components::bitwise_builtin::InteractionClaimImpl as BitwiseBuiltinInteractionClaimImpl;
-use components::mul_mod_builtin::InteractionClaimImpl as MulModBuiltinInteractionClaimImpl;
-use components::pedersen_builtin::InteractionClaimImpl as PedersenBuiltinInteractionClaimImpl;
-use components::poseidon_builtin::InteractionClaimImpl as PoseidonBuiltinInteractionClaimImpl;
-use components::range_check96_builtin::InteractionClaimImpl as RangeCheckBuiltinBits96InteractionClaimImpl;
-use components::range_check_builtin::InteractionClaimImpl as RangeCheckBuiltinBits128InteractionClaimImpl;
 use core::array::Span;
 use core::box::BoxImpl;
 use stwo_cairo_air::claims::CairoClaim;

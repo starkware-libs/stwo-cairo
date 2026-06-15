@@ -1,12 +1,4 @@
-use components::memory_address_to_id::InteractionClaimImpl as MemoryAddressToIdInteractionClaimImpl;
 use components::memory_id_to_big::LARGE_MEMORY_VALUE_ID_BASE;
-use components::triple_xor_32::InteractionClaimImpl as TripleXor32InteractionClaimImpl;
-use components::verify_bitwise_xor_12::InteractionClaimImpl as VerifyBitwiseXor12InteractionClaimImpl;
-use components::verify_bitwise_xor_4::InteractionClaimImpl as VerifyBitwiseXor4InteractionClaimImpl;
-use components::verify_bitwise_xor_7::InteractionClaimImpl as VerifyBitwiseXor7InteractionClaimImpl;
-use components::verify_bitwise_xor_8::InteractionClaimImpl as VerifyBitwiseXor8InteractionClaimImpl;
-use components::verify_bitwise_xor_9::InteractionClaimImpl as VerifyBitwiseXor9InteractionClaimImpl;
-use components::verify_instruction::InteractionClaimImpl as VerifyInstructionInteractionClaimImpl;
 use core::array::Span;
 use core::box::BoxImpl;
 use core::num::traits::Zero;
@@ -39,9 +31,24 @@ use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
 use stwo_verifier_core::verifier::Air;
-use stwo_verifier_core::{ColumnSpan, TreeSpan};
+use stwo_verifier_core::{ColumnSpan, TreeArray, TreeSpan};
 use crate::claim::{CairoInteractionClaim, CairoInteractionClaimImpl};
 use crate::claims::CairoClaim;
+
+/// Overrides the preprocessed trace log sizes with the actual,
+/// feature-selected preprocessed column log sizes for the Cairo AIR.
+///
+/// Wraps [`stwo_constraint_framework::override_preprocessed_trace_log_sizes`],
+/// supplying the crate's `PREPROCESSED_COLUMN_LOG_SIZE` (which is feature-gated
+/// between the canonical and without-pedersen variants) so the generated claim
+/// code does not need to know which variant is active.
+pub fn override_preprocessed_trace_log_sizes(
+    aggregated_log_sizes: TreeArray<Span<u32>>,
+) -> TreeArray<Span<u32>> {
+    stwo_constraint_framework::override_preprocessed_trace_log_sizes(
+        aggregated_log_sizes, crate::preprocessed_columns::PREPROCESSED_COLUMN_LOG_SIZE.span(),
+    )
+}
 
 pub const OPCODES_RELATION_ID: M31 = M31 { inner: 428564188 };
 pub const MEMORY_ADDRESS_TO_ID_RELATION_ID: M31 = M31 { inner: 1444891767 };

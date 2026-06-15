@@ -1,7 +1,4 @@
-use components::memory_address_to_id::{
-    InteractionClaimImpl as MemoryAddressToIdInteractionClaimImpl, LOG_MEMORY_ADDRESS_TO_ID_SPLIT,
-};
-use components::memory_id_to_big::InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl;
+use components::memory_address_to_id::LOG_MEMORY_ADDRESS_TO_ID_SPLIT;
 use stwo_verifier_core::Hash;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::vcs::blake2s_hasher::hash_small_vals;
