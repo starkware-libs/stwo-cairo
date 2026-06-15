@@ -16,7 +16,7 @@ use components::range_check_9_9::InteractionClaimImpl as RangeCheck_9_9Interacti
 use components::range_check_builtin::InteractionClaimImpl as RangeCheckBuiltinInteractionClaimImpl;
 use core::array::Span;
 use stwo_cairo_air::cairo_component::CairoComponent;
-use stwo_cairo_air::claims::{CairoClaim, CairoInteractionClaim};
+use stwo_cairo_air::claims::CairoClaim;
 use stwo_cairo_air::components;
 use stwo_constraint_framework::{
     CommonLookupElements, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
@@ -46,81 +46,59 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
     fn new(
         cairo_claim: @CairoClaim,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @CairoInteractionClaim,
+        ref claimed_sums: Span<QM31>,
     ) -> RangeChecksComponents {
         RangeChecksComponents {
             rc_6: components::range_check_6::NewComponentImpl::try_new(
-                cairo_claim.range_check_6, interaction_claim.range_check_6, common_lookup_elements,
+                cairo_claim.range_check_6, ref claimed_sums, common_lookup_elements,
             )
                 .unwrap(),
             rc_8: components::range_check_8::NewComponentImpl::try_new(
-                cairo_claim.range_check_8, interaction_claim.range_check_8, common_lookup_elements,
+                cairo_claim.range_check_8, ref claimed_sums, common_lookup_elements,
             )
                 .unwrap(),
             rc_11: components::range_check_11::NewComponentImpl::try_new(
-                cairo_claim.range_check_11,
-                interaction_claim.range_check_11,
-                common_lookup_elements,
+                cairo_claim.range_check_11, ref claimed_sums, common_lookup_elements,
             )
                 .unwrap(),
             rc_12: components::range_check_12::NewComponentImpl::try_new(
-                cairo_claim.range_check_12,
-                interaction_claim.range_check_12,
-                common_lookup_elements,
+                cairo_claim.range_check_12, ref claimed_sums, common_lookup_elements,
             )
                 .unwrap(),
             rc_18: components::range_check_18::NewComponentImpl::try_new(
-                cairo_claim.range_check_18,
-                interaction_claim.range_check_18,
-                common_lookup_elements,
+                cairo_claim.range_check_18, ref claimed_sums, common_lookup_elements,
             )
                 .unwrap(),
             rc_20: components::range_check_20::NewComponentImpl::try_new(
-                cairo_claim.range_check_20,
-                interaction_claim.range_check_20,
-                common_lookup_elements,
+                cairo_claim.range_check_20, ref claimed_sums, common_lookup_elements,
             )
                 .unwrap(),
             rc_4_3: components::range_check_4_3::NewComponentImpl::try_new(
-                cairo_claim.range_check_4_3,
-                interaction_claim.range_check_4_3,
-                common_lookup_elements,
+                cairo_claim.range_check_4_3, ref claimed_sums, common_lookup_elements,
             )
                 .unwrap(),
             rc_4_4: components::range_check_4_4::NewComponentImpl::try_new(
-                cairo_claim.range_check_4_4,
-                interaction_claim.range_check_4_4,
-                common_lookup_elements,
+                cairo_claim.range_check_4_4, ref claimed_sums, common_lookup_elements,
             )
                 .unwrap(),
             rc_9_9: components::range_check_9_9::NewComponentImpl::try_new(
-                cairo_claim.range_check_9_9,
-                interaction_claim.range_check_9_9,
-                common_lookup_elements,
+                cairo_claim.range_check_9_9, ref claimed_sums, common_lookup_elements,
             )
                 .unwrap(),
             rc_7_2_5: components::range_check_7_2_5::NewComponentImpl::try_new(
-                cairo_claim.range_check_7_2_5,
-                interaction_claim.range_check_7_2_5,
-                common_lookup_elements,
+                cairo_claim.range_check_7_2_5, ref claimed_sums, common_lookup_elements,
             )
                 .unwrap(),
             rc_3_6_6_3: components::range_check_3_6_6_3::NewComponentImpl::try_new(
-                cairo_claim.range_check_3_6_6_3,
-                interaction_claim.range_check_3_6_6_3,
-                common_lookup_elements,
+                cairo_claim.range_check_3_6_6_3, ref claimed_sums, common_lookup_elements,
             )
                 .unwrap(),
             rc_4_4_4_4: components::range_check_4_4_4_4::NewComponentImpl::try_new(
-                cairo_claim.range_check_4_4_4_4,
-                interaction_claim.range_check_4_4_4_4,
-                common_lookup_elements,
+                cairo_claim.range_check_4_4_4_4, ref claimed_sums, common_lookup_elements,
             )
                 .unwrap(),
             rc_3_3_3_3_3: components::range_check_3_3_3_3_3::NewComponentImpl::try_new(
-                cairo_claim.range_check_3_3_3_3_3,
-                interaction_claim.range_check_3_3_3_3_3,
-                common_lookup_elements,
+                cairo_claim.range_check_3_3_3_3_3, ref claimed_sums, common_lookup_elements,
             )
                 .unwrap(),
         }
@@ -253,4 +231,3 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
             );
     }
 }
-

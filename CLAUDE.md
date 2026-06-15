@@ -95,6 +95,12 @@ cargo nextest run --cargo-profile witness-opt-1 --features=slow-tests -j 1
 #   RUST_MIN_STACK=4194304
 #   RUSTFLAGS="-C target-cpu=native"
 
+# Test (heavy end-to-end proving — slow-tests and nightly suites)
+# witness-opt-1 inherits `dev` (debug-assertions on, opt-level 0 for most crates) and
+# is too slow for full prove->verify tests (e.g. test_prove_verify_*, Poseidon252 e2e).
+# These suites require an optimized build — use the release profile:
+cargo nextest run --cargo-profile release --features=slow-tests,nightly -j 1
+
 # Clippy
 scripts/clippy.sh
 

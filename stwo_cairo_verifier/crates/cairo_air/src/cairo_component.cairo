@@ -20,24 +20,20 @@ pub trait NewComponent<T> {
     type InteractionClaim;
 
     fn new(
-        claim: @Self::Claim,
-        interaction_claim: @Self::InteractionClaim,
-        common_lookup_elements: @CommonLookupElements,
+        claim: @Self::Claim, claimed_sum: QM31, common_lookup_elements: @CommonLookupElements,
     ) -> T;
 
     fn try_new(
         claim: @Option<Self::Claim>,
-        interaction_claim: @Option<Self::InteractionClaim>,
+        ref claimed_sums: Span<QM31>,
         interaction_elements: @CommonLookupElements,
     ) -> Option<
         T,
     > {
-        match (claim, interaction_claim) {
-            (
-                Some(claim), Some(interaction_claim),
-            ) => Some(Self::new(claim, interaction_claim, interaction_elements)),
-            (None, None) => None,
-            _ => panic!("inconsistent claim and interaction claim"),
-        }
+        let Some(claim) = claim else {
+            return None;
+        };
+        let claimed_sum = *claimed_sums.pop_front().unwrap();
+        Some(Self::new(claim, claimed_sum, interaction_elements))
     }
 }

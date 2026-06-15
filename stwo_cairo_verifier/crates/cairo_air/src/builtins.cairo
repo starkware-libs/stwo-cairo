@@ -8,7 +8,7 @@ use components::range_check_builtin::InteractionClaimImpl as RangeCheckBuiltinBi
 use core::array::Span;
 use core::box::BoxImpl;
 use stwo_cairo_air::cairo_component::CairoComponent;
-use stwo_cairo_air::claims::{CairoClaim, CairoInteractionClaim};
+use stwo_cairo_air::claims::CairoClaim;
 use stwo_cairo_air::components;
 use stwo_constraint_framework::{
     CommonLookupElements, LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
@@ -52,53 +52,42 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
     fn new(
         cairo_claim: @CairoClaim,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @CairoInteractionClaim,
+        ref claimed_sums: Span<QM31>,
     ) -> BuiltinComponents {
-        assert!(
-            cairo_claim.pedersen_builtin_narrow_windows.is_none()
-                && interaction_claim.pedersen_builtin_narrow_windows.is_none(),
-        );
+        assert!(cairo_claim.pedersen_builtin_narrow_windows.is_none());
 
         let add_mod_builtin_component = components::add_mod_builtin::NewComponentImpl::try_new(
-            cairo_claim.add_mod_builtin, interaction_claim.add_mod_builtin, common_lookup_elements,
+            cairo_claim.add_mod_builtin, ref claimed_sums, common_lookup_elements,
         );
 
         let bitwise_builtin_component = components::bitwise_builtin::NewComponentImpl::try_new(
-            cairo_claim.bitwise_builtin, interaction_claim.bitwise_builtin, common_lookup_elements,
+            cairo_claim.bitwise_builtin, ref claimed_sums, common_lookup_elements,
         );
 
         let mul_mod_builtin_component = components::mul_mod_builtin::NewComponentImpl::try_new(
-            cairo_claim.mul_mod_builtin, interaction_claim.mul_mod_builtin, common_lookup_elements,
+            cairo_claim.mul_mod_builtin, ref claimed_sums, common_lookup_elements,
         );
 
         let pedersen_builtin_component = components::pedersen_builtin::NewComponentImpl::try_new(
-            cairo_claim.pedersen_builtin,
-            interaction_claim.pedersen_builtin,
-            common_lookup_elements,
+            cairo_claim.pedersen_builtin, ref claimed_sums, common_lookup_elements,
         );
 
         let poseidon_builtin_component = components::poseidon_builtin::NewComponentImpl::try_new(
-            cairo_claim.poseidon_builtin,
-            interaction_claim.poseidon_builtin,
-            common_lookup_elements,
+            cairo_claim.poseidon_builtin, ref claimed_sums, common_lookup_elements,
         );
 
         let range_check_96_builtin_component =
             components::range_check96_builtin::NewComponentImpl::try_new(
-            cairo_claim.range_check96_builtin,
-            interaction_claim.range_check96_builtin,
-            common_lookup_elements,
+            cairo_claim.range_check96_builtin, ref claimed_sums, common_lookup_elements,
         );
 
         let range_check_128_builtin_component =
             components::range_check_builtin::NewComponentImpl::try_new(
-            cairo_claim.range_check_builtin,
-            interaction_claim.range_check_builtin,
-            common_lookup_elements,
+            cairo_claim.range_check_builtin, ref claimed_sums, common_lookup_elements,
         );
 
         let ec_op_builtin_component = components::ec_op_builtin::NewComponentImpl::try_new(
-            cairo_claim.ec_op_builtin, interaction_claim.ec_op_builtin, common_lookup_elements,
+            cairo_claim.ec_op_builtin, ref claimed_sums, common_lookup_elements,
         );
 
         BuiltinComponents {
@@ -228,39 +217,23 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
     fn new(
         cairo_claim: @CairoClaim,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @CairoInteractionClaim,
+        ref claimed_sums: Span<QM31>,
     ) -> BuiltinComponents {
-        assert!(
-            cairo_claim.range_check96_builtin.is_none()
-                && interaction_claim.range_check96_builtin.is_none(),
-        );
-        assert!(
-            cairo_claim.add_mod_builtin.is_none() && interaction_claim.add_mod_builtin.is_none(),
-        );
-        assert!(
-            cairo_claim.mul_mod_builtin.is_none() && interaction_claim.mul_mod_builtin.is_none(),
-        );
-        assert!(
-            cairo_claim.pedersen_builtin.is_none() && interaction_claim.pedersen_builtin.is_none(),
-        );
-        assert!(
-            cairo_claim.pedersen_builtin_narrow_windows.is_none()
-                && interaction_claim.pedersen_builtin_narrow_windows.is_none(),
-        );
-        assert!(
-            cairo_claim.poseidon_builtin.is_none() && interaction_claim.poseidon_builtin.is_none(),
-        );
-        assert!(cairo_claim.ec_op_builtin.is_none() && interaction_claim.ec_op_builtin.is_none());
+        assert!(cairo_claim.range_check96_builtin.is_none());
+        assert!(cairo_claim.add_mod_builtin.is_none());
+        assert!(cairo_claim.mul_mod_builtin.is_none());
+        assert!(cairo_claim.pedersen_builtin.is_none());
+        assert!(cairo_claim.pedersen_builtin_narrow_windows.is_none());
+        assert!(cairo_claim.poseidon_builtin.is_none());
+        assert!(cairo_claim.ec_op_builtin.is_none());
 
         let bitwise_builtin_component = components::bitwise_builtin::NewComponentImpl::try_new(
-            cairo_claim.bitwise_builtin, interaction_claim.bitwise_builtin, common_lookup_elements,
+            cairo_claim.bitwise_builtin, ref claimed_sums, common_lookup_elements,
         );
 
         let range_check_128_builtin_component =
             components::range_check_builtin::NewComponentImpl::try_new(
-            cairo_claim.range_check_builtin,
-            interaction_claim.range_check_builtin,
-            common_lookup_elements,
+            cairo_claim.range_check_builtin, ref claimed_sums, common_lookup_elements,
         );
 
         BuiltinComponents {
@@ -309,42 +282,26 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
     fn new(
         cairo_claim: @CairoClaim,
         common_lookup_elements: @CommonLookupElements,
-        interaction_claim: @CairoInteractionClaim,
+        ref claimed_sums: Span<QM31>,
     ) -> BuiltinComponents {
-        assert!(
-            cairo_claim.range_check96_builtin.is_none()
-                && interaction_claim.range_check96_builtin.is_none(),
-        );
-        assert!(
-            cairo_claim.add_mod_builtin.is_none() && interaction_claim.add_mod_builtin.is_none(),
-        );
-        assert!(
-            cairo_claim.mul_mod_builtin.is_none() && interaction_claim.mul_mod_builtin.is_none(),
-        );
-        assert!(
-            cairo_claim.pedersen_builtin.is_none() && interaction_claim.pedersen_builtin.is_none(),
-        );
-        assert!(
-            cairo_claim.pedersen_builtin_narrow_windows.is_none()
-                && interaction_claim.pedersen_builtin_narrow_windows.is_none(),
-        );
-        assert!(cairo_claim.ec_op_builtin.is_none() && interaction_claim.ec_op_builtin.is_none());
+        assert!(cairo_claim.range_check96_builtin.is_none());
+        assert!(cairo_claim.add_mod_builtin.is_none());
+        assert!(cairo_claim.mul_mod_builtin.is_none());
+        assert!(cairo_claim.pedersen_builtin.is_none());
+        assert!(cairo_claim.pedersen_builtin_narrow_windows.is_none());
+        assert!(cairo_claim.ec_op_builtin.is_none());
 
         let bitwise_builtin_component = components::bitwise_builtin::NewComponentImpl::try_new(
-            cairo_claim.bitwise_builtin, interaction_claim.bitwise_builtin, common_lookup_elements,
+            cairo_claim.bitwise_builtin, ref claimed_sums, common_lookup_elements,
         );
 
         let poseidon_builtin_component = components::poseidon_builtin::NewComponentImpl::try_new(
-            cairo_claim.poseidon_builtin,
-            interaction_claim.poseidon_builtin,
-            common_lookup_elements,
+            cairo_claim.poseidon_builtin, ref claimed_sums, common_lookup_elements,
         );
 
         let range_check_128_builtin_component =
             components::range_check_builtin::NewComponentImpl::try_new(
-            cairo_claim.range_check_builtin,
-            interaction_claim.range_check_builtin,
-            common_lookup_elements,
+            cairo_claim.range_check_builtin, ref claimed_sums, common_lookup_elements,
         );
 
         BuiltinComponents {
