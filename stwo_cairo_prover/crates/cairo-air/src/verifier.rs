@@ -8,7 +8,7 @@ use stwo::core::channel::{Channel, MerkleChannel};
 use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::pcs::CommitmentSchemeVerifier;
-use stwo::core::vcs_lifted::blake2_hash::Blake2sHash;
+use stwo::core::vcs::blake2_hash::Blake2sHash;
 use stwo::core::vcs_lifted::blake2_merkle::{Blake2sM31MerkleChannel, Blake2sMerkleChannel};
 use stwo::core::vcs_lifted::merkle_hasher::MerkleHasherLifted;
 use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
