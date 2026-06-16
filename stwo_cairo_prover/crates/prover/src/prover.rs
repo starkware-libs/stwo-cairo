@@ -870,10 +870,7 @@ pub mod tests {
 
                 let mut unsupported_blowup = rust_proof;
                 let mut unsupported_blowup_proof = unsupported_blowup.stark_proof.0.clone();
-                unsupported_blowup_proof
-                    .config
-                    .fri_config
-                    .log_blowup_factor = 6;
+                unsupported_blowup_proof.config.fri_config.log_blowup_factor = 6;
                 unsupported_blowup.stark_proof =
                     stwo::core::proof::StarkProof(unsupported_blowup_proof);
                 assert!(matches!(
