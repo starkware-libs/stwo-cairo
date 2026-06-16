@@ -146,3 +146,37 @@ fn static_root_policy_matches_generated_preprocessed_commitments() {
         );
     }
 }
+
+#[cfg(feature = "slow-tests")]
+#[test]
+fn static_root_policy_matches_generated_preprocessed_commitments_log_1() {
+    use cairo_air::verifier::{ExpectedPreprocessedRoot, ExpectedPreprocessedRootPolicy};
+    use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
+    use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
+
+    let generated = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(
+        1,
+        PreProcessedTraceVariant::Canonical,
+        None,
+    );
+    let expected = Blake2sMerkleChannel::expected_preprocessed_root(
+        PreProcessedTraceVariant::Canonical,
+        1,
+        None,
+    )
+    .unwrap();
+    assert!(matches!(expected, ExpectedPreprocessedRootPolicy::Exact(root) if root == generated));
+
+    let generated = generate_preprocessed_commitment_root::<Poseidon252MerkleChannel>(
+        1,
+        PreProcessedTraceVariant::CanonicalWithoutPedersen,
+        None,
+    );
+    let expected = Poseidon252MerkleChannel::expected_preprocessed_root(
+        PreProcessedTraceVariant::CanonicalWithoutPedersen,
+        1,
+        None,
+    )
+    .unwrap();
+    assert!(matches!(expected, ExpectedPreprocessedRootPolicy::Exact(root) if root == generated));
+}
