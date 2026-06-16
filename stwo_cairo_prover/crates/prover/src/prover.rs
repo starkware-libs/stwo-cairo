@@ -577,7 +577,7 @@ pub mod tests {
         use std::io::Write;
         use std::process::Command;
 
-        use cairo_air::verifier::verify_cairo;
+        use cairo_air::verifier::{verify_cairo, CairoVerificationError};
         use cairo_air::CairoProofForRustVerifier;
         use itertools::Itertools;
         use stwo::core::fri::FriConfig;
@@ -856,7 +856,27 @@ pub mod tests {
                 };
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
+                let rust_proof: CairoProofForRustVerifier<_> = cairo_proof.into();
+                verify_cairo::<Blake2sMerkleChannel>(rust_proof.clone()).unwrap();
+
+                let mut wrong_root = rust_proof.clone();
+                wrong_root.stark_proof.commitments[0] =
+                    wrong_root.stark_proof.commitments[1].clone();
+                assert!(matches!(
+                    verify_cairo::<Blake2sMerkleChannel>(wrong_root).unwrap_err(),
+                    CairoVerificationError::InvalidPreprocessedRoot
+                ));
+
+                let mut unsupported_blowup = rust_proof;
+                unsupported_blowup
+                    .stark_proof
+                    .config
+                    .fri_config
+                    .log_blowup_factor = 6;
+                assert!(matches!(
+                    verify_cairo::<Blake2sMerkleChannel>(unsupported_blowup).unwrap_err(),
+                    CairoVerificationError::UnsupportedPreprocessedRootConfig
+                ));
             }
 
             #[test]
