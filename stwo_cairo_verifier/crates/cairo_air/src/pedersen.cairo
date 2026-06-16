@@ -1,11 +1,8 @@
-use components::partial_ec_mul_window_bits_18::InteractionClaimImpl as PartialEcMulInteractionClaimImpl;
-use components::pedersen_aggregator_window_bits_18::InteractionClaimImpl as PedersenAggregatorInteractionClaimImpl;
-use components::pedersen_builtin::InteractionClaimImpl as PedersenBuiltinInteractionClaimImpl;
-use components::pedersen_points_table_window_bits_18::InteractionClaimImpl as PedersenPointsTableInteractionClaimImpl;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use core::array::Span;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_cairo_air::claims::CairoClaim;
+#[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_cairo_air::components;
 use stwo_constraint_framework::PreprocessedMaskValuesImpl;
 #[cfg(not(feature: "poseidon252_verifier"))]

@@ -1,8 +1,3 @@
-use components::blake_g::InteractionClaimImpl as BlakeGInteractionClaimImpl;
-use components::blake_round::InteractionClaimImpl as BlakeRoundInteractionClaimImpl;
-use components::blake_round_sigma::InteractionClaimImpl as BlakeRoundSigmaInteractionClaimImpl;
-use components::triple_xor_32::InteractionClaimImpl as TripleXor32InteractionClaimImpl;
-use components::verify_bitwise_xor_12::InteractionClaimImpl as VerifyBitwiseXor12InteractionClaimImpl;
 use core::array::Span;
 use stwo_cairo_air::claims::CairoClaim;
 use stwo_cairo_air::components;
