@@ -10,12 +10,33 @@
 
 use core::box::BoxImpl;
 use stwo_verifier_core::Hash;
+use stwo_verifier_core::fri::FriConfig;
+use stwo_verifier_core::pcs::PcsConfig;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash;
 
 /// Lifting log size of the recursive verification circuit's proof: the value carried in
 /// the proof's `pcs_config.lifting_log_size` (trace_log_size 20 + log_blowup_factor 2).
 pub const LIFTING_LOG_SIZE: u32 = 22;
+
+/// Expected PCS config of the recursive verification circuit's proof.
+///
+/// Hardcoded so the verifier accepts only proofs produced with the circuit's canonical
+/// configuration. This pins every FRI security parameter (a weaker config — fewer queries,
+/// smaller blowup, or less proof-of-work — is rejected, independently of stwo's
+/// `security_bits >= SECURITY_BITS` floor) and ties `log_blowup_factor` to the blowup the
+/// hardcoded `preprocessed_root()` was committed at. Must match the rust prover's
+/// `CIRCUIT_PCS_CONFIG` (proving-utils), with the prover-clamped `lifting_log_size`.
+/// Note `pow_bits + log_blowup_factor * n_queries = 26 + 2 * 35 = 96 = SECURITY_BITS`.
+pub fn circuit_pcs_config() -> PcsConfig {
+    PcsConfig {
+        pow_bits: 26,
+        fri_config: FriConfig {
+            log_blowup_factor: 2, log_last_layer_degree_bound: 0, n_queries: 35, fold_step: 4,
+        },
+        lifting_log_size: Option::Some(LIFTING_LOG_SIZE),
+    }
+}
 
 /// Number of public output values of the recursive verification circuit.
 ///
