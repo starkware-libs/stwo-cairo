@@ -106,3 +106,43 @@ fn test_small_canonical_preprocessed_root_regression() {
 
     assert_eq!(root, expected);
 }
+
+#[cfg(feature = "slow-tests")]
+#[test]
+fn static_root_policy_matches_generated_preprocessed_commitments() {
+    use cairo_air::verifier::{ExpectedPreprocessedRoot, ExpectedPreprocessedRootPolicy};
+    use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
+    use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
+
+    for log_blowup_factor in 1..=5 {
+        let generated = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(
+            log_blowup_factor,
+            PreProcessedTraceVariant::Canonical,
+            None,
+        );
+        let expected = Blake2sMerkleChannel::expected_preprocessed_root(
+            PreProcessedTraceVariant::Canonical,
+            log_blowup_factor,
+            None,
+        )
+        .unwrap();
+        assert!(
+            matches!(expected, ExpectedPreprocessedRootPolicy::Exact(root) if root == generated)
+        );
+
+        let generated = generate_preprocessed_commitment_root::<Poseidon252MerkleChannel>(
+            log_blowup_factor,
+            PreProcessedTraceVariant::CanonicalWithoutPedersen,
+            None,
+        );
+        let expected = Poseidon252MerkleChannel::expected_preprocessed_root(
+            PreProcessedTraceVariant::CanonicalWithoutPedersen,
+            log_blowup_factor,
+            None,
+        )
+        .unwrap();
+        assert!(
+            matches!(expected, ExpectedPreprocessedRootPolicy::Exact(root) if root == generated)
+        );
+    }
+}

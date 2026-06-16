@@ -301,6 +301,8 @@ where
 }
 
 pub enum ExpectedPreprocessedRootPolicy<Hash> {
+    /// This verifier configuration intentionally has no built-in static preprocessed root.
+    /// Callers must not infer root binding for modes that return this policy.
     NoStaticRoot,
     Exact(Hash),
 }
