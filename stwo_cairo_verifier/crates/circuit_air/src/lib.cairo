@@ -7,4 +7,5 @@ pub mod component_indices;
 pub mod components;
 pub mod prelude;
 pub mod preprocessed_columns;
+pub mod privacy_consts;
 pub mod relations;
