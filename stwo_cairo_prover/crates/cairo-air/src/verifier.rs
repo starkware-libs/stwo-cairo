@@ -286,6 +286,12 @@ fn check_builtin(
 /// 1 << (24 + INTERACTION_POW_BITS) relation terms.
 pub const INTERACTION_POW_BITS: u32 = 24;
 
+/// Static preprocessed-root policy for Rust verifier configurations.
+///
+/// `Exact` enforces Cairo-verifier-style binding by comparing the proof's preprocessed
+/// commitment root against a verifier-known root before the root is committed to the channel.
+/// `NoStaticRoot` is an explicit opt-out: the Rust verifier commits the proof-supplied
+/// preprocessed root without this static equality check.
 pub trait ExpectedPreprocessedRoot: MerkleChannel
 where
     Self::H: MerkleHasherLifted,
@@ -302,7 +308,7 @@ where
 
 pub enum ExpectedPreprocessedRootPolicy<Hash> {
     /// This verifier configuration intentionally has no built-in static preprocessed root.
-    /// Callers must not infer root binding for modes that return this policy.
+    /// Callers must not infer Cairo-style static root binding for modes that return this policy.
     NoStaticRoot,
     Exact(Hash),
 }
@@ -393,6 +399,14 @@ impl ExpectedPreprocessedRoot for Poseidon252MerkleChannel {
     }
 }
 
+/// Verifies a Cairo proof with the Rust verifier.
+///
+/// Static preprocessed-root binding is enforced only for configurations whose
+/// [`ExpectedPreprocessedRoot`] implementation returns [`ExpectedPreprocessedRootPolicy::Exact`].
+/// The built-in exact policies are Blake2s + `Canonical` and Poseidon252 +
+/// `CanonicalWithoutPedersen`, for supported log blowup factors without lifting.
+/// Configurations that return [`ExpectedPreprocessedRootPolicy::NoStaticRoot`] remain valid
+/// verifier modes, but they do not enforce Cairo-style static preprocessed-root equality.
 pub fn verify_cairo<MC: ExpectedPreprocessedRoot>(
     proof: CairoProofForRustVerifier<MC::H>,
 ) -> Result<(), CairoVerificationError> {
