@@ -29,6 +29,7 @@ pub mod poseidon_context_imports {
 }
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use poseidon_context_imports::*;
+use stwo_cairo_air::preprocessed_columns::PREPROCESSED_COLUMN_LOG_SIZE;
 use stwo_cairo_air::range_checks::{RangeChecksComponents, RangeChecksComponentsImpl};
 use stwo_cairo_air::{PublicDataImpl, components};
 use stwo_constraint_framework::{
@@ -39,7 +40,7 @@ use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
 use stwo_verifier_core::verifier::Air;
-use stwo_verifier_core::{ColumnSpan, TreeSpan};
+use stwo_verifier_core::{ColumnSpan, TreeArray, TreeSpan};
 use crate::claim::{CairoInteractionClaim, CairoInteractionClaimImpl};
 use crate::claims::CairoClaim;
 
@@ -48,6 +49,21 @@ pub const MEMORY_ADDRESS_TO_ID_RELATION_ID: M31 = M31 { inner: 1444891767 };
 pub const MEMORY_ID_TO_VALUE_RELATION_ID: M31 = M31 { inner: 1662111297 };
 pub const VERIFY_BITWISE_XOR_12_RELATION_ID: M31 = M31 { inner: 648362599 };
 
+
+/// Override the preprocessed trace log sizes, since they come from a global setting
+/// rather than computed by concatenating preprocessed log sizes of the individual
+/// components.
+/// TODO(ilya): consider removing the generation of `_invalid_preprocessed_trace_log_sizes`.
+pub fn override_preprocessed_trace_log_sizes(
+    aggregated_log_sizes: TreeArray<Span<u32>>,
+) -> TreeArray<Span<u32>> {
+    let boxed_triplet: Box<[Span<u32>; 3]> = *aggregated_log_sizes.span().try_into().unwrap();
+    let [_invalid_preprocessed_trace_log_sizes, trace_log_sizes, interaction_log_sizes] =
+        boxed_triplet
+        .unbox();
+
+    array![PREPROCESSED_COLUMN_LOG_SIZE.span(), trace_log_sizes, interaction_log_sizes]
+}
 
 #[derive(Drop)]
 #[cfg(not(feature: "poseidon252_verifier"))]

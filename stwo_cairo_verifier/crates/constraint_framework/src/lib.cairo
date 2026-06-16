@@ -1,14 +1,13 @@
-use core::box::BoxImpl;
 use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait, SquashedFelt252DictTrait};
 use core::nullable::{Nullable, NullableTrait};
 use core::num::traits::One;
+use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::fields::m31::M31;
 #[cfg(not(feature: "qm31_opcode"))]
 use stwo_verifier_core::fields::m31::MulByM31Trait;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnSpan, TreeArray};
 
 pub mod claim;
 pub mod component;
@@ -191,21 +190,6 @@ pub fn validate_mask_usage(
     preprocessed_mask_values.validate_usage();
     assert!(trace_mask_values.is_empty());
     assert!(interaction_trace_mask_values.is_empty());
-}
-
-/// Override the preprocessed trace log sizes, since they come from a global setting
-/// rather than computed by concatenating preprocessed log sizes of the individual
-/// components.
-/// TODO(ilya): consider removing the generation of `_invalid_preprocessed_trace_log_sizes`.
-pub fn override_preprocessed_trace_log_sizes(
-    aggregated_log_sizes: TreeArray<Span<u32>>, preprocessed_column_log_sizes: Span<u32>,
-) -> TreeArray<Span<u32>> {
-    let boxed_triplet: Box<[Span<u32>; 3]> = *aggregated_log_sizes.span().try_into().unwrap();
-    let [_invalid_preprocessed_trace_log_sizes, trace_log_sizes, interaction_log_sizes] =
-        boxed_triplet
-        .unbox();
-
-    array![preprocessed_column_log_sizes, trace_log_sizes, interaction_log_sizes]
 }
 
 #[derive(Debug, Default, Drop)]
