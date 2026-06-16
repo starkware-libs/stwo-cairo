@@ -164,6 +164,10 @@ pub enum VerificationError {
     OodsNotMatching,
     /// Security bits are too low.
     SecurityBitsTooLow,
+    /// Interaction proof of work verification failed.
+    InteractionProofOfWork,
+    /// The logup sum is not zero.
+    InvalidLogupSum,
 }
 
 impl VerificationErrorDisplay of core::fmt::Display<VerificationError> {
@@ -172,9 +176,13 @@ impl VerificationErrorDisplay of core::fmt::Display<VerificationError> {
             VerificationError::InvalidStructure(error) => write!(
                 f, "Proof has invalid structure: {}", error,
             ),
-            VerificationError::QueriesProofOfWork => write!(f, "Proof of work verification failed"),
+            VerificationError::QueriesProofOfWork => write!(f, "Proof Of Work verification failed"),
             VerificationError::OodsNotMatching => write!(f, "Invalid OODS eval"),
             VerificationError::SecurityBitsTooLow => write!(f, "Security bits are too low"),
+            VerificationError::InteractionProofOfWork => write!(
+                f, "Interaction Proof Of Work verification failed",
+            ),
+            VerificationError::InvalidLogupSum => write!(f, "Logup sum is not zero"),
         }
     }
 }
