@@ -8,10 +8,16 @@ use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::pcs::CommitmentSchemeVerifier;
 use stwo::core::verifier::{verify_ex, VerificationError};
+use stwo::core::vcs_lifted::blake2_hash::Blake2sHash;
+use stwo::core::vcs_lifted::blake2_merkle::{Blake2sM31MerkleChannel, Blake2sMerkleChannel};
+use stwo::core::vcs_lifted::merkle_hasher::MerkleHasherLifted;
+use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
 use stwo_cairo_common::builtins::*;
 use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, LOG_MEMORY_ADDRESS_BOUND};
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTraceVariant;
 use stwo_cairo_common::prover_types::cpu::{CasmState, PRIME};
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
+use starknet_ff::FieldElement as FieldElement252;
 use thiserror::Error;
 use tracing::{span, Level};
 
@@ -280,13 +286,93 @@ fn check_builtin(
 /// 1 << (24 + INTERACTION_POW_BITS) relation terms.
 pub const INTERACTION_POW_BITS: u32 = 24;
 
-pub fn verify_cairo<MC: MerkleChannel>(
+pub trait ExpectedPreprocessedRoot: MerkleChannel
+where
+    Self::H: MerkleHasherLifted,
+{
+    fn expected_preprocessed_root(
+        variant: PreProcessedTraceVariant,
+        log_blowup_factor: u32,
+        lifting_log_size: Option<u32>,
+    ) -> Option<<Self::H as MerkleHasherLifted>::Hash>;
+}
+
+impl ExpectedPreprocessedRoot for Blake2sMerkleChannel {
+    fn expected_preprocessed_root(
+        variant: PreProcessedTraceVariant,
+        log_blowup_factor: u32,
+        lifting_log_size: Option<u32>,
+    ) -> Option<<Self::H as MerkleHasherLifted>::Hash> {
+        if variant != PreProcessedTraceVariant::Canonical || lifting_log_size.is_some() {
+            return None;
+        }
+        let root = match log_blowup_factor {
+            1 => [
+                0x42228ea9, 0x35d2f53b, 0x360b1f98, 0x56ae39d9, 0x75e23bef, 0x32b0581c,
+                0x6e1e83b2, 0x6403ba24,
+            ],
+            2 => [
+                0x7094e904, 0x210a38ad, 0x126b6cee, 0x57097de8, 0x1c860da1, 0x91b704b1,
+                0xc6cf280a, 0x8a211523,
+            ],
+            3 => [
+                0x84cb79b9, 0xb050ad16, 0x69787584, 0xcf7f274f, 0x399792c8, 0xecf77fed,
+                0x458488fe, 0xe27bbcac,
+            ],
+            4 => [
+                0x803fe777, 0x1d9267a0, 0xe383c36d, 0x2b1b4bf0, 0x9a47969f, 0xcb683ef4,
+                0x598eca47, 0x09db42f9,
+            ],
+            5 => [
+                0xbfee7cd5, 0x429ca185, 0xa8d60ba7, 0x3856e072, 0xb88de2aa, 0x12ab5bc3,
+                0xde44271d, 0x2500318a,
+            ],
+            _ => return None,
+        };
+        Some(Blake2sHash(root.map(u32::to_le_bytes).concat().try_into().unwrap()))
+    }
+}
+
+impl ExpectedPreprocessedRoot for Blake2sM31MerkleChannel {
+    fn expected_preprocessed_root(
+        _variant: PreProcessedTraceVariant,
+        _log_blowup_factor: u32,
+        _lifting_log_size: Option<u32>,
+    ) -> Option<<Self::H as MerkleHasherLifted>::Hash> {
+        None
+    }
+}
+
+impl ExpectedPreprocessedRoot for Poseidon252MerkleChannel {
+    fn expected_preprocessed_root(
+        variant: PreProcessedTraceVariant,
+        log_blowup_factor: u32,
+        lifting_log_size: Option<u32>,
+    ) -> Option<<Self::H as MerkleHasherLifted>::Hash> {
+        if variant != PreProcessedTraceVariant::CanonicalWithoutPedersen
+            || lifting_log_size.is_some()
+        {
+            return None;
+        }
+        let root = match log_blowup_factor {
+            1 => "0x1fdacd6e29834987926672fcac7fda0577adce49999ad96fb0195e745e9ce0",
+            2 => "0x14103a81a8417d83c41bc877194607103f9e1cb4cb188e5f21b75499709bbb6",
+            3 => "0x20861f94b3cf37baf1939d20691d38630596bce389dcee5f224ef1f5682e70f",
+            4 => "0x26f3a39ddf7042fefdd2595bf4739063e044845418839b2b1ec556fdc1aecf",
+            5 => "0x2111b7db0f7fb2f629d493661207663b88609e5abebbe7e59c4f116dc3dac0",
+            _ => return None,
+        };
+        FieldElement252::from_hex_be(root).ok()
+    }
+}
+
+pub fn verify_cairo<MC: ExpectedPreprocessedRoot>(
     proof: CairoProofForRustVerifier<MC::H>,
 ) -> Result<(), CairoVerificationError> {
     verify_cairo_ex::<MC>(proof, false)
 }
 
-pub fn verify_cairo_ex<MC: MerkleChannel>(
+pub fn verify_cairo_ex<MC: ExpectedPreprocessedRoot>(
     CairoProofForRustVerifier {
         claim,
         interaction_pow,
@@ -322,6 +408,16 @@ pub fn verify_cairo_ex<MC: MerkleChannel>(
             .to_preprocessed_trace()
             .log_sizes(),
     );
+
+    if let Some(expected_preprocessed_root) = MC::expected_preprocessed_root(
+        preprocessed_trace_variant,
+        pcs_config.fri_config.log_blowup_factor,
+        pcs_config.lifting_log_size,
+    ) {
+        if stark_proof.commitments[0] != expected_preprocessed_root {
+            return Err(CairoVerificationError::InvalidPreprocessedRoot);
+        }
+    }
 
     // Preproccessed trace.
     commitment_scheme_verifier.commit(stark_proof.commitments[0], &log_sizes[0], channel);
@@ -366,6 +462,8 @@ pub fn verify_cairo_ex<MC: MerkleChannel>(
 pub enum CairoVerificationError {
     #[error("Invalid logup sum")]
     InvalidLogupSum,
+    #[error("Invalid preprocessed commitment root")]
+    InvalidPreprocessedRoot,
     #[error("Stark verification error: {0}")]
     Stark(#[from] VerificationError),
     #[error("Proof of work verification failed.")]

@@ -7,7 +7,7 @@ use cairo_air::cairo_components::CairoComponents;
 use cairo_air::claims::{lookup_sum, CairoClaim};
 use cairo_air::relations::CommonLookupElements;
 use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
-use cairo_air::verifier::{verify_cairo_ex, INTERACTION_POW_BITS};
+use cairo_air::verifier::{verify_cairo_ex, ExpectedPreprocessedRoot, INTERACTION_POW_BITS};
 use cairo_air::CairoProof;
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
@@ -50,7 +50,7 @@ mod json {
     pub use sonic_rs::from_str;
 }
 
-fn prove_verify_serialize<MC: MerkleChannel>(
+fn prove_verify_serialize<MC: MerkleChannel + ExpectedPreprocessedRoot>(
     input: ProverInput,
     verify: bool,
     proof_path: &Path,
