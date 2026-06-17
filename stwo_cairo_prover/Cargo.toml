@@ -86,3 +86,12 @@ package = { "stwo-cairo-prover" = { opt-level = 1 }, "stwo" = { opt-level = 1 } 
 inherits = "dev"
 package = { "stwo-cairo-adapter" = { opt-level = 3 } }
 debug-assertions = false
+
+# TEMP DEBUG (do not merge): point stwo at the instrumented worktree branch `leo/ppqp-debug`
+# (commit 2c57faeb) so `prepare_preprocessed_query_positions` prints the folded positions.
+# Local path — only builds on this machine.
+[patch."https://github.com/starkware-libs/stwo"]
+stwo = { path = "/home/leo/Desktop/repos/stwo-ppqp-debug/crates/stwo" }
+stwo-constraint-framework = { path = "/home/leo/Desktop/repos/stwo-ppqp-debug/crates/constraint-framework" }
+stwo-air-utils-derive = { path = "/home/leo/Desktop/repos/stwo-ppqp-debug/crates/air-utils-derive" }
+stwo-air-utils = { path = "/home/leo/Desktop/repos/stwo-ppqp-debug/crates/air-utils" }
