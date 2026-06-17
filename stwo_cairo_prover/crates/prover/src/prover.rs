@@ -810,9 +810,11 @@ pub mod tests {
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
             use cairo_vm::types::layout_name::LayoutName;
+            use stwo::core::pcs::utils::prepare_preprocessed_query_positions;
             use stwo::core::pcs::PcsConfig;
             use stwo_cairo_common::preprocessed_columns::preprocessed_trace::testing_preprocessed_tree;
             use stwo_cairo_dev_utils::vm_utils::{run_and_adapt, ProgramType};
+            use stwo_constraint_framework::ORIGINAL_TRACE_IDX;
             use test_log::test;
 
             use super::*;
@@ -881,6 +883,64 @@ pub mod tests {
                 };
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
+            }
+
+            /// Exercises the path where `lifting_log_size > pp_log_size`, producing *unsorted*
+            /// preprocessed query positions that the Merkle verifier must sort.
+            ///
+            /// `channel_salt = 43` with `n_queries = 1000` is a seed where the folded positions
+            /// come out unsorted.
+            #[test]
+            fn test_prove_verify_large_trace_canonical_small() {
+                use stwo::core::fri::FriConfig;
+                let compiled_program = get_compiled_cairo_program_path(
+                    "test_prove_verify_large_trace_canonical_small",
+                );
+                let input = run_and_adapt(
+                    &compiled_program,
+                    ProgramType::Json,
+                    LayoutName::stwo_no_ecop,
+                    None,
+                )
+                .unwrap();
+                let prover_params = ProverParameters {
+                    channel_hash: ChannelHash::Blake2s,
+                    pcs_config: PcsConfig {
+                        pow_bits: 10,
+                        fri_config: FriConfig::new(0, 1, 1000, 1),
+                        lifting_log_size: None,
+                    },
+                    preprocessed_trace: PreProcessedTraceVariant::CanonicalSmall,
+                    channel_salt: 43,
+                    store_polynomials_coefficients: false,
+                    include_all_preprocessed_columns: false,
+                    opt_n_id_to_big_components: None,
+                };
+                let cairo_proof =
+                    prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+                // Check that this seed produces unsorted preprocessed query positions.
+                let unsorted_query_positions = cairo_proof
+                    .extended_stark_proof
+                    .aux
+                    .unsorted_query_locations
+                    .clone();
+                let log_sizes = cairo_proof.claim.log_sizes();
+                let max_trace_log_size = log_sizes[ORIGINAL_TRACE_IDX].iter().max().unwrap();
+                let max_pp_log_size = PreProcessedTraceVariant::CanonicalSmall.max_log_trace_size();
+                let log_blowup_factor = cairo_proof
+                    .extended_stark_proof
+                    .proof
+                    .config
+                    .fri_config
+                    .log_blowup_factor;
+                assert!(!prepare_preprocessed_query_positions(
+                    &unsorted_query_positions.into_iter().sorted().collect_vec(),
+                    *max_trace_log_size + log_blowup_factor,
+                    max_pp_log_size + log_blowup_factor,
+                )
+                .is_sorted());
+
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
             }
 
