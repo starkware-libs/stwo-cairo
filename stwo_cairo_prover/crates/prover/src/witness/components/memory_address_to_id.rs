@@ -12,6 +12,7 @@ use itertools::{izip, Itertools};
 use rayon::iter::{IndexedParallelIterator, IntoParallelIterator, ParallelIterator};
 use stwo::core::fields::m31::{BaseField, M31};
 use stwo::core::poly::circle::CanonicCoset;
+use stwo::core::utils::SliceExt;
 use stwo::prover::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
 use stwo::prover::backend::simd::qm31::PackedQM31;
 use stwo::prover::backend::simd::SimdBackend;
@@ -52,7 +53,7 @@ impl AddressToId {
     }
 
     pub fn array_chunks<const N: usize>(&self) -> impl Iterator<Item = &[u32; N]> {
-        self.data.as_chunks::<N>().0.iter()
+        self.data.checked_as_chunks::<N>().iter()
     }
 }
 
