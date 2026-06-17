@@ -8,6 +8,7 @@ use num_traits::{One, Zero};
 use stwo::core::channel::MerkleChannel;
 use stwo::core::fields::m31::M31;
 use stwo::core::pcs::{TreeSubspan, TreeVec};
+use stwo::core::utils::SliceExt;
 use stwo::core::vcs_lifted::blake2_merkle::{Blake2sM31MerkleChannel, Blake2sMerkleChannel};
 use stwo::prover::backend::simd::conversion::{Pack, Unpack};
 use stwo::prover::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
@@ -24,7 +25,8 @@ use crate::witness::preprocessed_trace::generate_preprocessed_commitment_root;
 
 pub fn pack_values<T: Pack>(values: &[T]) -> Vec<T::SimdType> {
     values
-        .array_chunks::<N_LANES>()
+        .checked_as_chunks::<N_LANES>()
+        .iter()
         .map(|c| T::pack(*c))
         .collect()
 }
@@ -144,7 +146,8 @@ pub fn export_preprocessed_roots() {
         );
         let root_bytes = root.0;
         let u32s_hex = root_bytes
-            .array_chunks::<4>()
+            .checked_as_chunks::<4>()
+            .iter()
             .map(|&bytes| format!("{:#010x}", u32::from_le_bytes(bytes)))
             .collect_vec()
             .join(", ");
@@ -183,7 +186,8 @@ pub fn export_circuit_cairo_verifier_preprocessed_roots() {
 
         let root_bytes = root.0;
         let u32s = root_bytes
-            .array_chunks::<4>()
+            .checked_as_chunks::<4>()
+            .iter()
             .map(|&bytes| format!("{:}", u32::from_le_bytes(bytes)))
             .collect_vec()
             .join(", ");
