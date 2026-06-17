@@ -1922,6 +1922,7 @@ dependencies = [
  "allocator-api2",
  "equivalent",
  "foldhash 0.1.5",
+ "serde",
 ]
 
 [[package]]
@@ -1942,13 +1943,6 @@ name = "hashbrown"
 version = "0.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ed5909b6e89a2db4456e54cd5f673791d7eca6732202bbf2a9cc504fe2f9b84a"
-dependencies = [
- "allocator-api2",
- "equivalent",
- "foldhash 0.2.0",
- "serde",
- "serde_core",
-]
 
 [[package]]
 name = "hashlink"
@@ -3531,7 +3525,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo"
 version = "2.2.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=02e5ae3e#02e5ae3ea2e659f80830595afa88c81dd278ab5e"
+source = "git+https://github.com/starkware-libs/stwo?rev=74951f79#74951f7945b3f5d3fa54cc43ee73ac027146227a"
 dependencies = [
  "blake2",
  "blake3",
@@ -3540,7 +3534,7 @@ dependencies = [
  "dashmap",
  "educe 0.5.11",
  "fnv",
- "hashbrown 0.17.1",
+ "hashbrown 0.15.5",
  "hex",
  "indexmap",
  "itertools 0.12.1",
@@ -3560,7 +3554,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils"
 version = "2.2.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=02e5ae3e#02e5ae3ea2e659f80830595afa88c81dd278ab5e"
+source = "git+https://github.com/starkware-libs/stwo?rev=74951f79#74951f7945b3f5d3fa54cc43ee73ac027146227a"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -3572,7 +3566,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "2.2.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=02e5ae3e#02e5ae3ea2e659f80830595afa88c81dd278ab5e"
+source = "git+https://github.com/starkware-libs/stwo?rev=74951f79#74951f7945b3f5d3fa54cc43ee73ac027146227a"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3725,9 +3719,9 @@ dependencies = [
 [[package]]
 name = "stwo-constraint-framework"
 version = "2.2.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=02e5ae3e#02e5ae3ea2e659f80830595afa88c81dd278ab5e"
+source = "git+https://github.com/starkware-libs/stwo?rev=74951f79#74951f7945b3f5d3fa54cc43ee73ac027146227a"
 dependencies = [
- "hashbrown 0.17.1",
+ "hashbrown 0.15.5",
  "itertools 0.12.1",
  "num-traits",
  "rand 0.8.6",

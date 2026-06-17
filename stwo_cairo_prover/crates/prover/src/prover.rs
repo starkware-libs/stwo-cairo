@@ -884,6 +884,43 @@ pub mod tests {
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
             }
 
+            /// Exercises the path where `lifting_log_size > pp_log_size`, producing *unsorted*
+            /// preprocessed query positions that the Merkle verifier must sort.
+            ///
+            /// `channel_salt = 43` with `n_queries = 1000` is a seed where the folded positions
+            /// come out unsorted. To check this, run the test with --nocapture on commit f4dd688d7
+            /// (its stwo dependency prints the query transformation).
+            #[test]
+            fn test_prove_verify_large_trace_canonical_small() {
+                use stwo::core::fri::FriConfig;
+                let compiled_program = get_compiled_cairo_program_path(
+                    "test_prove_verify_large_trace_canonical_small",
+                );
+                let input = run_and_adapt(
+                    &compiled_program,
+                    ProgramType::Json,
+                    LayoutName::stwo_no_ecop,
+                    None,
+                )
+                .unwrap();
+                let prover_params = ProverParameters {
+                    channel_hash: ChannelHash::Blake2s,
+                    pcs_config: PcsConfig {
+                        pow_bits: 10,
+                        fri_config: FriConfig::new(0, 1, 1000, 1),
+                        lifting_log_size: None,
+                    },
+                    preprocessed_trace: PreProcessedTraceVariant::CanonicalSmall,
+                    channel_salt: 43,
+                    store_polynomials_coefficients: false,
+                    include_all_preprocessed_columns: false,
+                    opt_n_id_to_big_components: None,
+                };
+                let cairo_proof =
+                    prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
+            }
+
             #[test]
             fn test_add_mod_builtin_constraints() {
                 let compiled_program =
