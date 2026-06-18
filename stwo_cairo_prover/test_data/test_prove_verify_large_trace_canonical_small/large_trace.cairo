@@ -26,7 +26,7 @@ func add_routine(n: felt) {
     tempvar c13 = c12 - a;
     tempvar c14 = c13 + a;
     tempvar c15 = c14 - a;
-    bounce_adds(n - 1);
+    add_routine(n - 1);
     return ();
 }
 
