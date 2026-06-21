@@ -14,6 +14,7 @@ use stwo_constraint_framework::{
 };
 
 use crate::debug_tools::mock_tree_builder::MockCommitmentScheme;
+use crate::prover::warm_pedersen_pp_trace;
 use crate::witness::cairo::create_cairo_claim_generator;
 use crate::witness::preprocessed_trace::gen_trace;
 
@@ -257,6 +258,9 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
 }
 
 pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: Arc<PreProcessedTrace>) {
+    // Materializing the preprocessed trace below touches the Pedersen tables; warm them first.
+    warm_pedersen_pp_trace(preprocessed_trace.variant);
+
     let mut commitment_scheme = MockCommitmentScheme::default();
 
     // Preprocessed trace.

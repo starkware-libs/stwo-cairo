@@ -22,6 +22,22 @@ pub static PEDERSEN_TABLE_9: LazyLock<PedersenPointsTable<9>> =
 pub static PEDERSEN_TABLE_18: LazyLock<PedersenPointsTable<18>> =
     LazyLock::new(PedersenPointsTable::new);
 
+/// Returns the already-initialized table, panicking if it has not been forced yet.
+///
+/// Callers must warm the table with `LazyLock::force` before the parallel witness-generation
+/// region; a cold first touch from inside the rayon pool deadlocks. This guard turns a missing
+/// warm-up into a loud failure.
+fn require_initialized<const WINDOW_BITS: usize>(
+    table: &'static LazyLock<PedersenPointsTable<WINDOW_BITS>>,
+) -> &'static PedersenPointsTable<WINDOW_BITS> {
+    LazyLock::get(table).unwrap_or_else(|| {
+        panic!(
+            "PEDERSEN_TABLE_{WINDOW_BITS} accessed before initialization; \
+             call LazyLock::force on it before the parallel region"
+        )
+    })
+}
+
 pub const PEDERSEN_TABLE_N_COLUMNS: usize = FELT252_N_WORDS * 2;
 
 pub type PedersenPointsWindowBits9 = PedersenPoints<9>;
@@ -46,11 +62,12 @@ impl<const WINDOW_BITS: usize> PedersenPoints<WINDOW_BITS> {
     }
 
     pub fn get_data(&self) -> &Vec<M31> {
-        match WINDOW_BITS {
-            9 => &PEDERSEN_TABLE_9.column_data[self.index],
-            18 => &PEDERSEN_TABLE_18.column_data[self.index],
+        let column_data = match WINDOW_BITS {
+            9 => &require_initialized(&PEDERSEN_TABLE_9).column_data,
+            18 => &require_initialized(&PEDERSEN_TABLE_18).column_data,
             _ => panic!("Unsupported window_bits value {WINDOW_BITS}"),
-        }
+        };
+        &column_data[self.index]
     }
 }
 

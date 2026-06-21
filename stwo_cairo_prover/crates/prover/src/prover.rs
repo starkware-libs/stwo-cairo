@@ -1,6 +1,6 @@
 use std::fs::read_to_string;
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
+use std::sync::{Arc, LazyLock};
 
 use anyhow::Result;
 use cairo_air::cairo_components::CairoComponents;
@@ -30,6 +30,7 @@ use stwo::prover::poly::twiddles::TwiddleTree;
 use stwo::prover::poly::BitReversedOrder;
 use stwo::prover::{prove_ex, CommitmentSchemeProver, CommitmentTreeProver, ProvingError};
 use stwo_cairo_adapter::ProverInput;
+use stwo_cairo_common::preprocessed_columns::pedersen::{PEDERSEN_TABLE_18, PEDERSEN_TABLE_9};
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
     PreProcessedTrace, PreProcessedTraceVariant,
 };
@@ -73,6 +74,23 @@ where
     Ok(())
 }
 
+/// Builds the preprocessed Pedersen points table up front, on the calling thread.
+///
+/// The table is a `LazyLock` whose initializer itself uses rayon. Forcing it before the parallel
+/// witness generation avoids a deadlock: if first built from within that section, the worker pool
+/// is exhausted and the initializer can't get the threads it needs to finish.
+pub(crate) fn warm_pedersen_pp_trace(variant: PreProcessedTraceVariant) {
+    match variant {
+        PreProcessedTraceVariant::Canonical => {
+            LazyLock::force(&PEDERSEN_TABLE_18);
+        }
+        PreProcessedTraceVariant::CanonicalSmall => {
+            LazyLock::force(&PEDERSEN_TABLE_9);
+        }
+        PreProcessedTraceVariant::CanonicalWithoutPedersen => {}
+    }
+}
+
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
     prover_params: ProverParameters,
@@ -94,6 +112,8 @@ where
     let span = span!(Level::INFO, "Write Preprocessed trace").entered();
     let preprocessed_trace = Arc::new(preprocessed_trace_variant.to_preprocessed_trace());
     span.exit();
+
+    warm_pedersen_pp_trace(preprocessed_trace_variant);
 
     // Run Cairo.
     let cairo_claim_generator = create_cairo_claim_generator(input, preprocessed_trace.clone());
@@ -175,6 +195,8 @@ where
     SimdBackend: BackendForChannel<MC>,
 {
     let _span = span!(Level::INFO, "prove_cairo").entered();
+
+    warm_pedersen_pp_trace(prover_params.preprocessed_trace);
 
     // Run Cairo.
     let cairo_claim_generator = create_cairo_claim_generator(input, preprocessed_trace.clone());
