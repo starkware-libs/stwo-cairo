@@ -14,6 +14,8 @@ use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
     PreProcessedTrace, PreProcessedTraceVariant,
 };
 
+use crate::prover::warm_pedersen_pp_trace;
+
 /// Generates the root of the preprocessed trace commitment tree for a given `log_blowup_factor`.
 /// If `lifting_log_size` is provided, the preprocessed trace will be lifted to the given log size
 /// before generating the root.
@@ -27,6 +29,7 @@ pub fn generate_preprocessed_commitment_root<MC: MerkleChannel>(
 where
     SimdBackend: BackendForChannel<MC>,
 {
+    warm_pedersen_pp_trace(preprocessed_trace);
     let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace());
 
     // Precompute twiddles for the commitment scheme.
