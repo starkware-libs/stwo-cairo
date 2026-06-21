@@ -93,14 +93,32 @@ impl ClaimGenerator {
 
     pub fn add_inputs(&self, inputs: &[InputType]) {
         for input in inputs {
-            self.add_input(input, 0);
+            self.add_input(input);
         }
+    }
+
+    pub fn add_packed_inputs(&self, inputs: &[PackedInputType], _relation_index: usize) {
+        inputs.iter().for_each(|input| {
+            self.add_packed_m31(input);
+        });
     }
 
     pub fn add_packed_m31(&self, inputs: &PackedM31) {
         let memory_ids = inputs.to_array();
         for memory_id in memory_ids {
-            self.add_input(&memory_id, 0);
+            self.add_input(&memory_id);
+        }
+    }
+
+    pub fn add_input(&self, encoded_memory_id: &M31) {
+        match EncodedMemoryValueId(encoded_memory_id.0).decode() {
+            MemoryValueId::F252(id) => {
+                self.big_mults.increase_at(id);
+            }
+            MemoryValueId::Small(id) => {
+                self.small_mults.increase_at(id);
+            }
+            MemoryValueId::Empty => panic!("Attempted add_input on empty memory cell."),
         }
     }
 
@@ -272,28 +290,6 @@ impl ClaimGenerator {
                 small_multiplicities,
             },
         )
-    }
-}
-
-impl AddInputs for ClaimGenerator {
-    type PackedInputType = PackedInputType;
-    type InputType = InputType;
-    fn add_input(&self, encoded_memory_id: &M31, _relation_index: usize) {
-        match EncodedMemoryValueId(encoded_memory_id.0).decode() {
-            MemoryValueId::F252(id) => {
-                self.big_mults.increase_at(id);
-            }
-            MemoryValueId::Small(id) => {
-                self.small_mults.increase_at(id);
-            }
-            MemoryValueId::Empty => panic!("Attempted add_input on empty memory cell."),
-        }
-    }
-
-    fn add_packed_inputs(&self, packed_inputs: &[Self::PackedInputType], _relation_index: usize) {
-        packed_inputs.iter().for_each(|input| {
-            self.add_packed_m31(input);
-        });
     }
 }
 

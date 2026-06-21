@@ -39,15 +39,10 @@ impl ClaimGenerator {
             memory_id_to_big_state,
         );
         for inputs in sub_component_inputs.memory_address_to_id {
-            add_inputs(
-                memory_address_to_id_state,
-                &inputs,
-                inputs.len() * N_LANES,
-                0,
-            );
+            memory_address_to_id_state.add_packed_inputs(&inputs, 0);
         }
         for inputs in sub_component_inputs.memory_id_to_big {
-            add_inputs(memory_id_to_big_state, &inputs, inputs.len() * N_LANES, 0);
+            memory_id_to_big_state.add_packed_inputs(&inputs, 0);
         }
 
         (

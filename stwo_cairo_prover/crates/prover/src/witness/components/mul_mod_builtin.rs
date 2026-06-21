@@ -47,29 +47,19 @@ impl ClaimGenerator {
             range_check_18_state,
         );
         for inputs in sub_component_inputs.memory_address_to_id {
-            add_inputs(
-                memory_address_to_id_state,
-                &inputs,
-                inputs.len() * N_LANES,
-                0,
-            );
+            memory_address_to_id_state.add_packed_inputs(&inputs, 0);
         }
         for inputs in sub_component_inputs.memory_id_to_big {
-            add_inputs(memory_id_to_big_state, &inputs, inputs.len() * N_LANES, 0);
+            memory_id_to_big_state.add_packed_inputs(&inputs, 0);
         }
         for inputs in sub_component_inputs.range_check_12 {
-            add_inputs(range_check_12_state, &inputs, inputs.len() * N_LANES, 0);
+            range_check_12_state.add_packed_inputs(&inputs, 0);
         }
         for inputs in sub_component_inputs.range_check_3_6_6_3 {
-            add_inputs(
-                range_check_3_6_6_3_state,
-                &inputs,
-                inputs.len() * N_LANES,
-                0,
-            );
+            range_check_3_6_6_3_state.add_packed_inputs(&inputs, 0);
         }
         for inputs in sub_component_inputs.range_check_18 {
-            add_inputs(range_check_18_state, &inputs, inputs.len() * N_LANES, 0);
+            range_check_18_state.add_packed_inputs(&inputs, 0);
         }
 
         (

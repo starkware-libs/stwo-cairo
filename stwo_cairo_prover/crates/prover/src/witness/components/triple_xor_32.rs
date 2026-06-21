@@ -6,13 +6,11 @@ use cairo_air::components::triple_xor_32::{Claim, InteractionClaim, N_TRACE_COLU
 use crate::witness::components::verify_bitwise_xor_8;
 use crate::witness::prelude::*;
 
-pub type InputType = [UInt32; 3];
 pub type PackedInputType = [PackedUInt32; 3];
 
 #[derive(Default)]
 pub struct ClaimGenerator {
-    pub packed_inputs: Mutex<Vec<PackedInputType>>,
-    pub remainder_inputs: Mutex<Vec<InputType>>,
+    pub packed_inputs: Vec<PackedInputType>,
 }
 
 impl ClaimGenerator {
@@ -21,39 +19,28 @@ impl ClaimGenerator {
     }
 
     pub fn write_trace(
-        self,
+        mut self,
         verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
     ) -> (
         ComponentTrace<N_TRACE_COLUMNS>,
         Claim,
         InteractionClaimGenerator,
     ) {
-        let mut packed_inputs = self.packed_inputs.into_inner().unwrap();
-        assert!(!packed_inputs.is_empty());
-        assert!(self.remainder_inputs.lock().unwrap().is_empty());
-        let n_vec_rows = packed_inputs.len();
+        assert!(!self.packed_inputs.is_empty());
+        let n_vec_rows = self.packed_inputs.len();
         let n_rows = n_vec_rows * N_LANES;
         let packed_size = n_vec_rows.next_power_of_two();
         let log_size = packed_size.ilog2() + LOG_N_LANES;
-        packed_inputs.resize(packed_size, *packed_inputs.first().unwrap());
+        self.packed_inputs
+            .resize(packed_size, *self.packed_inputs.first().unwrap());
 
         let (trace, lookup_data, sub_component_inputs) =
-            write_trace_simd(packed_inputs, n_rows, verify_bitwise_xor_8_state);
+            write_trace_simd(self.packed_inputs, n_rows, verify_bitwise_xor_8_state);
         for inputs in sub_component_inputs.verify_bitwise_xor_8 {
-            add_inputs(
-                verify_bitwise_xor_8_state,
-                &inputs,
-                inputs.len() * N_LANES,
-                0,
-            );
+            verify_bitwise_xor_8_state.add_packed_inputs(&inputs, 0);
         }
         for inputs in sub_component_inputs.verify_bitwise_xor_8_b {
-            add_inputs(
-                verify_bitwise_xor_8_state,
-                &inputs,
-                inputs.len() * N_LANES,
-                1,
-            );
+            verify_bitwise_xor_8_state.add_packed_inputs(&inputs, 1);
         }
 
         (
@@ -65,17 +52,9 @@ impl ClaimGenerator {
             },
         )
     }
-}
 
-impl AddInputs for ClaimGenerator {
-    type PackedInputType = PackedInputType;
-    type InputType = InputType;
-
-    fn add_packed_inputs(&self, inputs: &[PackedInputType], _relation_index: usize) {
-        self.packed_inputs.lock().unwrap().extend(inputs);
-    }
-    fn add_input(&self, input: &InputType, _relation_index: usize) {
-        self.remainder_inputs.lock().unwrap().push(*input);
+    pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType], _relation_index: usize) {
+        self.packed_inputs.extend(inputs);
     }
 }
 

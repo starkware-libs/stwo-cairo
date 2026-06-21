@@ -23,7 +23,6 @@ use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{PreProcessedColumn, Seq};
 use stwo_constraint_framework::{LogupTraceGenerator, Relation};
 
-use crate::witness::prelude::AddInputs;
 use crate::witness::utils::AtomicMultiplicityColumn;
 
 pub type InputType = M31;
@@ -99,15 +98,26 @@ impl ClaimGenerator {
 
     pub fn add_inputs(&self, inputs: &[InputType]) {
         for input in inputs {
-            self.add_input(input, 0);
+            self.add_input(input);
         }
+    }
+
+    pub fn add_packed_inputs(&self, inputs: &[PackedInputType], _relation_index: usize) {
+        inputs.iter().for_each(|input| {
+            self.add_packed_m31(input);
+        });
     }
 
     pub fn add_packed_m31(&self, inputs: &PackedBaseField) {
         let addresses = inputs.to_array();
         for address in addresses {
-            self.add_input(&address, 0);
+            self.add_input(&address);
         }
+    }
+
+    pub fn add_input(&self, addr: &BaseField) {
+        // Addresses are offset by 1.
+        self.multiplicities.increase_at(addr.0 - 1);
     }
 
     pub fn write_trace(
@@ -173,22 +183,6 @@ impl ClaimGenerator {
     }
 }
 
-impl AddInputs for ClaimGenerator {
-    type PackedInputType = PackedInputType;
-    type InputType = InputType;
-
-    fn add_packed_inputs(&self, inputs: &[PackedInputType], _relation_index: usize) {
-        inputs.iter().for_each(|input| {
-            self.add_packed_m31(input);
-        });
-    }
-
-    fn add_input(&self, addr: &InputType, _relation_index: usize) {
-        // Addresses are offset by 1.
-        self.multiplicities.increase_at(addr.0 - 1);
-    }
-}
-
 pub struct InteractionClaimGenerator {
     pub ids: [Vec<PackedM31>; MEMORY_ADDRESS_TO_ID_SPLIT],
     pub multiplicities: [Vec<PackedM31>; MEMORY_ADDRESS_TO_ID_SPLIT],
@@ -247,7 +241,6 @@ mod tests {
     use stwo_cairo_adapter::memory::{MemoryBuilder, MemoryConfig, MemoryEntry};
 
     use crate::witness::components::memory_address_to_id;
-    use crate::witness::prelude::AddInputs;
 
     #[test]
     fn test_memory_multiplicities() {
@@ -269,7 +262,7 @@ mod tests {
         let expected_mults = [2, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0].map(M31);
 
         address_usages.iter().for_each(|addr| {
-            memory_address_to_id_gen.add_input(addr, 0);
+            memory_address_to_id_gen.add_input(addr);
         });
         let actual_mults = memory_address_to_id_gen.multiplicities.into_simd_vec();
 

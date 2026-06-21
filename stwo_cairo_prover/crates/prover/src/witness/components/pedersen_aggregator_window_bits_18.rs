@@ -25,7 +25,7 @@ impl ClaimGenerator {
         self,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
         range_check_8_state: &range_check_8::ClaimGenerator,
-        partial_ec_mul_window_bits_18_state: &partial_ec_mul_window_bits_18::ClaimGenerator,
+        partial_ec_mul_window_bits_18_state: &mut partial_ec_mul_window_bits_18::ClaimGenerator,
     ) -> (
         ComponentTrace<N_TRACE_COLUMNS>,
         Claim,
@@ -60,18 +60,13 @@ impl ClaimGenerator {
             partial_ec_mul_window_bits_18_state,
         );
         for inputs in sub_component_inputs.memory_id_to_big {
-            add_inputs(memory_id_to_big_state, &inputs, inputs.len() * N_LANES, 0);
+            memory_id_to_big_state.add_packed_inputs(&inputs, 0);
         }
         for inputs in sub_component_inputs.range_check_8 {
-            add_inputs(range_check_8_state, &inputs, inputs.len() * N_LANES, 0);
+            range_check_8_state.add_packed_inputs(&inputs, 0);
         }
         for inputs in sub_component_inputs.partial_ec_mul_window_bits_18 {
-            add_inputs(
-                partial_ec_mul_window_bits_18_state,
-                &inputs,
-                inputs.len() * N_LANES,
-                0,
-            );
+            partial_ec_mul_window_bits_18_state.add_packed_inputs(&inputs, 0);
         }
 
         (
@@ -83,13 +78,8 @@ impl ClaimGenerator {
             },
         )
     }
-}
 
-impl AddInputs for ClaimGenerator {
-    type PackedInputType = PackedInputType;
-    type InputType = InputType;
-
-    fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], _relation_index: usize) {
+    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], _relation_index: usize) {
         let merged: HashMap<InputType, u32> = packed_inputs
             .par_iter()
             .flat_map(|p| p.unpack())
@@ -111,12 +101,6 @@ impl AddInputs for ClaimGenerator {
                 .fetch_add(v, Ordering::Relaxed);
         }
     }
-    fn add_input(&self, input: &InputType, _relation_index: usize) {
-        self.mults
-            .entry(*input)
-            .or_insert_with(|| AtomicU32::new(0))
-            .fetch_add(1, Ordering::Relaxed);
-    }
 }
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
@@ -135,7 +119,7 @@ fn write_trace_simd(
     mults: Vec<Vec<PackedM31>>,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
     range_check_8_state: &range_check_8::ClaimGenerator,
-    partial_ec_mul_window_bits_18_state: &partial_ec_mul_window_bits_18::ClaimGenerator,
+    partial_ec_mul_window_bits_18_state: &mut partial_ec_mul_window_bits_18::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,
