@@ -79,7 +79,11 @@ where
 /// The table is a `LazyLock` whose initializer itself uses rayon. Forcing it before the parallel
 /// witness generation avoids a deadlock: if first built from within that section, the worker pool
 /// is exhausted and the initializer can't get the threads it needs to finish.
-pub(crate) fn warm_pedersen_pp_trace(variant: PreProcessedTraceVariant) {
+///
+/// Exposed so that callers driving the precompute path (`prove_cairo_with_precompute`) directly --
+/// materializing the preprocessed trace via `gen_trace` themselves -- can warm the table before
+/// that step. `PreProcessedColumn::get_data` panics if the table is read before being warmed.
+pub fn warm_pedersen_pp_trace(variant: PreProcessedTraceVariant) {
     match variant {
         PreProcessedTraceVariant::Canonical => {
             LazyLock::force(&PEDERSEN_TABLE_18);
