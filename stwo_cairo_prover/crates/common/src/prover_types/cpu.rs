@@ -807,7 +807,7 @@ impl<const B: usize, const L: usize, const F: usize> BigUInt<B, L, F> {
         let mask = (1u64 << BIGUINT_BITS_PER_WORD) - 1;
         let shift = BIGUINT_BITS_PER_WORD * index;
         let low_limb = shift / 64;
-        let shift_low = shift & 0x3F;
+        let shift_low = shift & 63;
         let high_limb = (shift + BIGUINT_BITS_PER_WORD - 1) / 64;
         let value = if low_limb == high_limb {
             ((self.limbs[low_limb] >> (shift_low)) & mask) as u32
