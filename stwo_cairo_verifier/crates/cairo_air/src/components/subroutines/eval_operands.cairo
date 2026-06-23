@@ -9,6 +9,7 @@ use crate::prelude::*;
 
 pub fn eval_operands_evaluate(
     input: [QM31; 16],
+    enabler: QM31,
     dst_src_col0: QM31,
     dst_id_col1: QM31,
     dst_limb_0_col2: QM31,
@@ -369,6 +370,7 @@ pub fn eval_operands_evaluate(
     sum = sum * random_coeff + constraint_quotient;
     read_positive_num_bits_252_evaluate(
         (dst_src_col0 + eval_operands_input_offset0),
+        enabler,
         dst_id_col1,
         dst_limb_0_col2,
         dst_limb_1_col3,
@@ -415,6 +417,7 @@ pub fn eval_operands_evaluate(
     sum = sum * random_coeff + constraint_quotient;
     read_positive_num_bits_252_evaluate(
         (op0_src_col30 + eval_operands_input_offset1),
+        enabler,
         op0_id_col31,
         op0_limb_0_col32,
         op0_limb_1_col33,
@@ -463,6 +466,7 @@ pub fn eval_operands_evaluate(
             op0_limb_24_col56, op0_limb_25_col57, op0_limb_26_col58, op0_limb_27_col59,
             eval_operands_input_op1_base_op0,
         ],
+        enabler,
         partial_limb_msb_col60,
         common_lookup_elements,
         ref sum,
@@ -478,6 +482,7 @@ pub fn eval_operands_evaluate(
     sum = sum * random_coeff + constraint_quotient;
     read_positive_num_bits_252_evaluate(
         (op1_src_col61 + eval_operands_input_offset2),
+        enabler,
         op1_id_col62,
         op1_limb_0_col63,
         op1_limb_1_col64,
@@ -532,6 +537,7 @@ pub fn eval_operands_evaluate(
             op1_limb_20_col83, op1_limb_21_col84, op1_limb_22_col85, op1_limb_23_col86,
             op1_limb_24_col87, op1_limb_25_col88, op1_limb_26_col89, op1_limb_27_col90,
         ],
+        enabler,
         add_res_limb_0_col91,
         add_res_limb_1_col92,
         add_res_limb_2_col93,
@@ -610,6 +616,7 @@ pub fn eval_operands_evaluate(
             op1_limb_20_col83, op1_limb_21_col84, op1_limb_22_col85, op1_limb_23_col86,
             op1_limb_24_col87, op1_limb_25_col88, op1_limb_26_col89, op1_limb_27_col90,
         ],
+        enabler,
         mul_res_limb_0_col120,
         mul_res_limb_1_col121,
         mul_res_limb_2_col122,

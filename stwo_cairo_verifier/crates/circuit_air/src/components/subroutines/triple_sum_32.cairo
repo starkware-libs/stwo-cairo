@@ -6,6 +6,7 @@ use crate::prelude::*;
 
 pub fn triple_sum_32_evaluate(
     input: [QM31; 6],
+    enabler: QM31,
     triple_sum32_res_limb_0_col0: QM31,
     triple_sum32_res_limb_1_col1: QM31,
     common_lookup_elements: @CommonLookupElements,
@@ -28,6 +29,7 @@ pub fn triple_sum_32_evaluate(
             triple_sum_32_input_c_limb_0, triple_sum_32_input_c_limb_1,
             triple_sum32_res_limb_0_col0, triple_sum32_res_limb_1_col1,
         ],
+        enabler,
         common_lookup_elements,
         ref sum,
         random_coeff,

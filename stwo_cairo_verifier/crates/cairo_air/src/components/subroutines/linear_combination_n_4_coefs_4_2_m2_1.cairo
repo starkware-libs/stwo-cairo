@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn linear_combination_n_4_coefs_4_2_m2_1_evaluate(
     input: [QM31; 40],
+    enabler: QM31,
     combination_limb_0_col0: QM31,
     combination_limb_1_col1: QM31,
     combination_limb_2_col2: QM31,
@@ -155,7 +156,7 @@ pub fn linear_combination_n_4_coefs_4_2_m2_1_evaluate(
             ]
                 .span(),
         );
-    numerator_0 = qm31_const::<1, 0, 0, 0>();
+    numerator_0 = enabler;
 
     range_check_4_4_4_4_sum_1 = common_lookup_elements
         .combine_qm31(
@@ -168,7 +169,7 @@ pub fn linear_combination_n_4_coefs_4_2_m2_1_evaluate(
             ]
                 .span(),
         );
-    numerator_1 = qm31_const::<1, 0, 0, 0>();
+    numerator_1 = enabler;
 
     range_check_4_4_sum_2 = common_lookup_elements
         .combine_qm31(
@@ -179,7 +180,7 @@ pub fn linear_combination_n_4_coefs_4_2_m2_1_evaluate(
             ]
                 .span(),
         );
-    numerator_2 = qm31_const::<1, 0, 0, 0>();
+    numerator_2 = enabler;
 
     []
 }

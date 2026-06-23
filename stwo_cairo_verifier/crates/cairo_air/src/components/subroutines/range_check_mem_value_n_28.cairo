@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn range_check_mem_value_n_28_evaluate(
     input: [QM31; 28],
+    enabler: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref range_check_9_9_sum_0: QM31,
     ref numerator_0: QM31,
@@ -77,7 +78,7 @@ pub fn range_check_mem_value_n_28_evaluate(
             ]
                 .span(),
         );
-    numerator_0 = qm31_const::<1, 0, 0, 0>();
+    numerator_0 = enabler;
 
     range_check_9_9_b_sum_1 = common_lookup_elements
         .combine_qm31(
@@ -87,7 +88,7 @@ pub fn range_check_mem_value_n_28_evaluate(
             ]
                 .span(),
         );
-    numerator_1 = qm31_const::<1, 0, 0, 0>();
+    numerator_1 = enabler;
 
     range_check_9_9_c_sum_2 = common_lookup_elements
         .combine_qm31(
@@ -97,7 +98,7 @@ pub fn range_check_mem_value_n_28_evaluate(
             ]
                 .span(),
         );
-    numerator_2 = qm31_const::<1, 0, 0, 0>();
+    numerator_2 = enabler;
 
     range_check_9_9_d_sum_3 = common_lookup_elements
         .combine_qm31(
@@ -107,7 +108,7 @@ pub fn range_check_mem_value_n_28_evaluate(
             ]
                 .span(),
         );
-    numerator_3 = qm31_const::<1, 0, 0, 0>();
+    numerator_3 = enabler;
 
     range_check_9_9_e_sum_4 = common_lookup_elements
         .combine_qm31(
@@ -117,7 +118,7 @@ pub fn range_check_mem_value_n_28_evaluate(
             ]
                 .span(),
         );
-    numerator_4 = qm31_const::<1, 0, 0, 0>();
+    numerator_4 = enabler;
 
     range_check_9_9_f_sum_5 = common_lookup_elements
         .combine_qm31(
@@ -127,7 +128,7 @@ pub fn range_check_mem_value_n_28_evaluate(
             ]
                 .span(),
         );
-    numerator_5 = qm31_const::<1, 0, 0, 0>();
+    numerator_5 = enabler;
 
     range_check_9_9_g_sum_6 = common_lookup_elements
         .combine_qm31(
@@ -137,7 +138,7 @@ pub fn range_check_mem_value_n_28_evaluate(
             ]
                 .span(),
         );
-    numerator_6 = qm31_const::<1, 0, 0, 0>();
+    numerator_6 = enabler;
 
     range_check_9_9_h_sum_7 = common_lookup_elements
         .combine_qm31(
@@ -147,7 +148,7 @@ pub fn range_check_mem_value_n_28_evaluate(
             ]
                 .span(),
         );
-    numerator_7 = qm31_const::<1, 0, 0, 0>();
+    numerator_7 = enabler;
 
     range_check_9_9_sum_8 = common_lookup_elements
         .combine_qm31(
@@ -157,7 +158,7 @@ pub fn range_check_mem_value_n_28_evaluate(
             ]
                 .span(),
         );
-    numerator_8 = qm31_const::<1, 0, 0, 0>();
+    numerator_8 = enabler;
 
     range_check_9_9_b_sum_9 = common_lookup_elements
         .combine_qm31(
@@ -167,7 +168,7 @@ pub fn range_check_mem_value_n_28_evaluate(
             ]
                 .span(),
         );
-    numerator_9 = qm31_const::<1, 0, 0, 0>();
+    numerator_9 = enabler;
 
     range_check_9_9_c_sum_10 = common_lookup_elements
         .combine_qm31(
@@ -177,7 +178,7 @@ pub fn range_check_mem_value_n_28_evaluate(
             ]
                 .span(),
         );
-    numerator_10 = qm31_const::<1, 0, 0, 0>();
+    numerator_10 = enabler;
 
     range_check_9_9_d_sum_11 = common_lookup_elements
         .combine_qm31(
@@ -187,7 +188,7 @@ pub fn range_check_mem_value_n_28_evaluate(
             ]
                 .span(),
         );
-    numerator_11 = qm31_const::<1, 0, 0, 0>();
+    numerator_11 = enabler;
 
     range_check_9_9_e_sum_12 = common_lookup_elements
         .combine_qm31(
@@ -197,7 +198,7 @@ pub fn range_check_mem_value_n_28_evaluate(
             ]
                 .span(),
         );
-    numerator_12 = qm31_const::<1, 0, 0, 0>();
+    numerator_12 = enabler;
 
     range_check_9_9_f_sum_13 = common_lookup_elements
         .combine_qm31(
@@ -207,7 +208,7 @@ pub fn range_check_mem_value_n_28_evaluate(
             ]
                 .span(),
         );
-    numerator_13 = qm31_const::<1, 0, 0, 0>();
+    numerator_13 = enabler;
 
     []
 }

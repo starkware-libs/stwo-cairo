@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn bitwise_xor_num_bits_8_evaluate(
     input: [QM31; 2],
+    enabler: QM31,
     xor_col0: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref verify_bitwise_xor_8_sum_0: QM31,
@@ -22,7 +23,7 @@ pub fn bitwise_xor_num_bits_8_evaluate(
             ]
                 .span(),
         );
-    numerator_0 = qm31_const::<1, 0, 0, 0>();
+    numerator_0 = enabler;
 
     []
 }

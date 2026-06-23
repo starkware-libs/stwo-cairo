@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn range_check_mem_value_n_8_evaluate(
     input: [QM31; 8],
+    enabler: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref range_check_9_9_sum_0: QM31,
     ref numerator_0: QM31,
@@ -37,7 +38,7 @@ pub fn range_check_mem_value_n_8_evaluate(
             ]
                 .span(),
         );
-    numerator_0 = qm31_const::<1, 0, 0, 0>();
+    numerator_0 = enabler;
 
     range_check_9_9_b_sum_1 = common_lookup_elements
         .combine_qm31(
@@ -47,7 +48,7 @@ pub fn range_check_mem_value_n_8_evaluate(
             ]
                 .span(),
         );
-    numerator_1 = qm31_const::<1, 0, 0, 0>();
+    numerator_1 = enabler;
 
     range_check_9_9_c_sum_2 = common_lookup_elements
         .combine_qm31(
@@ -57,7 +58,7 @@ pub fn range_check_mem_value_n_8_evaluate(
             ]
                 .span(),
         );
-    numerator_2 = qm31_const::<1, 0, 0, 0>();
+    numerator_2 = enabler;
 
     range_check_9_9_d_sum_3 = common_lookup_elements
         .combine_qm31(
@@ -67,7 +68,7 @@ pub fn range_check_mem_value_n_8_evaluate(
             ]
                 .span(),
         );
-    numerator_3 = qm31_const::<1, 0, 0, 0>();
+    numerator_3 = enabler;
 
     []
 }

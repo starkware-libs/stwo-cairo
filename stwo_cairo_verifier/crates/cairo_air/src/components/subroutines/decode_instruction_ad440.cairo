@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn decode_instruction_ad440_evaluate(
     input: QM31,
+    enabler: QM31,
     offset0_col0: QM31,
     dst_base_fp_col1: QM31,
     ap_update_add_1_col2: QM31,
@@ -38,7 +39,7 @@ pub fn decode_instruction_ad440_evaluate(
             ]
                 .span(),
         );
-    numerator_0 = qm31_const::<1, 0, 0, 0>();
+    numerator_0 = enabler;
 
     (offset0_col0 - qm31_const::<32768, 0, 0, 0>())
 }

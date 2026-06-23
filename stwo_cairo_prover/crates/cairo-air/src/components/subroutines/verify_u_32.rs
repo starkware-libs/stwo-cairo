@@ -16,6 +16,7 @@ impl VerifyU32 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [verify_u_32_input_limb_0, verify_u_32_input_limb_1, verify_u_32_input_limb_2]: [E::F; 3],
+        enabler: E::F,
         low_7_ms_bits_col0: E::F,
         high_14_ms_bits_col1: E::F,
         high_5_ms_bits_col2: E::F,
@@ -24,7 +25,6 @@ impl VerifyU32 {
         eval: &mut E,
     ) -> [E::F; 0] {
         let M31_0 = E::F::from(M31::from(0));
-        let M31_1 = E::F::from(M31::from(1));
         let M31_128 = E::F::from(M31::from(128));
         let M31_371240602 = E::F::from(M31::from(371240602));
         let M31_4 = E::F::from(M31::from(4));
@@ -35,7 +35,7 @@ impl VerifyU32 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_371240602.clone(),
                 low_7_ms_bits_col0.clone(),
@@ -77,6 +77,7 @@ impl VerifyU32 {
                 M31_0.clone(),
                 M31_0.clone(),
             ],
+            enabler.clone(),
             id_col3.clone(),
             common_lookup_elements,
             eval,

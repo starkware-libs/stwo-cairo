@@ -14,6 +14,7 @@ impl DecodeSmallSign {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         []: [E::F; 0],
+        enabler: E::F,
         msb_col0: E::F,
         mid_limbs_set_col1: E::F,
         common_lookup_elements: &relations::CommonLookupElements,

@@ -7,6 +7,7 @@ use crate::prelude::*;
 
 pub fn poseidon_partial_round_evaluate(
     input: [QM31; 50],
+    enabler: QM31,
     cube_252_output_limb_0_col0: QM31,
     cube_252_output_limb_1_col1: QM31,
     cube_252_output_limb_2_col2: QM31,
@@ -124,7 +125,7 @@ pub fn poseidon_partial_round_evaluate(
             ]
                 .span(),
         );
-    numerator_0 = qm31_const::<1, 0, 0, 0>();
+    numerator_0 = enabler;
     linear_combination_n_6_coefs_4_2_3_1_m1_1_evaluate(
         [
             poseidon_partial_round_input_z0_3_limb_0, poseidon_partial_round_input_z0_3_limb_1,
@@ -161,6 +162,7 @@ pub fn poseidon_partial_round_evaluate(
             poseidon_partial_round_input_half_key_limb_8,
             poseidon_partial_round_input_half_key_limb_9,
         ],
+        enabler,
         combination_limb_0_col10,
         combination_limb_1_col11,
         combination_limb_2_col12,
@@ -193,7 +195,7 @@ pub fn poseidon_partial_round_evaluate(
             ]
                 .span(),
         );
-    numerator_4 = qm31_const::<1, 0, 0, 0>();
+    numerator_4 = enabler;
     linear_combination_n_1_coefs_2_evaluate(
         [
             combination_limb_0_col10, combination_limb_1_col11, combination_limb_2_col12,
@@ -201,6 +203,7 @@ pub fn poseidon_partial_round_evaluate(
             combination_limb_6_col16, combination_limb_7_col17, combination_limb_8_col18,
             combination_limb_9_col19,
         ],
+        enabler,
         combination_limb_0_col21,
         combination_limb_1_col22,
         combination_limb_2_col23,

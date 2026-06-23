@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn decode_small_sign_evaluate(
     input: [QM31; 0],
+    enabler: QM31,
     msb_col0: QM31,
     mid_limbs_set_col1: QM31,
     common_lookup_elements: @CommonLookupElements,

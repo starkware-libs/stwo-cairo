@@ -127,15 +127,15 @@ impl ClaimGenerator {
         // Lookup data.
         let big_components_values: Vec<[_; FELT252_N_WORDS]> = big_table_traces
             .iter()
-            .map(|trace| std::array::from_fn(|i| trace[i].data.clone()))
+            .map(|trace| std::array::from_fn(|i| trace[i + 1].data.clone()))
             .collect_vec();
         let big_multiplicities = big_table_traces
             .iter()
-            .map(|trace| trace.last().unwrap().data.clone())
+            .map(|trace| trace.first().unwrap().data.clone())
             .collect_vec();
         let small_values: [_; N_M31_IN_SMALL_FELT252] =
-            std::array::from_fn(|i| small_table_trace[i].data.clone());
-        let small_multiplicities = small_table_trace.last().unwrap().data.clone();
+            std::array::from_fn(|i| small_table_trace[i + 1].data.clone());
+        let small_multiplicities = small_table_trace.first().unwrap().data.clone();
 
         // Add inputs to range check that all the values are 9-bit felts.
         for values in &big_components_values {
@@ -365,7 +365,7 @@ fn gen_single_big_memory_trace(values: &[[u32; 8]], mults: &[PackedM31]) -> Vec<
         }
     }
 
-    chain!(value_trace, [multiplicities]).collect_vec()
+    chain!([multiplicities], value_trace).collect_vec()
 }
 
 // Generates the trace of the small value memory table.
@@ -407,7 +407,7 @@ fn gen_small_memory_trace(values: Vec<u128>, mut mults: Vec<PackedM31>) -> Vec<B
         }
     }
 
-    chain!(values_trace, [multiplicities]).collect_vec()
+    chain!([multiplicities], values_trace).collect_vec()
 }
 
 #[derive(Debug)]

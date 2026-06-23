@@ -78,66 +78,67 @@ pub impl AirComponentImpl of AirComponent<Component> {
         let mut numerator_4: QM31 = Zero::zero();
 
         let [
-            input_pc_col0,
-            input_offset0_col1,
-            input_offset1_col2,
-            input_offset2_col3,
-            input_inst_felt5_high_col4,
-            input_inst_felt6_col5,
-            input_opcode_extension_col6,
-            offset0_low_col7,
-            offset0_mid_col8,
-            offset1_low_col9,
-            offset1_mid_col10,
-            offset1_high_col11,
-            offset2_low_col12,
-            offset2_mid_col13,
-            offset2_high_col14,
-            instruction_id_col15,
-            multiplicity_0_col16,
+            multiplicity_0_col0,
+            input_pc_col1,
+            input_offset0_col2,
+            input_offset1_col3,
+            input_offset2_col4,
+            input_inst_felt5_high_col5,
+            input_inst_felt6_col6,
+            input_opcode_extension_col7,
+            offset0_low_col8,
+            offset0_mid_col9,
+            offset1_low_col10,
+            offset1_mid_col11,
+            offset1_high_col12,
+            offset2_low_col13,
+            offset2_mid_col14,
+            offset2_high_col15,
+            instruction_id_col16,
         ]: [Span<QM31>; 17] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
             .unbox();
-        let [input_pc_col0]: [QM31; 1] = (*input_pc_col0.try_into().unwrap()).unbox();
-        let [input_offset0_col1]: [QM31; 1] = (*input_offset0_col1.try_into().unwrap()).unbox();
-        let [input_offset1_col2]: [QM31; 1] = (*input_offset1_col2.try_into().unwrap()).unbox();
-        let [input_offset2_col3]: [QM31; 1] = (*input_offset2_col3.try_into().unwrap()).unbox();
-        let [input_inst_felt5_high_col4]: [QM31; 1] = (*input_inst_felt5_high_col4
+        let [multiplicity_0_col0]: [QM31; 1] = (*multiplicity_0_col0.try_into().unwrap()).unbox();
+        let [input_pc_col1]: [QM31; 1] = (*input_pc_col1.try_into().unwrap()).unbox();
+        let [input_offset0_col2]: [QM31; 1] = (*input_offset0_col2.try_into().unwrap()).unbox();
+        let [input_offset1_col3]: [QM31; 1] = (*input_offset1_col3.try_into().unwrap()).unbox();
+        let [input_offset2_col4]: [QM31; 1] = (*input_offset2_col4.try_into().unwrap()).unbox();
+        let [input_inst_felt5_high_col5]: [QM31; 1] = (*input_inst_felt5_high_col5
             .try_into()
             .unwrap())
             .unbox();
-        let [input_inst_felt6_col5]: [QM31; 1] = (*input_inst_felt6_col5.try_into().unwrap())
+        let [input_inst_felt6_col6]: [QM31; 1] = (*input_inst_felt6_col6.try_into().unwrap())
             .unbox();
-        let [input_opcode_extension_col6]: [QM31; 1] = (*input_opcode_extension_col6
+        let [input_opcode_extension_col7]: [QM31; 1] = (*input_opcode_extension_col7
             .try_into()
             .unwrap())
             .unbox();
-        let [offset0_low_col7]: [QM31; 1] = (*offset0_low_col7.try_into().unwrap()).unbox();
-        let [offset0_mid_col8]: [QM31; 1] = (*offset0_mid_col8.try_into().unwrap()).unbox();
-        let [offset1_low_col9]: [QM31; 1] = (*offset1_low_col9.try_into().unwrap()).unbox();
-        let [offset1_mid_col10]: [QM31; 1] = (*offset1_mid_col10.try_into().unwrap()).unbox();
-        let [offset1_high_col11]: [QM31; 1] = (*offset1_high_col11.try_into().unwrap()).unbox();
-        let [offset2_low_col12]: [QM31; 1] = (*offset2_low_col12.try_into().unwrap()).unbox();
-        let [offset2_mid_col13]: [QM31; 1] = (*offset2_mid_col13.try_into().unwrap()).unbox();
-        let [offset2_high_col14]: [QM31; 1] = (*offset2_high_col14.try_into().unwrap()).unbox();
-        let [instruction_id_col15]: [QM31; 1] = (*instruction_id_col15.try_into().unwrap()).unbox();
-        let [multiplicity_0_col16]: [QM31; 1] = (*multiplicity_0_col16.try_into().unwrap()).unbox();
+        let [offset0_low_col8]: [QM31; 1] = (*offset0_low_col8.try_into().unwrap()).unbox();
+        let [offset0_mid_col9]: [QM31; 1] = (*offset0_mid_col9.try_into().unwrap()).unbox();
+        let [offset1_low_col10]: [QM31; 1] = (*offset1_low_col10.try_into().unwrap()).unbox();
+        let [offset1_mid_col11]: [QM31; 1] = (*offset1_mid_col11.try_into().unwrap()).unbox();
+        let [offset1_high_col12]: [QM31; 1] = (*offset1_high_col12.try_into().unwrap()).unbox();
+        let [offset2_low_col13]: [QM31; 1] = (*offset2_low_col13.try_into().unwrap()).unbox();
+        let [offset2_mid_col14]: [QM31; 1] = (*offset2_mid_col14.try_into().unwrap()).unbox();
+        let [offset2_high_col15]: [QM31; 1] = (*offset2_high_col15.try_into().unwrap()).unbox();
+        let [instruction_id_col16]: [QM31; 1] = (*instruction_id_col16.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
         let [encode_offsets_output_tmp_40a8f_8_limb_1, encode_offsets_output_tmp_40a8f_8_limb_3] =
             encode_offsets_evaluate(
-            [input_offset0_col1, input_offset1_col2, input_offset2_col3],
-            offset0_low_col7,
-            offset0_mid_col8,
-            offset1_low_col9,
-            offset1_mid_col10,
-            offset1_high_col11,
-            offset2_low_col12,
-            offset2_mid_col13,
-            offset2_high_col14,
+            [input_offset0_col2, input_offset1_col3, input_offset2_col4],
+            qm31_const::<1, 0, 0, 0>(),
+            offset0_low_col8,
+            offset0_mid_col9,
+            offset1_low_col10,
+            offset1_mid_col11,
+            offset1_high_col12,
+            offset2_low_col13,
+            offset2_mid_col14,
+            offset2_high_col15,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_0,
             ref numerator_0,
@@ -148,10 +149,10 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         mem_verify_evaluate(
             [
-                input_pc_col0, offset0_low_col7, encode_offsets_output_tmp_40a8f_8_limb_1,
-                offset1_mid_col10, encode_offsets_output_tmp_40a8f_8_limb_3, offset2_mid_col13,
-                (offset2_high_col14 + input_inst_felt5_high_col4), input_inst_felt6_col5,
-                input_opcode_extension_col6, qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
+                input_pc_col1, offset0_low_col8, encode_offsets_output_tmp_40a8f_8_limb_1,
+                offset1_mid_col11, encode_offsets_output_tmp_40a8f_8_limb_3, offset2_mid_col14,
+                (offset2_high_col15 + input_inst_felt5_high_col5), input_inst_felt6_col6,
+                input_opcode_extension_col7, qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
                 qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
                 qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
                 qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
@@ -159,7 +160,8 @@ pub impl AirComponentImpl of AirComponent<Component> {
                 qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
                 qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
             ],
-            instruction_id_col15,
+            qm31_const::<1, 0, 0, 0>(),
+            instruction_id_col16,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_2,
             ref numerator_2,
@@ -173,13 +175,13 @@ pub impl AirComponentImpl of AirComponent<Component> {
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1719106205, 0, 0, 0>(), input_pc_col0, input_offset0_col1,
-                    input_offset1_col2, input_offset2_col3, input_inst_felt5_high_col4,
-                    input_inst_felt6_col5, input_opcode_extension_col6,
+                    qm31_const::<1719106205, 0, 0, 0>(), input_pc_col1, input_offset0_col2,
+                    input_offset1_col3, input_offset2_col4, input_inst_felt5_high_col5,
+                    input_inst_felt6_col6, input_opcode_extension_col7,
                 ]
                     .span(),
             );
-        numerator_4 = multiplicity_0_col16;
+        numerator_4 = multiplicity_0_col0;
 
         lookup_constraints(
             ref sum,

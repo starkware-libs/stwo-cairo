@@ -6,6 +6,7 @@ use crate::prelude::*;
 
 pub fn handle_opcodes_evaluate(
     input: [QM31; 98],
+    enabler: QM31,
     partial_limb_msb_col0: QM31,
     partial_limb_msb_col1: QM31,
     common_lookup_elements: @CommonLookupElements,
@@ -304,6 +305,7 @@ pub fn handle_opcodes_evaluate(
             handle_opcodes_input_dst_limb_26, handle_opcodes_input_dst_limb_27,
             handle_opcodes_input_opcode_call,
         ],
+        enabler,
         partial_limb_msb_col0,
         common_lookup_elements,
         ref sum,
@@ -332,6 +334,7 @@ pub fn handle_opcodes_evaluate(
             handle_opcodes_input_op0_limb_26, handle_opcodes_input_op0_limb_27,
             handle_opcodes_input_opcode_call,
         ],
+        enabler,
         partial_limb_msb_col1,
         common_lookup_elements,
         ref sum,

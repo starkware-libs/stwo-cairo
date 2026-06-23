@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn read_positive_known_id_num_bits_99_evaluate(
     input: QM31,
+    enabler: QM31,
     value_limb_0_col0: QM31,
     value_limb_1_col1: QM31,
     value_limb_2_col2: QM31,
@@ -40,7 +41,7 @@ pub fn read_positive_known_id_num_bits_99_evaluate(
             ]
                 .span(),
         );
-    numerator_0 = qm31_const::<1, 0, 0, 0>();
+    numerator_0 = enabler;
 
     []
 }

@@ -97,8 +97,10 @@ impl FrameworkEval for BigEval {
 
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let M31_1 = E::F::from(M31::from(1));
         let M31_1662111297 = E::F::from(M31::from(1662111297));
         let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
+        let multiplicity = eval.next_trace_mask();
         let memory_id_to_big_output_col0 = eval.next_trace_mask();
         let memory_id_to_big_output_col1 = eval.next_trace_mask();
         let memory_id_to_big_output_col2 = eval.next_trace_mask();
@@ -127,7 +129,6 @@ impl FrameworkEval for BigEval {
         let memory_id_to_big_output_col25 = eval.next_trace_mask();
         let memory_id_to_big_output_col26 = eval.next_trace_mask();
         let memory_id_to_big_output_col27 = eval.next_trace_mask();
-        let multiplicity = eval.next_trace_mask();
 
         RangeCheckMemValueN28::evaluate(
             [
@@ -160,6 +161,7 @@ impl FrameworkEval for BigEval {
                 memory_id_to_big_output_col26.clone(),
                 memory_id_to_big_output_col27.clone(),
             ],
+            M31_1,
             &self.common_lookup_elements,
             &mut eval,
         );

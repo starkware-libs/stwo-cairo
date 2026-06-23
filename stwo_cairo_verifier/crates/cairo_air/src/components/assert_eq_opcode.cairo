@@ -78,50 +78,54 @@ pub impl AirComponentImpl of AirComponent<Component> {
         let mut numerator_4: QM31 = Zero::zero();
 
         let [
-            input_pc_col0,
-            input_ap_col1,
-            input_fp_col2,
-            offset0_col3,
-            offset2_col4,
-            dst_base_fp_col5,
-            op1_base_fp_col6,
-            ap_update_add_1_col7,
-            mem_dst_base_col8,
-            mem1_base_col9,
-            dst_id_col10,
-            enabler_col11,
+            enabler_col0,
+            input_pc_col1,
+            input_ap_col2,
+            input_fp_col3,
+            offset0_col4,
+            offset2_col5,
+            dst_base_fp_col6,
+            op1_base_fp_col7,
+            ap_update_add_1_col8,
+            mem_dst_base_col9,
+            mem1_base_col10,
+            dst_id_col11,
         ]: [Span<QM31>; 12] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
             .unbox();
-        let [input_pc_col0]: [QM31; 1] = (*input_pc_col0.try_into().unwrap()).unbox();
-        let [input_ap_col1]: [QM31; 1] = (*input_ap_col1.try_into().unwrap()).unbox();
-        let [input_fp_col2]: [QM31; 1] = (*input_fp_col2.try_into().unwrap()).unbox();
-        let [offset0_col3]: [QM31; 1] = (*offset0_col3.try_into().unwrap()).unbox();
-        let [offset2_col4]: [QM31; 1] = (*offset2_col4.try_into().unwrap()).unbox();
-        let [dst_base_fp_col5]: [QM31; 1] = (*dst_base_fp_col5.try_into().unwrap()).unbox();
-        let [op1_base_fp_col6]: [QM31; 1] = (*op1_base_fp_col6.try_into().unwrap()).unbox();
-        let [ap_update_add_1_col7]: [QM31; 1] = (*ap_update_add_1_col7.try_into().unwrap()).unbox();
-        let [mem_dst_base_col8]: [QM31; 1] = (*mem_dst_base_col8.try_into().unwrap()).unbox();
-        let [mem1_base_col9]: [QM31; 1] = (*mem1_base_col9.try_into().unwrap()).unbox();
-        let [dst_id_col10]: [QM31; 1] = (*dst_id_col10.try_into().unwrap()).unbox();
-        let [enabler_col11]: [QM31; 1] = (*enabler_col11.try_into().unwrap()).unbox();
+        let [enabler_col0]: [QM31; 1] = (*enabler_col0.try_into().unwrap()).unbox();
+        let [input_pc_col1]: [QM31; 1] = (*input_pc_col1.try_into().unwrap()).unbox();
+        let [input_ap_col2]: [QM31; 1] = (*input_ap_col2.try_into().unwrap()).unbox();
+        let [input_fp_col3]: [QM31; 1] = (*input_fp_col3.try_into().unwrap()).unbox();
+        let [offset0_col4]: [QM31; 1] = (*offset0_col4.try_into().unwrap()).unbox();
+        let [offset2_col5]: [QM31; 1] = (*offset2_col5.try_into().unwrap()).unbox();
+        let [dst_base_fp_col6]: [QM31; 1] = (*dst_base_fp_col6.try_into().unwrap()).unbox();
+        let [op1_base_fp_col7]: [QM31; 1] = (*op1_base_fp_col7.try_into().unwrap()).unbox();
+        let [ap_update_add_1_col8]: [QM31; 1] = (*ap_update_add_1_col8.try_into().unwrap()).unbox();
+        let [mem_dst_base_col9]: [QM31; 1] = (*mem_dst_base_col9.try_into().unwrap()).unbox();
+        let [mem1_base_col10]: [QM31; 1] = (*mem1_base_col10.try_into().unwrap()).unbox();
+        let [dst_id_col11]: [QM31; 1] = (*dst_id_col11.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
+        // Constraint - Enabler is a bit
+        let constraint_quotient = (((enabler_col0 * enabler_col0) - enabler_col0));
+        sum = sum * random_coeff + constraint_quotient;
         let [
             decode_instruction_135e3_output_tmp_36a9d_7_offset0,
             decode_instruction_135e3_output_tmp_36a9d_7_offset2,
             decode_instruction_135e3_output_tmp_36a9d_7_op1_base_ap,
         ] =
             decode_instruction_135e3_evaluate(
-            input_pc_col0,
-            offset0_col3,
-            offset2_col4,
-            dst_base_fp_col5,
-            op1_base_fp_col6,
-            ap_update_add_1_col7,
+            input_pc_col1,
+            enabler_col0,
+            offset0_col4,
+            offset2_col5,
+            dst_base_fp_col6,
+            op1_base_fp_col7,
+            ap_update_add_1_col8,
             self.common_lookup_elements,
             ref verify_instruction_sum_0,
             ref numerator_0,
@@ -130,22 +134,23 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
 
         // Constraint - mem_dst_base
-        let constraint_quotient = ((mem_dst_base_col8
-            - ((dst_base_fp_col5 * input_fp_col2)
-                + ((qm31_const::<1, 0, 0, 0>() - dst_base_fp_col5) * input_ap_col1))));
+        let constraint_quotient = ((mem_dst_base_col9
+            - ((dst_base_fp_col6 * input_fp_col3)
+                + ((qm31_const::<1, 0, 0, 0>() - dst_base_fp_col6) * input_ap_col2))));
         sum = sum * random_coeff + constraint_quotient;
 
         // Constraint - mem1_base
-        let constraint_quotient = ((mem1_base_col9
-            - ((op1_base_fp_col6 * input_fp_col2)
-                + (decode_instruction_135e3_output_tmp_36a9d_7_op1_base_ap * input_ap_col1))));
+        let constraint_quotient = ((mem1_base_col10
+            - ((op1_base_fp_col7 * input_fp_col3)
+                + (decode_instruction_135e3_output_tmp_36a9d_7_op1_base_ap * input_ap_col2))));
         sum = sum * random_coeff + constraint_quotient;
         mem_verify_equal_evaluate(
             [
-                (mem_dst_base_col8 + decode_instruction_135e3_output_tmp_36a9d_7_offset0),
-                (mem1_base_col9 + decode_instruction_135e3_output_tmp_36a9d_7_offset2),
+                (mem_dst_base_col9 + decode_instruction_135e3_output_tmp_36a9d_7_offset0),
+                (mem1_base_col10 + decode_instruction_135e3_output_tmp_36a9d_7_offset2),
             ],
-            dst_id_col10,
+            enabler_col0,
+            dst_id_col11,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_1,
             ref numerator_1,
@@ -155,29 +160,25 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
 
-        // Constraint - Enabler is a bit
-        let constraint_quotient = (((enabler_col11 * enabler_col11) - enabler_col11));
-        sum = sum * random_coeff + constraint_quotient;
-
         opcodes_sum_3 = self
             .common_lookup_elements
             .combine_qm31(
-                [qm31_const::<428564188, 0, 0, 0>(), input_pc_col0, input_ap_col1, input_fp_col2]
+                [qm31_const::<428564188, 0, 0, 0>(), input_pc_col1, input_ap_col2, input_fp_col3]
                     .span(),
             );
-        numerator_3 = enabler_col11;
+        numerator_3 = enabler_col0;
 
         opcodes_sum_4 = self
             .common_lookup_elements
             .combine_qm31(
                 [
                     qm31_const::<428564188, 0, 0, 0>(),
-                    (input_pc_col0 + qm31_const::<1, 0, 0, 0>()),
-                    (input_ap_col1 + ap_update_add_1_col7), input_fp_col2,
+                    (input_pc_col1 + qm31_const::<1, 0, 0, 0>()),
+                    (input_ap_col2 + ap_update_add_1_col8), input_fp_col3,
                 ]
                     .span(),
             );
-        numerator_4 = enabler_col11;
+        numerator_4 = enabler_col0;
 
         lookup_constraints(
             ref sum,

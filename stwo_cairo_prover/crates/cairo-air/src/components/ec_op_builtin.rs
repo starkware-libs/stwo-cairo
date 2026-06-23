@@ -358,6 +358,7 @@ impl FrameworkEval for Eval {
         );
         ReadPositiveNumBits252::evaluate(
             [instance_addr_tmp_1b73f_0.clone()],
+            M31_1.clone(),
             p_x_id_col0.clone(),
             p_x_limb_0_col1.clone(),
             p_x_limb_1_col2.clone(),
@@ -392,6 +393,7 @@ impl FrameworkEval for Eval {
         );
         ReadPositiveNumBits252::evaluate(
             [(instance_addr_tmp_1b73f_0.clone() + M31_1.clone())],
+            M31_1.clone(),
             p_y_id_col29.clone(),
             p_y_limb_0_col30.clone(),
             p_y_limb_1_col31.clone(),
@@ -426,6 +428,7 @@ impl FrameworkEval for Eval {
         );
         ReadPositiveNumBits252::evaluate(
             [(instance_addr_tmp_1b73f_0.clone() + M31_2.clone())],
+            M31_1.clone(),
             q_x_id_col58.clone(),
             q_x_limb_0_col59.clone(),
             q_x_limb_1_col60.clone(),
@@ -460,6 +463,7 @@ impl FrameworkEval for Eval {
         );
         ReadPositiveNumBits252::evaluate(
             [(instance_addr_tmp_1b73f_0.clone() + M31_3.clone())],
+            M31_1.clone(),
             q_y_id_col87.clone(),
             q_y_limb_0_col88.clone(),
             q_y_limb_1_col89.clone(),
@@ -494,6 +498,7 @@ impl FrameworkEval for Eval {
         );
         ReadPositiveNumBits252::evaluate(
             [(instance_addr_tmp_1b73f_0.clone() + M31_4.clone())],
+            M31_1.clone(),
             m_id_col116.clone(),
             m_limb_0_col117.clone(),
             m_limb_1_col118.clone(),
@@ -557,6 +562,7 @@ impl FrameworkEval for Eval {
                 m_limb_26_col143.clone(),
                 m_limb_27_col144.clone(),
             ],
+            M31_1.clone(),
             ms_limb_is_max_col145.clone(),
             ms_and_mid_limbs_are_max_col146.clone(),
             rc_input_col147.clone(),
@@ -872,6 +878,7 @@ impl FrameworkEval for Eval {
                 partial_ec_mul_generic_output_accumulator_x_limb_26_col240.clone(),
                 partial_ec_mul_generic_output_accumulator_x_limb_27_col241.clone(),
             ],
+            M31_1.clone(),
             res_x_id_col271.clone(),
             &self.common_lookup_elements,
             &mut eval,
@@ -908,6 +915,7 @@ impl FrameworkEval for Eval {
                 partial_ec_mul_generic_output_accumulator_y_limb_26_col268.clone(),
                 partial_ec_mul_generic_output_accumulator_y_limb_27_col269.clone(),
             ],
+            M31_1.clone(),
             res_y_id_col272.clone(),
             &self.common_lookup_elements,
             &mut eval,

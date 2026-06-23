@@ -8,6 +8,7 @@ use crate::prelude::*;
 
 pub fn decode_blake_opcode_evaluate(
     input: [QM31; 3],
+    enabler: QM31,
     offset0_col0: QM31,
     offset1_col1: QM31,
     offset2_col2: QM31,
@@ -77,6 +78,7 @@ pub fn decode_blake_opcode_evaluate(
     ] =
         decode_instruction_30129_evaluate(
         decode_blake_opcode_input_pc,
+        enabler,
         offset0_col0,
         offset1_col1,
         offset2_col2,
@@ -104,6 +106,7 @@ pub fn decode_blake_opcode_evaluate(
     sum = sum * random_coeff + constraint_quotient;
     read_positive_num_bits_29_evaluate(
         (mem0_base_col8 + decode_instruction_30129_output_tmp_c2bd8_9_offset1),
+        enabler,
         op0_id_col9,
         op0_limb_0_col10,
         op0_limb_1_col11,
@@ -127,6 +130,7 @@ pub fn decode_blake_opcode_evaluate(
     sum = sum * random_coeff + constraint_quotient;
     read_positive_num_bits_29_evaluate(
         (mem1_base_col15 + decode_instruction_30129_output_tmp_c2bd8_9_offset2),
+        enabler,
         op1_id_col16,
         op1_limb_0_col17,
         op1_limb_1_col18,
@@ -143,6 +147,7 @@ pub fn decode_blake_opcode_evaluate(
     );
     read_positive_num_bits_29_evaluate(
         decode_blake_opcode_input_ap,
+        enabler,
         ap_id_col22,
         ap_limb_0_col23,
         ap_limb_1_col24,
@@ -165,6 +170,7 @@ pub fn decode_blake_opcode_evaluate(
     sum = sum * random_coeff + constraint_quotient;
     read_u_32_evaluate(
         (mem_dst_base_col28 + decode_instruction_30129_output_tmp_c2bd8_9_offset0),
+        enabler,
         low_16_bits_col29,
         high_16_bits_col30,
         low_7_ms_bits_col31,
