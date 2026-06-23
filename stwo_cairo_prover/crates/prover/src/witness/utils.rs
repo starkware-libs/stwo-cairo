@@ -268,6 +268,22 @@ pub fn add_inputs<C, Packed, Unpacked>(
     }
 }
 
+pub fn add_remainder<Packed, Unpacked>(packed_inputs: &mut Vec<Packed>, remainder: &[Unpacked])
+where
+    Packed: Unpack,
+    Unpacked: Pack<SimdType = Packed>,
+{
+    if remainder.is_empty() {
+        return;
+    }
+
+    let mut padded = remainder.to_owned();
+    padded.resize(remainder.len().next_multiple_of(N_LANES), remainder[0]);
+    for chunk in padded.into_iter().array_chunks() {
+        packed_inputs.push(Unpacked::pack(chunk));
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use rand::rngs::SmallRng;
