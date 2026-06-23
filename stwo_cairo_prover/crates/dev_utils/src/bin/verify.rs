@@ -5,7 +5,7 @@ use cairo_air::verifier::verify_cairo;
 use cairo_air::CairoProofForRustVerifier;
 use clap::Parser;
 use stwo::core::vcs_lifted::blake2_merkle::{
-    Blake2sM31MerkleChannel, Blake2sM31MerkleHasher, Blake2sMerkleChannel, Blake2sMerkleHasher,
+    Blake2sM31MerkleChannel, Blake2sMerkleChannel, Blake2sMerkleHasher,
 };
 use stwo::core::vcs_lifted::poseidon252_merkle::{
     Poseidon252MerkleChannel, Poseidon252MerkleHasher,
@@ -50,7 +50,7 @@ fn verify_blake2s_proof(proof: String) -> Result<()> {
 }
 
 fn verify_blake2s_m31_proof(proof: String) -> Result<()> {
-    let proof: CairoProofForRustVerifier<Blake2sM31MerkleHasher> = sonic_rs::from_str(&proof)?;
+    let proof: CairoProofForRustVerifier<Blake2sMerkleHasher> = sonic_rs::from_str(&proof)?;
     verify_cairo::<Blake2sM31MerkleChannel>(proof)?;
     Ok(())
 }
