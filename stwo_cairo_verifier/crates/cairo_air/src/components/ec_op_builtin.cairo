@@ -1164,6 +1164,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             + ec_op_builtin_segment_start);
         read_positive_num_bits_252_evaluate(
             instance_addr_tmp_1b73f_0,
+            qm31_const::<1, 0, 0, 0>(),
             p_x_id_col0,
             p_x_limb_0_col1,
             p_x_limb_1_col2,
@@ -1203,6 +1204,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         read_positive_num_bits_252_evaluate(
             (instance_addr_tmp_1b73f_0 + qm31_const::<1, 0, 0, 0>()),
+            qm31_const::<1, 0, 0, 0>(),
             p_y_id_col29,
             p_y_limb_0_col30,
             p_y_limb_1_col31,
@@ -1242,6 +1244,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         read_positive_num_bits_252_evaluate(
             (instance_addr_tmp_1b73f_0 + qm31_const::<2, 0, 0, 0>()),
+            qm31_const::<1, 0, 0, 0>(),
             q_x_id_col58,
             q_x_limb_0_col59,
             q_x_limb_1_col60,
@@ -1281,6 +1284,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         read_positive_num_bits_252_evaluate(
             (instance_addr_tmp_1b73f_0 + qm31_const::<3, 0, 0, 0>()),
+            qm31_const::<1, 0, 0, 0>(),
             q_y_id_col87,
             q_y_limb_0_col88,
             q_y_limb_1_col89,
@@ -1320,6 +1324,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         read_positive_num_bits_252_evaluate(
             (instance_addr_tmp_1b73f_0 + qm31_const::<4, 0, 0, 0>()),
+            qm31_const::<1, 0, 0, 0>(),
             m_id_col116,
             m_limb_0_col117,
             m_limb_1_col118,
@@ -1367,6 +1372,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
                 m_limb_22_col139, m_limb_23_col140, m_limb_24_col141, m_limb_25_col142,
                 m_limb_26_col143, m_limb_27_col144,
             ],
+            qm31_const::<1, 0, 0, 0>(),
             ms_limb_is_max_col145,
             ms_and_mid_limbs_are_max_col146,
             rc_input_col147,
@@ -1604,6 +1610,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
                 partial_ec_mul_generic_output_accumulator_x_limb_26_col240,
                 partial_ec_mul_generic_output_accumulator_x_limb_27_col241,
             ],
+            qm31_const::<1, 0, 0, 0>(),
             res_x_id_col271,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_14,
@@ -1645,6 +1652,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
                 partial_ec_mul_generic_output_accumulator_y_limb_26_col268,
                 partial_ec_mul_generic_output_accumulator_y_limb_27_col269,
             ],
+            qm31_const::<1, 0, 0, 0>(),
             res_y_id_col272,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_16,

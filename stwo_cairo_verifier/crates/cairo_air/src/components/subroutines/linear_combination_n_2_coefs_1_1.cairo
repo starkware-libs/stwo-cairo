@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn linear_combination_n_2_coefs_1_1_evaluate(
     input: [QM31; 20],
+    enabler: QM31,
     combination_limb_0_col0: QM31,
     combination_limb_1_col1: QM31,
     combination_limb_2_col2: QM31,

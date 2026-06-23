@@ -114,6 +114,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         read_positive_num_bits_96_evaluate(
             (range_check96_builtin_segment_start + seq),
+            qm31_const::<1, 0, 0, 0>(),
             value_id_col0,
             value_limb_0_col1,
             value_limb_1_col2,

@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn felt_252_unpack_from_27_evaluate(
     input: [QM31; 10],
+    enabler: QM31,
     unpacked_limb_0_col0: QM31,
     unpacked_limb_1_col1: QM31,
     unpacked_limb_3_col2: QM31,

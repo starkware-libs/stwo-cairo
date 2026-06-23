@@ -50,7 +50,7 @@ pub fn evaluate_constraints_at_point(
     let mut numerator_14: QM31 = Zero::zero();
 
     let [
-        memory_id_to_big_output_col0,
+        multiplicity_0_col0,
         memory_id_to_big_output_col1,
         memory_id_to_big_output_col2,
         memory_id_to_big_output_col3,
@@ -78,16 +78,13 @@ pub fn evaluate_constraints_at_point(
         memory_id_to_big_output_col25,
         memory_id_to_big_output_col26,
         memory_id_to_big_output_col27,
-        multiplicity_0_col28,
+        memory_id_to_big_output_col28,
     ]: [Span<QM31>; 29] =
         (*trace_mask_values
         .multi_pop_front()
         .unwrap())
         .unbox();
-    let [memory_id_to_big_output_col0]: [QM31; 1] = (*memory_id_to_big_output_col0
-        .try_into()
-        .unwrap())
-        .unbox();
+    let [multiplicity_0_col0]: [QM31; 1] = (*multiplicity_0_col0.try_into().unwrap()).unbox();
     let [memory_id_to_big_output_col1]: [QM31; 1] = (*memory_id_to_big_output_col1
         .try_into()
         .unwrap())
@@ -196,27 +193,31 @@ pub fn evaluate_constraints_at_point(
         .try_into()
         .unwrap())
         .unbox();
-    let [multiplicity_0_col28]: [QM31; 1] = (*multiplicity_0_col28.try_into().unwrap()).unbox();
+    let [memory_id_to_big_output_col28]: [QM31; 1] = (*memory_id_to_big_output_col28
+        .try_into()
+        .unwrap())
+        .unbox();
 
     core::internal::revoke_ap_tracking();
 
     range_check_mem_value_n_28_evaluate(
         [
-            memory_id_to_big_output_col0, memory_id_to_big_output_col1,
-            memory_id_to_big_output_col2, memory_id_to_big_output_col3,
-            memory_id_to_big_output_col4, memory_id_to_big_output_col5,
-            memory_id_to_big_output_col6, memory_id_to_big_output_col7,
-            memory_id_to_big_output_col8, memory_id_to_big_output_col9,
-            memory_id_to_big_output_col10, memory_id_to_big_output_col11,
-            memory_id_to_big_output_col12, memory_id_to_big_output_col13,
-            memory_id_to_big_output_col14, memory_id_to_big_output_col15,
-            memory_id_to_big_output_col16, memory_id_to_big_output_col17,
-            memory_id_to_big_output_col18, memory_id_to_big_output_col19,
-            memory_id_to_big_output_col20, memory_id_to_big_output_col21,
-            memory_id_to_big_output_col22, memory_id_to_big_output_col23,
-            memory_id_to_big_output_col24, memory_id_to_big_output_col25,
-            memory_id_to_big_output_col26, memory_id_to_big_output_col27,
+            memory_id_to_big_output_col1, memory_id_to_big_output_col2,
+            memory_id_to_big_output_col3, memory_id_to_big_output_col4,
+            memory_id_to_big_output_col5, memory_id_to_big_output_col6,
+            memory_id_to_big_output_col7, memory_id_to_big_output_col8,
+            memory_id_to_big_output_col9, memory_id_to_big_output_col10,
+            memory_id_to_big_output_col11, memory_id_to_big_output_col12,
+            memory_id_to_big_output_col13, memory_id_to_big_output_col14,
+            memory_id_to_big_output_col15, memory_id_to_big_output_col16,
+            memory_id_to_big_output_col17, memory_id_to_big_output_col18,
+            memory_id_to_big_output_col19, memory_id_to_big_output_col20,
+            memory_id_to_big_output_col21, memory_id_to_big_output_col22,
+            memory_id_to_big_output_col23, memory_id_to_big_output_col24,
+            memory_id_to_big_output_col25, memory_id_to_big_output_col26,
+            memory_id_to_big_output_col27, memory_id_to_big_output_col28,
         ],
+        qm31_const::<1, 0, 0, 0>(),
         @common_lookup_elements,
         ref range_check_9_9_sum_0,
         ref numerator_0,
@@ -254,24 +255,24 @@ pub fn evaluate_constraints_at_point(
         .combine_qm31(
             [
                 qm31_const::<1662111297, 0, 0, 0>(), seq + offset.into(),
-                memory_id_to_big_output_col0, memory_id_to_big_output_col1,
-                memory_id_to_big_output_col2, memory_id_to_big_output_col3,
-                memory_id_to_big_output_col4, memory_id_to_big_output_col5,
-                memory_id_to_big_output_col6, memory_id_to_big_output_col7,
-                memory_id_to_big_output_col8, memory_id_to_big_output_col9,
-                memory_id_to_big_output_col10, memory_id_to_big_output_col11,
-                memory_id_to_big_output_col12, memory_id_to_big_output_col13,
-                memory_id_to_big_output_col14, memory_id_to_big_output_col15,
-                memory_id_to_big_output_col16, memory_id_to_big_output_col17,
-                memory_id_to_big_output_col18, memory_id_to_big_output_col19,
-                memory_id_to_big_output_col20, memory_id_to_big_output_col21,
-                memory_id_to_big_output_col22, memory_id_to_big_output_col23,
-                memory_id_to_big_output_col24, memory_id_to_big_output_col25,
-                memory_id_to_big_output_col26, memory_id_to_big_output_col27,
+                memory_id_to_big_output_col1, memory_id_to_big_output_col2,
+                memory_id_to_big_output_col3, memory_id_to_big_output_col4,
+                memory_id_to_big_output_col5, memory_id_to_big_output_col6,
+                memory_id_to_big_output_col7, memory_id_to_big_output_col8,
+                memory_id_to_big_output_col9, memory_id_to_big_output_col10,
+                memory_id_to_big_output_col11, memory_id_to_big_output_col12,
+                memory_id_to_big_output_col13, memory_id_to_big_output_col14,
+                memory_id_to_big_output_col15, memory_id_to_big_output_col16,
+                memory_id_to_big_output_col17, memory_id_to_big_output_col18,
+                memory_id_to_big_output_col19, memory_id_to_big_output_col20,
+                memory_id_to_big_output_col21, memory_id_to_big_output_col22,
+                memory_id_to_big_output_col23, memory_id_to_big_output_col24,
+                memory_id_to_big_output_col25, memory_id_to_big_output_col26,
+                memory_id_to_big_output_col27, memory_id_to_big_output_col28,
             ]
                 .span(),
         );
-    numerator_14 = multiplicity_0_col28;
+    numerator_14 = multiplicity_0_col0;
 
     lookup_constraints(
         ref sum,
@@ -537,7 +538,7 @@ mod tests {
     #[test]
     fn test_evaluation_result_offset_nonzero() {
         test_evaluation_result_with_offset(
-            m31(pow2(16)), qm31_const::<1131213454, 875887962, 2078309966, 913115890>(),
+            m31(pow2(16)), qm31_const::<13315150, 1172759499, 2088321995, 1234092827>(),
         );
     }
 

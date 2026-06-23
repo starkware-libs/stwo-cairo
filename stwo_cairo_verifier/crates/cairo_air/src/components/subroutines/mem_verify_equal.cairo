@@ -6,6 +6,7 @@ use crate::prelude::*;
 
 pub fn mem_verify_equal_evaluate(
     input: [QM31; 2],
+    enabler: QM31,
     id_col0: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref memory_address_to_id_sum_0: QM31,
@@ -18,6 +19,7 @@ pub fn mem_verify_equal_evaluate(
     let [mem_verify_equal_input_address1, mem_verify_equal_input_address2] = input;
     read_id_evaluate(
         mem_verify_equal_input_address1,
+        enabler,
         id_col0,
         common_lookup_elements,
         ref memory_address_to_id_sum_0,
@@ -30,7 +32,7 @@ pub fn mem_verify_equal_evaluate(
         .combine_qm31(
             [qm31_const::<1444891767, 0, 0, 0>(), mem_verify_equal_input_address2, id_col0].span(),
         );
-    numerator_1 = qm31_const::<1, 0, 0, 0>();
+    numerator_1 = enabler;
 
     []
 }

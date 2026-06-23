@@ -54,6 +54,7 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let M31_1 = E::F::from(M31::from(1));
         let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let value_id_col0 = eval.next_trace_mask();
         let value_limb_0_col1 = eval.next_trace_mask();
@@ -75,6 +76,7 @@ impl FrameworkEval for Eval {
 
         ReadPositiveNumBits128::evaluate(
             [(E::F::from(M31::from(self.range_check_builtin_segment_start)) + seq.clone())],
+            M31_1.clone(),
             value_id_col0.clone(),
             value_limb_0_col1.clone(),
             value_limb_1_col2.clone(),

@@ -35,6 +35,7 @@ impl ClaimGenerator {
         InteractionClaimGenerator,
     ) {
         let log_size = self.log_size;
+        let size = 1 << log_size;
 
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
             log_size,
@@ -45,26 +46,16 @@ impl ClaimGenerator {
             partial_ec_mul_generic_state,
         );
         for inputs in sub_component_inputs.memory_address_to_id {
-            add_inputs(
-                memory_address_to_id_state,
-                &inputs,
-                inputs.len() * N_LANES,
-                0,
-            );
+            add_inputs(memory_address_to_id_state, &inputs, size, 0);
         }
         for inputs in sub_component_inputs.memory_id_to_big {
-            add_inputs(memory_id_to_big_state, &inputs, inputs.len() * N_LANES, 0);
+            add_inputs(memory_id_to_big_state, &inputs, size, 0);
         }
         for inputs in sub_component_inputs.range_check_8 {
-            add_inputs(range_check_8_state, &inputs, inputs.len() * N_LANES, 0);
+            add_inputs(range_check_8_state, &inputs, size, 0);
         }
         for inputs in sub_component_inputs.partial_ec_mul_generic {
-            add_inputs(
-                partial_ec_mul_generic_state,
-                &inputs,
-                inputs.len() * N_LANES,
-                0,
-            );
+            add_inputs(partial_ec_mul_generic_state, &inputs, size, 0);
         }
 
         (

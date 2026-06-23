@@ -18,6 +18,7 @@ impl ReadSmall {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [read_small_input]: [E::F; 1],
+        enabler: E::F,
         id_col0: E::F,
         msb_col1: E::F,
         mid_limbs_set_col2: E::F,
@@ -39,6 +40,7 @@ impl ReadSmall {
 
         ReadId::evaluate(
             [read_small_input.clone()],
+            enabler.clone(),
             id_col0.clone(),
             common_lookup_elements,
             eval,
@@ -46,6 +48,7 @@ impl ReadSmall {
         let [decode_small_sign_output_tmp_c806d_5_limb3_7_high_bits, decode_small_sign_output_tmp_c806d_5_limbs4_to_20, decode_small_sign_output_tmp_c806d_5_limb21, decode_small_sign_output_tmp_c806d_5_limb27] =
             DecodeSmallSign::evaluate(
                 [],
+                enabler.clone(),
                 msb_col1.clone(),
                 mid_limbs_set_col2.clone(),
                 common_lookup_elements,
@@ -53,13 +56,14 @@ impl ReadSmall {
             );
         CondRangeCheck2::evaluate(
             [remainder_bits_col6.clone(), M31_1.clone()],
+            enabler.clone(),
             partial_limb_msb_col7.clone(),
             common_lookup_elements,
             eval,
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1662111297.clone(),
                 id_col0.clone(),

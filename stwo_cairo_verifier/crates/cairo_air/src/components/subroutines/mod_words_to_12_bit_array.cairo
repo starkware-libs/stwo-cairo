@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn mod_words_to_12_bit_array_evaluate(
     input: [QM31; 22],
+    enabler: QM31,
     limb1b_0_col0: QM31,
     limb2b_0_col1: QM31,
     limb5b_0_col2: QM31,
@@ -67,7 +68,7 @@ pub fn mod_words_to_12_bit_array_evaluate(
             ]
                 .span(),
         );
-    numerator_0 = qm31_const::<1, 0, 0, 0>();
+    numerator_0 = enabler;
     let limb5a_0_tmp_2aff4_5: QM31 = (mod_words_to_12_bit_array_input_limb_5
         - (limb5b_0_col2 * qm31_const::<8, 0, 0, 0>()));
     let limb6a_0_tmp_2aff4_7: QM31 = (mod_words_to_12_bit_array_input_limb_6
@@ -81,7 +82,7 @@ pub fn mod_words_to_12_bit_array_evaluate(
             ]
                 .span(),
         );
-    numerator_1 = qm31_const::<1, 0, 0, 0>();
+    numerator_1 = enabler;
     let limb9a_0_tmp_2aff4_9: QM31 = (mod_words_to_12_bit_array_input_limb_9
         - (limb9b_0_col4 * qm31_const::<8, 0, 0, 0>()));
     let limb1a_1_tmp_2aff4_11: QM31 = (mod_words_to_12_bit_array_input_limb_29
@@ -97,7 +98,7 @@ pub fn mod_words_to_12_bit_array_evaluate(
             ]
                 .span(),
         );
-    numerator_2 = qm31_const::<1, 0, 0, 0>();
+    numerator_2 = enabler;
     let limb5a_1_tmp_2aff4_15: QM31 = (mod_words_to_12_bit_array_input_limb_33
         - (limb5b_1_col7 * qm31_const::<8, 0, 0, 0>()));
     let limb6a_1_tmp_2aff4_17: QM31 = (mod_words_to_12_bit_array_input_limb_34
@@ -111,7 +112,7 @@ pub fn mod_words_to_12_bit_array_evaluate(
             ]
                 .span(),
         );
-    numerator_3 = qm31_const::<1, 0, 0, 0>();
+    numerator_3 = enabler;
     let limb9a_1_tmp_2aff4_19: QM31 = (mod_words_to_12_bit_array_input_limb_37
         - (limb9b_1_col9 * qm31_const::<8, 0, 0, 0>()));
 
@@ -123,7 +124,7 @@ pub fn mod_words_to_12_bit_array_evaluate(
             ]
                 .span(),
         );
-    numerator_4 = qm31_const::<1, 0, 0, 0>();
+    numerator_4 = enabler;
 
     [
         (mod_words_to_12_bit_array_input_limb_0

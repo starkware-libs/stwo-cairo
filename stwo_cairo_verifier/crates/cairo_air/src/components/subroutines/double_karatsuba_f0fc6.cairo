@@ -6,6 +6,7 @@ use crate::prelude::*;
 
 pub fn double_karatsuba_f0fc6_evaluate(
     input: [QM31; 56],
+    enabler: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref sum: QM31,
     random_coeff: QM31,
@@ -115,6 +116,7 @@ pub fn double_karatsuba_f0fc6_evaluate(
             double_karatsuba_f0fc6_input_limb_38, double_karatsuba_f0fc6_input_limb_39,
             double_karatsuba_f0fc6_input_limb_40, double_karatsuba_f0fc6_input_limb_41,
         ],
+        enabler,
         common_lookup_elements,
         ref sum,
         random_coeff,
@@ -165,6 +167,7 @@ pub fn double_karatsuba_f0fc6_evaluate(
             double_karatsuba_f0fc6_input_limb_52, double_karatsuba_f0fc6_input_limb_53,
             double_karatsuba_f0fc6_input_limb_54, double_karatsuba_f0fc6_input_limb_55,
         ],
+        enabler,
         common_lookup_elements,
         ref sum,
         random_coeff,
@@ -267,6 +270,7 @@ pub fn double_karatsuba_f0fc6_evaluate(
             y_sum_tmp_f0fc6_11_limb_10, y_sum_tmp_f0fc6_11_limb_11, y_sum_tmp_f0fc6_11_limb_12,
             y_sum_tmp_f0fc6_11_limb_13,
         ],
+        enabler,
         common_lookup_elements,
         ref sum,
         random_coeff,

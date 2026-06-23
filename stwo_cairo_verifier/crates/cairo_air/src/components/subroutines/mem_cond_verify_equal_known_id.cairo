@@ -6,6 +6,7 @@ use crate::prelude::*;
 
 pub fn mem_cond_verify_equal_known_id_evaluate(
     input: [QM31; 3],
+    enabler: QM31,
     id_col0: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref memory_address_to_id_sum_0: QM31,
@@ -21,6 +22,7 @@ pub fn mem_cond_verify_equal_known_id_evaluate(
         input;
     read_id_evaluate(
         mem_cond_verify_equal_known_id_input_limb_0,
+        enabler,
         id_col0,
         common_lookup_elements,
         ref memory_address_to_id_sum_0,

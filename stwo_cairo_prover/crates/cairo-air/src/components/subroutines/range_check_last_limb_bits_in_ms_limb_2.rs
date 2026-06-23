@@ -16,6 +16,7 @@ impl RangeCheckLastLimbBitsInMsLimb2 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [range_check_last_limb_bits_in_ms_limb_2_input]: [E::F; 1],
+        enabler: E::F,
         partial_limb_msb_col0: E::F,
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
@@ -27,6 +28,7 @@ impl RangeCheckLastLimbBitsInMsLimb2 {
                 range_check_last_limb_bits_in_ms_limb_2_input.clone(),
                 M31_1.clone(),
             ],
+            enabler.clone(),
             partial_limb_msb_col0.clone(),
             common_lookup_elements,
             eval,

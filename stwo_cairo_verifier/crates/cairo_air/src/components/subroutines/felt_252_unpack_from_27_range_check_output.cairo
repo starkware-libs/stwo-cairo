@@ -6,6 +6,7 @@ use crate::prelude::*;
 
 pub fn felt_252_unpack_from_27_range_check_output_evaluate(
     input: [QM31; 10],
+    enabler: QM31,
     unpacked_limb_0_col0: QM31,
     unpacked_limb_1_col1: QM31,
     unpacked_limb_3_col2: QM31,
@@ -129,6 +130,7 @@ pub fn felt_252_unpack_from_27_range_check_output_evaluate(
             unpacked_limb_24_col16, unpacked_limb_25_col17, unpacked_tmp_865a8_1_limb_26,
             unpacked_tmp_865a8_1_limb_27,
         ],
+        enabler,
         common_lookup_elements,
         ref range_check_9_9_sum_0,
         ref numerator_0,

@@ -9,6 +9,7 @@ use crate::prelude::*;
 
 pub fn mod_utils_evaluate(
     input: [QM31; 2],
+    enabler: QM31,
     is_instance_0_col0: QM31,
     p0_id_col1: QM31,
     p0_limb_0_col2: QM31,
@@ -388,6 +389,7 @@ pub fn mod_utils_evaluate(
         + (qm31_const::<7, 0, 0, 0>() * is_instance_0_minus_1_tmp_e0805_1));
     read_positive_num_bits_99_evaluate(
         instance_addr_tmp_e0805_2,
+        enabler,
         p0_id_col1,
         p0_limb_0_col2,
         p0_limb_1_col3,
@@ -410,6 +412,7 @@ pub fn mod_utils_evaluate(
     );
     read_positive_num_bits_99_evaluate(
         (instance_addr_tmp_e0805_2 + qm31_const::<1, 0, 0, 0>()),
+        enabler,
         p1_id_col13,
         p1_limb_0_col14,
         p1_limb_1_col15,
@@ -432,6 +435,7 @@ pub fn mod_utils_evaluate(
     );
     read_positive_num_bits_99_evaluate(
         (instance_addr_tmp_e0805_2 + qm31_const::<2, 0, 0, 0>()),
+        enabler,
         p2_id_col25,
         p2_limb_0_col26,
         p2_limb_1_col27,
@@ -454,6 +458,7 @@ pub fn mod_utils_evaluate(
     );
     read_positive_num_bits_99_evaluate(
         (instance_addr_tmp_e0805_2 + qm31_const::<3, 0, 0, 0>()),
+        enabler,
         p3_id_col37,
         p3_limb_0_col38,
         p3_limb_1_col39,
@@ -476,6 +481,7 @@ pub fn mod_utils_evaluate(
     );
     read_positive_num_bits_29_evaluate(
         (instance_addr_tmp_e0805_2 + qm31_const::<4, 0, 0, 0>()),
+        enabler,
         values_ptr_id_col49,
         values_ptr_limb_0_col50,
         values_ptr_limb_1_col51,
@@ -492,6 +498,7 @@ pub fn mod_utils_evaluate(
     );
     read_positive_num_bits_29_evaluate(
         (instance_addr_tmp_e0805_2 + qm31_const::<5, 0, 0, 0>()),
+        enabler,
         offsets_ptr_id_col55,
         offsets_ptr_limb_0_col56,
         offsets_ptr_limb_1_col57,
@@ -508,6 +515,7 @@ pub fn mod_utils_evaluate(
     );
     read_positive_num_bits_29_evaluate(
         (prev_instance_addr_tmp_e0805_3 + qm31_const::<5, 0, 0, 0>()),
+        enabler,
         offsets_ptr_prev_id_col61,
         offsets_ptr_prev_limb_0_col62,
         offsets_ptr_prev_limb_1_col63,
@@ -524,6 +532,7 @@ pub fn mod_utils_evaluate(
     );
     read_positive_num_bits_29_evaluate(
         (instance_addr_tmp_e0805_2 + qm31_const::<6, 0, 0, 0>()),
+        enabler,
         n_id_col67,
         n_limb_0_col68,
         n_limb_1_col69,
@@ -540,6 +549,7 @@ pub fn mod_utils_evaluate(
     );
     read_positive_num_bits_29_evaluate(
         (prev_instance_addr_tmp_e0805_3 + qm31_const::<6, 0, 0, 0>()),
+        enabler,
         n_prev_id_col73,
         n_prev_limb_0_col74,
         n_prev_limb_1_col75,
@@ -587,6 +597,7 @@ pub fn mod_utils_evaluate(
             (prev_instance_addr_tmp_e0805_3 + qm31_const::<4, 0, 0, 0>()), values_ptr_id_col49,
             block_reset_condition_tmp_e0805_61,
         ],
+        enabler,
         values_ptr_prev_id_col79,
         common_lookup_elements,
         ref memory_address_to_id_sum_18,
@@ -596,6 +607,7 @@ pub fn mod_utils_evaluate(
     );
     mem_cond_verify_equal_known_id_evaluate(
         [prev_instance_addr_tmp_e0805_3, p0_id_col1, block_reset_condition_tmp_e0805_61],
+        enabler,
         p_prev0_id_col80,
         common_lookup_elements,
         ref memory_address_to_id_sum_19,
@@ -608,6 +620,7 @@ pub fn mod_utils_evaluate(
             (prev_instance_addr_tmp_e0805_3 + qm31_const::<1, 0, 0, 0>()), p1_id_col13,
             block_reset_condition_tmp_e0805_61,
         ],
+        enabler,
         p_prev1_id_col81,
         common_lookup_elements,
         ref memory_address_to_id_sum_20,
@@ -620,6 +633,7 @@ pub fn mod_utils_evaluate(
             (prev_instance_addr_tmp_e0805_3 + qm31_const::<2, 0, 0, 0>()), p2_id_col25,
             block_reset_condition_tmp_e0805_61,
         ],
+        enabler,
         p_prev2_id_col82,
         common_lookup_elements,
         ref memory_address_to_id_sum_21,
@@ -632,6 +646,7 @@ pub fn mod_utils_evaluate(
             (prev_instance_addr_tmp_e0805_3 + qm31_const::<3, 0, 0, 0>()), p3_id_col37,
             block_reset_condition_tmp_e0805_61,
         ],
+        enabler,
         p_prev3_id_col83,
         common_lookup_elements,
         ref memory_address_to_id_sum_22,
@@ -641,6 +656,7 @@ pub fn mod_utils_evaluate(
     );
     let read_small_output_tmp_e0805_81_limb_0: QM31 = read_small_evaluate(
         offsets_ptr_tmp_e0805_60,
+        enabler,
         offsets_a_id_col84,
         msb_col85,
         mid_limbs_set_col86,
@@ -659,6 +675,7 @@ pub fn mod_utils_evaluate(
     );
     let read_small_output_tmp_e0805_91_limb_0: QM31 = read_small_evaluate(
         (offsets_ptr_tmp_e0805_60 + qm31_const::<1, 0, 0, 0>()),
+        enabler,
         offsets_b_id_col92,
         msb_col93,
         mid_limbs_set_col94,
@@ -677,6 +694,7 @@ pub fn mod_utils_evaluate(
     );
     let read_small_output_tmp_e0805_101_limb_0: QM31 = read_small_evaluate(
         (offsets_ptr_tmp_e0805_60 + qm31_const::<2, 0, 0, 0>()),
+        enabler,
         offsets_c_id_col100,
         msb_col101,
         mid_limbs_set_col102,
@@ -699,6 +717,7 @@ pub fn mod_utils_evaluate(
         + (values_ptr_limb_3_col53 * qm31_const::<134217728, 0, 0, 0>()));
     read_positive_num_bits_99_evaluate(
         (values_ptr_tmp_e0805_102 + read_small_output_tmp_e0805_81_limb_0),
+        enabler,
         a0_id_col108,
         a0_limb_0_col109,
         a0_limb_1_col110,
@@ -722,6 +741,7 @@ pub fn mod_utils_evaluate(
     read_positive_num_bits_99_evaluate(
         ((values_ptr_tmp_e0805_102 + read_small_output_tmp_e0805_81_limb_0)
             + qm31_const::<1, 0, 0, 0>()),
+        enabler,
         a1_id_col120,
         a1_limb_0_col121,
         a1_limb_1_col122,
@@ -745,6 +765,7 @@ pub fn mod_utils_evaluate(
     read_positive_num_bits_99_evaluate(
         ((values_ptr_tmp_e0805_102 + read_small_output_tmp_e0805_81_limb_0)
             + qm31_const::<2, 0, 0, 0>()),
+        enabler,
         a2_id_col132,
         a2_limb_0_col133,
         a2_limb_1_col134,
@@ -768,6 +789,7 @@ pub fn mod_utils_evaluate(
     read_positive_num_bits_99_evaluate(
         ((values_ptr_tmp_e0805_102 + read_small_output_tmp_e0805_81_limb_0)
             + qm31_const::<3, 0, 0, 0>()),
+        enabler,
         a3_id_col144,
         a3_limb_0_col145,
         a3_limb_1_col146,
@@ -790,6 +812,7 @@ pub fn mod_utils_evaluate(
     );
     read_positive_num_bits_99_evaluate(
         (values_ptr_tmp_e0805_102 + read_small_output_tmp_e0805_91_limb_0),
+        enabler,
         b0_id_col156,
         b0_limb_0_col157,
         b0_limb_1_col158,
@@ -813,6 +836,7 @@ pub fn mod_utils_evaluate(
     read_positive_num_bits_99_evaluate(
         ((values_ptr_tmp_e0805_102 + read_small_output_tmp_e0805_91_limb_0)
             + qm31_const::<1, 0, 0, 0>()),
+        enabler,
         b1_id_col168,
         b1_limb_0_col169,
         b1_limb_1_col170,
@@ -836,6 +860,7 @@ pub fn mod_utils_evaluate(
     read_positive_num_bits_99_evaluate(
         ((values_ptr_tmp_e0805_102 + read_small_output_tmp_e0805_91_limb_0)
             + qm31_const::<2, 0, 0, 0>()),
+        enabler,
         b2_id_col180,
         b2_limb_0_col181,
         b2_limb_1_col182,
@@ -859,6 +884,7 @@ pub fn mod_utils_evaluate(
     read_positive_num_bits_99_evaluate(
         ((values_ptr_tmp_e0805_102 + read_small_output_tmp_e0805_91_limb_0)
             + qm31_const::<3, 0, 0, 0>()),
+        enabler,
         b3_id_col192,
         b3_limb_0_col193,
         b3_limb_1_col194,
@@ -881,6 +907,7 @@ pub fn mod_utils_evaluate(
     );
     read_positive_num_bits_99_evaluate(
         (values_ptr_tmp_e0805_102 + read_small_output_tmp_e0805_101_limb_0),
+        enabler,
         c0_id_col204,
         c0_limb_0_col205,
         c0_limb_1_col206,
@@ -904,6 +931,7 @@ pub fn mod_utils_evaluate(
     read_positive_num_bits_99_evaluate(
         ((values_ptr_tmp_e0805_102 + read_small_output_tmp_e0805_101_limb_0)
             + qm31_const::<1, 0, 0, 0>()),
+        enabler,
         c1_id_col216,
         c1_limb_0_col217,
         c1_limb_1_col218,
@@ -927,6 +955,7 @@ pub fn mod_utils_evaluate(
     read_positive_num_bits_99_evaluate(
         ((values_ptr_tmp_e0805_102 + read_small_output_tmp_e0805_101_limb_0)
             + qm31_const::<2, 0, 0, 0>()),
+        enabler,
         c2_id_col228,
         c2_limb_0_col229,
         c2_limb_1_col230,
@@ -950,6 +979,7 @@ pub fn mod_utils_evaluate(
     read_positive_num_bits_99_evaluate(
         ((values_ptr_tmp_e0805_102 + read_small_output_tmp_e0805_101_limb_0)
             + qm31_const::<3, 0, 0, 0>()),
+        enabler,
         c3_id_col240,
         c3_limb_0_col241,
         c3_limb_1_col242,

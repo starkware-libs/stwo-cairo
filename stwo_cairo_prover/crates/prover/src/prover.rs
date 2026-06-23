@@ -889,7 +889,7 @@ pub mod tests {
             /// Exercises the path where `lifting_log_size > pp_log_size`, producing *unsorted*
             /// preprocessed query positions that the Merkle verifier must sort.
             ///
-            /// `channel_salt = 43` with `n_queries = 1000` is a seed where the folded positions
+            /// `channel_salt = 17` with `n_queries = 1000` is a seed where the folded positions
             /// come out unsorted.
             #[test]
             fn test_prove_verify_large_trace_canonical_small() {
@@ -912,7 +912,7 @@ pub mod tests {
                         lifting_log_size: None,
                     },
                     preprocessed_trace: PreProcessedTraceVariant::CanonicalSmall,
-                    channel_salt: 43,
+                    channel_salt: 17,
                     store_polynomials_coefficients: false,
                     include_all_preprocessed_columns: false,
                     opt_n_id_to_big_components: None,

@@ -16,6 +16,7 @@ impl DoubleKaratsubaF0Fc6 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [double_karatsuba_f0fc6_input_limb_0, double_karatsuba_f0fc6_input_limb_1, double_karatsuba_f0fc6_input_limb_2, double_karatsuba_f0fc6_input_limb_3, double_karatsuba_f0fc6_input_limb_4, double_karatsuba_f0fc6_input_limb_5, double_karatsuba_f0fc6_input_limb_6, double_karatsuba_f0fc6_input_limb_7, double_karatsuba_f0fc6_input_limb_8, double_karatsuba_f0fc6_input_limb_9, double_karatsuba_f0fc6_input_limb_10, double_karatsuba_f0fc6_input_limb_11, double_karatsuba_f0fc6_input_limb_12, double_karatsuba_f0fc6_input_limb_13, double_karatsuba_f0fc6_input_limb_14, double_karatsuba_f0fc6_input_limb_15, double_karatsuba_f0fc6_input_limb_16, double_karatsuba_f0fc6_input_limb_17, double_karatsuba_f0fc6_input_limb_18, double_karatsuba_f0fc6_input_limb_19, double_karatsuba_f0fc6_input_limb_20, double_karatsuba_f0fc6_input_limb_21, double_karatsuba_f0fc6_input_limb_22, double_karatsuba_f0fc6_input_limb_23, double_karatsuba_f0fc6_input_limb_24, double_karatsuba_f0fc6_input_limb_25, double_karatsuba_f0fc6_input_limb_26, double_karatsuba_f0fc6_input_limb_27, double_karatsuba_f0fc6_input_limb_28, double_karatsuba_f0fc6_input_limb_29, double_karatsuba_f0fc6_input_limb_30, double_karatsuba_f0fc6_input_limb_31, double_karatsuba_f0fc6_input_limb_32, double_karatsuba_f0fc6_input_limb_33, double_karatsuba_f0fc6_input_limb_34, double_karatsuba_f0fc6_input_limb_35, double_karatsuba_f0fc6_input_limb_36, double_karatsuba_f0fc6_input_limb_37, double_karatsuba_f0fc6_input_limb_38, double_karatsuba_f0fc6_input_limb_39, double_karatsuba_f0fc6_input_limb_40, double_karatsuba_f0fc6_input_limb_41, double_karatsuba_f0fc6_input_limb_42, double_karatsuba_f0fc6_input_limb_43, double_karatsuba_f0fc6_input_limb_44, double_karatsuba_f0fc6_input_limb_45, double_karatsuba_f0fc6_input_limb_46, double_karatsuba_f0fc6_input_limb_47, double_karatsuba_f0fc6_input_limb_48, double_karatsuba_f0fc6_input_limb_49, double_karatsuba_f0fc6_input_limb_50, double_karatsuba_f0fc6_input_limb_51, double_karatsuba_f0fc6_input_limb_52, double_karatsuba_f0fc6_input_limb_53, double_karatsuba_f0fc6_input_limb_54, double_karatsuba_f0fc6_input_limb_55]: [E::F; 56],
+        enabler: E::F,
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 55] {
@@ -51,6 +52,7 @@ impl DoubleKaratsubaF0Fc6 {
                     double_karatsuba_f0fc6_input_limb_40.clone(),
                     double_karatsuba_f0fc6_input_limb_41.clone(),
                 ],
+                enabler.clone(),
                 common_lookup_elements,
                 eval,
             );
@@ -86,6 +88,7 @@ impl DoubleKaratsubaF0Fc6 {
                     double_karatsuba_f0fc6_input_limb_54.clone(),
                     double_karatsuba_f0fc6_input_limb_55.clone(),
                 ],
+                enabler.clone(),
                 common_lookup_elements,
                 eval,
             );
@@ -233,6 +236,7 @@ impl DoubleKaratsubaF0Fc6 {
                     y_sum_tmp_f0fc6_11_limb_12.clone(),
                     y_sum_tmp_f0fc6_11_limb_13.clone(),
                 ],
+                enabler.clone(),
                 common_lookup_elements,
                 eval,
             );

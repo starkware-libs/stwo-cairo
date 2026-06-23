@@ -16,6 +16,7 @@ impl HandleOpcodes {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [handle_opcodes_input_pc, handle_opcodes_input_fp, handle_opcodes_input_dst_base_fp, handle_opcodes_input_op0_base_fp, handle_opcodes_input_op1_base_fp, handle_opcodes_input_pc_update_jump, handle_opcodes_input_opcode_call, handle_opcodes_input_opcode_ret, handle_opcodes_input_opcode_assert_eq, handle_opcodes_input_res_op1, handle_opcodes_input_instruction_size, handle_opcodes_input_offset0, handle_opcodes_input_offset1, handle_opcodes_input_offset2, handle_opcodes_input_dst_limb_0, handle_opcodes_input_dst_limb_1, handle_opcodes_input_dst_limb_2, handle_opcodes_input_dst_limb_3, handle_opcodes_input_dst_limb_4, handle_opcodes_input_dst_limb_5, handle_opcodes_input_dst_limb_6, handle_opcodes_input_dst_limb_7, handle_opcodes_input_dst_limb_8, handle_opcodes_input_dst_limb_9, handle_opcodes_input_dst_limb_10, handle_opcodes_input_dst_limb_11, handle_opcodes_input_dst_limb_12, handle_opcodes_input_dst_limb_13, handle_opcodes_input_dst_limb_14, handle_opcodes_input_dst_limb_15, handle_opcodes_input_dst_limb_16, handle_opcodes_input_dst_limb_17, handle_opcodes_input_dst_limb_18, handle_opcodes_input_dst_limb_19, handle_opcodes_input_dst_limb_20, handle_opcodes_input_dst_limb_21, handle_opcodes_input_dst_limb_22, handle_opcodes_input_dst_limb_23, handle_opcodes_input_dst_limb_24, handle_opcodes_input_dst_limb_25, handle_opcodes_input_dst_limb_26, handle_opcodes_input_dst_limb_27, handle_opcodes_input_op0_limb_0, handle_opcodes_input_op0_limb_1, handle_opcodes_input_op0_limb_2, handle_opcodes_input_op0_limb_3, handle_opcodes_input_op0_limb_4, handle_opcodes_input_op0_limb_5, handle_opcodes_input_op0_limb_6, handle_opcodes_input_op0_limb_7, handle_opcodes_input_op0_limb_8, handle_opcodes_input_op0_limb_9, handle_opcodes_input_op0_limb_10, handle_opcodes_input_op0_limb_11, handle_opcodes_input_op0_limb_12, handle_opcodes_input_op0_limb_13, handle_opcodes_input_op0_limb_14, handle_opcodes_input_op0_limb_15, handle_opcodes_input_op0_limb_16, handle_opcodes_input_op0_limb_17, handle_opcodes_input_op0_limb_18, handle_opcodes_input_op0_limb_19, handle_opcodes_input_op0_limb_20, handle_opcodes_input_op0_limb_21, handle_opcodes_input_op0_limb_22, handle_opcodes_input_op0_limb_23, handle_opcodes_input_op0_limb_24, handle_opcodes_input_op0_limb_25, handle_opcodes_input_op0_limb_26, handle_opcodes_input_op0_limb_27, handle_opcodes_input_res_limb_0, handle_opcodes_input_res_limb_1, handle_opcodes_input_res_limb_2, handle_opcodes_input_res_limb_3, handle_opcodes_input_res_limb_4, handle_opcodes_input_res_limb_5, handle_opcodes_input_res_limb_6, handle_opcodes_input_res_limb_7, handle_opcodes_input_res_limb_8, handle_opcodes_input_res_limb_9, handle_opcodes_input_res_limb_10, handle_opcodes_input_res_limb_11, handle_opcodes_input_res_limb_12, handle_opcodes_input_res_limb_13, handle_opcodes_input_res_limb_14, handle_opcodes_input_res_limb_15, handle_opcodes_input_res_limb_16, handle_opcodes_input_res_limb_17, handle_opcodes_input_res_limb_18, handle_opcodes_input_res_limb_19, handle_opcodes_input_res_limb_20, handle_opcodes_input_res_limb_21, handle_opcodes_input_res_limb_22, handle_opcodes_input_res_limb_23, handle_opcodes_input_res_limb_24, handle_opcodes_input_res_limb_25, handle_opcodes_input_res_limb_26, handle_opcodes_input_res_limb_27]: [E::F; 98],
+        enabler: E::F,
         partial_limb_msb_col0: E::F,
         partial_limb_msb_col1: E::F,
         common_lookup_elements: &relations::CommonLookupElements,
@@ -230,6 +231,7 @@ impl HandleOpcodes {
                 handle_opcodes_input_dst_limb_27.clone(),
                 handle_opcodes_input_opcode_call.clone(),
             ],
+            enabler.clone(),
             partial_limb_msb_col0.clone(),
             common_lookup_elements,
             eval,
@@ -271,6 +273,7 @@ impl HandleOpcodes {
                 handle_opcodes_input_op0_limb_27.clone(),
                 handle_opcodes_input_opcode_call.clone(),
             ],
+            enabler.clone(),
             partial_limb_msb_col1.clone(),
             common_lookup_elements,
             eval,

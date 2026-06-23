@@ -186,771 +186,776 @@ pub impl AirComponentImpl of AirComponent<Component> {
         let mut numerator_58: QM31 = Zero::zero();
 
         let [
-            input_limb_0_col0,
-            input_limb_1_col1,
-            input_limb_2_col2,
-            input_limb_3_col3,
-            input_limb_4_col4,
-            input_limb_5_col5,
-            input_limb_6_col6,
-            input_limb_7_col7,
-            input_limb_8_col8,
-            input_limb_9_col9,
-            input_limb_10_col10,
-            input_limb_11_col11,
-            input_limb_12_col12,
-            input_limb_13_col13,
-            input_limb_14_col14,
-            input_limb_15_col15,
-            input_limb_16_col16,
-            input_limb_17_col17,
-            input_limb_18_col18,
-            input_limb_19_col19,
-            input_limb_20_col20,
-            input_limb_21_col21,
-            input_limb_22_col22,
-            input_limb_23_col23,
-            input_limb_24_col24,
-            input_limb_25_col25,
-            input_limb_26_col26,
-            input_limb_27_col27,
-            input_limb_28_col28,
-            input_limb_29_col29,
-            input_limb_30_col30,
-            input_limb_31_col31,
-            input_limb_32_col32,
-            input_limb_33_col33,
-            input_limb_34_col34,
-            blake_round_sigma_output_limb_0_col35,
-            blake_round_sigma_output_limb_1_col36,
-            blake_round_sigma_output_limb_2_col37,
-            blake_round_sigma_output_limb_3_col38,
-            blake_round_sigma_output_limb_4_col39,
-            blake_round_sigma_output_limb_5_col40,
-            blake_round_sigma_output_limb_6_col41,
-            blake_round_sigma_output_limb_7_col42,
-            blake_round_sigma_output_limb_8_col43,
-            blake_round_sigma_output_limb_9_col44,
-            blake_round_sigma_output_limb_10_col45,
-            blake_round_sigma_output_limb_11_col46,
-            blake_round_sigma_output_limb_12_col47,
-            blake_round_sigma_output_limb_13_col48,
-            blake_round_sigma_output_limb_14_col49,
-            blake_round_sigma_output_limb_15_col50,
-            low_16_bits_col51,
-            high_16_bits_col52,
-            low_7_ms_bits_col53,
-            high_14_ms_bits_col54,
-            high_5_ms_bits_col55,
-            message_word_0_id_col56,
-            low_16_bits_col57,
-            high_16_bits_col58,
-            low_7_ms_bits_col59,
-            high_14_ms_bits_col60,
-            high_5_ms_bits_col61,
-            message_word_1_id_col62,
-            low_16_bits_col63,
-            high_16_bits_col64,
-            low_7_ms_bits_col65,
-            high_14_ms_bits_col66,
-            high_5_ms_bits_col67,
-            message_word_2_id_col68,
-            low_16_bits_col69,
-            high_16_bits_col70,
-            low_7_ms_bits_col71,
-            high_14_ms_bits_col72,
-            high_5_ms_bits_col73,
-            message_word_3_id_col74,
-            low_16_bits_col75,
-            high_16_bits_col76,
-            low_7_ms_bits_col77,
-            high_14_ms_bits_col78,
-            high_5_ms_bits_col79,
-            message_word_4_id_col80,
-            low_16_bits_col81,
-            high_16_bits_col82,
-            low_7_ms_bits_col83,
-            high_14_ms_bits_col84,
-            high_5_ms_bits_col85,
-            message_word_5_id_col86,
-            low_16_bits_col87,
-            high_16_bits_col88,
-            low_7_ms_bits_col89,
-            high_14_ms_bits_col90,
-            high_5_ms_bits_col91,
-            message_word_6_id_col92,
-            low_16_bits_col93,
-            high_16_bits_col94,
-            low_7_ms_bits_col95,
-            high_14_ms_bits_col96,
-            high_5_ms_bits_col97,
-            message_word_7_id_col98,
-            low_16_bits_col99,
-            high_16_bits_col100,
-            low_7_ms_bits_col101,
-            high_14_ms_bits_col102,
-            high_5_ms_bits_col103,
-            message_word_8_id_col104,
-            low_16_bits_col105,
-            high_16_bits_col106,
-            low_7_ms_bits_col107,
-            high_14_ms_bits_col108,
-            high_5_ms_bits_col109,
-            message_word_9_id_col110,
-            low_16_bits_col111,
-            high_16_bits_col112,
-            low_7_ms_bits_col113,
-            high_14_ms_bits_col114,
-            high_5_ms_bits_col115,
-            message_word_10_id_col116,
-            low_16_bits_col117,
-            high_16_bits_col118,
-            low_7_ms_bits_col119,
-            high_14_ms_bits_col120,
-            high_5_ms_bits_col121,
-            message_word_11_id_col122,
-            low_16_bits_col123,
-            high_16_bits_col124,
-            low_7_ms_bits_col125,
-            high_14_ms_bits_col126,
-            high_5_ms_bits_col127,
-            message_word_12_id_col128,
-            low_16_bits_col129,
-            high_16_bits_col130,
-            low_7_ms_bits_col131,
-            high_14_ms_bits_col132,
-            high_5_ms_bits_col133,
-            message_word_13_id_col134,
-            low_16_bits_col135,
-            high_16_bits_col136,
-            low_7_ms_bits_col137,
-            high_14_ms_bits_col138,
-            high_5_ms_bits_col139,
-            message_word_14_id_col140,
-            low_16_bits_col141,
-            high_16_bits_col142,
-            low_7_ms_bits_col143,
-            high_14_ms_bits_col144,
-            high_5_ms_bits_col145,
-            message_word_15_id_col146,
-            blake_g_output_limb_0_col147,
-            blake_g_output_limb_1_col148,
-            blake_g_output_limb_2_col149,
-            blake_g_output_limb_3_col150,
-            blake_g_output_limb_4_col151,
-            blake_g_output_limb_5_col152,
-            blake_g_output_limb_6_col153,
-            blake_g_output_limb_7_col154,
-            blake_g_output_limb_0_col155,
-            blake_g_output_limb_1_col156,
-            blake_g_output_limb_2_col157,
-            blake_g_output_limb_3_col158,
-            blake_g_output_limb_4_col159,
-            blake_g_output_limb_5_col160,
-            blake_g_output_limb_6_col161,
-            blake_g_output_limb_7_col162,
-            blake_g_output_limb_0_col163,
-            blake_g_output_limb_1_col164,
-            blake_g_output_limb_2_col165,
-            blake_g_output_limb_3_col166,
-            blake_g_output_limb_4_col167,
-            blake_g_output_limb_5_col168,
-            blake_g_output_limb_6_col169,
-            blake_g_output_limb_7_col170,
-            blake_g_output_limb_0_col171,
-            blake_g_output_limb_1_col172,
-            blake_g_output_limb_2_col173,
-            blake_g_output_limb_3_col174,
-            blake_g_output_limb_4_col175,
-            blake_g_output_limb_5_col176,
-            blake_g_output_limb_6_col177,
-            blake_g_output_limb_7_col178,
-            blake_g_output_limb_0_col179,
-            blake_g_output_limb_1_col180,
-            blake_g_output_limb_2_col181,
-            blake_g_output_limb_3_col182,
-            blake_g_output_limb_4_col183,
-            blake_g_output_limb_5_col184,
-            blake_g_output_limb_6_col185,
-            blake_g_output_limb_7_col186,
-            blake_g_output_limb_0_col187,
-            blake_g_output_limb_1_col188,
-            blake_g_output_limb_2_col189,
-            blake_g_output_limb_3_col190,
-            blake_g_output_limb_4_col191,
-            blake_g_output_limb_5_col192,
-            blake_g_output_limb_6_col193,
-            blake_g_output_limb_7_col194,
-            blake_g_output_limb_0_col195,
-            blake_g_output_limb_1_col196,
-            blake_g_output_limb_2_col197,
-            blake_g_output_limb_3_col198,
-            blake_g_output_limb_4_col199,
-            blake_g_output_limb_5_col200,
-            blake_g_output_limb_6_col201,
-            blake_g_output_limb_7_col202,
-            blake_g_output_limb_0_col203,
-            blake_g_output_limb_1_col204,
-            blake_g_output_limb_2_col205,
-            blake_g_output_limb_3_col206,
-            blake_g_output_limb_4_col207,
-            blake_g_output_limb_5_col208,
-            blake_g_output_limb_6_col209,
-            blake_g_output_limb_7_col210,
-            enabler_col211,
+            enabler_col0,
+            input_limb_0_col1,
+            input_limb_1_col2,
+            input_limb_2_col3,
+            input_limb_3_col4,
+            input_limb_4_col5,
+            input_limb_5_col6,
+            input_limb_6_col7,
+            input_limb_7_col8,
+            input_limb_8_col9,
+            input_limb_9_col10,
+            input_limb_10_col11,
+            input_limb_11_col12,
+            input_limb_12_col13,
+            input_limb_13_col14,
+            input_limb_14_col15,
+            input_limb_15_col16,
+            input_limb_16_col17,
+            input_limb_17_col18,
+            input_limb_18_col19,
+            input_limb_19_col20,
+            input_limb_20_col21,
+            input_limb_21_col22,
+            input_limb_22_col23,
+            input_limb_23_col24,
+            input_limb_24_col25,
+            input_limb_25_col26,
+            input_limb_26_col27,
+            input_limb_27_col28,
+            input_limb_28_col29,
+            input_limb_29_col30,
+            input_limb_30_col31,
+            input_limb_31_col32,
+            input_limb_32_col33,
+            input_limb_33_col34,
+            input_limb_34_col35,
+            blake_round_sigma_output_limb_0_col36,
+            blake_round_sigma_output_limb_1_col37,
+            blake_round_sigma_output_limb_2_col38,
+            blake_round_sigma_output_limb_3_col39,
+            blake_round_sigma_output_limb_4_col40,
+            blake_round_sigma_output_limb_5_col41,
+            blake_round_sigma_output_limb_6_col42,
+            blake_round_sigma_output_limb_7_col43,
+            blake_round_sigma_output_limb_8_col44,
+            blake_round_sigma_output_limb_9_col45,
+            blake_round_sigma_output_limb_10_col46,
+            blake_round_sigma_output_limb_11_col47,
+            blake_round_sigma_output_limb_12_col48,
+            blake_round_sigma_output_limb_13_col49,
+            blake_round_sigma_output_limb_14_col50,
+            blake_round_sigma_output_limb_15_col51,
+            low_16_bits_col52,
+            high_16_bits_col53,
+            low_7_ms_bits_col54,
+            high_14_ms_bits_col55,
+            high_5_ms_bits_col56,
+            message_word_0_id_col57,
+            low_16_bits_col58,
+            high_16_bits_col59,
+            low_7_ms_bits_col60,
+            high_14_ms_bits_col61,
+            high_5_ms_bits_col62,
+            message_word_1_id_col63,
+            low_16_bits_col64,
+            high_16_bits_col65,
+            low_7_ms_bits_col66,
+            high_14_ms_bits_col67,
+            high_5_ms_bits_col68,
+            message_word_2_id_col69,
+            low_16_bits_col70,
+            high_16_bits_col71,
+            low_7_ms_bits_col72,
+            high_14_ms_bits_col73,
+            high_5_ms_bits_col74,
+            message_word_3_id_col75,
+            low_16_bits_col76,
+            high_16_bits_col77,
+            low_7_ms_bits_col78,
+            high_14_ms_bits_col79,
+            high_5_ms_bits_col80,
+            message_word_4_id_col81,
+            low_16_bits_col82,
+            high_16_bits_col83,
+            low_7_ms_bits_col84,
+            high_14_ms_bits_col85,
+            high_5_ms_bits_col86,
+            message_word_5_id_col87,
+            low_16_bits_col88,
+            high_16_bits_col89,
+            low_7_ms_bits_col90,
+            high_14_ms_bits_col91,
+            high_5_ms_bits_col92,
+            message_word_6_id_col93,
+            low_16_bits_col94,
+            high_16_bits_col95,
+            low_7_ms_bits_col96,
+            high_14_ms_bits_col97,
+            high_5_ms_bits_col98,
+            message_word_7_id_col99,
+            low_16_bits_col100,
+            high_16_bits_col101,
+            low_7_ms_bits_col102,
+            high_14_ms_bits_col103,
+            high_5_ms_bits_col104,
+            message_word_8_id_col105,
+            low_16_bits_col106,
+            high_16_bits_col107,
+            low_7_ms_bits_col108,
+            high_14_ms_bits_col109,
+            high_5_ms_bits_col110,
+            message_word_9_id_col111,
+            low_16_bits_col112,
+            high_16_bits_col113,
+            low_7_ms_bits_col114,
+            high_14_ms_bits_col115,
+            high_5_ms_bits_col116,
+            message_word_10_id_col117,
+            low_16_bits_col118,
+            high_16_bits_col119,
+            low_7_ms_bits_col120,
+            high_14_ms_bits_col121,
+            high_5_ms_bits_col122,
+            message_word_11_id_col123,
+            low_16_bits_col124,
+            high_16_bits_col125,
+            low_7_ms_bits_col126,
+            high_14_ms_bits_col127,
+            high_5_ms_bits_col128,
+            message_word_12_id_col129,
+            low_16_bits_col130,
+            high_16_bits_col131,
+            low_7_ms_bits_col132,
+            high_14_ms_bits_col133,
+            high_5_ms_bits_col134,
+            message_word_13_id_col135,
+            low_16_bits_col136,
+            high_16_bits_col137,
+            low_7_ms_bits_col138,
+            high_14_ms_bits_col139,
+            high_5_ms_bits_col140,
+            message_word_14_id_col141,
+            low_16_bits_col142,
+            high_16_bits_col143,
+            low_7_ms_bits_col144,
+            high_14_ms_bits_col145,
+            high_5_ms_bits_col146,
+            message_word_15_id_col147,
+            blake_g_output_limb_0_col148,
+            blake_g_output_limb_1_col149,
+            blake_g_output_limb_2_col150,
+            blake_g_output_limb_3_col151,
+            blake_g_output_limb_4_col152,
+            blake_g_output_limb_5_col153,
+            blake_g_output_limb_6_col154,
+            blake_g_output_limb_7_col155,
+            blake_g_output_limb_0_col156,
+            blake_g_output_limb_1_col157,
+            blake_g_output_limb_2_col158,
+            blake_g_output_limb_3_col159,
+            blake_g_output_limb_4_col160,
+            blake_g_output_limb_5_col161,
+            blake_g_output_limb_6_col162,
+            blake_g_output_limb_7_col163,
+            blake_g_output_limb_0_col164,
+            blake_g_output_limb_1_col165,
+            blake_g_output_limb_2_col166,
+            blake_g_output_limb_3_col167,
+            blake_g_output_limb_4_col168,
+            blake_g_output_limb_5_col169,
+            blake_g_output_limb_6_col170,
+            blake_g_output_limb_7_col171,
+            blake_g_output_limb_0_col172,
+            blake_g_output_limb_1_col173,
+            blake_g_output_limb_2_col174,
+            blake_g_output_limb_3_col175,
+            blake_g_output_limb_4_col176,
+            blake_g_output_limb_5_col177,
+            blake_g_output_limb_6_col178,
+            blake_g_output_limb_7_col179,
+            blake_g_output_limb_0_col180,
+            blake_g_output_limb_1_col181,
+            blake_g_output_limb_2_col182,
+            blake_g_output_limb_3_col183,
+            blake_g_output_limb_4_col184,
+            blake_g_output_limb_5_col185,
+            blake_g_output_limb_6_col186,
+            blake_g_output_limb_7_col187,
+            blake_g_output_limb_0_col188,
+            blake_g_output_limb_1_col189,
+            blake_g_output_limb_2_col190,
+            blake_g_output_limb_3_col191,
+            blake_g_output_limb_4_col192,
+            blake_g_output_limb_5_col193,
+            blake_g_output_limb_6_col194,
+            blake_g_output_limb_7_col195,
+            blake_g_output_limb_0_col196,
+            blake_g_output_limb_1_col197,
+            blake_g_output_limb_2_col198,
+            blake_g_output_limb_3_col199,
+            blake_g_output_limb_4_col200,
+            blake_g_output_limb_5_col201,
+            blake_g_output_limb_6_col202,
+            blake_g_output_limb_7_col203,
+            blake_g_output_limb_0_col204,
+            blake_g_output_limb_1_col205,
+            blake_g_output_limb_2_col206,
+            blake_g_output_limb_3_col207,
+            blake_g_output_limb_4_col208,
+            blake_g_output_limb_5_col209,
+            blake_g_output_limb_6_col210,
+            blake_g_output_limb_7_col211,
         ]: [Span<QM31>; 212] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
             .unbox();
-        let [input_limb_0_col0]: [QM31; 1] = (*input_limb_0_col0.try_into().unwrap()).unbox();
-        let [input_limb_1_col1]: [QM31; 1] = (*input_limb_1_col1.try_into().unwrap()).unbox();
-        let [input_limb_2_col2]: [QM31; 1] = (*input_limb_2_col2.try_into().unwrap()).unbox();
-        let [input_limb_3_col3]: [QM31; 1] = (*input_limb_3_col3.try_into().unwrap()).unbox();
-        let [input_limb_4_col4]: [QM31; 1] = (*input_limb_4_col4.try_into().unwrap()).unbox();
-        let [input_limb_5_col5]: [QM31; 1] = (*input_limb_5_col5.try_into().unwrap()).unbox();
-        let [input_limb_6_col6]: [QM31; 1] = (*input_limb_6_col6.try_into().unwrap()).unbox();
-        let [input_limb_7_col7]: [QM31; 1] = (*input_limb_7_col7.try_into().unwrap()).unbox();
-        let [input_limb_8_col8]: [QM31; 1] = (*input_limb_8_col8.try_into().unwrap()).unbox();
-        let [input_limb_9_col9]: [QM31; 1] = (*input_limb_9_col9.try_into().unwrap()).unbox();
-        let [input_limb_10_col10]: [QM31; 1] = (*input_limb_10_col10.try_into().unwrap()).unbox();
-        let [input_limb_11_col11]: [QM31; 1] = (*input_limb_11_col11.try_into().unwrap()).unbox();
-        let [input_limb_12_col12]: [QM31; 1] = (*input_limb_12_col12.try_into().unwrap()).unbox();
-        let [input_limb_13_col13]: [QM31; 1] = (*input_limb_13_col13.try_into().unwrap()).unbox();
-        let [input_limb_14_col14]: [QM31; 1] = (*input_limb_14_col14.try_into().unwrap()).unbox();
-        let [input_limb_15_col15]: [QM31; 1] = (*input_limb_15_col15.try_into().unwrap()).unbox();
-        let [input_limb_16_col16]: [QM31; 1] = (*input_limb_16_col16.try_into().unwrap()).unbox();
-        let [input_limb_17_col17]: [QM31; 1] = (*input_limb_17_col17.try_into().unwrap()).unbox();
-        let [input_limb_18_col18]: [QM31; 1] = (*input_limb_18_col18.try_into().unwrap()).unbox();
-        let [input_limb_19_col19]: [QM31; 1] = (*input_limb_19_col19.try_into().unwrap()).unbox();
-        let [input_limb_20_col20]: [QM31; 1] = (*input_limb_20_col20.try_into().unwrap()).unbox();
-        let [input_limb_21_col21]: [QM31; 1] = (*input_limb_21_col21.try_into().unwrap()).unbox();
-        let [input_limb_22_col22]: [QM31; 1] = (*input_limb_22_col22.try_into().unwrap()).unbox();
-        let [input_limb_23_col23]: [QM31; 1] = (*input_limb_23_col23.try_into().unwrap()).unbox();
-        let [input_limb_24_col24]: [QM31; 1] = (*input_limb_24_col24.try_into().unwrap()).unbox();
-        let [input_limb_25_col25]: [QM31; 1] = (*input_limb_25_col25.try_into().unwrap()).unbox();
-        let [input_limb_26_col26]: [QM31; 1] = (*input_limb_26_col26.try_into().unwrap()).unbox();
-        let [input_limb_27_col27]: [QM31; 1] = (*input_limb_27_col27.try_into().unwrap()).unbox();
-        let [input_limb_28_col28]: [QM31; 1] = (*input_limb_28_col28.try_into().unwrap()).unbox();
-        let [input_limb_29_col29]: [QM31; 1] = (*input_limb_29_col29.try_into().unwrap()).unbox();
-        let [input_limb_30_col30]: [QM31; 1] = (*input_limb_30_col30.try_into().unwrap()).unbox();
-        let [input_limb_31_col31]: [QM31; 1] = (*input_limb_31_col31.try_into().unwrap()).unbox();
-        let [input_limb_32_col32]: [QM31; 1] = (*input_limb_32_col32.try_into().unwrap()).unbox();
-        let [input_limb_33_col33]: [QM31; 1] = (*input_limb_33_col33.try_into().unwrap()).unbox();
-        let [input_limb_34_col34]: [QM31; 1] = (*input_limb_34_col34.try_into().unwrap()).unbox();
-        let [blake_round_sigma_output_limb_0_col35]: [QM31; 1] =
-            (*blake_round_sigma_output_limb_0_col35
+        let [enabler_col0]: [QM31; 1] = (*enabler_col0.try_into().unwrap()).unbox();
+        let [input_limb_0_col1]: [QM31; 1] = (*input_limb_0_col1.try_into().unwrap()).unbox();
+        let [input_limb_1_col2]: [QM31; 1] = (*input_limb_1_col2.try_into().unwrap()).unbox();
+        let [input_limb_2_col3]: [QM31; 1] = (*input_limb_2_col3.try_into().unwrap()).unbox();
+        let [input_limb_3_col4]: [QM31; 1] = (*input_limb_3_col4.try_into().unwrap()).unbox();
+        let [input_limb_4_col5]: [QM31; 1] = (*input_limb_4_col5.try_into().unwrap()).unbox();
+        let [input_limb_5_col6]: [QM31; 1] = (*input_limb_5_col6.try_into().unwrap()).unbox();
+        let [input_limb_6_col7]: [QM31; 1] = (*input_limb_6_col7.try_into().unwrap()).unbox();
+        let [input_limb_7_col8]: [QM31; 1] = (*input_limb_7_col8.try_into().unwrap()).unbox();
+        let [input_limb_8_col9]: [QM31; 1] = (*input_limb_8_col9.try_into().unwrap()).unbox();
+        let [input_limb_9_col10]: [QM31; 1] = (*input_limb_9_col10.try_into().unwrap()).unbox();
+        let [input_limb_10_col11]: [QM31; 1] = (*input_limb_10_col11.try_into().unwrap()).unbox();
+        let [input_limb_11_col12]: [QM31; 1] = (*input_limb_11_col12.try_into().unwrap()).unbox();
+        let [input_limb_12_col13]: [QM31; 1] = (*input_limb_12_col13.try_into().unwrap()).unbox();
+        let [input_limb_13_col14]: [QM31; 1] = (*input_limb_13_col14.try_into().unwrap()).unbox();
+        let [input_limb_14_col15]: [QM31; 1] = (*input_limb_14_col15.try_into().unwrap()).unbox();
+        let [input_limb_15_col16]: [QM31; 1] = (*input_limb_15_col16.try_into().unwrap()).unbox();
+        let [input_limb_16_col17]: [QM31; 1] = (*input_limb_16_col17.try_into().unwrap()).unbox();
+        let [input_limb_17_col18]: [QM31; 1] = (*input_limb_17_col18.try_into().unwrap()).unbox();
+        let [input_limb_18_col19]: [QM31; 1] = (*input_limb_18_col19.try_into().unwrap()).unbox();
+        let [input_limb_19_col20]: [QM31; 1] = (*input_limb_19_col20.try_into().unwrap()).unbox();
+        let [input_limb_20_col21]: [QM31; 1] = (*input_limb_20_col21.try_into().unwrap()).unbox();
+        let [input_limb_21_col22]: [QM31; 1] = (*input_limb_21_col22.try_into().unwrap()).unbox();
+        let [input_limb_22_col23]: [QM31; 1] = (*input_limb_22_col23.try_into().unwrap()).unbox();
+        let [input_limb_23_col24]: [QM31; 1] = (*input_limb_23_col24.try_into().unwrap()).unbox();
+        let [input_limb_24_col25]: [QM31; 1] = (*input_limb_24_col25.try_into().unwrap()).unbox();
+        let [input_limb_25_col26]: [QM31; 1] = (*input_limb_25_col26.try_into().unwrap()).unbox();
+        let [input_limb_26_col27]: [QM31; 1] = (*input_limb_26_col27.try_into().unwrap()).unbox();
+        let [input_limb_27_col28]: [QM31; 1] = (*input_limb_27_col28.try_into().unwrap()).unbox();
+        let [input_limb_28_col29]: [QM31; 1] = (*input_limb_28_col29.try_into().unwrap()).unbox();
+        let [input_limb_29_col30]: [QM31; 1] = (*input_limb_29_col30.try_into().unwrap()).unbox();
+        let [input_limb_30_col31]: [QM31; 1] = (*input_limb_30_col31.try_into().unwrap()).unbox();
+        let [input_limb_31_col32]: [QM31; 1] = (*input_limb_31_col32.try_into().unwrap()).unbox();
+        let [input_limb_32_col33]: [QM31; 1] = (*input_limb_32_col33.try_into().unwrap()).unbox();
+        let [input_limb_33_col34]: [QM31; 1] = (*input_limb_33_col34.try_into().unwrap()).unbox();
+        let [input_limb_34_col35]: [QM31; 1] = (*input_limb_34_col35.try_into().unwrap()).unbox();
+        let [blake_round_sigma_output_limb_0_col36]: [QM31; 1] =
+            (*blake_round_sigma_output_limb_0_col36
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_sigma_output_limb_1_col36]: [QM31; 1] =
-            (*blake_round_sigma_output_limb_1_col36
+        let [blake_round_sigma_output_limb_1_col37]: [QM31; 1] =
+            (*blake_round_sigma_output_limb_1_col37
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_sigma_output_limb_2_col37]: [QM31; 1] =
-            (*blake_round_sigma_output_limb_2_col37
+        let [blake_round_sigma_output_limb_2_col38]: [QM31; 1] =
+            (*blake_round_sigma_output_limb_2_col38
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_sigma_output_limb_3_col38]: [QM31; 1] =
-            (*blake_round_sigma_output_limb_3_col38
+        let [blake_round_sigma_output_limb_3_col39]: [QM31; 1] =
+            (*blake_round_sigma_output_limb_3_col39
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_sigma_output_limb_4_col39]: [QM31; 1] =
-            (*blake_round_sigma_output_limb_4_col39
+        let [blake_round_sigma_output_limb_4_col40]: [QM31; 1] =
+            (*blake_round_sigma_output_limb_4_col40
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_sigma_output_limb_5_col40]: [QM31; 1] =
-            (*blake_round_sigma_output_limb_5_col40
+        let [blake_round_sigma_output_limb_5_col41]: [QM31; 1] =
+            (*blake_round_sigma_output_limb_5_col41
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_sigma_output_limb_6_col41]: [QM31; 1] =
-            (*blake_round_sigma_output_limb_6_col41
+        let [blake_round_sigma_output_limb_6_col42]: [QM31; 1] =
+            (*blake_round_sigma_output_limb_6_col42
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_sigma_output_limb_7_col42]: [QM31; 1] =
-            (*blake_round_sigma_output_limb_7_col42
+        let [blake_round_sigma_output_limb_7_col43]: [QM31; 1] =
+            (*blake_round_sigma_output_limb_7_col43
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_sigma_output_limb_8_col43]: [QM31; 1] =
-            (*blake_round_sigma_output_limb_8_col43
+        let [blake_round_sigma_output_limb_8_col44]: [QM31; 1] =
+            (*blake_round_sigma_output_limb_8_col44
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_sigma_output_limb_9_col44]: [QM31; 1] =
-            (*blake_round_sigma_output_limb_9_col44
+        let [blake_round_sigma_output_limb_9_col45]: [QM31; 1] =
+            (*blake_round_sigma_output_limb_9_col45
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_sigma_output_limb_10_col45]: [QM31; 1] =
-            (*blake_round_sigma_output_limb_10_col45
+        let [blake_round_sigma_output_limb_10_col46]: [QM31; 1] =
+            (*blake_round_sigma_output_limb_10_col46
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_sigma_output_limb_11_col46]: [QM31; 1] =
-            (*blake_round_sigma_output_limb_11_col46
+        let [blake_round_sigma_output_limb_11_col47]: [QM31; 1] =
+            (*blake_round_sigma_output_limb_11_col47
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_sigma_output_limb_12_col47]: [QM31; 1] =
-            (*blake_round_sigma_output_limb_12_col47
+        let [blake_round_sigma_output_limb_12_col48]: [QM31; 1] =
+            (*blake_round_sigma_output_limb_12_col48
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_sigma_output_limb_13_col48]: [QM31; 1] =
-            (*blake_round_sigma_output_limb_13_col48
+        let [blake_round_sigma_output_limb_13_col49]: [QM31; 1] =
+            (*blake_round_sigma_output_limb_13_col49
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_sigma_output_limb_14_col49]: [QM31; 1] =
-            (*blake_round_sigma_output_limb_14_col49
+        let [blake_round_sigma_output_limb_14_col50]: [QM31; 1] =
+            (*blake_round_sigma_output_limb_14_col50
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_sigma_output_limb_15_col50]: [QM31; 1] =
-            (*blake_round_sigma_output_limb_15_col50
+        let [blake_round_sigma_output_limb_15_col51]: [QM31; 1] =
+            (*blake_round_sigma_output_limb_15_col51
             .try_into()
             .unwrap())
             .unbox();
-        let [low_16_bits_col51]: [QM31; 1] = (*low_16_bits_col51.try_into().unwrap()).unbox();
-        let [high_16_bits_col52]: [QM31; 1] = (*high_16_bits_col52.try_into().unwrap()).unbox();
-        let [low_7_ms_bits_col53]: [QM31; 1] = (*low_7_ms_bits_col53.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col54]: [QM31; 1] = (*high_14_ms_bits_col54.try_into().unwrap())
+        let [low_16_bits_col52]: [QM31; 1] = (*low_16_bits_col52.try_into().unwrap()).unbox();
+        let [high_16_bits_col53]: [QM31; 1] = (*high_16_bits_col53.try_into().unwrap()).unbox();
+        let [low_7_ms_bits_col54]: [QM31; 1] = (*low_7_ms_bits_col54.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col55]: [QM31; 1] = (*high_14_ms_bits_col55.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col55]: [QM31; 1] = (*high_5_ms_bits_col55.try_into().unwrap()).unbox();
-        let [message_word_0_id_col56]: [QM31; 1] = (*message_word_0_id_col56.try_into().unwrap())
+        let [high_5_ms_bits_col56]: [QM31; 1] = (*high_5_ms_bits_col56.try_into().unwrap()).unbox();
+        let [message_word_0_id_col57]: [QM31; 1] = (*message_word_0_id_col57.try_into().unwrap())
             .unbox();
-        let [low_16_bits_col57]: [QM31; 1] = (*low_16_bits_col57.try_into().unwrap()).unbox();
-        let [high_16_bits_col58]: [QM31; 1] = (*high_16_bits_col58.try_into().unwrap()).unbox();
-        let [low_7_ms_bits_col59]: [QM31; 1] = (*low_7_ms_bits_col59.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col60]: [QM31; 1] = (*high_14_ms_bits_col60.try_into().unwrap())
+        let [low_16_bits_col58]: [QM31; 1] = (*low_16_bits_col58.try_into().unwrap()).unbox();
+        let [high_16_bits_col59]: [QM31; 1] = (*high_16_bits_col59.try_into().unwrap()).unbox();
+        let [low_7_ms_bits_col60]: [QM31; 1] = (*low_7_ms_bits_col60.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col61]: [QM31; 1] = (*high_14_ms_bits_col61.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col61]: [QM31; 1] = (*high_5_ms_bits_col61.try_into().unwrap()).unbox();
-        let [message_word_1_id_col62]: [QM31; 1] = (*message_word_1_id_col62.try_into().unwrap())
+        let [high_5_ms_bits_col62]: [QM31; 1] = (*high_5_ms_bits_col62.try_into().unwrap()).unbox();
+        let [message_word_1_id_col63]: [QM31; 1] = (*message_word_1_id_col63.try_into().unwrap())
             .unbox();
-        let [low_16_bits_col63]: [QM31; 1] = (*low_16_bits_col63.try_into().unwrap()).unbox();
-        let [high_16_bits_col64]: [QM31; 1] = (*high_16_bits_col64.try_into().unwrap()).unbox();
-        let [low_7_ms_bits_col65]: [QM31; 1] = (*low_7_ms_bits_col65.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col66]: [QM31; 1] = (*high_14_ms_bits_col66.try_into().unwrap())
+        let [low_16_bits_col64]: [QM31; 1] = (*low_16_bits_col64.try_into().unwrap()).unbox();
+        let [high_16_bits_col65]: [QM31; 1] = (*high_16_bits_col65.try_into().unwrap()).unbox();
+        let [low_7_ms_bits_col66]: [QM31; 1] = (*low_7_ms_bits_col66.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col67]: [QM31; 1] = (*high_14_ms_bits_col67.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col67]: [QM31; 1] = (*high_5_ms_bits_col67.try_into().unwrap()).unbox();
-        let [message_word_2_id_col68]: [QM31; 1] = (*message_word_2_id_col68.try_into().unwrap())
+        let [high_5_ms_bits_col68]: [QM31; 1] = (*high_5_ms_bits_col68.try_into().unwrap()).unbox();
+        let [message_word_2_id_col69]: [QM31; 1] = (*message_word_2_id_col69.try_into().unwrap())
             .unbox();
-        let [low_16_bits_col69]: [QM31; 1] = (*low_16_bits_col69.try_into().unwrap()).unbox();
-        let [high_16_bits_col70]: [QM31; 1] = (*high_16_bits_col70.try_into().unwrap()).unbox();
-        let [low_7_ms_bits_col71]: [QM31; 1] = (*low_7_ms_bits_col71.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col72]: [QM31; 1] = (*high_14_ms_bits_col72.try_into().unwrap())
+        let [low_16_bits_col70]: [QM31; 1] = (*low_16_bits_col70.try_into().unwrap()).unbox();
+        let [high_16_bits_col71]: [QM31; 1] = (*high_16_bits_col71.try_into().unwrap()).unbox();
+        let [low_7_ms_bits_col72]: [QM31; 1] = (*low_7_ms_bits_col72.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col73]: [QM31; 1] = (*high_14_ms_bits_col73.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col73]: [QM31; 1] = (*high_5_ms_bits_col73.try_into().unwrap()).unbox();
-        let [message_word_3_id_col74]: [QM31; 1] = (*message_word_3_id_col74.try_into().unwrap())
+        let [high_5_ms_bits_col74]: [QM31; 1] = (*high_5_ms_bits_col74.try_into().unwrap()).unbox();
+        let [message_word_3_id_col75]: [QM31; 1] = (*message_word_3_id_col75.try_into().unwrap())
             .unbox();
-        let [low_16_bits_col75]: [QM31; 1] = (*low_16_bits_col75.try_into().unwrap()).unbox();
-        let [high_16_bits_col76]: [QM31; 1] = (*high_16_bits_col76.try_into().unwrap()).unbox();
-        let [low_7_ms_bits_col77]: [QM31; 1] = (*low_7_ms_bits_col77.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col78]: [QM31; 1] = (*high_14_ms_bits_col78.try_into().unwrap())
+        let [low_16_bits_col76]: [QM31; 1] = (*low_16_bits_col76.try_into().unwrap()).unbox();
+        let [high_16_bits_col77]: [QM31; 1] = (*high_16_bits_col77.try_into().unwrap()).unbox();
+        let [low_7_ms_bits_col78]: [QM31; 1] = (*low_7_ms_bits_col78.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col79]: [QM31; 1] = (*high_14_ms_bits_col79.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col79]: [QM31; 1] = (*high_5_ms_bits_col79.try_into().unwrap()).unbox();
-        let [message_word_4_id_col80]: [QM31; 1] = (*message_word_4_id_col80.try_into().unwrap())
+        let [high_5_ms_bits_col80]: [QM31; 1] = (*high_5_ms_bits_col80.try_into().unwrap()).unbox();
+        let [message_word_4_id_col81]: [QM31; 1] = (*message_word_4_id_col81.try_into().unwrap())
             .unbox();
-        let [low_16_bits_col81]: [QM31; 1] = (*low_16_bits_col81.try_into().unwrap()).unbox();
-        let [high_16_bits_col82]: [QM31; 1] = (*high_16_bits_col82.try_into().unwrap()).unbox();
-        let [low_7_ms_bits_col83]: [QM31; 1] = (*low_7_ms_bits_col83.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col84]: [QM31; 1] = (*high_14_ms_bits_col84.try_into().unwrap())
+        let [low_16_bits_col82]: [QM31; 1] = (*low_16_bits_col82.try_into().unwrap()).unbox();
+        let [high_16_bits_col83]: [QM31; 1] = (*high_16_bits_col83.try_into().unwrap()).unbox();
+        let [low_7_ms_bits_col84]: [QM31; 1] = (*low_7_ms_bits_col84.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col85]: [QM31; 1] = (*high_14_ms_bits_col85.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col85]: [QM31; 1] = (*high_5_ms_bits_col85.try_into().unwrap()).unbox();
-        let [message_word_5_id_col86]: [QM31; 1] = (*message_word_5_id_col86.try_into().unwrap())
+        let [high_5_ms_bits_col86]: [QM31; 1] = (*high_5_ms_bits_col86.try_into().unwrap()).unbox();
+        let [message_word_5_id_col87]: [QM31; 1] = (*message_word_5_id_col87.try_into().unwrap())
             .unbox();
-        let [low_16_bits_col87]: [QM31; 1] = (*low_16_bits_col87.try_into().unwrap()).unbox();
-        let [high_16_bits_col88]: [QM31; 1] = (*high_16_bits_col88.try_into().unwrap()).unbox();
-        let [low_7_ms_bits_col89]: [QM31; 1] = (*low_7_ms_bits_col89.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col90]: [QM31; 1] = (*high_14_ms_bits_col90.try_into().unwrap())
+        let [low_16_bits_col88]: [QM31; 1] = (*low_16_bits_col88.try_into().unwrap()).unbox();
+        let [high_16_bits_col89]: [QM31; 1] = (*high_16_bits_col89.try_into().unwrap()).unbox();
+        let [low_7_ms_bits_col90]: [QM31; 1] = (*low_7_ms_bits_col90.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col91]: [QM31; 1] = (*high_14_ms_bits_col91.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col91]: [QM31; 1] = (*high_5_ms_bits_col91.try_into().unwrap()).unbox();
-        let [message_word_6_id_col92]: [QM31; 1] = (*message_word_6_id_col92.try_into().unwrap())
+        let [high_5_ms_bits_col92]: [QM31; 1] = (*high_5_ms_bits_col92.try_into().unwrap()).unbox();
+        let [message_word_6_id_col93]: [QM31; 1] = (*message_word_6_id_col93.try_into().unwrap())
             .unbox();
-        let [low_16_bits_col93]: [QM31; 1] = (*low_16_bits_col93.try_into().unwrap()).unbox();
-        let [high_16_bits_col94]: [QM31; 1] = (*high_16_bits_col94.try_into().unwrap()).unbox();
-        let [low_7_ms_bits_col95]: [QM31; 1] = (*low_7_ms_bits_col95.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col96]: [QM31; 1] = (*high_14_ms_bits_col96.try_into().unwrap())
+        let [low_16_bits_col94]: [QM31; 1] = (*low_16_bits_col94.try_into().unwrap()).unbox();
+        let [high_16_bits_col95]: [QM31; 1] = (*high_16_bits_col95.try_into().unwrap()).unbox();
+        let [low_7_ms_bits_col96]: [QM31; 1] = (*low_7_ms_bits_col96.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col97]: [QM31; 1] = (*high_14_ms_bits_col97.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col97]: [QM31; 1] = (*high_5_ms_bits_col97.try_into().unwrap()).unbox();
-        let [message_word_7_id_col98]: [QM31; 1] = (*message_word_7_id_col98.try_into().unwrap())
+        let [high_5_ms_bits_col98]: [QM31; 1] = (*high_5_ms_bits_col98.try_into().unwrap()).unbox();
+        let [message_word_7_id_col99]: [QM31; 1] = (*message_word_7_id_col99.try_into().unwrap())
             .unbox();
-        let [low_16_bits_col99]: [QM31; 1] = (*low_16_bits_col99.try_into().unwrap()).unbox();
-        let [high_16_bits_col100]: [QM31; 1] = (*high_16_bits_col100.try_into().unwrap()).unbox();
-        let [low_7_ms_bits_col101]: [QM31; 1] = (*low_7_ms_bits_col101.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col102]: [QM31; 1] = (*high_14_ms_bits_col102.try_into().unwrap())
+        let [low_16_bits_col100]: [QM31; 1] = (*low_16_bits_col100.try_into().unwrap()).unbox();
+        let [high_16_bits_col101]: [QM31; 1] = (*high_16_bits_col101.try_into().unwrap()).unbox();
+        let [low_7_ms_bits_col102]: [QM31; 1] = (*low_7_ms_bits_col102.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col103]: [QM31; 1] = (*high_14_ms_bits_col103.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col103]: [QM31; 1] = (*high_5_ms_bits_col103.try_into().unwrap())
+        let [high_5_ms_bits_col104]: [QM31; 1] = (*high_5_ms_bits_col104.try_into().unwrap())
             .unbox();
-        let [message_word_8_id_col104]: [QM31; 1] = (*message_word_8_id_col104.try_into().unwrap())
+        let [message_word_8_id_col105]: [QM31; 1] = (*message_word_8_id_col105.try_into().unwrap())
             .unbox();
-        let [low_16_bits_col105]: [QM31; 1] = (*low_16_bits_col105.try_into().unwrap()).unbox();
-        let [high_16_bits_col106]: [QM31; 1] = (*high_16_bits_col106.try_into().unwrap()).unbox();
-        let [low_7_ms_bits_col107]: [QM31; 1] = (*low_7_ms_bits_col107.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col108]: [QM31; 1] = (*high_14_ms_bits_col108.try_into().unwrap())
+        let [low_16_bits_col106]: [QM31; 1] = (*low_16_bits_col106.try_into().unwrap()).unbox();
+        let [high_16_bits_col107]: [QM31; 1] = (*high_16_bits_col107.try_into().unwrap()).unbox();
+        let [low_7_ms_bits_col108]: [QM31; 1] = (*low_7_ms_bits_col108.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col109]: [QM31; 1] = (*high_14_ms_bits_col109.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col109]: [QM31; 1] = (*high_5_ms_bits_col109.try_into().unwrap())
+        let [high_5_ms_bits_col110]: [QM31; 1] = (*high_5_ms_bits_col110.try_into().unwrap())
             .unbox();
-        let [message_word_9_id_col110]: [QM31; 1] = (*message_word_9_id_col110.try_into().unwrap())
+        let [message_word_9_id_col111]: [QM31; 1] = (*message_word_9_id_col111.try_into().unwrap())
             .unbox();
-        let [low_16_bits_col111]: [QM31; 1] = (*low_16_bits_col111.try_into().unwrap()).unbox();
-        let [high_16_bits_col112]: [QM31; 1] = (*high_16_bits_col112.try_into().unwrap()).unbox();
-        let [low_7_ms_bits_col113]: [QM31; 1] = (*low_7_ms_bits_col113.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col114]: [QM31; 1] = (*high_14_ms_bits_col114.try_into().unwrap())
+        let [low_16_bits_col112]: [QM31; 1] = (*low_16_bits_col112.try_into().unwrap()).unbox();
+        let [high_16_bits_col113]: [QM31; 1] = (*high_16_bits_col113.try_into().unwrap()).unbox();
+        let [low_7_ms_bits_col114]: [QM31; 1] = (*low_7_ms_bits_col114.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col115]: [QM31; 1] = (*high_14_ms_bits_col115.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col115]: [QM31; 1] = (*high_5_ms_bits_col115.try_into().unwrap())
+        let [high_5_ms_bits_col116]: [QM31; 1] = (*high_5_ms_bits_col116.try_into().unwrap())
             .unbox();
-        let [message_word_10_id_col116]: [QM31; 1] = (*message_word_10_id_col116
+        let [message_word_10_id_col117]: [QM31; 1] = (*message_word_10_id_col117
             .try_into()
             .unwrap())
             .unbox();
-        let [low_16_bits_col117]: [QM31; 1] = (*low_16_bits_col117.try_into().unwrap()).unbox();
-        let [high_16_bits_col118]: [QM31; 1] = (*high_16_bits_col118.try_into().unwrap()).unbox();
-        let [low_7_ms_bits_col119]: [QM31; 1] = (*low_7_ms_bits_col119.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col120]: [QM31; 1] = (*high_14_ms_bits_col120.try_into().unwrap())
+        let [low_16_bits_col118]: [QM31; 1] = (*low_16_bits_col118.try_into().unwrap()).unbox();
+        let [high_16_bits_col119]: [QM31; 1] = (*high_16_bits_col119.try_into().unwrap()).unbox();
+        let [low_7_ms_bits_col120]: [QM31; 1] = (*low_7_ms_bits_col120.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col121]: [QM31; 1] = (*high_14_ms_bits_col121.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col121]: [QM31; 1] = (*high_5_ms_bits_col121.try_into().unwrap())
+        let [high_5_ms_bits_col122]: [QM31; 1] = (*high_5_ms_bits_col122.try_into().unwrap())
             .unbox();
-        let [message_word_11_id_col122]: [QM31; 1] = (*message_word_11_id_col122
+        let [message_word_11_id_col123]: [QM31; 1] = (*message_word_11_id_col123
             .try_into()
             .unwrap())
             .unbox();
-        let [low_16_bits_col123]: [QM31; 1] = (*low_16_bits_col123.try_into().unwrap()).unbox();
-        let [high_16_bits_col124]: [QM31; 1] = (*high_16_bits_col124.try_into().unwrap()).unbox();
-        let [low_7_ms_bits_col125]: [QM31; 1] = (*low_7_ms_bits_col125.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col126]: [QM31; 1] = (*high_14_ms_bits_col126.try_into().unwrap())
+        let [low_16_bits_col124]: [QM31; 1] = (*low_16_bits_col124.try_into().unwrap()).unbox();
+        let [high_16_bits_col125]: [QM31; 1] = (*high_16_bits_col125.try_into().unwrap()).unbox();
+        let [low_7_ms_bits_col126]: [QM31; 1] = (*low_7_ms_bits_col126.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col127]: [QM31; 1] = (*high_14_ms_bits_col127.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col127]: [QM31; 1] = (*high_5_ms_bits_col127.try_into().unwrap())
+        let [high_5_ms_bits_col128]: [QM31; 1] = (*high_5_ms_bits_col128.try_into().unwrap())
             .unbox();
-        let [message_word_12_id_col128]: [QM31; 1] = (*message_word_12_id_col128
+        let [message_word_12_id_col129]: [QM31; 1] = (*message_word_12_id_col129
             .try_into()
             .unwrap())
             .unbox();
-        let [low_16_bits_col129]: [QM31; 1] = (*low_16_bits_col129.try_into().unwrap()).unbox();
-        let [high_16_bits_col130]: [QM31; 1] = (*high_16_bits_col130.try_into().unwrap()).unbox();
-        let [low_7_ms_bits_col131]: [QM31; 1] = (*low_7_ms_bits_col131.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col132]: [QM31; 1] = (*high_14_ms_bits_col132.try_into().unwrap())
+        let [low_16_bits_col130]: [QM31; 1] = (*low_16_bits_col130.try_into().unwrap()).unbox();
+        let [high_16_bits_col131]: [QM31; 1] = (*high_16_bits_col131.try_into().unwrap()).unbox();
+        let [low_7_ms_bits_col132]: [QM31; 1] = (*low_7_ms_bits_col132.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col133]: [QM31; 1] = (*high_14_ms_bits_col133.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col133]: [QM31; 1] = (*high_5_ms_bits_col133.try_into().unwrap())
+        let [high_5_ms_bits_col134]: [QM31; 1] = (*high_5_ms_bits_col134.try_into().unwrap())
             .unbox();
-        let [message_word_13_id_col134]: [QM31; 1] = (*message_word_13_id_col134
+        let [message_word_13_id_col135]: [QM31; 1] = (*message_word_13_id_col135
             .try_into()
             .unwrap())
             .unbox();
-        let [low_16_bits_col135]: [QM31; 1] = (*low_16_bits_col135.try_into().unwrap()).unbox();
-        let [high_16_bits_col136]: [QM31; 1] = (*high_16_bits_col136.try_into().unwrap()).unbox();
-        let [low_7_ms_bits_col137]: [QM31; 1] = (*low_7_ms_bits_col137.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col138]: [QM31; 1] = (*high_14_ms_bits_col138.try_into().unwrap())
+        let [low_16_bits_col136]: [QM31; 1] = (*low_16_bits_col136.try_into().unwrap()).unbox();
+        let [high_16_bits_col137]: [QM31; 1] = (*high_16_bits_col137.try_into().unwrap()).unbox();
+        let [low_7_ms_bits_col138]: [QM31; 1] = (*low_7_ms_bits_col138.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col139]: [QM31; 1] = (*high_14_ms_bits_col139.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col139]: [QM31; 1] = (*high_5_ms_bits_col139.try_into().unwrap())
+        let [high_5_ms_bits_col140]: [QM31; 1] = (*high_5_ms_bits_col140.try_into().unwrap())
             .unbox();
-        let [message_word_14_id_col140]: [QM31; 1] = (*message_word_14_id_col140
+        let [message_word_14_id_col141]: [QM31; 1] = (*message_word_14_id_col141
             .try_into()
             .unwrap())
             .unbox();
-        let [low_16_bits_col141]: [QM31; 1] = (*low_16_bits_col141.try_into().unwrap()).unbox();
-        let [high_16_bits_col142]: [QM31; 1] = (*high_16_bits_col142.try_into().unwrap()).unbox();
-        let [low_7_ms_bits_col143]: [QM31; 1] = (*low_7_ms_bits_col143.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col144]: [QM31; 1] = (*high_14_ms_bits_col144.try_into().unwrap())
+        let [low_16_bits_col142]: [QM31; 1] = (*low_16_bits_col142.try_into().unwrap()).unbox();
+        let [high_16_bits_col143]: [QM31; 1] = (*high_16_bits_col143.try_into().unwrap()).unbox();
+        let [low_7_ms_bits_col144]: [QM31; 1] = (*low_7_ms_bits_col144.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col145]: [QM31; 1] = (*high_14_ms_bits_col145.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col145]: [QM31; 1] = (*high_5_ms_bits_col145.try_into().unwrap())
+        let [high_5_ms_bits_col146]: [QM31; 1] = (*high_5_ms_bits_col146.try_into().unwrap())
             .unbox();
-        let [message_word_15_id_col146]: [QM31; 1] = (*message_word_15_id_col146
+        let [message_word_15_id_col147]: [QM31; 1] = (*message_word_15_id_col147
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_0_col147]: [QM31; 1] = (*blake_g_output_limb_0_col147
+        let [blake_g_output_limb_0_col148]: [QM31; 1] = (*blake_g_output_limb_0_col148
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_1_col148]: [QM31; 1] = (*blake_g_output_limb_1_col148
+        let [blake_g_output_limb_1_col149]: [QM31; 1] = (*blake_g_output_limb_1_col149
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_2_col149]: [QM31; 1] = (*blake_g_output_limb_2_col149
+        let [blake_g_output_limb_2_col150]: [QM31; 1] = (*blake_g_output_limb_2_col150
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_3_col150]: [QM31; 1] = (*blake_g_output_limb_3_col150
+        let [blake_g_output_limb_3_col151]: [QM31; 1] = (*blake_g_output_limb_3_col151
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_4_col151]: [QM31; 1] = (*blake_g_output_limb_4_col151
+        let [blake_g_output_limb_4_col152]: [QM31; 1] = (*blake_g_output_limb_4_col152
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_5_col152]: [QM31; 1] = (*blake_g_output_limb_5_col152
+        let [blake_g_output_limb_5_col153]: [QM31; 1] = (*blake_g_output_limb_5_col153
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_6_col153]: [QM31; 1] = (*blake_g_output_limb_6_col153
+        let [blake_g_output_limb_6_col154]: [QM31; 1] = (*blake_g_output_limb_6_col154
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_7_col154]: [QM31; 1] = (*blake_g_output_limb_7_col154
+        let [blake_g_output_limb_7_col155]: [QM31; 1] = (*blake_g_output_limb_7_col155
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_0_col155]: [QM31; 1] = (*blake_g_output_limb_0_col155
+        let [blake_g_output_limb_0_col156]: [QM31; 1] = (*blake_g_output_limb_0_col156
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_1_col156]: [QM31; 1] = (*blake_g_output_limb_1_col156
+        let [blake_g_output_limb_1_col157]: [QM31; 1] = (*blake_g_output_limb_1_col157
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_2_col157]: [QM31; 1] = (*blake_g_output_limb_2_col157
+        let [blake_g_output_limb_2_col158]: [QM31; 1] = (*blake_g_output_limb_2_col158
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_3_col158]: [QM31; 1] = (*blake_g_output_limb_3_col158
+        let [blake_g_output_limb_3_col159]: [QM31; 1] = (*blake_g_output_limb_3_col159
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_4_col159]: [QM31; 1] = (*blake_g_output_limb_4_col159
+        let [blake_g_output_limb_4_col160]: [QM31; 1] = (*blake_g_output_limb_4_col160
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_5_col160]: [QM31; 1] = (*blake_g_output_limb_5_col160
+        let [blake_g_output_limb_5_col161]: [QM31; 1] = (*blake_g_output_limb_5_col161
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_6_col161]: [QM31; 1] = (*blake_g_output_limb_6_col161
+        let [blake_g_output_limb_6_col162]: [QM31; 1] = (*blake_g_output_limb_6_col162
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_7_col162]: [QM31; 1] = (*blake_g_output_limb_7_col162
+        let [blake_g_output_limb_7_col163]: [QM31; 1] = (*blake_g_output_limb_7_col163
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_0_col163]: [QM31; 1] = (*blake_g_output_limb_0_col163
+        let [blake_g_output_limb_0_col164]: [QM31; 1] = (*blake_g_output_limb_0_col164
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_1_col164]: [QM31; 1] = (*blake_g_output_limb_1_col164
+        let [blake_g_output_limb_1_col165]: [QM31; 1] = (*blake_g_output_limb_1_col165
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_2_col165]: [QM31; 1] = (*blake_g_output_limb_2_col165
+        let [blake_g_output_limb_2_col166]: [QM31; 1] = (*blake_g_output_limb_2_col166
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_3_col166]: [QM31; 1] = (*blake_g_output_limb_3_col166
+        let [blake_g_output_limb_3_col167]: [QM31; 1] = (*blake_g_output_limb_3_col167
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_4_col167]: [QM31; 1] = (*blake_g_output_limb_4_col167
+        let [blake_g_output_limb_4_col168]: [QM31; 1] = (*blake_g_output_limb_4_col168
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_5_col168]: [QM31; 1] = (*blake_g_output_limb_5_col168
+        let [blake_g_output_limb_5_col169]: [QM31; 1] = (*blake_g_output_limb_5_col169
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_6_col169]: [QM31; 1] = (*blake_g_output_limb_6_col169
+        let [blake_g_output_limb_6_col170]: [QM31; 1] = (*blake_g_output_limb_6_col170
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_7_col170]: [QM31; 1] = (*blake_g_output_limb_7_col170
+        let [blake_g_output_limb_7_col171]: [QM31; 1] = (*blake_g_output_limb_7_col171
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_0_col171]: [QM31; 1] = (*blake_g_output_limb_0_col171
+        let [blake_g_output_limb_0_col172]: [QM31; 1] = (*blake_g_output_limb_0_col172
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_1_col172]: [QM31; 1] = (*blake_g_output_limb_1_col172
+        let [blake_g_output_limb_1_col173]: [QM31; 1] = (*blake_g_output_limb_1_col173
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_2_col173]: [QM31; 1] = (*blake_g_output_limb_2_col173
+        let [blake_g_output_limb_2_col174]: [QM31; 1] = (*blake_g_output_limb_2_col174
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_3_col174]: [QM31; 1] = (*blake_g_output_limb_3_col174
+        let [blake_g_output_limb_3_col175]: [QM31; 1] = (*blake_g_output_limb_3_col175
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_4_col175]: [QM31; 1] = (*blake_g_output_limb_4_col175
+        let [blake_g_output_limb_4_col176]: [QM31; 1] = (*blake_g_output_limb_4_col176
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_5_col176]: [QM31; 1] = (*blake_g_output_limb_5_col176
+        let [blake_g_output_limb_5_col177]: [QM31; 1] = (*blake_g_output_limb_5_col177
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_6_col177]: [QM31; 1] = (*blake_g_output_limb_6_col177
+        let [blake_g_output_limb_6_col178]: [QM31; 1] = (*blake_g_output_limb_6_col178
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_7_col178]: [QM31; 1] = (*blake_g_output_limb_7_col178
+        let [blake_g_output_limb_7_col179]: [QM31; 1] = (*blake_g_output_limb_7_col179
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_0_col179]: [QM31; 1] = (*blake_g_output_limb_0_col179
+        let [blake_g_output_limb_0_col180]: [QM31; 1] = (*blake_g_output_limb_0_col180
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_1_col180]: [QM31; 1] = (*blake_g_output_limb_1_col180
+        let [blake_g_output_limb_1_col181]: [QM31; 1] = (*blake_g_output_limb_1_col181
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_2_col181]: [QM31; 1] = (*blake_g_output_limb_2_col181
+        let [blake_g_output_limb_2_col182]: [QM31; 1] = (*blake_g_output_limb_2_col182
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_3_col182]: [QM31; 1] = (*blake_g_output_limb_3_col182
+        let [blake_g_output_limb_3_col183]: [QM31; 1] = (*blake_g_output_limb_3_col183
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_4_col183]: [QM31; 1] = (*blake_g_output_limb_4_col183
+        let [blake_g_output_limb_4_col184]: [QM31; 1] = (*blake_g_output_limb_4_col184
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_5_col184]: [QM31; 1] = (*blake_g_output_limb_5_col184
+        let [blake_g_output_limb_5_col185]: [QM31; 1] = (*blake_g_output_limb_5_col185
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_6_col185]: [QM31; 1] = (*blake_g_output_limb_6_col185
+        let [blake_g_output_limb_6_col186]: [QM31; 1] = (*blake_g_output_limb_6_col186
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_7_col186]: [QM31; 1] = (*blake_g_output_limb_7_col186
+        let [blake_g_output_limb_7_col187]: [QM31; 1] = (*blake_g_output_limb_7_col187
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_0_col187]: [QM31; 1] = (*blake_g_output_limb_0_col187
+        let [blake_g_output_limb_0_col188]: [QM31; 1] = (*blake_g_output_limb_0_col188
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_1_col188]: [QM31; 1] = (*blake_g_output_limb_1_col188
+        let [blake_g_output_limb_1_col189]: [QM31; 1] = (*blake_g_output_limb_1_col189
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_2_col189]: [QM31; 1] = (*blake_g_output_limb_2_col189
+        let [blake_g_output_limb_2_col190]: [QM31; 1] = (*blake_g_output_limb_2_col190
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_3_col190]: [QM31; 1] = (*blake_g_output_limb_3_col190
+        let [blake_g_output_limb_3_col191]: [QM31; 1] = (*blake_g_output_limb_3_col191
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_4_col191]: [QM31; 1] = (*blake_g_output_limb_4_col191
+        let [blake_g_output_limb_4_col192]: [QM31; 1] = (*blake_g_output_limb_4_col192
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_5_col192]: [QM31; 1] = (*blake_g_output_limb_5_col192
+        let [blake_g_output_limb_5_col193]: [QM31; 1] = (*blake_g_output_limb_5_col193
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_6_col193]: [QM31; 1] = (*blake_g_output_limb_6_col193
+        let [blake_g_output_limb_6_col194]: [QM31; 1] = (*blake_g_output_limb_6_col194
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_7_col194]: [QM31; 1] = (*blake_g_output_limb_7_col194
+        let [blake_g_output_limb_7_col195]: [QM31; 1] = (*blake_g_output_limb_7_col195
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_0_col195]: [QM31; 1] = (*blake_g_output_limb_0_col195
+        let [blake_g_output_limb_0_col196]: [QM31; 1] = (*blake_g_output_limb_0_col196
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_1_col196]: [QM31; 1] = (*blake_g_output_limb_1_col196
+        let [blake_g_output_limb_1_col197]: [QM31; 1] = (*blake_g_output_limb_1_col197
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_2_col197]: [QM31; 1] = (*blake_g_output_limb_2_col197
+        let [blake_g_output_limb_2_col198]: [QM31; 1] = (*blake_g_output_limb_2_col198
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_3_col198]: [QM31; 1] = (*blake_g_output_limb_3_col198
+        let [blake_g_output_limb_3_col199]: [QM31; 1] = (*blake_g_output_limb_3_col199
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_4_col199]: [QM31; 1] = (*blake_g_output_limb_4_col199
+        let [blake_g_output_limb_4_col200]: [QM31; 1] = (*blake_g_output_limb_4_col200
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_5_col200]: [QM31; 1] = (*blake_g_output_limb_5_col200
+        let [blake_g_output_limb_5_col201]: [QM31; 1] = (*blake_g_output_limb_5_col201
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_6_col201]: [QM31; 1] = (*blake_g_output_limb_6_col201
+        let [blake_g_output_limb_6_col202]: [QM31; 1] = (*blake_g_output_limb_6_col202
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_7_col202]: [QM31; 1] = (*blake_g_output_limb_7_col202
+        let [blake_g_output_limb_7_col203]: [QM31; 1] = (*blake_g_output_limb_7_col203
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_0_col203]: [QM31; 1] = (*blake_g_output_limb_0_col203
+        let [blake_g_output_limb_0_col204]: [QM31; 1] = (*blake_g_output_limb_0_col204
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_1_col204]: [QM31; 1] = (*blake_g_output_limb_1_col204
+        let [blake_g_output_limb_1_col205]: [QM31; 1] = (*blake_g_output_limb_1_col205
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_2_col205]: [QM31; 1] = (*blake_g_output_limb_2_col205
+        let [blake_g_output_limb_2_col206]: [QM31; 1] = (*blake_g_output_limb_2_col206
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_3_col206]: [QM31; 1] = (*blake_g_output_limb_3_col206
+        let [blake_g_output_limb_3_col207]: [QM31; 1] = (*blake_g_output_limb_3_col207
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_4_col207]: [QM31; 1] = (*blake_g_output_limb_4_col207
+        let [blake_g_output_limb_4_col208]: [QM31; 1] = (*blake_g_output_limb_4_col208
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_5_col208]: [QM31; 1] = (*blake_g_output_limb_5_col208
+        let [blake_g_output_limb_5_col209]: [QM31; 1] = (*blake_g_output_limb_5_col209
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_6_col209]: [QM31; 1] = (*blake_g_output_limb_6_col209
+        let [blake_g_output_limb_6_col210]: [QM31; 1] = (*blake_g_output_limb_6_col210
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_g_output_limb_7_col210]: [QM31; 1] = (*blake_g_output_limb_7_col210
+        let [blake_g_output_limb_7_col211]: [QM31; 1] = (*blake_g_output_limb_7_col211
             .try_into()
             .unwrap())
             .unbox();
-        let [enabler_col211]: [QM31; 1] = (*enabler_col211.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
+
+        // Constraint - Enabler is a bit
+        let constraint_quotient = (((enabler_col0 * enabler_col0) - enabler_col0));
+        sum = sum * random_coeff + constraint_quotient;
 
         blake_round_sigma_sum_0 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1805967942, 0, 0, 0>(), input_limb_1_col1,
-                    blake_round_sigma_output_limb_0_col35, blake_round_sigma_output_limb_1_col36,
-                    blake_round_sigma_output_limb_2_col37, blake_round_sigma_output_limb_3_col38,
-                    blake_round_sigma_output_limb_4_col39, blake_round_sigma_output_limb_5_col40,
-                    blake_round_sigma_output_limb_6_col41, blake_round_sigma_output_limb_7_col42,
-                    blake_round_sigma_output_limb_8_col43, blake_round_sigma_output_limb_9_col44,
-                    blake_round_sigma_output_limb_10_col45, blake_round_sigma_output_limb_11_col46,
-                    blake_round_sigma_output_limb_12_col47, blake_round_sigma_output_limb_13_col48,
-                    blake_round_sigma_output_limb_14_col49, blake_round_sigma_output_limb_15_col50,
+                    qm31_const::<1805967942, 0, 0, 0>(), input_limb_1_col2,
+                    blake_round_sigma_output_limb_0_col36, blake_round_sigma_output_limb_1_col37,
+                    blake_round_sigma_output_limb_2_col38, blake_round_sigma_output_limb_3_col39,
+                    blake_round_sigma_output_limb_4_col40, blake_round_sigma_output_limb_5_col41,
+                    blake_round_sigma_output_limb_6_col42, blake_round_sigma_output_limb_7_col43,
+                    blake_round_sigma_output_limb_8_col44, blake_round_sigma_output_limb_9_col45,
+                    blake_round_sigma_output_limb_10_col46, blake_round_sigma_output_limb_11_col47,
+                    blake_round_sigma_output_limb_12_col48, blake_round_sigma_output_limb_13_col49,
+                    blake_round_sigma_output_limb_14_col50, blake_round_sigma_output_limb_15_col51,
                 ]
                     .span(),
             );
-        numerator_0 = qm31_const::<1, 0, 0, 0>();
+        numerator_0 = enabler_col0;
         read_u_32_evaluate(
-            (input_limb_34_col34 + blake_round_sigma_output_limb_0_col35),
-            low_16_bits_col51,
-            high_16_bits_col52,
-            low_7_ms_bits_col53,
-            high_14_ms_bits_col54,
-            high_5_ms_bits_col55,
-            message_word_0_id_col56,
+            (input_limb_34_col35 + blake_round_sigma_output_limb_0_col36),
+            enabler_col0,
+            low_16_bits_col52,
+            high_16_bits_col53,
+            low_7_ms_bits_col54,
+            high_14_ms_bits_col55,
+            high_5_ms_bits_col56,
+            message_word_0_id_col57,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_1,
             ref numerator_1,
@@ -962,13 +967,14 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_u_32_evaluate(
-            (input_limb_34_col34 + blake_round_sigma_output_limb_1_col36),
-            low_16_bits_col57,
-            high_16_bits_col58,
-            low_7_ms_bits_col59,
-            high_14_ms_bits_col60,
-            high_5_ms_bits_col61,
-            message_word_1_id_col62,
+            (input_limb_34_col35 + blake_round_sigma_output_limb_1_col37),
+            enabler_col0,
+            low_16_bits_col58,
+            high_16_bits_col59,
+            low_7_ms_bits_col60,
+            high_14_ms_bits_col61,
+            high_5_ms_bits_col62,
+            message_word_1_id_col63,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_4,
             ref numerator_4,
@@ -980,13 +986,14 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_u_32_evaluate(
-            (input_limb_34_col34 + blake_round_sigma_output_limb_2_col37),
-            low_16_bits_col63,
-            high_16_bits_col64,
-            low_7_ms_bits_col65,
-            high_14_ms_bits_col66,
-            high_5_ms_bits_col67,
-            message_word_2_id_col68,
+            (input_limb_34_col35 + blake_round_sigma_output_limb_2_col38),
+            enabler_col0,
+            low_16_bits_col64,
+            high_16_bits_col65,
+            low_7_ms_bits_col66,
+            high_14_ms_bits_col67,
+            high_5_ms_bits_col68,
+            message_word_2_id_col69,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_7,
             ref numerator_7,
@@ -998,13 +1005,14 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_u_32_evaluate(
-            (input_limb_34_col34 + blake_round_sigma_output_limb_3_col38),
-            low_16_bits_col69,
-            high_16_bits_col70,
-            low_7_ms_bits_col71,
-            high_14_ms_bits_col72,
-            high_5_ms_bits_col73,
-            message_word_3_id_col74,
+            (input_limb_34_col35 + blake_round_sigma_output_limb_3_col39),
+            enabler_col0,
+            low_16_bits_col70,
+            high_16_bits_col71,
+            low_7_ms_bits_col72,
+            high_14_ms_bits_col73,
+            high_5_ms_bits_col74,
+            message_word_3_id_col75,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_10,
             ref numerator_10,
@@ -1016,13 +1024,14 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_u_32_evaluate(
-            (input_limb_34_col34 + blake_round_sigma_output_limb_4_col39),
-            low_16_bits_col75,
-            high_16_bits_col76,
-            low_7_ms_bits_col77,
-            high_14_ms_bits_col78,
-            high_5_ms_bits_col79,
-            message_word_4_id_col80,
+            (input_limb_34_col35 + blake_round_sigma_output_limb_4_col40),
+            enabler_col0,
+            low_16_bits_col76,
+            high_16_bits_col77,
+            low_7_ms_bits_col78,
+            high_14_ms_bits_col79,
+            high_5_ms_bits_col80,
+            message_word_4_id_col81,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_13,
             ref numerator_13,
@@ -1034,13 +1043,14 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_u_32_evaluate(
-            (input_limb_34_col34 + blake_round_sigma_output_limb_5_col40),
-            low_16_bits_col81,
-            high_16_bits_col82,
-            low_7_ms_bits_col83,
-            high_14_ms_bits_col84,
-            high_5_ms_bits_col85,
-            message_word_5_id_col86,
+            (input_limb_34_col35 + blake_round_sigma_output_limb_5_col41),
+            enabler_col0,
+            low_16_bits_col82,
+            high_16_bits_col83,
+            low_7_ms_bits_col84,
+            high_14_ms_bits_col85,
+            high_5_ms_bits_col86,
+            message_word_5_id_col87,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_16,
             ref numerator_16,
@@ -1052,13 +1062,14 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_u_32_evaluate(
-            (input_limb_34_col34 + blake_round_sigma_output_limb_6_col41),
-            low_16_bits_col87,
-            high_16_bits_col88,
-            low_7_ms_bits_col89,
-            high_14_ms_bits_col90,
-            high_5_ms_bits_col91,
-            message_word_6_id_col92,
+            (input_limb_34_col35 + blake_round_sigma_output_limb_6_col42),
+            enabler_col0,
+            low_16_bits_col88,
+            high_16_bits_col89,
+            low_7_ms_bits_col90,
+            high_14_ms_bits_col91,
+            high_5_ms_bits_col92,
+            message_word_6_id_col93,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_19,
             ref numerator_19,
@@ -1070,13 +1081,14 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_u_32_evaluate(
-            (input_limb_34_col34 + blake_round_sigma_output_limb_7_col42),
-            low_16_bits_col93,
-            high_16_bits_col94,
-            low_7_ms_bits_col95,
-            high_14_ms_bits_col96,
-            high_5_ms_bits_col97,
-            message_word_7_id_col98,
+            (input_limb_34_col35 + blake_round_sigma_output_limb_7_col43),
+            enabler_col0,
+            low_16_bits_col94,
+            high_16_bits_col95,
+            low_7_ms_bits_col96,
+            high_14_ms_bits_col97,
+            high_5_ms_bits_col98,
+            message_word_7_id_col99,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_22,
             ref numerator_22,
@@ -1088,13 +1100,14 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_u_32_evaluate(
-            (input_limb_34_col34 + blake_round_sigma_output_limb_8_col43),
-            low_16_bits_col99,
-            high_16_bits_col100,
-            low_7_ms_bits_col101,
-            high_14_ms_bits_col102,
-            high_5_ms_bits_col103,
-            message_word_8_id_col104,
+            (input_limb_34_col35 + blake_round_sigma_output_limb_8_col44),
+            enabler_col0,
+            low_16_bits_col100,
+            high_16_bits_col101,
+            low_7_ms_bits_col102,
+            high_14_ms_bits_col103,
+            high_5_ms_bits_col104,
+            message_word_8_id_col105,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_25,
             ref numerator_25,
@@ -1106,13 +1119,14 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_u_32_evaluate(
-            (input_limb_34_col34 + blake_round_sigma_output_limb_9_col44),
-            low_16_bits_col105,
-            high_16_bits_col106,
-            low_7_ms_bits_col107,
-            high_14_ms_bits_col108,
-            high_5_ms_bits_col109,
-            message_word_9_id_col110,
+            (input_limb_34_col35 + blake_round_sigma_output_limb_9_col45),
+            enabler_col0,
+            low_16_bits_col106,
+            high_16_bits_col107,
+            low_7_ms_bits_col108,
+            high_14_ms_bits_col109,
+            high_5_ms_bits_col110,
+            message_word_9_id_col111,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_28,
             ref numerator_28,
@@ -1124,13 +1138,14 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_u_32_evaluate(
-            (input_limb_34_col34 + blake_round_sigma_output_limb_10_col45),
-            low_16_bits_col111,
-            high_16_bits_col112,
-            low_7_ms_bits_col113,
-            high_14_ms_bits_col114,
-            high_5_ms_bits_col115,
-            message_word_10_id_col116,
+            (input_limb_34_col35 + blake_round_sigma_output_limb_10_col46),
+            enabler_col0,
+            low_16_bits_col112,
+            high_16_bits_col113,
+            low_7_ms_bits_col114,
+            high_14_ms_bits_col115,
+            high_5_ms_bits_col116,
+            message_word_10_id_col117,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_31,
             ref numerator_31,
@@ -1142,13 +1157,14 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_u_32_evaluate(
-            (input_limb_34_col34 + blake_round_sigma_output_limb_11_col46),
-            low_16_bits_col117,
-            high_16_bits_col118,
-            low_7_ms_bits_col119,
-            high_14_ms_bits_col120,
-            high_5_ms_bits_col121,
-            message_word_11_id_col122,
+            (input_limb_34_col35 + blake_round_sigma_output_limb_11_col47),
+            enabler_col0,
+            low_16_bits_col118,
+            high_16_bits_col119,
+            low_7_ms_bits_col120,
+            high_14_ms_bits_col121,
+            high_5_ms_bits_col122,
+            message_word_11_id_col123,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_34,
             ref numerator_34,
@@ -1160,13 +1176,14 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_u_32_evaluate(
-            (input_limb_34_col34 + blake_round_sigma_output_limb_12_col47),
-            low_16_bits_col123,
-            high_16_bits_col124,
-            low_7_ms_bits_col125,
-            high_14_ms_bits_col126,
-            high_5_ms_bits_col127,
-            message_word_12_id_col128,
+            (input_limb_34_col35 + blake_round_sigma_output_limb_12_col48),
+            enabler_col0,
+            low_16_bits_col124,
+            high_16_bits_col125,
+            low_7_ms_bits_col126,
+            high_14_ms_bits_col127,
+            high_5_ms_bits_col128,
+            message_word_12_id_col129,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_37,
             ref numerator_37,
@@ -1178,13 +1195,14 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_u_32_evaluate(
-            (input_limb_34_col34 + blake_round_sigma_output_limb_13_col48),
-            low_16_bits_col129,
-            high_16_bits_col130,
-            low_7_ms_bits_col131,
-            high_14_ms_bits_col132,
-            high_5_ms_bits_col133,
-            message_word_13_id_col134,
+            (input_limb_34_col35 + blake_round_sigma_output_limb_13_col49),
+            enabler_col0,
+            low_16_bits_col130,
+            high_16_bits_col131,
+            low_7_ms_bits_col132,
+            high_14_ms_bits_col133,
+            high_5_ms_bits_col134,
+            message_word_13_id_col135,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_40,
             ref numerator_40,
@@ -1196,13 +1214,14 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_u_32_evaluate(
-            (input_limb_34_col34 + blake_round_sigma_output_limb_14_col49),
-            low_16_bits_col135,
-            high_16_bits_col136,
-            low_7_ms_bits_col137,
-            high_14_ms_bits_col138,
-            high_5_ms_bits_col139,
-            message_word_14_id_col140,
+            (input_limb_34_col35 + blake_round_sigma_output_limb_14_col50),
+            enabler_col0,
+            low_16_bits_col136,
+            high_16_bits_col137,
+            low_7_ms_bits_col138,
+            high_14_ms_bits_col139,
+            high_5_ms_bits_col140,
+            message_word_14_id_col141,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_43,
             ref numerator_43,
@@ -1214,13 +1233,14 @@ pub impl AirComponentImpl of AirComponent<Component> {
             random_coeff,
         );
         read_u_32_evaluate(
-            (input_limb_34_col34 + blake_round_sigma_output_limb_15_col50),
-            low_16_bits_col141,
-            high_16_bits_col142,
-            low_7_ms_bits_col143,
-            high_14_ms_bits_col144,
-            high_5_ms_bits_col145,
-            message_word_15_id_col146,
+            (input_limb_34_col35 + blake_round_sigma_output_limb_15_col51),
+            enabler_col0,
+            low_16_bits_col142,
+            high_16_bits_col143,
+            low_7_ms_bits_col144,
+            high_14_ms_bits_col145,
+            high_5_ms_bits_col146,
+            message_word_15_id_col147,
             self.common_lookup_elements,
             ref range_check_7_2_5_sum_46,
             ref numerator_46,
@@ -1236,197 +1256,193 @@ pub impl AirComponentImpl of AirComponent<Component> {
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1139985212, 0, 0, 0>(), input_limb_2_col2, input_limb_3_col3,
-                    input_limb_10_col10, input_limb_11_col11, input_limb_18_col18,
-                    input_limb_19_col19, input_limb_26_col26, input_limb_27_col27,
-                    low_16_bits_col51, high_16_bits_col52, low_16_bits_col57, high_16_bits_col58,
-                    blake_g_output_limb_0_col147, blake_g_output_limb_1_col148,
-                    blake_g_output_limb_2_col149, blake_g_output_limb_3_col150,
-                    blake_g_output_limb_4_col151, blake_g_output_limb_5_col152,
-                    blake_g_output_limb_6_col153, blake_g_output_limb_7_col154,
+                    qm31_const::<1139985212, 0, 0, 0>(), input_limb_2_col3, input_limb_3_col4,
+                    input_limb_10_col11, input_limb_11_col12, input_limb_18_col19,
+                    input_limb_19_col20, input_limb_26_col27, input_limb_27_col28,
+                    low_16_bits_col52, high_16_bits_col53, low_16_bits_col58, high_16_bits_col59,
+                    blake_g_output_limb_0_col148, blake_g_output_limb_1_col149,
+                    blake_g_output_limb_2_col150, blake_g_output_limb_3_col151,
+                    blake_g_output_limb_4_col152, blake_g_output_limb_5_col153,
+                    blake_g_output_limb_6_col154, blake_g_output_limb_7_col155,
                 ]
                     .span(),
             );
-        numerator_49 = qm31_const::<1, 0, 0, 0>();
+        numerator_49 = enabler_col0;
 
         blake_g_sum_50 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1139985212, 0, 0, 0>(), input_limb_4_col4, input_limb_5_col5,
-                    input_limb_12_col12, input_limb_13_col13, input_limb_20_col20,
-                    input_limb_21_col21, input_limb_28_col28, input_limb_29_col29,
-                    low_16_bits_col63, high_16_bits_col64, low_16_bits_col69, high_16_bits_col70,
-                    blake_g_output_limb_0_col155, blake_g_output_limb_1_col156,
-                    blake_g_output_limb_2_col157, blake_g_output_limb_3_col158,
-                    blake_g_output_limb_4_col159, blake_g_output_limb_5_col160,
-                    blake_g_output_limb_6_col161, blake_g_output_limb_7_col162,
+                    qm31_const::<1139985212, 0, 0, 0>(), input_limb_4_col5, input_limb_5_col6,
+                    input_limb_12_col13, input_limb_13_col14, input_limb_20_col21,
+                    input_limb_21_col22, input_limb_28_col29, input_limb_29_col30,
+                    low_16_bits_col64, high_16_bits_col65, low_16_bits_col70, high_16_bits_col71,
+                    blake_g_output_limb_0_col156, blake_g_output_limb_1_col157,
+                    blake_g_output_limb_2_col158, blake_g_output_limb_3_col159,
+                    blake_g_output_limb_4_col160, blake_g_output_limb_5_col161,
+                    blake_g_output_limb_6_col162, blake_g_output_limb_7_col163,
                 ]
                     .span(),
             );
-        numerator_50 = qm31_const::<1, 0, 0, 0>();
+        numerator_50 = enabler_col0;
 
         blake_g_sum_51 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1139985212, 0, 0, 0>(), input_limb_6_col6, input_limb_7_col7,
-                    input_limb_14_col14, input_limb_15_col15, input_limb_22_col22,
-                    input_limb_23_col23, input_limb_30_col30, input_limb_31_col31,
-                    low_16_bits_col75, high_16_bits_col76, low_16_bits_col81, high_16_bits_col82,
-                    blake_g_output_limb_0_col163, blake_g_output_limb_1_col164,
-                    blake_g_output_limb_2_col165, blake_g_output_limb_3_col166,
-                    blake_g_output_limb_4_col167, blake_g_output_limb_5_col168,
-                    blake_g_output_limb_6_col169, blake_g_output_limb_7_col170,
+                    qm31_const::<1139985212, 0, 0, 0>(), input_limb_6_col7, input_limb_7_col8,
+                    input_limb_14_col15, input_limb_15_col16, input_limb_22_col23,
+                    input_limb_23_col24, input_limb_30_col31, input_limb_31_col32,
+                    low_16_bits_col76, high_16_bits_col77, low_16_bits_col82, high_16_bits_col83,
+                    blake_g_output_limb_0_col164, blake_g_output_limb_1_col165,
+                    blake_g_output_limb_2_col166, blake_g_output_limb_3_col167,
+                    blake_g_output_limb_4_col168, blake_g_output_limb_5_col169,
+                    blake_g_output_limb_6_col170, blake_g_output_limb_7_col171,
                 ]
                     .span(),
             );
-        numerator_51 = qm31_const::<1, 0, 0, 0>();
+        numerator_51 = enabler_col0;
 
         blake_g_sum_52 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1139985212, 0, 0, 0>(), input_limb_8_col8, input_limb_9_col9,
-                    input_limb_16_col16, input_limb_17_col17, input_limb_24_col24,
-                    input_limb_25_col25, input_limb_32_col32, input_limb_33_col33,
-                    low_16_bits_col87, high_16_bits_col88, low_16_bits_col93, high_16_bits_col94,
-                    blake_g_output_limb_0_col171, blake_g_output_limb_1_col172,
-                    blake_g_output_limb_2_col173, blake_g_output_limb_3_col174,
-                    blake_g_output_limb_4_col175, blake_g_output_limb_5_col176,
-                    blake_g_output_limb_6_col177, blake_g_output_limb_7_col178,
+                    qm31_const::<1139985212, 0, 0, 0>(), input_limb_8_col9, input_limb_9_col10,
+                    input_limb_16_col17, input_limb_17_col18, input_limb_24_col25,
+                    input_limb_25_col26, input_limb_32_col33, input_limb_33_col34,
+                    low_16_bits_col88, high_16_bits_col89, low_16_bits_col94, high_16_bits_col95,
+                    blake_g_output_limb_0_col172, blake_g_output_limb_1_col173,
+                    blake_g_output_limb_2_col174, blake_g_output_limb_3_col175,
+                    blake_g_output_limb_4_col176, blake_g_output_limb_5_col177,
+                    blake_g_output_limb_6_col178, blake_g_output_limb_7_col179,
                 ]
                     .span(),
             );
-        numerator_52 = qm31_const::<1, 0, 0, 0>();
+        numerator_52 = enabler_col0;
 
         blake_g_sum_53 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1139985212, 0, 0, 0>(), blake_g_output_limb_0_col147,
-                    blake_g_output_limb_1_col148, blake_g_output_limb_2_col157,
-                    blake_g_output_limb_3_col158, blake_g_output_limb_4_col167,
-                    blake_g_output_limb_5_col168, blake_g_output_limb_6_col177,
-                    blake_g_output_limb_7_col178, low_16_bits_col99, high_16_bits_col100,
-                    low_16_bits_col105, high_16_bits_col106, blake_g_output_limb_0_col179,
-                    blake_g_output_limb_1_col180, blake_g_output_limb_2_col181,
-                    blake_g_output_limb_3_col182, blake_g_output_limb_4_col183,
-                    blake_g_output_limb_5_col184, blake_g_output_limb_6_col185,
-                    blake_g_output_limb_7_col186,
+                    qm31_const::<1139985212, 0, 0, 0>(), blake_g_output_limb_0_col148,
+                    blake_g_output_limb_1_col149, blake_g_output_limb_2_col158,
+                    blake_g_output_limb_3_col159, blake_g_output_limb_4_col168,
+                    blake_g_output_limb_5_col169, blake_g_output_limb_6_col178,
+                    blake_g_output_limb_7_col179, low_16_bits_col100, high_16_bits_col101,
+                    low_16_bits_col106, high_16_bits_col107, blake_g_output_limb_0_col180,
+                    blake_g_output_limb_1_col181, blake_g_output_limb_2_col182,
+                    blake_g_output_limb_3_col183, blake_g_output_limb_4_col184,
+                    blake_g_output_limb_5_col185, blake_g_output_limb_6_col186,
+                    blake_g_output_limb_7_col187,
                 ]
                     .span(),
             );
-        numerator_53 = qm31_const::<1, 0, 0, 0>();
+        numerator_53 = enabler_col0;
 
         blake_g_sum_54 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1139985212, 0, 0, 0>(), blake_g_output_limb_0_col155,
-                    blake_g_output_limb_1_col156, blake_g_output_limb_2_col165,
-                    blake_g_output_limb_3_col166, blake_g_output_limb_4_col175,
-                    blake_g_output_limb_5_col176, blake_g_output_limb_6_col153,
-                    blake_g_output_limb_7_col154, low_16_bits_col111, high_16_bits_col112,
-                    low_16_bits_col117, high_16_bits_col118, blake_g_output_limb_0_col187,
-                    blake_g_output_limb_1_col188, blake_g_output_limb_2_col189,
-                    blake_g_output_limb_3_col190, blake_g_output_limb_4_col191,
-                    blake_g_output_limb_5_col192, blake_g_output_limb_6_col193,
-                    blake_g_output_limb_7_col194,
+                    qm31_const::<1139985212, 0, 0, 0>(), blake_g_output_limb_0_col156,
+                    blake_g_output_limb_1_col157, blake_g_output_limb_2_col166,
+                    blake_g_output_limb_3_col167, blake_g_output_limb_4_col176,
+                    blake_g_output_limb_5_col177, blake_g_output_limb_6_col154,
+                    blake_g_output_limb_7_col155, low_16_bits_col112, high_16_bits_col113,
+                    low_16_bits_col118, high_16_bits_col119, blake_g_output_limb_0_col188,
+                    blake_g_output_limb_1_col189, blake_g_output_limb_2_col190,
+                    blake_g_output_limb_3_col191, blake_g_output_limb_4_col192,
+                    blake_g_output_limb_5_col193, blake_g_output_limb_6_col194,
+                    blake_g_output_limb_7_col195,
                 ]
                     .span(),
             );
-        numerator_54 = qm31_const::<1, 0, 0, 0>();
+        numerator_54 = enabler_col0;
 
         blake_g_sum_55 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1139985212, 0, 0, 0>(), blake_g_output_limb_0_col163,
-                    blake_g_output_limb_1_col164, blake_g_output_limb_2_col173,
-                    blake_g_output_limb_3_col174, blake_g_output_limb_4_col151,
-                    blake_g_output_limb_5_col152, blake_g_output_limb_6_col161,
-                    blake_g_output_limb_7_col162, low_16_bits_col123, high_16_bits_col124,
-                    low_16_bits_col129, high_16_bits_col130, blake_g_output_limb_0_col195,
-                    blake_g_output_limb_1_col196, blake_g_output_limb_2_col197,
-                    blake_g_output_limb_3_col198, blake_g_output_limb_4_col199,
-                    blake_g_output_limb_5_col200, blake_g_output_limb_6_col201,
-                    blake_g_output_limb_7_col202,
+                    qm31_const::<1139985212, 0, 0, 0>(), blake_g_output_limb_0_col164,
+                    blake_g_output_limb_1_col165, blake_g_output_limb_2_col174,
+                    blake_g_output_limb_3_col175, blake_g_output_limb_4_col152,
+                    blake_g_output_limb_5_col153, blake_g_output_limb_6_col162,
+                    blake_g_output_limb_7_col163, low_16_bits_col124, high_16_bits_col125,
+                    low_16_bits_col130, high_16_bits_col131, blake_g_output_limb_0_col196,
+                    blake_g_output_limb_1_col197, blake_g_output_limb_2_col198,
+                    blake_g_output_limb_3_col199, blake_g_output_limb_4_col200,
+                    blake_g_output_limb_5_col201, blake_g_output_limb_6_col202,
+                    blake_g_output_limb_7_col203,
                 ]
                     .span(),
             );
-        numerator_55 = qm31_const::<1, 0, 0, 0>();
+        numerator_55 = enabler_col0;
 
         blake_g_sum_56 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1139985212, 0, 0, 0>(), blake_g_output_limb_0_col171,
-                    blake_g_output_limb_1_col172, blake_g_output_limb_2_col149,
-                    blake_g_output_limb_3_col150, blake_g_output_limb_4_col159,
-                    blake_g_output_limb_5_col160, blake_g_output_limb_6_col169,
-                    blake_g_output_limb_7_col170, low_16_bits_col135, high_16_bits_col136,
-                    low_16_bits_col141, high_16_bits_col142, blake_g_output_limb_0_col203,
-                    blake_g_output_limb_1_col204, blake_g_output_limb_2_col205,
-                    blake_g_output_limb_3_col206, blake_g_output_limb_4_col207,
-                    blake_g_output_limb_5_col208, blake_g_output_limb_6_col209,
-                    blake_g_output_limb_7_col210,
+                    qm31_const::<1139985212, 0, 0, 0>(), blake_g_output_limb_0_col172,
+                    blake_g_output_limb_1_col173, blake_g_output_limb_2_col150,
+                    blake_g_output_limb_3_col151, blake_g_output_limb_4_col160,
+                    blake_g_output_limb_5_col161, blake_g_output_limb_6_col170,
+                    blake_g_output_limb_7_col171, low_16_bits_col136, high_16_bits_col137,
+                    low_16_bits_col142, high_16_bits_col143, blake_g_output_limb_0_col204,
+                    blake_g_output_limb_1_col205, blake_g_output_limb_2_col206,
+                    blake_g_output_limb_3_col207, blake_g_output_limb_4_col208,
+                    blake_g_output_limb_5_col209, blake_g_output_limb_6_col210,
+                    blake_g_output_limb_7_col211,
                 ]
                     .span(),
             );
-        numerator_56 = qm31_const::<1, 0, 0, 0>();
-
-        // Constraint - Enabler is a bit
-        let constraint_quotient = (((enabler_col211 * enabler_col211) - enabler_col211));
-        sum = sum * random_coeff + constraint_quotient;
+        numerator_56 = enabler_col0;
 
         blake_round_sum_57 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<40528774, 0, 0, 0>(), input_limb_0_col0, input_limb_1_col1,
-                    input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5,
-                    input_limb_6_col6, input_limb_7_col7, input_limb_8_col8, input_limb_9_col9,
-                    input_limb_10_col10, input_limb_11_col11, input_limb_12_col12,
-                    input_limb_13_col13, input_limb_14_col14, input_limb_15_col15,
-                    input_limb_16_col16, input_limb_17_col17, input_limb_18_col18,
-                    input_limb_19_col19, input_limb_20_col20, input_limb_21_col21,
-                    input_limb_22_col22, input_limb_23_col23, input_limb_24_col24,
-                    input_limb_25_col25, input_limb_26_col26, input_limb_27_col27,
-                    input_limb_28_col28, input_limb_29_col29, input_limb_30_col30,
-                    input_limb_31_col31, input_limb_32_col32, input_limb_33_col33,
-                    input_limb_34_col34,
+                    qm31_const::<40528774, 0, 0, 0>(), input_limb_0_col1, input_limb_1_col2,
+                    input_limb_2_col3, input_limb_3_col4, input_limb_4_col5, input_limb_5_col6,
+                    input_limb_6_col7, input_limb_7_col8, input_limb_8_col9, input_limb_9_col10,
+                    input_limb_10_col11, input_limb_11_col12, input_limb_12_col13,
+                    input_limb_13_col14, input_limb_14_col15, input_limb_15_col16,
+                    input_limb_16_col17, input_limb_17_col18, input_limb_18_col19,
+                    input_limb_19_col20, input_limb_20_col21, input_limb_21_col22,
+                    input_limb_22_col23, input_limb_23_col24, input_limb_24_col25,
+                    input_limb_25_col26, input_limb_26_col27, input_limb_27_col28,
+                    input_limb_28_col29, input_limb_29_col30, input_limb_30_col31,
+                    input_limb_31_col32, input_limb_32_col33, input_limb_33_col34,
+                    input_limb_34_col35,
                 ]
                     .span(),
             );
-        numerator_57 = enabler_col211;
+        numerator_57 = enabler_col0;
 
         blake_round_sum_58 = self
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<40528774, 0, 0, 0>(), input_limb_0_col0,
-                    (input_limb_1_col1 + qm31_const::<1, 0, 0, 0>()), blake_g_output_limb_0_col179,
-                    blake_g_output_limb_1_col180, blake_g_output_limb_0_col187,
-                    blake_g_output_limb_1_col188, blake_g_output_limb_0_col195,
-                    blake_g_output_limb_1_col196, blake_g_output_limb_0_col203,
-                    blake_g_output_limb_1_col204, blake_g_output_limb_2_col205,
-                    blake_g_output_limb_3_col206, blake_g_output_limb_2_col181,
-                    blake_g_output_limb_3_col182, blake_g_output_limb_2_col189,
-                    blake_g_output_limb_3_col190, blake_g_output_limb_2_col197,
-                    blake_g_output_limb_3_col198, blake_g_output_limb_4_col199,
-                    blake_g_output_limb_5_col200, blake_g_output_limb_4_col207,
-                    blake_g_output_limb_5_col208, blake_g_output_limb_4_col183,
-                    blake_g_output_limb_5_col184, blake_g_output_limb_4_col191,
-                    blake_g_output_limb_5_col192, blake_g_output_limb_6_col193,
-                    blake_g_output_limb_7_col194, blake_g_output_limb_6_col201,
-                    blake_g_output_limb_7_col202, blake_g_output_limb_6_col209,
-                    blake_g_output_limb_7_col210, blake_g_output_limb_6_col185,
-                    blake_g_output_limb_7_col186, input_limb_34_col34,
+                    qm31_const::<40528774, 0, 0, 0>(), input_limb_0_col1,
+                    (input_limb_1_col2 + qm31_const::<1, 0, 0, 0>()), blake_g_output_limb_0_col180,
+                    blake_g_output_limb_1_col181, blake_g_output_limb_0_col188,
+                    blake_g_output_limb_1_col189, blake_g_output_limb_0_col196,
+                    blake_g_output_limb_1_col197, blake_g_output_limb_0_col204,
+                    blake_g_output_limb_1_col205, blake_g_output_limb_2_col206,
+                    blake_g_output_limb_3_col207, blake_g_output_limb_2_col182,
+                    blake_g_output_limb_3_col183, blake_g_output_limb_2_col190,
+                    blake_g_output_limb_3_col191, blake_g_output_limb_2_col198,
+                    blake_g_output_limb_3_col199, blake_g_output_limb_4_col200,
+                    blake_g_output_limb_5_col201, blake_g_output_limb_4_col208,
+                    blake_g_output_limb_5_col209, blake_g_output_limb_4_col184,
+                    blake_g_output_limb_5_col185, blake_g_output_limb_4_col192,
+                    blake_g_output_limb_5_col193, blake_g_output_limb_6_col194,
+                    blake_g_output_limb_7_col195, blake_g_output_limb_6_col202,
+                    blake_g_output_limb_7_col203, blake_g_output_limb_6_col210,
+                    blake_g_output_limb_7_col211, blake_g_output_limb_6_col186,
+                    blake_g_output_limb_7_col187, input_limb_34_col35,
                 ]
                     .span(),
             );
-        numerator_58 = enabler_col211;
+        numerator_58 = enabler_col0;
 
         lookup_constraints(
             ref sum,

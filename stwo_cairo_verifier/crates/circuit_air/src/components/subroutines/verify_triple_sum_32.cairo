@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn verify_triple_sum_32_evaluate(
     input: [QM31; 8],
+    enabler: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref sum: QM31,
     random_coeff: QM31,

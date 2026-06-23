@@ -8,6 +8,7 @@ use crate::prelude::*;
 
 pub fn xor_rot_32_r_16_evaluate(
     input: [QM31; 4],
+    enabler: QM31,
     ms_8_bits_col0: QM31,
     ms_8_bits_col1: QM31,
     ms_8_bits_col2: QM31,
@@ -37,25 +38,46 @@ pub fn xor_rot_32_r_16_evaluate(
         input;
     let split_16_low_part_size_8_output_tmp_6b1a8_1_limb_0: QM31 =
         split_16_low_part_size_8_evaluate(
-        xor_rot_32_r_16_input_limb_0, ms_8_bits_col0, common_lookup_elements, ref sum, random_coeff,
+        xor_rot_32_r_16_input_limb_0,
+        enabler,
+        ms_8_bits_col0,
+        common_lookup_elements,
+        ref sum,
+        random_coeff,
     );
     let split_16_low_part_size_8_output_tmp_6b1a8_3_limb_0: QM31 =
         split_16_low_part_size_8_evaluate(
-        xor_rot_32_r_16_input_limb_1, ms_8_bits_col1, common_lookup_elements, ref sum, random_coeff,
+        xor_rot_32_r_16_input_limb_1,
+        enabler,
+        ms_8_bits_col1,
+        common_lookup_elements,
+        ref sum,
+        random_coeff,
     );
     let split_16_low_part_size_8_output_tmp_6b1a8_5_limb_0: QM31 =
         split_16_low_part_size_8_evaluate(
-        xor_rot_32_r_16_input_limb_2, ms_8_bits_col2, common_lookup_elements, ref sum, random_coeff,
+        xor_rot_32_r_16_input_limb_2,
+        enabler,
+        ms_8_bits_col2,
+        common_lookup_elements,
+        ref sum,
+        random_coeff,
     );
     let split_16_low_part_size_8_output_tmp_6b1a8_7_limb_0: QM31 =
         split_16_low_part_size_8_evaluate(
-        xor_rot_32_r_16_input_limb_3, ms_8_bits_col3, common_lookup_elements, ref sum, random_coeff,
+        xor_rot_32_r_16_input_limb_3,
+        enabler,
+        ms_8_bits_col3,
+        common_lookup_elements,
+        ref sum,
+        random_coeff,
     );
     bitwise_xor_num_bits_8_evaluate(
         [
             split_16_low_part_size_8_output_tmp_6b1a8_1_limb_0,
             split_16_low_part_size_8_output_tmp_6b1a8_5_limb_0,
         ],
+        enabler,
         xor_col4,
         common_lookup_elements,
         ref verify_bitwise_xor_8_sum_0,
@@ -65,6 +87,7 @@ pub fn xor_rot_32_r_16_evaluate(
     );
     bitwise_xor_num_bits_8_evaluate(
         [ms_8_bits_col0, ms_8_bits_col2],
+        enabler,
         xor_col5,
         common_lookup_elements,
         ref verify_bitwise_xor_8_sum_1,
@@ -77,6 +100,7 @@ pub fn xor_rot_32_r_16_evaluate(
             split_16_low_part_size_8_output_tmp_6b1a8_3_limb_0,
             split_16_low_part_size_8_output_tmp_6b1a8_7_limb_0,
         ],
+        enabler,
         xor_col6,
         common_lookup_elements,
         ref verify_bitwise_xor_8_b_sum_2,
@@ -86,6 +110,7 @@ pub fn xor_rot_32_r_16_evaluate(
     );
     bitwise_xor_num_bits_8_b_evaluate(
         [ms_8_bits_col1, ms_8_bits_col3],
+        enabler,
         xor_col7,
         common_lookup_elements,
         ref verify_bitwise_xor_8_b_sum_3,

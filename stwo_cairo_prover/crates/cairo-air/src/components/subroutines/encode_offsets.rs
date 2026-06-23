@@ -14,6 +14,7 @@ impl EncodeOffsets {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [encode_offsets_input_offset0, encode_offsets_input_offset1, encode_offsets_input_offset2]: [E::F; 3],
+        enabler: E::F,
         offset0_low_col0: E::F,
         offset0_mid_col1: E::F,
         offset1_low_col2: E::F,
@@ -25,7 +26,6 @@ impl EncodeOffsets {
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 2] {
-        let M31_1 = E::F::from(M31::from(1));
         let M31_128 = E::F::from(M31::from(128));
         let M31_1567323731 = E::F::from(M31::from(1567323731));
         let M31_16 = E::F::from(M31::from(16));
@@ -55,7 +55,7 @@ impl EncodeOffsets {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_371240602.clone(),
                 offset0_mid_col1.clone(),
@@ -66,7 +66,7 @@ impl EncodeOffsets {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1567323731.clone(),
                 offset2_low_col5.clone(),

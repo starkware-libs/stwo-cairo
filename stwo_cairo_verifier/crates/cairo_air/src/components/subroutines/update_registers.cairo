@@ -8,6 +8,7 @@ use crate::prelude::*;
 
 pub fn update_registers_evaluate(
     input: [QM31; 97],
+    enabler: QM31,
     partial_limb_msb_col0: QM31,
     msb_col1: QM31,
     mid_limbs_set_col2: QM31,
@@ -149,6 +150,7 @@ pub fn update_registers_evaluate(
             update_registers_input_dst_limb_26, update_registers_input_dst_limb_27,
             update_registers_input_opcode_ret,
         ],
+        enabler,
         partial_limb_msb_col0,
         common_lookup_elements,
         ref sum,
@@ -172,6 +174,7 @@ pub fn update_registers_evaluate(
             update_registers_input_res_limb_26, update_registers_input_res_limb_27,
             (update_registers_input_pc_update_jump_rel + update_registers_input_ap_update_add),
         ],
+        enabler,
         msb_col1,
         mid_limbs_set_col2,
         partial_limb_msb_col3,
@@ -270,6 +273,7 @@ pub fn update_registers_evaluate(
             update_registers_input_op1_limb_26, update_registers_input_op1_limb_27,
             op1_as_rel_imm_cond_col6,
         ],
+        enabler,
         msb_col7,
         mid_limbs_set_col8,
         partial_limb_msb_col9,
@@ -309,6 +313,7 @@ pub fn update_registers_evaluate(
     sum = sum * random_coeff + constraint_quotient;
     range_check_29_evaluate(
         next_ap_col12,
+        enabler,
         range_check_29_bot11bits_col13,
         common_lookup_elements,
         ref range_check_18_sum_0,

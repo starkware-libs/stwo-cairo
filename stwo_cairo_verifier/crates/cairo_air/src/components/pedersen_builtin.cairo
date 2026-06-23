@@ -98,6 +98,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             + pedersen_builtin_segment_start);
         read_id_evaluate(
             instance_addr_tmp_7cd2f_0,
+            qm31_const::<1, 0, 0, 0>(),
             input_state_0_id_col0,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_0,
@@ -107,6 +108,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         read_id_evaluate(
             (instance_addr_tmp_7cd2f_0 + qm31_const::<1, 0, 0, 0>()),
+            qm31_const::<1, 0, 0, 0>(),
             input_state_1_id_col1,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_1,
@@ -116,6 +118,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         read_id_evaluate(
             (instance_addr_tmp_7cd2f_0 + qm31_const::<2, 0, 0, 0>()),
+            qm31_const::<1, 0, 0, 0>(),
             output_state_id_col2,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_2,

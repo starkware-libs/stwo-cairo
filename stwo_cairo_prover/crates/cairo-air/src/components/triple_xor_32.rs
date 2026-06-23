@@ -57,19 +57,19 @@ impl FrameworkEval for Eval {
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_256 = E::F::from(M31::from(256));
         let M31_990559919 = E::F::from(M31::from(990559919));
-        let input_limb_0_col0 = eval.next_trace_mask();
-        let input_limb_1_col1 = eval.next_trace_mask();
-        let input_limb_2_col2 = eval.next_trace_mask();
-        let input_limb_3_col3 = eval.next_trace_mask();
-        let input_limb_4_col4 = eval.next_trace_mask();
-        let input_limb_5_col5 = eval.next_trace_mask();
-        let ms_8_bits_col6 = eval.next_trace_mask();
+        let enabler_col0 = eval.next_trace_mask();
+        let input_limb_0_col1 = eval.next_trace_mask();
+        let input_limb_1_col2 = eval.next_trace_mask();
+        let input_limb_2_col3 = eval.next_trace_mask();
+        let input_limb_3_col4 = eval.next_trace_mask();
+        let input_limb_4_col5 = eval.next_trace_mask();
+        let input_limb_5_col6 = eval.next_trace_mask();
         let ms_8_bits_col7 = eval.next_trace_mask();
         let ms_8_bits_col8 = eval.next_trace_mask();
         let ms_8_bits_col9 = eval.next_trace_mask();
         let ms_8_bits_col10 = eval.next_trace_mask();
         let ms_8_bits_col11 = eval.next_trace_mask();
-        let xor_col12 = eval.next_trace_mask();
+        let ms_8_bits_col12 = eval.next_trace_mask();
         let xor_col13 = eval.next_trace_mask();
         let xor_col14 = eval.next_trace_mask();
         let xor_col15 = eval.next_trace_mask();
@@ -77,53 +77,61 @@ impl FrameworkEval for Eval {
         let xor_col17 = eval.next_trace_mask();
         let xor_col18 = eval.next_trace_mask();
         let xor_col19 = eval.next_trace_mask();
-        let enabler_col20 = eval.next_trace_mask();
+        let xor_col20 = eval.next_trace_mask();
 
+        // Enabler is a bit.
+        eval.add_constraint(((enabler_col0.clone() * enabler_col0.clone()) - enabler_col0.clone()));
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [split_16_low_part_size_8_output_tmp_6e2d1_1_limb_0] = Split16LowPartSize8::evaluate(
-            [input_limb_0_col0.clone()],
-            ms_8_bits_col6.clone(),
-            &self.common_lookup_elements,
-            &mut eval,
-        );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [split_16_low_part_size_8_output_tmp_6e2d1_3_limb_0] = Split16LowPartSize8::evaluate(
-            [input_limb_1_col1.clone()],
+            [input_limb_0_col1.clone()],
+            enabler_col0.clone(),
             ms_8_bits_col7.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [split_16_low_part_size_8_output_tmp_6e2d1_5_limb_0] = Split16LowPartSize8::evaluate(
-            [input_limb_2_col2.clone()],
+        let [split_16_low_part_size_8_output_tmp_6e2d1_3_limb_0] = Split16LowPartSize8::evaluate(
+            [input_limb_1_col2.clone()],
+            enabler_col0.clone(),
             ms_8_bits_col8.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [split_16_low_part_size_8_output_tmp_6e2d1_7_limb_0] = Split16LowPartSize8::evaluate(
-            [input_limb_3_col3.clone()],
+        let [split_16_low_part_size_8_output_tmp_6e2d1_5_limb_0] = Split16LowPartSize8::evaluate(
+            [input_limb_2_col3.clone()],
+            enabler_col0.clone(),
             ms_8_bits_col9.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [split_16_low_part_size_8_output_tmp_6e2d1_9_limb_0] = Split16LowPartSize8::evaluate(
-            [input_limb_4_col4.clone()],
+        let [split_16_low_part_size_8_output_tmp_6e2d1_7_limb_0] = Split16LowPartSize8::evaluate(
+            [input_limb_3_col4.clone()],
+            enabler_col0.clone(),
             ms_8_bits_col10.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [split_16_low_part_size_8_output_tmp_6e2d1_11_limb_0] = Split16LowPartSize8::evaluate(
-            [input_limb_5_col5.clone()],
+        let [split_16_low_part_size_8_output_tmp_6e2d1_9_limb_0] = Split16LowPartSize8::evaluate(
+            [input_limb_4_col5.clone()],
+            enabler_col0.clone(),
             ms_8_bits_col11.clone(),
+            &self.common_lookup_elements,
+            &mut eval,
+        );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_6e2d1_11_limb_0] = Split16LowPartSize8::evaluate(
+            [input_limb_5_col6.clone()],
+            enabler_col0.clone(),
+            ms_8_bits_col12.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
@@ -132,28 +140,32 @@ impl FrameworkEval for Eval {
                 split_16_low_part_size_8_output_tmp_6e2d1_1_limb_0.clone(),
                 split_16_low_part_size_8_output_tmp_6e2d1_5_limb_0.clone(),
             ],
-            xor_col12.clone(),
-            &self.common_lookup_elements,
-            &mut eval,
-        );
-        BitwiseXorNumBits8::evaluate(
-            [
-                xor_col12.clone(),
-                split_16_low_part_size_8_output_tmp_6e2d1_9_limb_0.clone(),
-            ],
+            enabler_col0.clone(),
             xor_col13.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         BitwiseXorNumBits8::evaluate(
-            [ms_8_bits_col6.clone(), ms_8_bits_col8.clone()],
+            [
+                xor_col13.clone(),
+                split_16_low_part_size_8_output_tmp_6e2d1_9_limb_0.clone(),
+            ],
+            enabler_col0.clone(),
             xor_col14.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         BitwiseXorNumBits8::evaluate(
-            [xor_col14.clone(), ms_8_bits_col10.clone()],
+            [ms_8_bits_col7.clone(), ms_8_bits_col9.clone()],
+            enabler_col0.clone(),
             xor_col15.clone(),
+            &self.common_lookup_elements,
+            &mut eval,
+        );
+        BitwiseXorNumBits8::evaluate(
+            [xor_col15.clone(), ms_8_bits_col11.clone()],
+            enabler_col0.clone(),
+            xor_col16.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
@@ -162,50 +174,50 @@ impl FrameworkEval for Eval {
                 split_16_low_part_size_8_output_tmp_6e2d1_3_limb_0.clone(),
                 split_16_low_part_size_8_output_tmp_6e2d1_7_limb_0.clone(),
             ],
-            xor_col16.clone(),
-            &self.common_lookup_elements,
-            &mut eval,
-        );
-        BitwiseXorNumBits8B::evaluate(
-            [
-                xor_col16.clone(),
-                split_16_low_part_size_8_output_tmp_6e2d1_11_limb_0.clone(),
-            ],
+            enabler_col0.clone(),
             xor_col17.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         BitwiseXorNumBits8B::evaluate(
-            [ms_8_bits_col7.clone(), ms_8_bits_col9.clone()],
+            [
+                xor_col17.clone(),
+                split_16_low_part_size_8_output_tmp_6e2d1_11_limb_0.clone(),
+            ],
+            enabler_col0.clone(),
             xor_col18.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         BitwiseXorNumBits8B::evaluate(
-            [xor_col18.clone(), ms_8_bits_col11.clone()],
+            [ms_8_bits_col8.clone(), ms_8_bits_col10.clone()],
+            enabler_col0.clone(),
             xor_col19.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
-        let triple_xor32_output_tmp_6e2d1_28_limb_0 =
-            eval.add_intermediate((xor_col13.clone() + (xor_col15.clone() * M31_256.clone())));
-        let triple_xor32_output_tmp_6e2d1_28_limb_1 =
-            eval.add_intermediate((xor_col17.clone() + (xor_col19.clone() * M31_256.clone())));
-        // Enabler is a bit.
-        eval.add_constraint(
-            ((enabler_col20.clone() * enabler_col20.clone()) - enabler_col20.clone()),
+        BitwiseXorNumBits8B::evaluate(
+            [xor_col19.clone(), ms_8_bits_col12.clone()],
+            enabler_col0.clone(),
+            xor_col20.clone(),
+            &self.common_lookup_elements,
+            &mut eval,
         );
+        let triple_xor32_output_tmp_6e2d1_28_limb_0 =
+            eval.add_intermediate((xor_col14.clone() + (xor_col16.clone() * M31_256.clone())));
+        let triple_xor32_output_tmp_6e2d1_28_limb_1 =
+            eval.add_intermediate((xor_col18.clone() + (xor_col20.clone() * M31_256.clone())));
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler_col20.clone()),
+            -E::EF::from(enabler_col0.clone()),
             &[
                 M31_990559919.clone(),
-                input_limb_0_col0.clone(),
-                input_limb_1_col1.clone(),
-                input_limb_2_col2.clone(),
-                input_limb_3_col3.clone(),
-                input_limb_4_col4.clone(),
-                input_limb_5_col5.clone(),
+                input_limb_0_col1.clone(),
+                input_limb_1_col2.clone(),
+                input_limb_2_col3.clone(),
+                input_limb_3_col4.clone(),
+                input_limb_4_col5.clone(),
+                input_limb_5_col6.clone(),
                 triple_xor32_output_tmp_6e2d1_28_limb_0.clone(),
                 triple_xor32_output_tmp_6e2d1_28_limb_1.clone(),
             ],
