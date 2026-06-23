@@ -268,6 +268,31 @@ pub fn add_inputs<C, Packed, Unpacked>(
     }
 }
 
+/// Packs a slice of unpacked inputs and concatenates it to the already packed inputs
+///
+/// Used to handle "remainder inputs": When a caller wants to add an amount of inputs
+/// that is not a multiple of N_LANES, the remainder is saved in the callee's
+/// remainder_inputs field. After all callers are done, this function is used to add
+/// these inputs to the main vector of packed inputs. Note that if there are multiple
+/// callers, remainder_inputs may grow to > N_LANES elements.
+pub fn add_remainder<PackedInput, UnpackedInput>(
+    packed_inputs: &mut Vec<PackedInput>,
+    remainder: &[UnpackedInput],
+) where
+    PackedInput: Unpack,
+    UnpackedInput: Pack<SimdType = PackedInput>,
+{
+    if remainder.is_empty() {
+        return;
+    }
+
+    let mut padded = remainder.to_owned();
+    padded.resize(remainder.len().next_multiple_of(N_LANES), remainder[0]);
+    for chunk in padded.into_iter().array_chunks() {
+        packed_inputs.push(UnpackedInput::pack(chunk));
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use rand::rngs::SmallRng;
