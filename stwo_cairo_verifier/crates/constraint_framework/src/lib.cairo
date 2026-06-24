@@ -12,6 +12,7 @@ use stwo_verifier_core::{ColumnSpan, TreeArray};
 
 pub mod claim;
 pub mod component;
+pub mod test_utils;
 pub mod utils;
 
 pub use claim::ClaimTrait;

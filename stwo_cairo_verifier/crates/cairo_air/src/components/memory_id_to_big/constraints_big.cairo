@@ -519,12 +519,12 @@ fn lookup_constraints(
 mod tests {
     use core::num::traits::Zero;
     use stwo_constraint_framework::LookupElementsTrait;
+    use stwo_constraint_framework::test_utils::make_interaction_trace;
     use stwo_verifier_core::fields::m31::{M31, m31};
     use stwo_verifier_core::fields::qm31::{QM31, QM31Trait, qm31_const};
     use stwo_verifier_core::poly::circle::CanonicCosetImpl;
     use stwo_verifier_core::utils::pow2;
     use crate::components::sample_evaluations::*;
-    use crate::test_utils::make_interaction_trace;
     use super::{ConstraintParams, evaluate_constraints_at_point};
 
     #[test]
