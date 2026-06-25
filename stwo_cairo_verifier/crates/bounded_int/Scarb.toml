@@ -14,4 +14,4 @@ cairo-lint.workspace = true
 [dependencies]
 
 [dev-dependencies]
-cairo_test = "2.12.2"
+cairo_test.workspace = true

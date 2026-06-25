@@ -18,7 +18,7 @@ qm31_opcode = ["stwo_circuit_air/qm31_opcode"]
 [dependencies]
 stwo_circuit_air = { path = "../circuit_air" }
 stwo_verifier_core = { path = "../verifier_core" }
-cairo_execute = "2.12.2"
+cairo_execute.workspace = true
 
 [dev-dependencies]
-cairo_test = "2.12.2"
+cairo_test.workspace = true
