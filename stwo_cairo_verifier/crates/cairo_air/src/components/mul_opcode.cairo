@@ -1268,9 +1268,9 @@ fn lookup_constraints(
 mod tests {
     use core::array::ArrayImpl;
     use core::num::traits::Zero;
-    #[allow(unused_imports)]
-    use stwo_cairo_air::preprocessed_columns::*;
     use stwo_constraint_framework::AirComponent;
+    #[allow(unused_imports)]
+    use stwo_constraint_framework::test_utils::{make_interaction_trace, preprocessed_mask_add};
     #[allow(unused_imports)]
     use stwo_constraint_framework::{
         LookupElementsTrait, PreprocessedMaskValues, PreprocessedMaskValuesTrait,
@@ -1278,8 +1278,7 @@ mod tests {
     use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Trait, qm31_const};
     use crate::components::sample_evaluations::*;
     #[allow(unused_imports)]
-    use crate::test_utils::{make_interaction_trace, preprocessed_mask_add};
-    use crate::utils::*;
+    use crate::preprocessed_columns::*;
     use super::{Claim, Component};
 
     #[test]
