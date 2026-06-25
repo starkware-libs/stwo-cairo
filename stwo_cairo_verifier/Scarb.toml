@@ -11,6 +11,10 @@ members = [
     "crates/verifier_utils",
 ]
 
+[workspace.dependencies]
+cairo_execute = "2.18.0"
+cairo_test = "2.18.0"
+
 [workspace.tool.cairo-lint]
 collapsible_if_else = false
 double_parens = false
