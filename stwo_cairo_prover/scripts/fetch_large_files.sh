@@ -11,7 +11,7 @@ fi
 
 # Check if jq is installed
 if ! command -v jq &> /dev/null; then
-    echo "Error: 'jq' is not installed. Run: sudo apt-get install js."
+    echo "Error: 'jq' is not installed. Run: sudo apt-get install jq."
     exit 1
 fi
 
