@@ -1,5 +1,6 @@
 use stwo_constraint_framework::{CommonLookupElements, LookupElementsTrait};
 use stwo_verifier_core::fields::qm31::qm31_const;
+use crate::components::memory_id_to_big::LARGE_MEMORY_VALUE_ID_BASE;
 use super::{MemorySmallValue, PublicDataImpl, PublicMemory, PublicSegmentRanges, SegmentRange};
 
 #[generate_trait]
@@ -15,8 +16,10 @@ pub impl LookupElementsDummyImpl of LookupElementsDummyTrait {
 /// `output_len` elements, each being a tuple of (id, value).
 pub fn mock_public_memory_with_outputs(output_len: u32) -> PublicMemory {
     let mut output = array![];
+    let output_len_id = 1000;
+
     for i in 0..output_len {
-        output.append((i, [i; 8]));
+        output.append((LARGE_MEMORY_VALUE_ID_BASE + i, [i; 8]));
     }
 
     let empty_segment = SegmentRange {
@@ -27,7 +30,11 @@ pub fn mock_public_memory_with_outputs(output_len: u32) -> PublicMemory {
     PublicMemory {
         program: [].span(),
         public_segments: PublicSegmentRanges {
-            output: empty_segment,
+            // The output segment range needs to be consistent with output.len()
+            output: SegmentRange {
+                start_ptr: MemorySmallValue { id: 0, value: 0 },
+                stop_ptr: MemorySmallValue { id: output_len_id, value: output_len },
+            },
             pedersen: empty_segment,
             range_check_128: empty_segment,
             ecdsa: empty_segment,
