@@ -503,7 +503,18 @@ impl PublicMemory {
         let [program, output] =
             [&self.program, &self.output].map(|section| section.clone().into_iter().enumerate());
         let program_iter = program.map(move |(i, (id, value))| (initial_pc + i as u32, id, value));
-        let output_iter = output.map(move |(i, (id, value))| (final_ap + i as u32, id, value));
+
+        let SegmentRange {
+            start_ptr: output_start_ptr,
+            stop_ptr: output_stop_ptr,
+        } = self.public_segments.output;
+
+        // The output segment's declared length (`output_stop_ptr` - `output_start_ptr`) must match
+        // the number of output values.
+        let output_len: u32 = self.output.len().try_into().unwrap();
+        assert!(output_stop_ptr.value == output_start_ptr.value + output_len);
+        let output_iter =
+            output.map(move |(i, (id, value))| (output_start_ptr.value + i as u32, id, value));
 
         let [safe_call_id0, safe_call_id1] = self.safe_call_ids;
         // The safe call area should be [initial_fp, 0] and initial_fp should be the same as
