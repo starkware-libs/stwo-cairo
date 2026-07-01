@@ -27,7 +27,11 @@ pub fn mock_public_memory_with_outputs(output_len: u32) -> PublicMemory {
     PublicMemory {
         program: [].span(),
         public_segments: PublicSegmentRanges {
-            output: empty_segment,
+            // The output segment range needs to be consistent with output.len()
+            output: SegmentRange {
+                start_ptr: MemorySmallValue { id: 0, value: 0 },
+                stop_ptr: MemorySmallValue { id: 0, value: output_len },
+            },
             pedersen: empty_segment,
             range_check_128: empty_segment,
             ecdsa: empty_segment,
