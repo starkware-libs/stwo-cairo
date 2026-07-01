@@ -501,8 +501,10 @@ impl PublicMemory {
         final_ap: u32,
     ) -> impl Iterator<Item = PubMemoryEntry> {
         let [program, output] =
-            [&self.program, &self.output].map(|section| section.clone().into_iter().enumerate());
+            [&self.program, &self.output].map(|section| section.into_iter().cloned().enumerate());
         let program_iter = program.map(move |(i, (id, value))| (initial_pc + i as u32, id, value));
+
+        // TODO(ilya): Use output_segment_start instead of final_ap.
         let output_iter = output.map(move |(i, (id, value))| (final_ap + i as u32, id, value));
 
         let [safe_call_id0, safe_call_id1] = self.safe_call_ids;
