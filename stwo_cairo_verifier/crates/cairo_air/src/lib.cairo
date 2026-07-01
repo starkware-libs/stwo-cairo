@@ -266,13 +266,16 @@ pub fn verify_cairo(proof: CairoProof) {
 fn verify_claim(claim: @CairoClaim) {
     let PublicData {
         public_memory: PublicMemory {
-            program, public_segments, output: _output, safe_call_ids: _safe_call_ids,
+            program, public_segments, output, safe_call_ids: _safe_call_ids,
             }, initial_state: CasmState {
             pc: initial_pc, ap: initial_ap, fp: initial_fp,
             }, final_state: CasmState {
             pc: final_pc, ap: final_ap, fp: final_fp,
         },
     } = claim.public_data;
+
+    // get_entries assumes that the output builtin starts at the final ap.
+    assert!(*public_segments.output.start_ptr.value == (*final_ap).into());
 
     verify_builtins(
         claim.range_check_builtin,
@@ -285,6 +288,7 @@ fn verify_claim(claim: @CairoClaim) {
         claim.poseidon_builtin,
         claim.ec_op_builtin,
         public_segments,
+        output.len(),
     );
     verify_program(*program, public_segments);
 
@@ -359,6 +363,7 @@ fn verify_builtins(
     poseidon_builtin: @Option<crate::components::poseidon_builtin::Claim>,
     ec_op_builtin: @Option<crate::components::ec_op_builtin::Claim>,
     segment_ranges: @PublicSegmentRanges,
+    n_outputs: u32,
 ) {
     assert!(pedersen_builtin_narrow_windows.is_none());
 
@@ -382,7 +387,9 @@ fn verify_builtins(
 
     // Output builtin.
     assert!(output_segment_range.stop_ptr.value <= @pow2(31));
-    assert!(output_segment_range.start_ptr.value <= output_segment_range.stop_ptr.value);
+    assert!(
+        *output_segment_range.stop_ptr.value - *output_segment_range.start_ptr.value == n_outputs,
+    );
 
     // All other supported builtins.
     check_builtin(
