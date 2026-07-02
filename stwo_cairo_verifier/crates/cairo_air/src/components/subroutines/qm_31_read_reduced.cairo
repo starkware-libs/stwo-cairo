@@ -6,6 +6,7 @@ use crate::prelude::*;
 
 pub fn qm_31_read_reduced_evaluate(
     input: QM31,
+    enabler: QM31,
     id_col0: QM31,
     value_limb_0_col1: QM31,
     value_limb_1_col2: QM31,
@@ -38,6 +39,7 @@ pub fn qm_31_read_reduced_evaluate(
     let qm_31_read_reduced_input = input;
     read_positive_num_bits_144_evaluate(
         qm_31_read_reduced_input,
+        enabler,
         id_col0,
         value_limb_0_col1,
         value_limb_1_col2,
@@ -72,7 +74,7 @@ pub fn qm_31_read_reduced_evaluate(
             ]
                 .span(),
         );
-    numerator_2 = qm31_const::<1, 0, 0, 0>();
+    numerator_2 = enabler;
 
     // Constraint - delta_ab doesn't equal 0
     let constraint_quotient = ((((((((value_limb_0_col1 + value_limb_1_col2) + value_limb_2_col3)

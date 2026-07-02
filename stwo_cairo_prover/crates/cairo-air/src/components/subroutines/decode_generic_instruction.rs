@@ -16,6 +16,7 @@ impl DecodeGenericInstruction {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [decode_generic_instruction_input]: [E::F; 1],
+        enabler: E::F,
         offset0_col0: E::F,
         offset1_col1: E::F,
         offset2_col2: E::F,
@@ -42,6 +43,7 @@ impl DecodeGenericInstruction {
         let [decode_instruction_a1c8b_output_tmp_e6fd8_20_offset0, decode_instruction_a1c8b_output_tmp_e6fd8_20_offset1, decode_instruction_a1c8b_output_tmp_e6fd8_20_offset2] =
             DecodeInstructionA1C8B::evaluate(
                 [decode_generic_instruction_input.clone()],
+                enabler.clone(),
                 offset0_col0.clone(),
                 offset1_col1.clone(),
                 offset2_col2.clone(),

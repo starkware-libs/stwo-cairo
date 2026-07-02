@@ -14,10 +14,10 @@ impl RangeCheckMemValueN28 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [range_check_mem_value_n_28_input_limb_0, range_check_mem_value_n_28_input_limb_1, range_check_mem_value_n_28_input_limb_2, range_check_mem_value_n_28_input_limb_3, range_check_mem_value_n_28_input_limb_4, range_check_mem_value_n_28_input_limb_5, range_check_mem_value_n_28_input_limb_6, range_check_mem_value_n_28_input_limb_7, range_check_mem_value_n_28_input_limb_8, range_check_mem_value_n_28_input_limb_9, range_check_mem_value_n_28_input_limb_10, range_check_mem_value_n_28_input_limb_11, range_check_mem_value_n_28_input_limb_12, range_check_mem_value_n_28_input_limb_13, range_check_mem_value_n_28_input_limb_14, range_check_mem_value_n_28_input_limb_15, range_check_mem_value_n_28_input_limb_16, range_check_mem_value_n_28_input_limb_17, range_check_mem_value_n_28_input_limb_18, range_check_mem_value_n_28_input_limb_19, range_check_mem_value_n_28_input_limb_20, range_check_mem_value_n_28_input_limb_21, range_check_mem_value_n_28_input_limb_22, range_check_mem_value_n_28_input_limb_23, range_check_mem_value_n_28_input_limb_24, range_check_mem_value_n_28_input_limb_25, range_check_mem_value_n_28_input_limb_26, range_check_mem_value_n_28_input_limb_27]: [E::F; 28],
+        enabler: E::F,
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
-        let M31_1 = E::F::from(M31::from(1));
         let M31_1813904000 = E::F::from(M31::from(1813904000));
         let M31_1830681619 = E::F::from(M31::from(1830681619));
         let M31_1847459238 = E::F::from(M31::from(1847459238));
@@ -29,7 +29,7 @@ impl RangeCheckMemValueN28 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_517791011.clone(),
                 range_check_mem_value_n_28_input_limb_0.clone(),
@@ -39,7 +39,7 @@ impl RangeCheckMemValueN28 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1897792095.clone(),
                 range_check_mem_value_n_28_input_limb_2.clone(),
@@ -49,7 +49,7 @@ impl RangeCheckMemValueN28 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1881014476.clone(),
                 range_check_mem_value_n_28_input_limb_4.clone(),
@@ -59,7 +59,7 @@ impl RangeCheckMemValueN28 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1864236857.clone(),
                 range_check_mem_value_n_28_input_limb_6.clone(),
@@ -69,7 +69,7 @@ impl RangeCheckMemValueN28 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1847459238.clone(),
                 range_check_mem_value_n_28_input_limb_8.clone(),
@@ -79,7 +79,7 @@ impl RangeCheckMemValueN28 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1830681619.clone(),
                 range_check_mem_value_n_28_input_limb_10.clone(),
@@ -89,7 +89,7 @@ impl RangeCheckMemValueN28 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1813904000.clone(),
                 range_check_mem_value_n_28_input_limb_12.clone(),
@@ -99,7 +99,7 @@ impl RangeCheckMemValueN28 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_2065568285.clone(),
                 range_check_mem_value_n_28_input_limb_14.clone(),
@@ -109,7 +109,7 @@ impl RangeCheckMemValueN28 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_517791011.clone(),
                 range_check_mem_value_n_28_input_limb_16.clone(),
@@ -119,7 +119,7 @@ impl RangeCheckMemValueN28 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1897792095.clone(),
                 range_check_mem_value_n_28_input_limb_18.clone(),
@@ -129,7 +129,7 @@ impl RangeCheckMemValueN28 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1881014476.clone(),
                 range_check_mem_value_n_28_input_limb_20.clone(),
@@ -139,7 +139,7 @@ impl RangeCheckMemValueN28 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1864236857.clone(),
                 range_check_mem_value_n_28_input_limb_22.clone(),
@@ -149,7 +149,7 @@ impl RangeCheckMemValueN28 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1847459238.clone(),
                 range_check_mem_value_n_28_input_limb_24.clone(),
@@ -159,7 +159,7 @@ impl RangeCheckMemValueN28 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1830681619.clone(),
                 range_check_mem_value_n_28_input_limb_26.clone(),

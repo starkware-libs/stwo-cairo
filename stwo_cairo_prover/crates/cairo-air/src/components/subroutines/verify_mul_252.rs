@@ -16,6 +16,7 @@ impl VerifyMul252 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [verify_mul_252_input_a_limb_0, verify_mul_252_input_a_limb_1, verify_mul_252_input_a_limb_2, verify_mul_252_input_a_limb_3, verify_mul_252_input_a_limb_4, verify_mul_252_input_a_limb_5, verify_mul_252_input_a_limb_6, verify_mul_252_input_a_limb_7, verify_mul_252_input_a_limb_8, verify_mul_252_input_a_limb_9, verify_mul_252_input_a_limb_10, verify_mul_252_input_a_limb_11, verify_mul_252_input_a_limb_12, verify_mul_252_input_a_limb_13, verify_mul_252_input_a_limb_14, verify_mul_252_input_a_limb_15, verify_mul_252_input_a_limb_16, verify_mul_252_input_a_limb_17, verify_mul_252_input_a_limb_18, verify_mul_252_input_a_limb_19, verify_mul_252_input_a_limb_20, verify_mul_252_input_a_limb_21, verify_mul_252_input_a_limb_22, verify_mul_252_input_a_limb_23, verify_mul_252_input_a_limb_24, verify_mul_252_input_a_limb_25, verify_mul_252_input_a_limb_26, verify_mul_252_input_a_limb_27, verify_mul_252_input_b_limb_0, verify_mul_252_input_b_limb_1, verify_mul_252_input_b_limb_2, verify_mul_252_input_b_limb_3, verify_mul_252_input_b_limb_4, verify_mul_252_input_b_limb_5, verify_mul_252_input_b_limb_6, verify_mul_252_input_b_limb_7, verify_mul_252_input_b_limb_8, verify_mul_252_input_b_limb_9, verify_mul_252_input_b_limb_10, verify_mul_252_input_b_limb_11, verify_mul_252_input_b_limb_12, verify_mul_252_input_b_limb_13, verify_mul_252_input_b_limb_14, verify_mul_252_input_b_limb_15, verify_mul_252_input_b_limb_16, verify_mul_252_input_b_limb_17, verify_mul_252_input_b_limb_18, verify_mul_252_input_b_limb_19, verify_mul_252_input_b_limb_20, verify_mul_252_input_b_limb_21, verify_mul_252_input_b_limb_22, verify_mul_252_input_b_limb_23, verify_mul_252_input_b_limb_24, verify_mul_252_input_b_limb_25, verify_mul_252_input_b_limb_26, verify_mul_252_input_b_limb_27, verify_mul_252_input_c_limb_0, verify_mul_252_input_c_limb_1, verify_mul_252_input_c_limb_2, verify_mul_252_input_c_limb_3, verify_mul_252_input_c_limb_4, verify_mul_252_input_c_limb_5, verify_mul_252_input_c_limb_6, verify_mul_252_input_c_limb_7, verify_mul_252_input_c_limb_8, verify_mul_252_input_c_limb_9, verify_mul_252_input_c_limb_10, verify_mul_252_input_c_limb_11, verify_mul_252_input_c_limb_12, verify_mul_252_input_c_limb_13, verify_mul_252_input_c_limb_14, verify_mul_252_input_c_limb_15, verify_mul_252_input_c_limb_16, verify_mul_252_input_c_limb_17, verify_mul_252_input_c_limb_18, verify_mul_252_input_c_limb_19, verify_mul_252_input_c_limb_20, verify_mul_252_input_c_limb_21, verify_mul_252_input_c_limb_22, verify_mul_252_input_c_limb_23, verify_mul_252_input_c_limb_24, verify_mul_252_input_c_limb_25, verify_mul_252_input_c_limb_26, verify_mul_252_input_c_limb_27]: [E::F; 84],
+        enabler: E::F,
         k_col0: E::F,
         carry_0_col1: E::F,
         carry_1_col2: E::F,
@@ -47,7 +48,6 @@ impl VerifyMul252 {
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
-        let M31_1 = E::F::from(M31::from(1));
         let M31_136 = E::F::from(M31::from(136));
         let M31_1410849886 = E::F::from(M31::from(1410849886));
         let M31_2 = E::F::from(M31::from(2));
@@ -126,6 +126,7 @@ impl VerifyMul252 {
                     verify_mul_252_input_b_limb_26.clone(),
                     verify_mul_252_input_b_limb_27.clone(),
                 ],
+                enabler.clone(),
                 common_lookup_elements,
                 eval,
             );
@@ -462,7 +463,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1410849886.clone(),
                 (k_col0.clone() + M31_524288.clone()),
@@ -475,7 +476,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_514232941.clone(),
                 (carry_0_col1.clone() + M31_524288.clone()),
@@ -488,7 +489,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_531010560.clone(),
                 (carry_1_col2.clone() + M31_524288.clone()),
@@ -501,7 +502,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_480677703.clone(),
                 (carry_2_col3.clone() + M31_524288.clone()),
@@ -514,7 +515,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_497455322.clone(),
                 (carry_3_col4.clone() + M31_524288.clone()),
@@ -527,7 +528,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_447122465.clone(),
                 (carry_4_col5.clone() + M31_524288.clone()),
@@ -540,7 +541,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_463900084.clone(),
                 (carry_5_col6.clone() + M31_524288.clone()),
@@ -553,7 +554,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_682009131.clone(),
                 (carry_6_col7.clone() + M31_524288.clone()),
@@ -566,7 +567,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1410849886.clone(),
                 (carry_7_col8.clone() + M31_524288.clone()),
@@ -579,7 +580,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_514232941.clone(),
                 (carry_8_col9.clone() + M31_524288.clone()),
@@ -592,7 +593,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_531010560.clone(),
                 (carry_9_col10.clone() + M31_524288.clone()),
@@ -605,7 +606,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_480677703.clone(),
                 (carry_10_col11.clone() + M31_524288.clone()),
@@ -618,7 +619,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_497455322.clone(),
                 (carry_11_col12.clone() + M31_524288.clone()),
@@ -631,7 +632,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_447122465.clone(),
                 (carry_12_col13.clone() + M31_524288.clone()),
@@ -644,7 +645,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_463900084.clone(),
                 (carry_13_col14.clone() + M31_524288.clone()),
@@ -657,7 +658,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_682009131.clone(),
                 (carry_14_col15.clone() + M31_524288.clone()),
@@ -670,7 +671,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1410849886.clone(),
                 (carry_15_col16.clone() + M31_524288.clone()),
@@ -683,7 +684,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_514232941.clone(),
                 (carry_16_col17.clone() + M31_524288.clone()),
@@ -696,7 +697,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_531010560.clone(),
                 (carry_17_col18.clone() + M31_524288.clone()),
@@ -709,7 +710,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_480677703.clone(),
                 (carry_18_col19.clone() + M31_524288.clone()),
@@ -722,7 +723,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_497455322.clone(),
                 (carry_19_col20.clone() + M31_524288.clone()),
@@ -735,7 +736,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_447122465.clone(),
                 (carry_20_col21.clone() + M31_524288.clone()),
@@ -749,7 +750,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_463900084.clone(),
                 (carry_21_col22.clone() + M31_524288.clone()),
@@ -762,7 +763,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_682009131.clone(),
                 (carry_22_col23.clone() + M31_524288.clone()),
@@ -775,7 +776,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1410849886.clone(),
                 (carry_23_col24.clone() + M31_524288.clone()),
@@ -788,7 +789,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_514232941.clone(),
                 (carry_24_col25.clone() + M31_524288.clone()),
@@ -801,7 +802,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_531010560.clone(),
                 (carry_25_col26.clone() + M31_524288.clone()),
@@ -814,7 +815,7 @@ impl VerifyMul252 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_480677703.clone(),
                 (carry_26_col27.clone() + M31_524288.clone()),

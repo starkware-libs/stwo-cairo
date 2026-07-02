@@ -6,6 +6,7 @@ use crate::prelude::*;
 
 pub fn verify_mul_252_evaluate(
     input: [QM31; 84],
+    enabler: QM31,
     k_col0: QM31,
     carry_0_col1: QM31,
     carry_1_col2: QM31,
@@ -269,6 +270,7 @@ pub fn verify_mul_252_evaluate(
             verify_mul_252_input_b_limb_24, verify_mul_252_input_b_limb_25,
             verify_mul_252_input_b_limb_26, verify_mul_252_input_b_limb_27,
         ],
+        enabler,
         common_lookup_elements,
         ref sum,
         random_coeff,
@@ -493,7 +495,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<1410849886, 0, 0, 0>(), (k_col0 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_0 = qm31_const::<1, 0, 0, 0>();
+    numerator_0 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_0_col1 * qm31_const::<512, 0, 0, 0>())
@@ -505,7 +507,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<514232941, 0, 0, 0>(), (carry_0_col1 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_1 = qm31_const::<1, 0, 0, 0>();
+    numerator_1 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_1_col2 * qm31_const::<512, 0, 0, 0>())
@@ -517,7 +519,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<531010560, 0, 0, 0>(), (carry_1_col2 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_2 = qm31_const::<1, 0, 0, 0>();
+    numerator_2 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_2_col3 * qm31_const::<512, 0, 0, 0>())
@@ -529,7 +531,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<480677703, 0, 0, 0>(), (carry_2_col3 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_3 = qm31_const::<1, 0, 0, 0>();
+    numerator_3 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_3_col4 * qm31_const::<512, 0, 0, 0>())
@@ -541,7 +543,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<497455322, 0, 0, 0>(), (carry_3_col4 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_4 = qm31_const::<1, 0, 0, 0>();
+    numerator_4 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_4_col5 * qm31_const::<512, 0, 0, 0>())
@@ -553,7 +555,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<447122465, 0, 0, 0>(), (carry_4_col5 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_5 = qm31_const::<1, 0, 0, 0>();
+    numerator_5 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_5_col6 * qm31_const::<512, 0, 0, 0>())
@@ -565,7 +567,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<463900084, 0, 0, 0>(), (carry_5_col6 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_6 = qm31_const::<1, 0, 0, 0>();
+    numerator_6 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_6_col7 * qm31_const::<512, 0, 0, 0>())
@@ -577,7 +579,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<682009131, 0, 0, 0>(), (carry_6_col7 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_7 = qm31_const::<1, 0, 0, 0>();
+    numerator_7 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_7_col8 * qm31_const::<512, 0, 0, 0>())
@@ -589,7 +591,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<1410849886, 0, 0, 0>(), (carry_7_col8 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_8 = qm31_const::<1, 0, 0, 0>();
+    numerator_8 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_8_col9 * qm31_const::<512, 0, 0, 0>())
@@ -601,7 +603,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<514232941, 0, 0, 0>(), (carry_8_col9 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_9 = qm31_const::<1, 0, 0, 0>();
+    numerator_9 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_9_col10 * qm31_const::<512, 0, 0, 0>())
@@ -613,7 +615,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<531010560, 0, 0, 0>(), (carry_9_col10 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_10 = qm31_const::<1, 0, 0, 0>();
+    numerator_10 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_10_col11 * qm31_const::<512, 0, 0, 0>())
@@ -625,7 +627,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<480677703, 0, 0, 0>(), (carry_10_col11 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_11 = qm31_const::<1, 0, 0, 0>();
+    numerator_11 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_11_col12 * qm31_const::<512, 0, 0, 0>())
@@ -637,7 +639,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<497455322, 0, 0, 0>(), (carry_11_col12 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_12 = qm31_const::<1, 0, 0, 0>();
+    numerator_12 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_12_col13 * qm31_const::<512, 0, 0, 0>())
@@ -649,7 +651,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<447122465, 0, 0, 0>(), (carry_12_col13 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_13 = qm31_const::<1, 0, 0, 0>();
+    numerator_13 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_13_col14 * qm31_const::<512, 0, 0, 0>())
@@ -661,7 +663,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<463900084, 0, 0, 0>(), (carry_13_col14 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_14 = qm31_const::<1, 0, 0, 0>();
+    numerator_14 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_14_col15 * qm31_const::<512, 0, 0, 0>())
@@ -673,7 +675,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<682009131, 0, 0, 0>(), (carry_14_col15 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_15 = qm31_const::<1, 0, 0, 0>();
+    numerator_15 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_15_col16 * qm31_const::<512, 0, 0, 0>())
@@ -688,7 +690,7 @@ pub fn verify_mul_252_evaluate(
             ]
                 .span(),
         );
-    numerator_16 = qm31_const::<1, 0, 0, 0>();
+    numerator_16 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_16_col17 * qm31_const::<512, 0, 0, 0>())
@@ -700,7 +702,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<514232941, 0, 0, 0>(), (carry_16_col17 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_17 = qm31_const::<1, 0, 0, 0>();
+    numerator_17 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_17_col18 * qm31_const::<512, 0, 0, 0>())
@@ -712,7 +714,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<531010560, 0, 0, 0>(), (carry_17_col18 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_18 = qm31_const::<1, 0, 0, 0>();
+    numerator_18 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_18_col19 * qm31_const::<512, 0, 0, 0>())
@@ -724,7 +726,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<480677703, 0, 0, 0>(), (carry_18_col19 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_19 = qm31_const::<1, 0, 0, 0>();
+    numerator_19 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_19_col20 * qm31_const::<512, 0, 0, 0>())
@@ -736,7 +738,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<497455322, 0, 0, 0>(), (carry_19_col20 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_20 = qm31_const::<1, 0, 0, 0>();
+    numerator_20 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_20_col21 * qm31_const::<512, 0, 0, 0>())
@@ -748,7 +750,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<447122465, 0, 0, 0>(), (carry_20_col21 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_21 = qm31_const::<1, 0, 0, 0>();
+    numerator_21 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_21_col22 * qm31_const::<512, 0, 0, 0>())
@@ -761,7 +763,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<463900084, 0, 0, 0>(), (carry_21_col22 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_22 = qm31_const::<1, 0, 0, 0>();
+    numerator_22 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_22_col23 * qm31_const::<512, 0, 0, 0>())
@@ -773,7 +775,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<682009131, 0, 0, 0>(), (carry_22_col23 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_23 = qm31_const::<1, 0, 0, 0>();
+    numerator_23 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_23_col24 * qm31_const::<512, 0, 0, 0>())
@@ -788,7 +790,7 @@ pub fn verify_mul_252_evaluate(
             ]
                 .span(),
         );
-    numerator_24 = qm31_const::<1, 0, 0, 0>();
+    numerator_24 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_24_col25 * qm31_const::<512, 0, 0, 0>())
@@ -800,7 +802,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<514232941, 0, 0, 0>(), (carry_24_col25 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_25 = qm31_const::<1, 0, 0, 0>();
+    numerator_25 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_25_col26 * qm31_const::<512, 0, 0, 0>())
@@ -812,7 +814,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<531010560, 0, 0, 0>(), (carry_25_col26 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_26 = qm31_const::<1, 0, 0, 0>();
+    numerator_26 = enabler;
 
     // Constraint -
     let constraint_quotient = (((carry_26_col27 * qm31_const::<512, 0, 0, 0>())
@@ -824,7 +826,7 @@ pub fn verify_mul_252_evaluate(
             [qm31_const::<480677703, 0, 0, 0>(), (carry_26_col27 + qm31_const::<524288, 0, 0, 0>())]
                 .span(),
         );
-    numerator_27 = qm31_const::<1, 0, 0, 0>();
+    numerator_27 = enabler;
 
     // Constraint -
     let constraint_quotient = (((conv_mod_tmp_18a9a_19_limb_27

@@ -18,6 +18,7 @@ impl UpdateRegisters {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [update_registers_input_pc, update_registers_input_ap, update_registers_input_fp, update_registers_input_pc_update_jump, update_registers_input_pc_update_jump_rel, update_registers_input_pc_update_jnz, update_registers_input_ap_update_add, update_registers_input_ap_update_add_1, update_registers_input_opcode_call, update_registers_input_opcode_ret, update_registers_input_pc_update_regular, update_registers_input_fp_update_regular, update_registers_input_instruction_size, update_registers_input_dst_limb_0, update_registers_input_dst_limb_1, update_registers_input_dst_limb_2, update_registers_input_dst_limb_3, update_registers_input_dst_limb_4, update_registers_input_dst_limb_5, update_registers_input_dst_limb_6, update_registers_input_dst_limb_7, update_registers_input_dst_limb_8, update_registers_input_dst_limb_9, update_registers_input_dst_limb_10, update_registers_input_dst_limb_11, update_registers_input_dst_limb_12, update_registers_input_dst_limb_13, update_registers_input_dst_limb_14, update_registers_input_dst_limb_15, update_registers_input_dst_limb_16, update_registers_input_dst_limb_17, update_registers_input_dst_limb_18, update_registers_input_dst_limb_19, update_registers_input_dst_limb_20, update_registers_input_dst_limb_21, update_registers_input_dst_limb_22, update_registers_input_dst_limb_23, update_registers_input_dst_limb_24, update_registers_input_dst_limb_25, update_registers_input_dst_limb_26, update_registers_input_dst_limb_27, update_registers_input_op1_limb_0, update_registers_input_op1_limb_1, update_registers_input_op1_limb_2, update_registers_input_op1_limb_3, update_registers_input_op1_limb_4, update_registers_input_op1_limb_5, update_registers_input_op1_limb_6, update_registers_input_op1_limb_7, update_registers_input_op1_limb_8, update_registers_input_op1_limb_9, update_registers_input_op1_limb_10, update_registers_input_op1_limb_11, update_registers_input_op1_limb_12, update_registers_input_op1_limb_13, update_registers_input_op1_limb_14, update_registers_input_op1_limb_15, update_registers_input_op1_limb_16, update_registers_input_op1_limb_17, update_registers_input_op1_limb_18, update_registers_input_op1_limb_19, update_registers_input_op1_limb_20, update_registers_input_op1_limb_21, update_registers_input_op1_limb_22, update_registers_input_op1_limb_23, update_registers_input_op1_limb_24, update_registers_input_op1_limb_25, update_registers_input_op1_limb_26, update_registers_input_op1_limb_27, update_registers_input_res_limb_0, update_registers_input_res_limb_1, update_registers_input_res_limb_2, update_registers_input_res_limb_3, update_registers_input_res_limb_4, update_registers_input_res_limb_5, update_registers_input_res_limb_6, update_registers_input_res_limb_7, update_registers_input_res_limb_8, update_registers_input_res_limb_9, update_registers_input_res_limb_10, update_registers_input_res_limb_11, update_registers_input_res_limb_12, update_registers_input_res_limb_13, update_registers_input_res_limb_14, update_registers_input_res_limb_15, update_registers_input_res_limb_16, update_registers_input_res_limb_17, update_registers_input_res_limb_18, update_registers_input_res_limb_19, update_registers_input_res_limb_20, update_registers_input_res_limb_21, update_registers_input_res_limb_22, update_registers_input_res_limb_23, update_registers_input_res_limb_24, update_registers_input_res_limb_25, update_registers_input_res_limb_26, update_registers_input_res_limb_27]: [E::F; 97],
+        enabler: E::F,
         partial_limb_msb_col0: E::F,
         msb_col1: E::F,
         mid_limbs_set_col2: E::F,
@@ -73,6 +74,7 @@ impl UpdateRegisters {
                 update_registers_input_dst_limb_27.clone(),
                 update_registers_input_opcode_ret.clone(),
             ],
+            enabler.clone(),
             partial_limb_msb_col0.clone(),
             common_lookup_elements,
             eval,
@@ -110,6 +112,7 @@ impl UpdateRegisters {
                 (update_registers_input_pc_update_jump_rel.clone()
                     + update_registers_input_ap_update_add.clone()),
             ],
+            enabler.clone(),
             msb_col1.clone(),
             mid_limbs_set_col2.clone(),
             partial_limb_msb_col3.clone(),
@@ -225,6 +228,7 @@ impl UpdateRegisters {
                 update_registers_input_op1_limb_27.clone(),
                 op1_as_rel_imm_cond_col6.clone(),
             ],
+            enabler.clone(),
             msb_col7.clone(),
             mid_limbs_set_col8.clone(),
             partial_limb_msb_col9.clone(),
@@ -269,6 +273,7 @@ impl UpdateRegisters {
         );
         RangeCheck29::evaluate(
             [next_ap_col12.clone()],
+            enabler.clone(),
             range_check_29_bot11bits_col13.clone(),
             common_lookup_elements,
             eval,

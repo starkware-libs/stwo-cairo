@@ -14,6 +14,7 @@ impl LinearCombinationN4Coefs42M21 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [linear_combination_n_4_coefs_4_2_m2_1_input_limb_0, linear_combination_n_4_coefs_4_2_m2_1_input_limb_1, linear_combination_n_4_coefs_4_2_m2_1_input_limb_2, linear_combination_n_4_coefs_4_2_m2_1_input_limb_3, linear_combination_n_4_coefs_4_2_m2_1_input_limb_4, linear_combination_n_4_coefs_4_2_m2_1_input_limb_5, linear_combination_n_4_coefs_4_2_m2_1_input_limb_6, linear_combination_n_4_coefs_4_2_m2_1_input_limb_7, linear_combination_n_4_coefs_4_2_m2_1_input_limb_8, linear_combination_n_4_coefs_4_2_m2_1_input_limb_9, linear_combination_n_4_coefs_4_2_m2_1_input_limb_10, linear_combination_n_4_coefs_4_2_m2_1_input_limb_11, linear_combination_n_4_coefs_4_2_m2_1_input_limb_12, linear_combination_n_4_coefs_4_2_m2_1_input_limb_13, linear_combination_n_4_coefs_4_2_m2_1_input_limb_14, linear_combination_n_4_coefs_4_2_m2_1_input_limb_15, linear_combination_n_4_coefs_4_2_m2_1_input_limb_16, linear_combination_n_4_coefs_4_2_m2_1_input_limb_17, linear_combination_n_4_coefs_4_2_m2_1_input_limb_18, linear_combination_n_4_coefs_4_2_m2_1_input_limb_19, linear_combination_n_4_coefs_4_2_m2_1_input_limb_20, linear_combination_n_4_coefs_4_2_m2_1_input_limb_21, linear_combination_n_4_coefs_4_2_m2_1_input_limb_22, linear_combination_n_4_coefs_4_2_m2_1_input_limb_23, linear_combination_n_4_coefs_4_2_m2_1_input_limb_24, linear_combination_n_4_coefs_4_2_m2_1_input_limb_25, linear_combination_n_4_coefs_4_2_m2_1_input_limb_26, linear_combination_n_4_coefs_4_2_m2_1_input_limb_27, linear_combination_n_4_coefs_4_2_m2_1_input_limb_28, linear_combination_n_4_coefs_4_2_m2_1_input_limb_29, linear_combination_n_4_coefs_4_2_m2_1_input_limb_30, linear_combination_n_4_coefs_4_2_m2_1_input_limb_31, linear_combination_n_4_coefs_4_2_m2_1_input_limb_32, linear_combination_n_4_coefs_4_2_m2_1_input_limb_33, linear_combination_n_4_coefs_4_2_m2_1_input_limb_34, linear_combination_n_4_coefs_4_2_m2_1_input_limb_35, linear_combination_n_4_coefs_4_2_m2_1_input_limb_36, linear_combination_n_4_coefs_4_2_m2_1_input_limb_37, linear_combination_n_4_coefs_4_2_m2_1_input_limb_38, linear_combination_n_4_coefs_4_2_m2_1_input_limb_39]: [E::F; 40],
+        enabler: E::F,
         combination_limb_0_col0: E::F,
         combination_limb_1_col1: E::F,
         combination_limb_2_col2: E::F,
@@ -28,7 +29,6 @@ impl LinearCombinationN4Coefs42M21 {
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
-        let M31_1 = E::F::from(M31::from(1));
         let M31_1027333874 = E::F::from(M31::from(1027333874));
         let M31_136 = E::F::from(M31::from(136));
         let M31_16 = E::F::from(M31::from(16));
@@ -154,7 +154,7 @@ impl LinearCombinationN4Coefs42M21 {
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1027333874.clone(),
                 (p_coef_col10.clone() + M31_3.clone()),
@@ -166,7 +166,7 @@ impl LinearCombinationN4Coefs42M21 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1027333874.clone(),
                 (carry_3_tmp_5073a_5.clone() + M31_3.clone()),
@@ -178,7 +178,7 @@ impl LinearCombinationN4Coefs42M21 {
 
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
-            E::EF::from(M31_1.clone()),
+            E::EF::from(enabler.clone()),
             &[
                 M31_1651211826.clone(),
                 (carry_7_tmp_5073a_9.clone() + M31_3.clone()),

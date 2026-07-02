@@ -6,6 +6,7 @@ use crate::prelude::*;
 
 pub fn range_check_last_limb_bits_in_ms_limb_2_evaluate(
     input: QM31,
+    enabler: QM31,
     partial_limb_msb_col0: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref sum: QM31,
@@ -14,6 +15,7 @@ pub fn range_check_last_limb_bits_in_ms_limb_2_evaluate(
     let range_check_last_limb_bits_in_ms_limb_2_input = input;
     cond_range_check_2_evaluate(
         [range_check_last_limb_bits_in_ms_limb_2_input, qm31_const::<1, 0, 0, 0>()],
+        enabler,
         partial_limb_msb_col0,
         common_lookup_elements,
         ref sum,

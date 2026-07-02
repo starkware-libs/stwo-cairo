@@ -17,6 +17,7 @@ impl ReadPositiveNumBits72 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [read_positive_num_bits_72_input]: [E::F; 1],
+        enabler: E::F,
         id_col0: E::F,
         value_limb_0_col1: E::F,
         value_limb_1_col2: E::F,
@@ -31,12 +32,14 @@ impl ReadPositiveNumBits72 {
     ) -> [E::F; 0] {
         ReadId::evaluate(
             [read_positive_num_bits_72_input.clone()],
+            enabler.clone(),
             id_col0.clone(),
             common_lookup_elements,
             eval,
         );
         ReadPositiveKnownIdNumBits72::evaluate(
             [id_col0.clone()],
+            enabler.clone(),
             value_limb_0_col1.clone(),
             value_limb_1_col2.clone(),
             value_limb_2_col3.clone(),

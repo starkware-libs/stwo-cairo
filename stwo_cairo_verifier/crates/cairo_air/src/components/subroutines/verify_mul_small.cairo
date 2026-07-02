@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn verify_mul_small_evaluate(
     input: [QM31; 16],
+    enabler: QM31,
     carry_1_col0: QM31,
     carry_3_col1: QM31,
     carry_5_col2: QM31,
@@ -40,7 +41,7 @@ pub fn verify_mul_small_evaluate(
 
     range_check_11_sum_0 = common_lookup_elements
         .combine_qm31([qm31_const::<991608089, 0, 0, 0>(), carry_1_col0].span());
-    numerator_0 = qm31_const::<1, 0, 0, 0>();
+    numerator_0 = enabler;
 
     // Constraint - carry 1 definition
     let constraint_quotient = (((carry_1_col0 * qm31_const::<262144, 0, 0, 0>())
@@ -54,7 +55,7 @@ pub fn verify_mul_small_evaluate(
 
     range_check_11_sum_1 = common_lookup_elements
         .combine_qm31([qm31_const::<991608089, 0, 0, 0>(), carry_3_col1].span());
-    numerator_1 = qm31_const::<1, 0, 0, 0>();
+    numerator_1 = enabler;
 
     // Constraint - carry 3 definition
     let constraint_quotient = (((carry_3_col1 * qm31_const::<262144, 0, 0, 0>())
@@ -73,7 +74,7 @@ pub fn verify_mul_small_evaluate(
 
     range_check_11_sum_2 = common_lookup_elements
         .combine_qm31([qm31_const::<991608089, 0, 0, 0>(), carry_5_col2].span());
-    numerator_2 = qm31_const::<1, 0, 0, 0>();
+    numerator_2 = enabler;
 
     // Constraint - carry 5 definition
     let constraint_quotient = (((carry_5_col2 * qm31_const::<262144, 0, 0, 0>())

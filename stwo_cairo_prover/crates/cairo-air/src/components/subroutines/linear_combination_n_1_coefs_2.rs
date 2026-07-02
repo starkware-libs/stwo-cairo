@@ -14,6 +14,7 @@ impl LinearCombinationN1Coefs2 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [linear_combination_n_1_coefs_2_input_limb_0, linear_combination_n_1_coefs_2_input_limb_1, linear_combination_n_1_coefs_2_input_limb_2, linear_combination_n_1_coefs_2_input_limb_3, linear_combination_n_1_coefs_2_input_limb_4, linear_combination_n_1_coefs_2_input_limb_5, linear_combination_n_1_coefs_2_input_limb_6, linear_combination_n_1_coefs_2_input_limb_7, linear_combination_n_1_coefs_2_input_limb_8, linear_combination_n_1_coefs_2_input_limb_9]: [E::F; 10],
+        enabler: E::F,
         combination_limb_0_col0: E::F,
         combination_limb_1_col1: E::F,
         combination_limb_2_col2: E::F,

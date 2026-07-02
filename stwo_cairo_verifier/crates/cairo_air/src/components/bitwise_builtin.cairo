@@ -342,6 +342,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         read_positive_num_bits_252_evaluate(
             (bitwise_builtin_segment_start + (seq * qm31_const::<5, 0, 0, 0>())),
+            qm31_const::<1, 0, 0, 0>(),
             op0_id_col0,
             op0_limb_0_col1,
             op0_limb_1_col2,
@@ -382,6 +383,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         read_positive_num_bits_252_evaluate(
             ((bitwise_builtin_segment_start + (seq * qm31_const::<5, 0, 0, 0>()))
                 + qm31_const::<1, 0, 0, 0>()),
+            qm31_const::<1, 0, 0, 0>(),
             op1_id_col29,
             op1_limb_0_col30,
             op1_limb_1_col31,
@@ -421,6 +423,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_0_col1, op1_limb_0_col30],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col58,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_4,
@@ -432,6 +435,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_0_col1 + op1_limb_0_col30) - xor_col58));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_1_col2, op1_limb_1_col31],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col59,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_5,
@@ -443,6 +447,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_1_col2 + op1_limb_1_col31) - xor_col59));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_2_col3, op1_limb_2_col32],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col60,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_6,
@@ -454,6 +459,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_2_col3 + op1_limb_2_col32) - xor_col60));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_3_col4, op1_limb_3_col33],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col61,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_7,
@@ -465,6 +471,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_3_col4 + op1_limb_3_col33) - xor_col61));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_4_col5, op1_limb_4_col34],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col62,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_8,
@@ -476,6 +483,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_4_col5 + op1_limb_4_col34) - xor_col62));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_5_col6, op1_limb_5_col35],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col63,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_9,
@@ -487,6 +495,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_5_col6 + op1_limb_5_col35) - xor_col63));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_6_col7, op1_limb_6_col36],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col64,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_10,
@@ -498,6 +507,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_6_col7 + op1_limb_6_col36) - xor_col64));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_7_col8, op1_limb_7_col37],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col65,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_11,
@@ -509,6 +519,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_7_col8 + op1_limb_7_col37) - xor_col65));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_8_col9, op1_limb_8_col38],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col66,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_12,
@@ -520,6 +531,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_8_col9 + op1_limb_8_col38) - xor_col66));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_9_col10, op1_limb_9_col39],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col67,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_13,
@@ -531,6 +543,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_9_col10 + op1_limb_9_col39) - xor_col67));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_10_col11, op1_limb_10_col40],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col68,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_14,
@@ -542,6 +555,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_10_col11 + op1_limb_10_col40) - xor_col68));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_11_col12, op1_limb_11_col41],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col69,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_15,
@@ -553,6 +567,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_11_col12 + op1_limb_11_col41) - xor_col69));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_12_col13, op1_limb_12_col42],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col70,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_16,
@@ -564,6 +579,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_12_col13 + op1_limb_12_col42) - xor_col70));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_13_col14, op1_limb_13_col43],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col71,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_17,
@@ -575,6 +591,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_13_col14 + op1_limb_13_col43) - xor_col71));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_14_col15, op1_limb_14_col44],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col72,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_18,
@@ -586,6 +603,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_14_col15 + op1_limb_14_col44) - xor_col72));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_15_col16, op1_limb_15_col45],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col73,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_19,
@@ -597,6 +615,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_15_col16 + op1_limb_15_col45) - xor_col73));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_16_col17, op1_limb_16_col46],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col74,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_20,
@@ -608,6 +627,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_16_col17 + op1_limb_16_col46) - xor_col74));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_17_col18, op1_limb_17_col47],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col75,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_21,
@@ -619,6 +639,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_17_col18 + op1_limb_17_col47) - xor_col75));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_18_col19, op1_limb_18_col48],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col76,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_22,
@@ -630,6 +651,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_18_col19 + op1_limb_18_col48) - xor_col76));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_19_col20, op1_limb_19_col49],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col77,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_23,
@@ -641,6 +663,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_19_col20 + op1_limb_19_col49) - xor_col77));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_20_col21, op1_limb_20_col50],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col78,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_24,
@@ -652,6 +675,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_20_col21 + op1_limb_20_col50) - xor_col78));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_21_col22, op1_limb_21_col51],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col79,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_25,
@@ -663,6 +687,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_21_col22 + op1_limb_21_col51) - xor_col79));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_22_col23, op1_limb_22_col52],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col80,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_26,
@@ -674,6 +699,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_22_col23 + op1_limb_22_col52) - xor_col80));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_23_col24, op1_limb_23_col53],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col81,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_27,
@@ -685,6 +711,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_23_col24 + op1_limb_23_col53) - xor_col81));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_24_col25, op1_limb_24_col54],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col82,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_28,
@@ -696,6 +723,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_24_col25 + op1_limb_24_col54) - xor_col82));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_25_col26, op1_limb_25_col55],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col83,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_29,
@@ -707,6 +735,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_25_col26 + op1_limb_25_col55) - xor_col83));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_26_col27, op1_limb_26_col56],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col84,
             self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_30,
@@ -718,6 +747,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
             * ((op0_limb_26_col27 + op1_limb_26_col56) - xor_col84));
         bitwise_xor_num_bits_8_evaluate(
             [op0_limb_27_col28, op1_limb_27_col57],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col85,
             self.common_lookup_elements,
             ref verify_bitwise_xor_8_sum_31,
@@ -739,6 +769,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
                 and_tmp_b8fb8_72, and_tmp_b8fb8_75, and_tmp_b8fb8_78, and_tmp_b8fb8_81,
                 and_tmp_b8fb8_84, and_tmp_b8fb8_87, and_tmp_b8fb8_90, and_tmp_b8fb8_93,
             ],
+            qm31_const::<1, 0, 0, 0>(),
             and_id_col86,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_32,
@@ -757,6 +788,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
                 xor_col72, xor_col73, xor_col74, xor_col75, xor_col76, xor_col77, xor_col78,
                 xor_col79, xor_col80, xor_col81, xor_col82, xor_col83, xor_col84, xor_col85,
             ],
+            qm31_const::<1, 0, 0, 0>(),
             xor_id_col87,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_34,
@@ -785,6 +817,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
                 (and_tmp_b8fb8_84 + xor_col82), (and_tmp_b8fb8_87 + xor_col83),
                 (and_tmp_b8fb8_90 + xor_col84), (and_tmp_b8fb8_93 + xor_col85),
             ],
+            qm31_const::<1, 0, 0, 0>(),
             or_id_col88,
             self.common_lookup_elements,
             ref memory_address_to_id_sum_36,

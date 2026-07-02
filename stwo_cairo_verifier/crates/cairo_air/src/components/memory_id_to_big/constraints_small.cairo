@@ -30,7 +30,7 @@ pub fn evaluate_constraints_at_point(
     let mut numerator_4: QM31 = Zero::zero();
 
     let [
-        memory_id_to_small_output_col0,
+        multiplicity_0_col0,
         memory_id_to_small_output_col1,
         memory_id_to_small_output_col2,
         memory_id_to_small_output_col3,
@@ -38,16 +38,13 @@ pub fn evaluate_constraints_at_point(
         memory_id_to_small_output_col5,
         memory_id_to_small_output_col6,
         memory_id_to_small_output_col7,
-        multiplicity_0_col8,
+        memory_id_to_small_output_col8,
     ]: [Span<QM31>; 9] =
         (*trace_mask_values
         .multi_pop_front()
         .unwrap())
         .unbox();
-    let [memory_id_to_small_output_col0]: [QM31; 1] = (*memory_id_to_small_output_col0
-        .try_into()
-        .unwrap())
-        .unbox();
+    let [multiplicity_0_col0]: [QM31; 1] = (*multiplicity_0_col0.try_into().unwrap()).unbox();
     let [memory_id_to_small_output_col1]: [QM31; 1] = (*memory_id_to_small_output_col1
         .try_into()
         .unwrap())
@@ -76,17 +73,21 @@ pub fn evaluate_constraints_at_point(
         .try_into()
         .unwrap())
         .unbox();
-    let [multiplicity_0_col8]: [QM31; 1] = (*multiplicity_0_col8.try_into().unwrap()).unbox();
+    let [memory_id_to_small_output_col8]: [QM31; 1] = (*memory_id_to_small_output_col8
+        .try_into()
+        .unwrap())
+        .unbox();
 
     core::internal::revoke_ap_tracking();
 
     range_check_mem_value_n_8_evaluate(
         [
-            memory_id_to_small_output_col0, memory_id_to_small_output_col1,
-            memory_id_to_small_output_col2, memory_id_to_small_output_col3,
-            memory_id_to_small_output_col4, memory_id_to_small_output_col5,
-            memory_id_to_small_output_col6, memory_id_to_small_output_col7,
+            memory_id_to_small_output_col1, memory_id_to_small_output_col2,
+            memory_id_to_small_output_col3, memory_id_to_small_output_col4,
+            memory_id_to_small_output_col5, memory_id_to_small_output_col6,
+            memory_id_to_small_output_col7, memory_id_to_small_output_col8,
         ],
+        qm31_const::<1, 0, 0, 0>(),
         @common_lookup_elements,
         ref range_check_9_9_sum_0,
         ref numerator_0,
@@ -103,15 +104,15 @@ pub fn evaluate_constraints_at_point(
     memory_id_to_big_sum_4 = common_lookup_elements
         .combine_qm31(
             [
-                qm31_const::<1662111297, 0, 0, 0>(), seq, memory_id_to_small_output_col0,
-                memory_id_to_small_output_col1, memory_id_to_small_output_col2,
-                memory_id_to_small_output_col3, memory_id_to_small_output_col4,
-                memory_id_to_small_output_col5, memory_id_to_small_output_col6,
-                memory_id_to_small_output_col7,
+                qm31_const::<1662111297, 0, 0, 0>(), seq, memory_id_to_small_output_col1,
+                memory_id_to_small_output_col2, memory_id_to_small_output_col3,
+                memory_id_to_small_output_col4, memory_id_to_small_output_col5,
+                memory_id_to_small_output_col6, memory_id_to_small_output_col7,
+                memory_id_to_small_output_col8,
             ]
                 .span(),
         );
-    numerator_4 = multiplicity_0_col8;
+    numerator_4 = multiplicity_0_col0;
 
     lookup_constraints(
         ref sum,

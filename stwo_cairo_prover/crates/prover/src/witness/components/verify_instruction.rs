@@ -42,9 +42,9 @@ impl ClaimGenerator {
 
         let (mut inputs, mut mults) = inputs_mults.into_iter().unzip::<_, _, Vec<_>, Vec<_>>();
 
-        let n_rows = inputs.len();
-        assert_ne!(n_rows, 0);
-        let size = std::cmp::max(n_rows.next_power_of_two(), N_LANES);
+        let n_active_rows = inputs.len();
+        assert_ne!(n_active_rows, 0);
+        let size = std::cmp::max(n_active_rows.next_power_of_two(), N_LANES);
         let log_size = size.ilog2();
 
         inputs.resize(size, *inputs.first().unwrap());
@@ -62,21 +62,16 @@ impl ClaimGenerator {
             memory_id_to_big_state,
         );
         for inputs in sub_component_inputs.range_check_7_2_5 {
-            add_inputs(range_check_7_2_5_state, &inputs, inputs.len() * N_LANES, 0);
+            add_inputs(range_check_7_2_5_state, &inputs, size, 0);
         }
         for inputs in sub_component_inputs.range_check_4_3 {
-            add_inputs(range_check_4_3_state, &inputs, inputs.len() * N_LANES, 0);
+            add_inputs(range_check_4_3_state, &inputs, size, 0);
         }
         for inputs in sub_component_inputs.memory_address_to_id {
-            add_inputs(
-                memory_address_to_id_state,
-                &inputs,
-                inputs.len() * N_LANES,
-                0,
-            );
+            add_inputs(memory_address_to_id_state, &inputs, size, 0);
         }
         for inputs in sub_component_inputs.memory_id_to_big {
-            add_inputs(memory_id_to_big_state, &inputs, inputs.len() * N_LANES, 0);
+            add_inputs(memory_id_to_big_state, &inputs, size, 0);
         }
 
         (
@@ -186,73 +181,75 @@ fn write_trace_simd(
         .enumerate()
         .for_each(
             |(row_index, (row, lookup_data, sub_component_inputs, verify_instruction_input))| {
-                let input_pc_col0 = verify_instruction_input.0;
-                *row[0] = input_pc_col0;
-                let input_offset0_col1 = verify_instruction_input.1[0];
-                *row[1] = input_offset0_col1;
-                let input_offset1_col2 = verify_instruction_input.1[1];
-                *row[2] = input_offset1_col2;
-                let input_offset2_col3 = verify_instruction_input.1[2];
-                *row[3] = input_offset2_col3;
-                let input_inst_felt5_high_col4 = verify_instruction_input.2[0];
-                *row[4] = input_inst_felt5_high_col4;
-                let input_inst_felt6_col5 = verify_instruction_input.2[1];
-                *row[5] = input_inst_felt6_col5;
-                let input_opcode_extension_col6 = verify_instruction_input.3;
-                *row[6] = input_opcode_extension_col6;
+                let multiplicity_0_col0 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
+                *row[0] = multiplicity_0_col0;
+                let input_pc_col1 = verify_instruction_input.0;
+                *row[1] = input_pc_col1;
+                let input_offset0_col2 = verify_instruction_input.1[0];
+                *row[2] = input_offset0_col2;
+                let input_offset1_col3 = verify_instruction_input.1[1];
+                *row[3] = input_offset1_col3;
+                let input_offset2_col4 = verify_instruction_input.1[2];
+                *row[4] = input_offset2_col4;
+                let input_inst_felt5_high_col5 = verify_instruction_input.2[0];
+                *row[5] = input_inst_felt5_high_col5;
+                let input_inst_felt6_col6 = verify_instruction_input.2[1];
+                *row[6] = input_inst_felt6_col6;
+                let input_opcode_extension_col7 = verify_instruction_input.3;
+                *row[7] = input_opcode_extension_col7;
 
                 // Encode Offsets.
 
                 let offset0_low_tmp_40a8f_0 =
-                    ((PackedUInt16::from_m31(input_offset0_col1)) & (UInt16_511));
-                let offset0_low_col7 = offset0_low_tmp_40a8f_0.as_m31();
-                *row[7] = offset0_low_col7;
+                    ((PackedUInt16::from_m31(input_offset0_col2)) & (UInt16_511));
+                let offset0_low_col8 = offset0_low_tmp_40a8f_0.as_m31();
+                *row[8] = offset0_low_col8;
                 let offset0_mid_tmp_40a8f_1 =
-                    ((PackedUInt16::from_m31(input_offset0_col1)) >> (UInt16_9));
-                let offset0_mid_col8 = offset0_mid_tmp_40a8f_1.as_m31();
-                *row[8] = offset0_mid_col8;
+                    ((PackedUInt16::from_m31(input_offset0_col2)) >> (UInt16_9));
+                let offset0_mid_col9 = offset0_mid_tmp_40a8f_1.as_m31();
+                *row[9] = offset0_mid_col9;
                 let offset1_low_tmp_40a8f_2 =
-                    ((PackedUInt16::from_m31(input_offset1_col2)) & (UInt16_3));
-                let offset1_low_col9 = offset1_low_tmp_40a8f_2.as_m31();
-                *row[9] = offset1_low_col9;
+                    ((PackedUInt16::from_m31(input_offset1_col3)) & (UInt16_3));
+                let offset1_low_col10 = offset1_low_tmp_40a8f_2.as_m31();
+                *row[10] = offset1_low_col10;
                 let offset1_mid_tmp_40a8f_3 =
-                    (((PackedUInt16::from_m31(input_offset1_col2)) >> (UInt16_2)) & (UInt16_511));
-                let offset1_mid_col10 = offset1_mid_tmp_40a8f_3.as_m31();
-                *row[10] = offset1_mid_col10;
+                    (((PackedUInt16::from_m31(input_offset1_col3)) >> (UInt16_2)) & (UInt16_511));
+                let offset1_mid_col11 = offset1_mid_tmp_40a8f_3.as_m31();
+                *row[11] = offset1_mid_col11;
                 let offset1_high_tmp_40a8f_4 =
-                    ((PackedUInt16::from_m31(input_offset1_col2)) >> (UInt16_11));
-                let offset1_high_col11 = offset1_high_tmp_40a8f_4.as_m31();
-                *row[11] = offset1_high_col11;
+                    ((PackedUInt16::from_m31(input_offset1_col3)) >> (UInt16_11));
+                let offset1_high_col12 = offset1_high_tmp_40a8f_4.as_m31();
+                *row[12] = offset1_high_col12;
                 let offset2_low_tmp_40a8f_5 =
-                    ((PackedUInt16::from_m31(input_offset2_col3)) & (UInt16_15));
-                let offset2_low_col12 = offset2_low_tmp_40a8f_5.as_m31();
-                *row[12] = offset2_low_col12;
+                    ((PackedUInt16::from_m31(input_offset2_col4)) & (UInt16_15));
+                let offset2_low_col13 = offset2_low_tmp_40a8f_5.as_m31();
+                *row[13] = offset2_low_col13;
                 let offset2_mid_tmp_40a8f_6 =
-                    (((PackedUInt16::from_m31(input_offset2_col3)) >> (UInt16_4)) & (UInt16_511));
-                let offset2_mid_col13 = offset2_mid_tmp_40a8f_6.as_m31();
-                *row[13] = offset2_mid_col13;
+                    (((PackedUInt16::from_m31(input_offset2_col4)) >> (UInt16_4)) & (UInt16_511));
+                let offset2_mid_col14 = offset2_mid_tmp_40a8f_6.as_m31();
+                *row[14] = offset2_mid_col14;
                 let offset2_high_tmp_40a8f_7 =
-                    ((PackedUInt16::from_m31(input_offset2_col3)) >> (UInt16_13));
-                let offset2_high_col14 = offset2_high_tmp_40a8f_7.as_m31();
-                *row[14] = offset2_high_col14;
+                    ((PackedUInt16::from_m31(input_offset2_col4)) >> (UInt16_13));
+                let offset2_high_col15 = offset2_high_tmp_40a8f_7.as_m31();
+                *row[15] = offset2_high_col15;
                 *sub_component_inputs.range_check_7_2_5[0] =
-                    [offset0_mid_col8, offset1_low_col9, offset1_high_col11];
+                    [offset0_mid_col9, offset1_low_col10, offset1_high_col12];
                 *lookup_data.range_check_7_2_5_0 = [
                     M31_371240602,
-                    offset0_mid_col8,
-                    offset1_low_col9,
-                    offset1_high_col11,
+                    offset0_mid_col9,
+                    offset1_low_col10,
+                    offset1_high_col12,
                 ];
-                *sub_component_inputs.range_check_4_3[0] = [offset2_low_col12, offset2_high_col14];
+                *sub_component_inputs.range_check_4_3[0] = [offset2_low_col13, offset2_high_col15];
                 *lookup_data.range_check_4_3_1 =
-                    [M31_1567323731, offset2_low_col12, offset2_high_col14];
+                    [M31_1567323731, offset2_low_col13, offset2_high_col15];
                 let encode_offsets_output_tmp_40a8f_8 = [
-                    offset0_low_col7,
-                    ((offset0_mid_col8) + ((offset1_low_col9) * (M31_128))),
-                    offset1_mid_col10,
-                    ((offset1_high_col11) + ((offset2_low_col12) * (M31_32))),
-                    offset2_mid_col13,
-                    offset2_high_col14,
+                    offset0_low_col8,
+                    ((offset0_mid_col9) + ((offset1_low_col10) * (M31_128))),
+                    offset1_mid_col11,
+                    ((offset1_high_col12) + ((offset2_low_col13) * (M31_32))),
+                    offset2_mid_col14,
+                    offset2_high_col15,
                 ];
 
                 // Mem Verify.
@@ -260,25 +257,25 @@ fn write_trace_simd(
                 // Read Id.
 
                 let memory_address_to_id_value_tmp_40a8f_9 =
-                    memory_address_to_id_state.deduce_output(input_pc_col0);
-                let instruction_id_col15 = memory_address_to_id_value_tmp_40a8f_9;
-                *row[15] = instruction_id_col15;
-                *sub_component_inputs.memory_address_to_id[0] = input_pc_col0;
+                    memory_address_to_id_state.deduce_output(input_pc_col1);
+                let instruction_id_col16 = memory_address_to_id_value_tmp_40a8f_9;
+                *row[16] = instruction_id_col16;
+                *sub_component_inputs.memory_address_to_id[0] = input_pc_col1;
                 *lookup_data.memory_address_to_id_2 =
-                    [M31_1444891767, input_pc_col0, instruction_id_col15];
+                    [M31_1444891767, input_pc_col1, instruction_id_col16];
 
-                *sub_component_inputs.memory_id_to_big[0] = instruction_id_col15;
+                *sub_component_inputs.memory_id_to_big[0] = instruction_id_col16;
                 *lookup_data.memory_id_to_big_3 = [
                     M31_1662111297,
-                    instruction_id_col15,
-                    offset0_low_col7,
+                    instruction_id_col16,
+                    offset0_low_col8,
                     encode_offsets_output_tmp_40a8f_8[1],
-                    offset1_mid_col10,
+                    offset1_mid_col11,
                     encode_offsets_output_tmp_40a8f_8[3],
-                    offset2_mid_col13,
-                    ((offset2_high_col14) + (input_inst_felt5_high_col4)),
-                    input_inst_felt6_col5,
-                    input_opcode_extension_col6,
+                    offset2_mid_col14,
+                    ((offset2_high_col15) + (input_inst_felt5_high_col5)),
+                    input_inst_felt6_col6,
+                    input_opcode_extension_col7,
                     M31_0,
                     M31_0,
                     M31_0,
@@ -301,20 +298,18 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
-                let multiplicity_0_col16 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
-                *row[16] = multiplicity_0_col16;
                 *lookup_data.verify_instruction_4 = [
                     M31_1719106205,
-                    input_pc_col0,
-                    input_offset0_col1,
-                    input_offset1_col2,
-                    input_offset2_col3,
-                    input_inst_felt5_high_col4,
-                    input_inst_felt6_col5,
-                    input_opcode_extension_col6,
+                    input_pc_col1,
+                    input_offset0_col2,
+                    input_offset1_col3,
+                    input_offset2_col4,
+                    input_inst_felt5_high_col5,
+                    input_inst_felt6_col6,
+                    input_opcode_extension_col7,
                 ];
                 *lookup_data.mults_0 = M31_1;
-                *lookup_data.mults_1 = multiplicity_0_col16;
+                *lookup_data.mults_1 = multiplicity_0_col0;
             },
         );
 

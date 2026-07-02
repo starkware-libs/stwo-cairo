@@ -7,6 +7,7 @@ use crate::prelude::*;
 
 pub fn cond_felt_252_as_rel_imm_evaluate(
     input: [QM31; 29],
+    enabler: QM31,
     msb_col0: QM31,
     mid_limbs_set_col1: QM31,
     partial_limb_msb_col2: QM31,
@@ -53,12 +54,13 @@ pub fn cond_felt_252_as_rel_imm_evaluate(
         decode_small_sign_output_tmp_37f57_2_limb27,
     ] =
         decode_small_sign_evaluate(
-        [], msb_col0, mid_limbs_set_col1, common_lookup_elements, ref sum, random_coeff,
+        [], enabler, msb_col0, mid_limbs_set_col1, common_lookup_elements, ref sum, random_coeff,
     );
     let remainder_bits_tmp_37f57_3: QM31 = (cond_felt_252_as_rel_imm_input_limb_3
         - decode_small_sign_output_tmp_37f57_2_limb3_7_high_bits);
     cond_range_check_2_evaluate(
         [remainder_bits_tmp_37f57_3, cond_felt_252_as_rel_imm_input_limb_28],
+        enabler,
         partial_limb_msb_col2,
         common_lookup_elements,
         ref sum,

@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn encode_offsets_evaluate(
     input: [QM31; 3],
+    enabler: QM31,
     offset0_low_col0: QM31,
     offset0_mid_col1: QM31,
     offset1_low_col2: QM31,
@@ -52,13 +53,13 @@ pub fn encode_offsets_evaluate(
             ]
                 .span(),
         );
-    numerator_0 = qm31_const::<1, 0, 0, 0>();
+    numerator_0 = enabler;
 
     range_check_4_3_sum_1 = common_lookup_elements
         .combine_qm31(
             [qm31_const::<1567323731, 0, 0, 0>(), offset2_low_col5, offset2_high_col7].span(),
         );
-    numerator_1 = qm31_const::<1, 0, 0, 0>();
+    numerator_1 = enabler;
 
     [
         (offset0_mid_col1 + (offset1_low_col2 * qm31_const::<128, 0, 0, 0>())),

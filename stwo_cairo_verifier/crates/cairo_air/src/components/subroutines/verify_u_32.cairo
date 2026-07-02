@@ -6,6 +6,7 @@ use crate::prelude::*;
 
 pub fn verify_u_32_evaluate(
     input: [QM31; 3],
+    enabler: QM31,
     low_7_ms_bits_col0: QM31,
     high_14_ms_bits_col1: QM31,
     high_5_ms_bits_col2: QM31,
@@ -32,7 +33,7 @@ pub fn verify_u_32_evaluate(
             ]
                 .span(),
         );
-    numerator_0 = qm31_const::<1, 0, 0, 0>();
+    numerator_0 = enabler;
     mem_verify_evaluate(
         [
             verify_u_32_input_limb_0,
@@ -49,6 +50,7 @@ pub fn verify_u_32_evaluate(
             qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
             qm31_const::<0, 0, 0, 0>(),
         ],
+        enabler,
         id_col3,
         common_lookup_elements,
         ref memory_address_to_id_sum_1,

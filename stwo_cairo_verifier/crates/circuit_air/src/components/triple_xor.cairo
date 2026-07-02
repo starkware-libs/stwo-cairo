@@ -156,15 +156,26 @@ pub impl AirComponentImpl of AirComponent<Component> {
 
         let split_16_low_part_size_8_output_tmp_4ec2c_1_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
-            input_a_limb_0_col0, ms_8_bits_col8, self.common_lookup_elements, ref sum, random_coeff,
+            input_a_limb_0_col0,
+            qm31_const::<1, 0, 0, 0>(),
+            ms_8_bits_col8,
+            self.common_lookup_elements,
+            ref sum,
+            random_coeff,
         );
         let split_16_low_part_size_8_output_tmp_4ec2c_3_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
-            input_a_limb_1_col1, ms_8_bits_col9, self.common_lookup_elements, ref sum, random_coeff,
+            input_a_limb_1_col1,
+            qm31_const::<1, 0, 0, 0>(),
+            ms_8_bits_col9,
+            self.common_lookup_elements,
+            ref sum,
+            random_coeff,
         );
         let split_16_low_part_size_8_output_tmp_4ec2c_5_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
             input_b_limb_0_col2,
+            qm31_const::<1, 0, 0, 0>(),
             ms_8_bits_col10,
             self.common_lookup_elements,
             ref sum,
@@ -173,6 +184,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         let split_16_low_part_size_8_output_tmp_4ec2c_7_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
             input_b_limb_1_col3,
+            qm31_const::<1, 0, 0, 0>(),
             ms_8_bits_col11,
             self.common_lookup_elements,
             ref sum,
@@ -181,6 +193,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         let split_16_low_part_size_8_output_tmp_4ec2c_9_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
             input_c_limb_0_col4,
+            qm31_const::<1, 0, 0, 0>(),
             ms_8_bits_col12,
             self.common_lookup_elements,
             ref sum,
@@ -189,6 +202,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         let split_16_low_part_size_8_output_tmp_4ec2c_11_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
             input_c_limb_1_col5,
+            qm31_const::<1, 0, 0, 0>(),
             ms_8_bits_col13,
             self.common_lookup_elements,
             ref sum,
@@ -197,6 +211,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         let split_16_low_part_size_8_output_tmp_4ec2c_13_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
             input_a_xor_b_xor_c_limb_0_col6,
+            qm31_const::<1, 0, 0, 0>(),
             ms_8_bits_col14,
             self.common_lookup_elements,
             ref sum,
@@ -205,6 +220,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         let split_16_low_part_size_8_output_tmp_4ec2c_15_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
             input_a_xor_b_xor_c_limb_1_col7,
+            qm31_const::<1, 0, 0, 0>(),
             ms_8_bits_col15,
             self.common_lookup_elements,
             ref sum,
@@ -215,6 +231,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
                 split_16_low_part_size_8_output_tmp_4ec2c_1_limb_0,
                 split_16_low_part_size_8_output_tmp_4ec2c_5_limb_0,
             ],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col16,
             self.common_lookup_elements,
             ref verify_bitwise_xor_8_sum_0,
@@ -224,6 +241,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         bitwise_xor_num_bits_8_evaluate(
             [ms_8_bits_col8, ms_8_bits_col10],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col17,
             self.common_lookup_elements,
             ref verify_bitwise_xor_8_sum_1,
@@ -236,6 +254,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
                 split_16_low_part_size_8_output_tmp_4ec2c_3_limb_0,
                 split_16_low_part_size_8_output_tmp_4ec2c_7_limb_0,
             ],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col18,
             self.common_lookup_elements,
             ref verify_bitwise_xor_8_sum_2,
@@ -245,6 +264,7 @@ pub impl AirComponentImpl of AirComponent<Component> {
         );
         bitwise_xor_num_bits_8_evaluate(
             [ms_8_bits_col9, ms_8_bits_col11],
+            qm31_const::<1, 0, 0, 0>(),
             xor_col19,
             self.common_lookup_elements,
             ref verify_bitwise_xor_8_sum_3,

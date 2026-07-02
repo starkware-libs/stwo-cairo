@@ -73,96 +73,97 @@ impl FrameworkEval for Eval {
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1 = E::F::from(M31::from(1));
         let M31_428564188 = E::F::from(M31::from(428564188));
-        let input_pc_col0 = eval.next_trace_mask();
-        let input_ap_col1 = eval.next_trace_mask();
-        let input_fp_col2 = eval.next_trace_mask();
-        let offset2_col3 = eval.next_trace_mask();
-        let op1_imm_col4 = eval.next_trace_mask();
-        let op1_base_fp_col5 = eval.next_trace_mask();
-        let mem1_base_col6 = eval.next_trace_mask();
-        let op1_id_col7 = eval.next_trace_mask();
-        let msb_col8 = eval.next_trace_mask();
-        let mid_limbs_set_col9 = eval.next_trace_mask();
-        let op1_limb_0_col10 = eval.next_trace_mask();
-        let op1_limb_1_col11 = eval.next_trace_mask();
-        let op1_limb_2_col12 = eval.next_trace_mask();
-        let remainder_bits_col13 = eval.next_trace_mask();
-        let partial_limb_msb_col14 = eval.next_trace_mask();
-        let range_check_29_bot11bits_col15 = eval.next_trace_mask();
-        let enabler_col16 = eval.next_trace_mask();
+        let enabler_col0 = eval.next_trace_mask();
+        let input_pc_col1 = eval.next_trace_mask();
+        let input_ap_col2 = eval.next_trace_mask();
+        let input_fp_col3 = eval.next_trace_mask();
+        let offset2_col4 = eval.next_trace_mask();
+        let op1_imm_col5 = eval.next_trace_mask();
+        let op1_base_fp_col6 = eval.next_trace_mask();
+        let mem1_base_col7 = eval.next_trace_mask();
+        let op1_id_col8 = eval.next_trace_mask();
+        let msb_col9 = eval.next_trace_mask();
+        let mid_limbs_set_col10 = eval.next_trace_mask();
+        let op1_limb_0_col11 = eval.next_trace_mask();
+        let op1_limb_1_col12 = eval.next_trace_mask();
+        let op1_limb_2_col13 = eval.next_trace_mask();
+        let remainder_bits_col14 = eval.next_trace_mask();
+        let partial_limb_msb_col15 = eval.next_trace_mask();
+        let range_check_29_bot11bits_col16 = eval.next_trace_mask();
 
+        // Enabler is a bit.
+        eval.add_constraint(((enabler_col0.clone() * enabler_col0.clone()) - enabler_col0.clone()));
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [decode_instruction_89ffb_output_tmp_44683_6_offset2, decode_instruction_89ffb_output_tmp_44683_6_op1_base_ap] =
             DecodeInstruction89Ffb::evaluate(
-                [input_pc_col0.clone()],
-                offset2_col3.clone(),
-                op1_imm_col4.clone(),
-                op1_base_fp_col5.clone(),
+                [input_pc_col1.clone()],
+                enabler_col0.clone(),
+                offset2_col4.clone(),
+                op1_imm_col5.clone(),
+                op1_base_fp_col6.clone(),
                 &self.common_lookup_elements,
                 &mut eval,
             );
         // if imm then offset2 is 1.
         eval.add_constraint(
-            (op1_imm_col4.clone()
+            (op1_imm_col5.clone()
                 * (M31_1.clone() - decode_instruction_89ffb_output_tmp_44683_6_offset2.clone())),
         );
         // mem1_base.
         eval.add_constraint(
-            (mem1_base_col6.clone()
-                - (((op1_imm_col4.clone() * input_pc_col0.clone())
-                    + (op1_base_fp_col5.clone() * input_fp_col2.clone()))
+            (mem1_base_col7.clone()
+                - (((op1_imm_col5.clone() * input_pc_col1.clone())
+                    + (op1_base_fp_col6.clone() * input_fp_col3.clone()))
                     + (decode_instruction_89ffb_output_tmp_44683_6_op1_base_ap.clone()
-                        * input_ap_col1.clone()))),
+                        * input_ap_col2.clone()))),
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [read_small_output_tmp_44683_16_limb_0] = ReadSmall::evaluate(
-            [(mem1_base_col6.clone()
+            [(mem1_base_col7.clone()
                 + decode_instruction_89ffb_output_tmp_44683_6_offset2.clone())],
-            op1_id_col7.clone(),
-            msb_col8.clone(),
-            mid_limbs_set_col9.clone(),
-            op1_limb_0_col10.clone(),
-            op1_limb_1_col11.clone(),
-            op1_limb_2_col12.clone(),
-            remainder_bits_col13.clone(),
-            partial_limb_msb_col14.clone(),
+            enabler_col0.clone(),
+            op1_id_col8.clone(),
+            msb_col9.clone(),
+            mid_limbs_set_col10.clone(),
+            op1_limb_0_col11.clone(),
+            op1_limb_1_col12.clone(),
+            op1_limb_2_col13.clone(),
+            remainder_bits_col14.clone(),
+            partial_limb_msb_col15.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
         let next_ap_tmp_44683_17 = eval.add_intermediate(
-            (input_ap_col1.clone() + read_small_output_tmp_44683_16_limb_0.clone()),
+            (input_ap_col2.clone() + read_small_output_tmp_44683_16_limb_0.clone()),
         );
         RangeCheck29::evaluate(
             [next_ap_tmp_44683_17.clone()],
-            range_check_29_bot11bits_col15.clone(),
+            enabler_col0.clone(),
+            range_check_29_bot11bits_col16.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
-        // Enabler is a bit.
-        eval.add_constraint(
-            ((enabler_col16.clone() * enabler_col16.clone()) - enabler_col16.clone()),
-        );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::from(enabler_col16.clone()),
+            E::EF::from(enabler_col0.clone()),
             &[
                 M31_428564188.clone(),
-                input_pc_col0.clone(),
-                input_ap_col1.clone(),
-                input_fp_col2.clone(),
+                input_pc_col1.clone(),
+                input_ap_col2.clone(),
+                input_fp_col3.clone(),
             ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler_col16.clone()),
+            -E::EF::from(enabler_col0.clone()),
             &[
                 M31_428564188.clone(),
-                (input_pc_col0.clone() + (M31_1.clone() + op1_imm_col4.clone())),
+                (input_pc_col1.clone() + (M31_1.clone() + op1_imm_col5.clone())),
                 next_ap_tmp_44683_17.clone(),
-                input_fp_col2.clone(),
+                input_fp_col3.clone(),
             ],
         ));
 

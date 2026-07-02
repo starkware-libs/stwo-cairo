@@ -19,6 +19,7 @@ impl EvalOperands {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [eval_operands_input_pc, eval_operands_input_ap, eval_operands_input_fp, eval_operands_input_dst_base_fp, eval_operands_input_op0_base_fp, eval_operands_input_op1_imm, eval_operands_input_op1_base_fp, eval_operands_input_op1_base_ap, eval_operands_input_res_add, eval_operands_input_res_mul, eval_operands_input_pc_update_jnz, eval_operands_input_op1_base_op0, eval_operands_input_res_op1, eval_operands_input_offset0, eval_operands_input_offset1, eval_operands_input_offset2]: [E::F; 16],
+        enabler: E::F,
         dst_src_col0: E::F,
         dst_id_col1: E::F,
         dst_limb_0_col2: E::F,
@@ -237,6 +238,7 @@ impl EvalOperands {
         );
         ReadPositiveNumBits252::evaluate(
             [(dst_src_col0.clone() + eval_operands_input_offset0.clone())],
+            enabler.clone(),
             dst_id_col1.clone(),
             dst_limb_0_col2.clone(),
             dst_limb_1_col3.clone(),
@@ -278,6 +280,7 @@ impl EvalOperands {
         );
         ReadPositiveNumBits252::evaluate(
             [(op0_src_col30.clone() + eval_operands_input_offset1.clone())],
+            enabler.clone(),
             op0_id_col31.clone(),
             op0_limb_0_col32.clone(),
             op0_limb_1_col33.clone(),
@@ -342,6 +345,7 @@ impl EvalOperands {
                 op0_limb_27_col59.clone(),
                 eval_operands_input_op1_base_op0.clone(),
             ],
+            enabler.clone(),
             partial_limb_msb_col60.clone(),
             common_lookup_elements,
             eval,
@@ -358,6 +362,7 @@ impl EvalOperands {
         );
         ReadPositiveNumBits252::evaluate(
             [(op1_src_col61.clone() + eval_operands_input_offset2.clone())],
+            enabler.clone(),
             op1_id_col62.clone(),
             op1_limb_0_col63.clone(),
             op1_limb_1_col64.clone(),
@@ -449,6 +454,7 @@ impl EvalOperands {
                 op1_limb_26_col89.clone(),
                 op1_limb_27_col90.clone(),
             ],
+            enabler.clone(),
             add_res_limb_0_col91.clone(),
             add_res_limb_1_col92.clone(),
             add_res_limb_2_col93.clone(),
@@ -540,6 +546,7 @@ impl EvalOperands {
                 op1_limb_26_col89.clone(),
                 op1_limb_27_col90.clone(),
             ],
+            enabler.clone(),
             mul_res_limb_0_col120.clone(),
             mul_res_limb_1_col121.clone(),
             mul_res_limb_2_col122.clone(),

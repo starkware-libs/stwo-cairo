@@ -19,6 +19,7 @@ impl ModUtils {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [mod_utils_input_first_addr, mod_utils_input_instance_num]: [E::F; 2],
+        enabler: E::F,
         is_instance_0_col0: E::F,
         p0_id_col1: E::F,
         p0_limb_0_col2: E::F,
@@ -303,6 +304,7 @@ impl ModUtils {
         );
         ReadPositiveNumBits99::evaluate(
             [instance_addr_tmp_e0805_2.clone()],
+            enabler.clone(),
             p0_id_col1.clone(),
             p0_limb_0_col2.clone(),
             p0_limb_1_col3.clone(),
@@ -320,6 +322,7 @@ impl ModUtils {
         );
         ReadPositiveNumBits99::evaluate(
             [(instance_addr_tmp_e0805_2.clone() + M31_1.clone())],
+            enabler.clone(),
             p1_id_col13.clone(),
             p1_limb_0_col14.clone(),
             p1_limb_1_col15.clone(),
@@ -337,6 +340,7 @@ impl ModUtils {
         );
         ReadPositiveNumBits99::evaluate(
             [(instance_addr_tmp_e0805_2.clone() + M31_2.clone())],
+            enabler.clone(),
             p2_id_col25.clone(),
             p2_limb_0_col26.clone(),
             p2_limb_1_col27.clone(),
@@ -354,6 +358,7 @@ impl ModUtils {
         );
         ReadPositiveNumBits99::evaluate(
             [(instance_addr_tmp_e0805_2.clone() + M31_3.clone())],
+            enabler.clone(),
             p3_id_col37.clone(),
             p3_limb_0_col38.clone(),
             p3_limb_1_col39.clone(),
@@ -371,6 +376,7 @@ impl ModUtils {
         );
         ReadPositiveNumBits29::evaluate(
             [(instance_addr_tmp_e0805_2.clone() + M31_4.clone())],
+            enabler.clone(),
             values_ptr_id_col49.clone(),
             values_ptr_limb_0_col50.clone(),
             values_ptr_limb_1_col51.clone(),
@@ -382,6 +388,7 @@ impl ModUtils {
         );
         ReadPositiveNumBits29::evaluate(
             [(instance_addr_tmp_e0805_2.clone() + M31_5.clone())],
+            enabler.clone(),
             offsets_ptr_id_col55.clone(),
             offsets_ptr_limb_0_col56.clone(),
             offsets_ptr_limb_1_col57.clone(),
@@ -393,6 +400,7 @@ impl ModUtils {
         );
         ReadPositiveNumBits29::evaluate(
             [(prev_instance_addr_tmp_e0805_3.clone() + M31_5.clone())],
+            enabler.clone(),
             offsets_ptr_prev_id_col61.clone(),
             offsets_ptr_prev_limb_0_col62.clone(),
             offsets_ptr_prev_limb_1_col63.clone(),
@@ -404,6 +412,7 @@ impl ModUtils {
         );
         ReadPositiveNumBits29::evaluate(
             [(instance_addr_tmp_e0805_2.clone() + M31_6.clone())],
+            enabler.clone(),
             n_id_col67.clone(),
             n_limb_0_col68.clone(),
             n_limb_1_col69.clone(),
@@ -415,6 +424,7 @@ impl ModUtils {
         );
         ReadPositiveNumBits29::evaluate(
             [(prev_instance_addr_tmp_e0805_3.clone() + M31_6.clone())],
+            enabler.clone(),
             n_prev_id_col73.clone(),
             n_prev_limb_0_col74.clone(),
             n_prev_limb_1_col75.clone(),
@@ -462,6 +472,7 @@ impl ModUtils {
                 values_ptr_id_col49.clone(),
                 block_reset_condition_tmp_e0805_61.clone(),
             ],
+            enabler.clone(),
             values_ptr_prev_id_col79.clone(),
             common_lookup_elements,
             eval,
@@ -472,6 +483,7 @@ impl ModUtils {
                 p0_id_col1.clone(),
                 block_reset_condition_tmp_e0805_61.clone(),
             ],
+            enabler.clone(),
             p_prev0_id_col80.clone(),
             common_lookup_elements,
             eval,
@@ -482,6 +494,7 @@ impl ModUtils {
                 p1_id_col13.clone(),
                 block_reset_condition_tmp_e0805_61.clone(),
             ],
+            enabler.clone(),
             p_prev1_id_col81.clone(),
             common_lookup_elements,
             eval,
@@ -492,6 +505,7 @@ impl ModUtils {
                 p2_id_col25.clone(),
                 block_reset_condition_tmp_e0805_61.clone(),
             ],
+            enabler.clone(),
             p_prev2_id_col82.clone(),
             common_lookup_elements,
             eval,
@@ -502,12 +516,14 @@ impl ModUtils {
                 p3_id_col37.clone(),
                 block_reset_condition_tmp_e0805_61.clone(),
             ],
+            enabler.clone(),
             p_prev3_id_col83.clone(),
             common_lookup_elements,
             eval,
         );
         let [read_small_output_tmp_e0805_81_limb_0] = ReadSmall::evaluate(
             [offsets_ptr_tmp_e0805_60.clone()],
+            enabler.clone(),
             offsets_a_id_col84.clone(),
             msb_col85.clone(),
             mid_limbs_set_col86.clone(),
@@ -521,6 +537,7 @@ impl ModUtils {
         );
         let [read_small_output_tmp_e0805_91_limb_0] = ReadSmall::evaluate(
             [(offsets_ptr_tmp_e0805_60.clone() + M31_1.clone())],
+            enabler.clone(),
             offsets_b_id_col92.clone(),
             msb_col93.clone(),
             mid_limbs_set_col94.clone(),
@@ -534,6 +551,7 @@ impl ModUtils {
         );
         let [read_small_output_tmp_e0805_101_limb_0] = ReadSmall::evaluate(
             [(offsets_ptr_tmp_e0805_60.clone() + M31_2.clone())],
+            enabler.clone(),
             offsets_c_id_col100.clone(),
             msb_col101.clone(),
             mid_limbs_set_col102.clone(),
@@ -553,6 +571,7 @@ impl ModUtils {
         );
         ReadPositiveNumBits99::evaluate(
             [(values_ptr_tmp_e0805_102.clone() + read_small_output_tmp_e0805_81_limb_0.clone())],
+            enabler.clone(),
             a0_id_col108.clone(),
             a0_limb_0_col109.clone(),
             a0_limb_1_col110.clone(),
@@ -574,6 +593,7 @@ impl ModUtils {
                     + read_small_output_tmp_e0805_81_limb_0.clone())
                     + M31_1.clone()),
             ],
+            enabler.clone(),
             a1_id_col120.clone(),
             a1_limb_0_col121.clone(),
             a1_limb_1_col122.clone(),
@@ -595,6 +615,7 @@ impl ModUtils {
                     + read_small_output_tmp_e0805_81_limb_0.clone())
                     + M31_2.clone()),
             ],
+            enabler.clone(),
             a2_id_col132.clone(),
             a2_limb_0_col133.clone(),
             a2_limb_1_col134.clone(),
@@ -616,6 +637,7 @@ impl ModUtils {
                     + read_small_output_tmp_e0805_81_limb_0.clone())
                     + M31_3.clone()),
             ],
+            enabler.clone(),
             a3_id_col144.clone(),
             a3_limb_0_col145.clone(),
             a3_limb_1_col146.clone(),
@@ -633,6 +655,7 @@ impl ModUtils {
         );
         ReadPositiveNumBits99::evaluate(
             [(values_ptr_tmp_e0805_102.clone() + read_small_output_tmp_e0805_91_limb_0.clone())],
+            enabler.clone(),
             b0_id_col156.clone(),
             b0_limb_0_col157.clone(),
             b0_limb_1_col158.clone(),
@@ -654,6 +677,7 @@ impl ModUtils {
                     + read_small_output_tmp_e0805_91_limb_0.clone())
                     + M31_1.clone()),
             ],
+            enabler.clone(),
             b1_id_col168.clone(),
             b1_limb_0_col169.clone(),
             b1_limb_1_col170.clone(),
@@ -675,6 +699,7 @@ impl ModUtils {
                     + read_small_output_tmp_e0805_91_limb_0.clone())
                     + M31_2.clone()),
             ],
+            enabler.clone(),
             b2_id_col180.clone(),
             b2_limb_0_col181.clone(),
             b2_limb_1_col182.clone(),
@@ -696,6 +721,7 @@ impl ModUtils {
                     + read_small_output_tmp_e0805_91_limb_0.clone())
                     + M31_3.clone()),
             ],
+            enabler.clone(),
             b3_id_col192.clone(),
             b3_limb_0_col193.clone(),
             b3_limb_1_col194.clone(),
@@ -713,6 +739,7 @@ impl ModUtils {
         );
         ReadPositiveNumBits99::evaluate(
             [(values_ptr_tmp_e0805_102.clone() + read_small_output_tmp_e0805_101_limb_0.clone())],
+            enabler.clone(),
             c0_id_col204.clone(),
             c0_limb_0_col205.clone(),
             c0_limb_1_col206.clone(),
@@ -734,6 +761,7 @@ impl ModUtils {
                     + read_small_output_tmp_e0805_101_limb_0.clone())
                     + M31_1.clone()),
             ],
+            enabler.clone(),
             c1_id_col216.clone(),
             c1_limb_0_col217.clone(),
             c1_limb_1_col218.clone(),
@@ -755,6 +783,7 @@ impl ModUtils {
                     + read_small_output_tmp_e0805_101_limb_0.clone())
                     + M31_2.clone()),
             ],
+            enabler.clone(),
             c2_id_col228.clone(),
             c2_limb_0_col229.clone(),
             c2_limb_1_col230.clone(),
@@ -776,6 +805,7 @@ impl ModUtils {
                     + read_small_output_tmp_e0805_101_limb_0.clone())
                     + M31_3.clone()),
             ],
+            enabler.clone(),
             c3_id_col240.clone(),
             c3_limb_0_col241.clone(),
             c3_limb_1_col242.clone(),

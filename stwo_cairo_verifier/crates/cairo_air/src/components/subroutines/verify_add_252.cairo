@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn verify_add_252_evaluate(
     input: [QM31; 84],
+    enabler: QM31,
     sub_p_bit_col0: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref sum: QM31,

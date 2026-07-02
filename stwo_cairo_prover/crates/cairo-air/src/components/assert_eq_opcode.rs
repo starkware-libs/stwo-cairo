@@ -60,79 +60,79 @@ impl FrameworkEval for Eval {
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1 = E::F::from(M31::from(1));
         let M31_428564188 = E::F::from(M31::from(428564188));
-        let input_pc_col0 = eval.next_trace_mask();
-        let input_ap_col1 = eval.next_trace_mask();
-        let input_fp_col2 = eval.next_trace_mask();
-        let offset0_col3 = eval.next_trace_mask();
-        let offset2_col4 = eval.next_trace_mask();
-        let dst_base_fp_col5 = eval.next_trace_mask();
-        let op1_base_fp_col6 = eval.next_trace_mask();
-        let ap_update_add_1_col7 = eval.next_trace_mask();
-        let mem_dst_base_col8 = eval.next_trace_mask();
-        let mem1_base_col9 = eval.next_trace_mask();
-        let dst_id_col10 = eval.next_trace_mask();
-        let enabler_col11 = eval.next_trace_mask();
+        let enabler_col0 = eval.next_trace_mask();
+        let input_pc_col1 = eval.next_trace_mask();
+        let input_ap_col2 = eval.next_trace_mask();
+        let input_fp_col3 = eval.next_trace_mask();
+        let offset0_col4 = eval.next_trace_mask();
+        let offset2_col5 = eval.next_trace_mask();
+        let dst_base_fp_col6 = eval.next_trace_mask();
+        let op1_base_fp_col7 = eval.next_trace_mask();
+        let ap_update_add_1_col8 = eval.next_trace_mask();
+        let mem_dst_base_col9 = eval.next_trace_mask();
+        let mem1_base_col10 = eval.next_trace_mask();
+        let dst_id_col11 = eval.next_trace_mask();
 
+        // Enabler is a bit.
+        eval.add_constraint(((enabler_col0.clone() * enabler_col0.clone()) - enabler_col0.clone()));
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [decode_instruction_135e3_output_tmp_36a9d_7_offset0, decode_instruction_135e3_output_tmp_36a9d_7_offset2, decode_instruction_135e3_output_tmp_36a9d_7_op1_base_ap] =
             DecodeInstruction135E3::evaluate(
-                [input_pc_col0.clone()],
-                offset0_col3.clone(),
-                offset2_col4.clone(),
-                dst_base_fp_col5.clone(),
-                op1_base_fp_col6.clone(),
-                ap_update_add_1_col7.clone(),
+                [input_pc_col1.clone()],
+                enabler_col0.clone(),
+                offset0_col4.clone(),
+                offset2_col5.clone(),
+                dst_base_fp_col6.clone(),
+                op1_base_fp_col7.clone(),
+                ap_update_add_1_col8.clone(),
                 &self.common_lookup_elements,
                 &mut eval,
             );
         // mem_dst_base.
         eval.add_constraint(
-            (mem_dst_base_col8.clone()
-                - ((dst_base_fp_col5.clone() * input_fp_col2.clone())
-                    + ((M31_1.clone() - dst_base_fp_col5.clone()) * input_ap_col1.clone()))),
+            (mem_dst_base_col9.clone()
+                - ((dst_base_fp_col6.clone() * input_fp_col3.clone())
+                    + ((M31_1.clone() - dst_base_fp_col6.clone()) * input_ap_col2.clone()))),
         );
         // mem1_base.
         eval.add_constraint(
-            (mem1_base_col9.clone()
-                - ((op1_base_fp_col6.clone() * input_fp_col2.clone())
+            (mem1_base_col10.clone()
+                - ((op1_base_fp_col7.clone() * input_fp_col3.clone())
                     + (decode_instruction_135e3_output_tmp_36a9d_7_op1_base_ap.clone()
-                        * input_ap_col1.clone()))),
+                        * input_ap_col2.clone()))),
         );
         MemVerifyEqual::evaluate(
             [
-                (mem_dst_base_col8.clone()
+                (mem_dst_base_col9.clone()
                     + decode_instruction_135e3_output_tmp_36a9d_7_offset0.clone()),
-                (mem1_base_col9.clone()
+                (mem1_base_col10.clone()
                     + decode_instruction_135e3_output_tmp_36a9d_7_offset2.clone()),
             ],
-            dst_id_col10.clone(),
+            enabler_col0.clone(),
+            dst_id_col11.clone(),
             &self.common_lookup_elements,
             &mut eval,
         );
-        // Enabler is a bit.
-        eval.add_constraint(
-            ((enabler_col11.clone() * enabler_col11.clone()) - enabler_col11.clone()),
-        );
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            E::EF::from(enabler_col11.clone()),
+            E::EF::from(enabler_col0.clone()),
             &[
                 M31_428564188.clone(),
-                input_pc_col0.clone(),
-                input_ap_col1.clone(),
-                input_fp_col2.clone(),
+                input_pc_col1.clone(),
+                input_ap_col2.clone(),
+                input_fp_col3.clone(),
             ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
-            -E::EF::from(enabler_col11.clone()),
+            -E::EF::from(enabler_col0.clone()),
             &[
                 M31_428564188.clone(),
-                (input_pc_col0.clone() + M31_1.clone()),
-                (input_ap_col1.clone() + ap_update_add_1_col7.clone()),
-                input_fp_col2.clone(),
+                (input_pc_col1.clone() + M31_1.clone()),
+                (input_ap_col2.clone() + ap_update_add_1_col8.clone()),
+                input_fp_col3.clone(),
             ],
         ));
 

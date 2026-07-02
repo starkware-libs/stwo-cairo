@@ -5,6 +5,7 @@ use crate::prelude::*;
 
 pub fn single_karatsuba_n_8_evaluate(
     input: [QM31; 32],
+    enabler: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref sum: QM31,
     random_coeff: QM31,
