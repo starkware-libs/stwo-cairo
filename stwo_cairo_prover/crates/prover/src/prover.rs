@@ -7,7 +7,7 @@ use cairo_air::cairo_components::CairoComponents;
 use cairo_air::claims::{lookup_sum, CairoClaim};
 use cairo_air::relations::CommonLookupElements;
 use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
-use cairo_air::verifier::{verify_cairo_ex, INTERACTION_POW_BITS};
+use cairo_air::verifier::{verify_cairo_ex, ExpectedPreprocessedRoot, INTERACTION_POW_BITS};
 use cairo_air::CairoProof;
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
@@ -51,7 +51,7 @@ mod json {
     pub use sonic_rs::from_str;
 }
 
-fn prove_verify_serialize<MC: MerkleChannel>(
+fn prove_verify_serialize<MC: MerkleChannel + ExpectedPreprocessedRoot>(
     input: ProverInput,
     verify: bool,
     proof_path: &Path,
@@ -597,7 +597,7 @@ pub mod tests {
         use std::io::Write;
         use std::process::Command;
 
-        use cairo_air::verifier::verify_cairo;
+        use cairo_air::verifier::{verify_cairo, CairoVerificationError};
         use cairo_air::CairoProofForRustVerifier;
         use itertools::Itertools;
         use stwo::core::fri::FriConfig;
@@ -878,7 +878,27 @@ pub mod tests {
                 };
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
+                let rust_proof: CairoProofForRustVerifier<_> = cairo_proof.into();
+                verify_cairo::<Blake2sMerkleChannel>(rust_proof.clone()).unwrap();
+
+                let mut wrong_root = rust_proof.clone();
+                let mut wrong_root_proof = wrong_root.stark_proof.0.clone();
+                wrong_root_proof.commitments[0] = wrong_root_proof.commitments[1].clone();
+                wrong_root.stark_proof = stwo::core::proof::StarkProof(wrong_root_proof);
+                assert!(matches!(
+                    verify_cairo::<Blake2sMerkleChannel>(wrong_root).unwrap_err(),
+                    CairoVerificationError::InvalidPreprocessedRoot
+                ));
+
+                let mut unsupported_blowup = rust_proof;
+                let mut unsupported_blowup_proof = unsupported_blowup.stark_proof.0.clone();
+                unsupported_blowup_proof.config.fri_config.log_blowup_factor = 6;
+                unsupported_blowup.stark_proof =
+                    stwo::core::proof::StarkProof(unsupported_blowup_proof);
+                assert!(matches!(
+                    verify_cairo::<Blake2sMerkleChannel>(unsupported_blowup).unwrap_err(),
+                    CairoVerificationError::UnsupportedPreprocessedRootConfig
+                ));
             }
 
             #[test]
