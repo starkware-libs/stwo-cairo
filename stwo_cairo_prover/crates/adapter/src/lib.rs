@@ -26,6 +26,7 @@ pub const N_REGISTERS: usize = 3;
 /// Externally provided inputs for the Stwo prover.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ProverInput {
+    pub program_segment: Vec<[u32; 8]>,
     pub state_transitions: StateTransitions,
     pub memory: Memory,
     pub pc_count: usize,
