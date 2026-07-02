@@ -25,7 +25,7 @@ pub fn generate_preprocessed_commitment_root<MC: MerkleChannel>(
     log_blowup_factor: u32,
     preprocessed_trace: PreProcessedTraceVariant,
     lifting_log_size: Option<u32>,
-) -> <<MC as MerkleChannel>::H as MerkleHasherLifted>::Hash
+) -> Result<<<MC as MerkleChannel>::H as MerkleHasherLifted>::Hash, String>
 where
     SimdBackend: BackendForChannel<MC>,
 {
@@ -35,7 +35,9 @@ where
     // Precompute twiddles for the commitment scheme.
     let mut max_log_size = preprocessed_trace.log_sizes().into_iter().max().unwrap();
     if let Some(lifting_log_size) = lifting_log_size {
-        assert!(lifting_log_size >= max_log_size, "Lifting log size must be greater than or equal to the maximum log size of the preprocessed trace");
+        if lifting_log_size < max_log_size {
+            return Err("Lifting log size must be greater than or equal to the maximum log size of the preprocessed trace".to_string());
+        }
         max_log_size = lifting_log_size
     }
     let twiddles = SimdBackend::precompute_twiddles(
@@ -55,7 +57,7 @@ where
         &BaseColumnPool::new(),
     );
 
-    commitment_scheme.commitment.root()
+    Ok(commitment_scheme.commitment.root())
 }
 
 pub fn gen_trace(
@@ -84,7 +86,8 @@ fn test_canonical_preprocessed_root_regression() {
         log_blowup_factor,
         PreProcessedTraceVariant::Canonical,
         None,
-    );
+    )
+    .unwrap();
 
     assert_eq!(root, expected);
 }
@@ -105,7 +108,8 @@ fn test_small_canonical_preprocessed_root_regression() {
         log_blowup_factor,
         PreProcessedTraceVariant::CanonicalSmall,
         None,
-    );
+    )
+    .unwrap();
 
     assert_eq!(root, expected);
 }
