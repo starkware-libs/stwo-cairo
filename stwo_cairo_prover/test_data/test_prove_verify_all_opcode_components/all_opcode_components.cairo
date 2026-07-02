@@ -74,6 +74,12 @@ func main{
     // ap += 1;
     // [ap] = 1, ap++;
 
+
+    // Output 2 elements (zeroes) for compatibility with the circuit verifier.
+    assert [output_ptr] = 0;
+    assert [output_ptr + 1] = 0;
+    let output_ptr = output_ptr + 2;
+
     return ();
 }
 
