@@ -6,9 +6,7 @@ use stwo_cairo_common::builtins::{
     MUL_MOD_BUILTIN_MEMORY_CELLS, PEDERSEN_BUILTIN_MEMORY_CELLS, POSEIDON_BUILTIN_MEMORY_CELLS,
     RANGE_CHECK_96_BUILTIN_MEMORY_CELLS, RANGE_CHECK_BUILTIN_MEMORY_CELLS,
 };
-use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
-    PreProcessedTrace, PreProcessedTraceVariant,
-};
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
 pub fn get_builtins(
@@ -130,11 +128,6 @@ pub fn get_builtins(
             n_instances.is_power_of_two(),
             "ec_op instances number is not a power of two"
         );
-
-        if preprocessed_trace.variant == PreProcessedTraceVariant::CanonicalSmall {
-            panic!("Not supporting ec_op_builtin with canonical_small preprocessed trace.")
-        }
-
         builtins.push("ec_op_builtin");
     }
 
