@@ -79,20 +79,6 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
     }
 }
 
-#[derive(Drop, Serde)]
-pub struct InteractionClaim {
-    pub big_claimed_sums: Array<QM31>,
-    pub claimed_sum: QM31,
-}
-
-#[generate_trait]
-pub impl InteractionClaimImpl of InteractionClaimTrait {
-    fn mix_into(self: @InteractionClaim, ref channel: Channel) {
-        channel.mix_felts(self.big_claimed_sums.span());
-    }
-}
-
-
 #[derive(Drop)]
 pub struct BigComponent {
     pub log_n_rows: u32,
