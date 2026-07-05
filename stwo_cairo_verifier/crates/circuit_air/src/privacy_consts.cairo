@@ -11,7 +11,7 @@
 use core::box::BoxImpl;
 use stwo_verifier_core::Hash;
 use stwo_verifier_core::fri::FriConfig;
-use stwo_verifier_core::pcs::PcsConfig;
+use stwo_verifier_core::pcs::{LiftingLogSize, PcsConfig};
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash;
 
@@ -35,7 +35,7 @@ pub fn circuit_pcs_config() -> PcsConfig {
         fri_config: FriConfig {
             log_blowup_factor: 3, log_last_layer_degree_bound: 0, n_queries: 23, fold_step: 4,
         },
-        lifting_log_size: Option::Some(LIFTING_LOG_SIZE),
+        lifting_log_size: LiftingLogSize::Fixed(LIFTING_LOG_SIZE),
     }
 }
 

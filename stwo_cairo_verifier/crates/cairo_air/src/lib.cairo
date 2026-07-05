@@ -39,8 +39,8 @@ use stwo_verifier_core::fields::m31::{M31, M31Trait, P_U32};
 use stwo_verifier_core::fields::qm31::QM31;
 #[cfg(not(feature: "qm31_opcode"))]
 use stwo_verifier_core::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait};
-use stwo_verifier_core::pcs::PcsConfigTrait;
 use stwo_verifier_core::pcs::verifier::{CommitmentSchemeVerifierImpl, get_trace_lde_log_size};
+use stwo_verifier_core::pcs::{LiftingLogSize, PcsConfigTrait};
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pack_into_qm31s, pow2};
 use stwo_verifier_core::verifier::{StarkProof, VerificationError, verify};
 use stwo_verifier_utils::{MemorySection, PubMemoryValue, construct_f252};
@@ -180,7 +180,7 @@ pub fn verify_cairo(proof: CairoProof) {
 
     // Verify.
     let pcs_config = stark_proof.commitment_scheme_proof.config;
-    assert!(pcs_config.lifting_log_size.is_none());
+    assert!(pcs_config.lifting_log_size == LiftingLogSize::Auto);
 
     verify_claim(@claim);
 

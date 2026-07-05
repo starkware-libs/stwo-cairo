@@ -5,7 +5,7 @@ use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::fri::{FriConfig, FriLayerProof, FriProof};
 use stwo::core::pcs::quotients::CommitmentSchemeProof;
-use stwo::core::pcs::{PcsConfig, TreeVec};
+use stwo::core::pcs::{LiftingLogSize, PcsConfig, TreeVec};
 use stwo::core::poly::line::LinePoly;
 use stwo::core::proof::StarkProof;
 use stwo::core::vcs::blake2_hash::Blake2sHash;
@@ -148,7 +148,7 @@ impl CairoDeserialize for PcsConfig {
     fn deserialize<'a>(data: &mut impl Iterator<Item = &'a FieldElement>) -> Self {
         let pow_bits = u32::deserialize(data);
         let fri_config = FriConfig::deserialize(data);
-        let lifting_log_size = Option::<u32>::deserialize(data);
+        let lifting_log_size = LiftingLogSize::deserialize(data);
         PcsConfig {
             pow_bits,
             fri_config,
@@ -201,6 +201,21 @@ impl<T: CairoDeserialize> CairoDeserialize for Option<T> {
             None
         } else {
             panic!("Invalid discriminant for Option<T>");
+        }
+    }
+}
+
+impl CairoDeserialize for LiftingLogSize {
+    fn deserialize<'a>(data: &mut impl Iterator<Item = &'a FieldElement>) -> Self {
+        let discriminant = data.next().unwrap();
+        if *discriminant == FieldElement::ZERO {
+            LiftingLogSize::Fixed(u32::deserialize(data))
+        } else if *discriminant == FieldElement::ONE {
+            LiftingLogSize::Auto
+        } else if *discriminant == FieldElement::TWO {
+            LiftingLogSize::AtLeast(u32::deserialize(data))
+        } else {
+            panic!("Invalid discriminant for LiftingLogSize");
         }
     }
 }

@@ -17,18 +17,30 @@ pub mod verifier;
 #[cfg(test)]
 mod verifier_test;
 
+/// Controls the size of the lifting domain used by the commitment scheme (this size includes the
+/// `log_blowup_factor`).
+#[derive(Drop, Serde, Copy, PartialEq)]
+pub enum LiftingLogSize {
+    /// Lift all polynomials to the domain of exactly this log size.
+    Fixed: u32,
+    /// Lift each tree's polynomials to the largest domain within that tree - the natural sizing.
+    /// An implicit assumption here is that the largest domains are all of equal size across trees,
+    /// except possibly for the preprocessed tree.
+    Auto,
+    /// Lift to at least this log size, bumped up to the call site's natural minimum when the
+    /// latter is larger, i.e. `max(x, natural_min)`. The natural minimum is the log size of the
+    /// evaluation domain being committed, which already includes the `log_blowup_factor`. At the
+    /// preprocessed-tree commitment that is `preprocessed_trace_log_size + log_blowup_factor`, so
+    /// this resolves to `max(x, preprocessed_trace_log_size + log_blowup_factor)`.
+    AtLeast: u32,
+}
+
 #[derive(Drop, Serde, Copy, PartialEq)]
 pub struct PcsConfig {
     pub pow_bits: u32,
     pub fri_config: FriConfig,
-    /// An optional integer which controls the size of the lifting domain (this size includes the
-    /// `log_blowup_factor`). When specified, the verifier lifts all polynomials to the domain of
-    /// the given log size.
-    /// If `None`, the verifier lifts each tree's polynomials to the largest domain within that
-    /// tree.
-    /// (an implicit assumption here is that the largest domains are all of equal size across
-    /// trees, except possibly for the preprocessed tree).
-    pub lifting_log_size: Option<u32>,
+    /// Controls the size of the lifting domain. See [`LiftingLogSize`].
+    pub lifting_log_size: LiftingLogSize,
 }
 #[generate_trait]
 pub impl PcsConfigImpl of PcsConfigTrait {
@@ -39,7 +51,14 @@ pub impl PcsConfigImpl of PcsConfigTrait {
         } = fri_config;
 
         let zero = M31Zero::zero();
-        let lifting_log_size_m31 = (*lifting_log_size).unwrap_or(0).try_into().unwrap();
+        // Domain-separated by a variant tag mixed before the value.
+        let (lifting_tag, lifting_value) = match *lifting_log_size {
+            LiftingLogSize::Fixed(log_size) => (0_u32, log_size),
+            LiftingLogSize::Auto => (1_u32, 0_u32),
+            LiftingLogSize::AtLeast(log_size) => (2_u32, log_size),
+        };
+        let lifting_tag_m31 = lifting_tag.try_into().unwrap();
+        let lifting_value_m31 = lifting_value.try_into().unwrap();
         channel
             .mix_felts(
                 array![
@@ -52,7 +71,10 @@ pub impl PcsConfigImpl of PcsConfigTrait {
                         ],
                     ),
                     QM31Trait::from_fixed_array(
-                        [(*fold_step).try_into().unwrap(), lifting_log_size_m31, zero, zero],
+                        [
+                            (*fold_step).try_into().unwrap(), lifting_tag_m31, lifting_value_m31,
+                            zero,
+                        ],
                     ),
                 ]
                     .span(),

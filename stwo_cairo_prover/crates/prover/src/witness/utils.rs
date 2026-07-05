@@ -7,7 +7,7 @@ use itertools::Itertools;
 use num_traits::{One, Zero};
 use stwo::core::channel::MerkleChannel;
 use stwo::core::fields::m31::M31;
-use stwo::core::pcs::{TreeSubspan, TreeVec};
+use stwo::core::pcs::{LiftingLogSize, TreeSubspan, TreeVec};
 use stwo::core::utils::SliceExt;
 use stwo::core::vcs_lifted::blake2_merkle::{Blake2sM31MerkleChannel, Blake2sMerkleChannel};
 use stwo::prover::backend::simd::conversion::{Pack, Unpack};
@@ -142,7 +142,7 @@ pub fn export_preprocessed_roots() {
         let root = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(
             log_blowup_factor,
             PreProcessedTraceVariant::Canonical,
-            None,
+            LiftingLogSize::Auto,
         );
         let root_bytes = root.0;
         let u32s_hex = root_bytes
@@ -164,7 +164,7 @@ pub fn export_preprocessed_roots() {
             let root = generate_preprocessed_commitment_root::<Poseidon252MerkleChannel>(
                 log_blowup_factor,
                 PreProcessedTraceVariant::CanonicalWithoutPedersen,
-                None,
+                LiftingLogSize::Auto,
             );
             println!("log_blowup_factor: {log_blowup_factor}, poseidon root: [{root:#010x}]");
         }
@@ -181,7 +181,7 @@ pub fn export_circuit_cairo_verifier_preprocessed_roots() {
         let root = generate_preprocessed_commitment_root::<Blake2sM31MerkleChannel>(
             log_blowup_factor,
             PreProcessedTraceVariant::CanonicalSmall,
-            Some(20 + log_blowup_factor),
+            LiftingLogSize::Fixed(20 + log_blowup_factor),
         );
 
         let root_bytes = root.0;

@@ -3,7 +3,7 @@ use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::fri::{FriConfig, FriLayerProof, FriProof};
 use stwo::core::pcs::quotients::CommitmentSchemeProof;
-use stwo::core::pcs::PcsConfig;
+use stwo::core::pcs::{LiftingLogSize, PcsConfig};
 use stwo::core::poly::line::LinePoly;
 use stwo::core::proof::StarkProof;
 use stwo::core::vcs::blake2_hash::Blake2sHash;
@@ -172,6 +172,22 @@ impl<T: CairoSerialize> CairoSerialize for Option<T> {
                 v.serialize(output);
             }
             None => output.push(FieldElement::ONE),
+        }
+    }
+}
+
+impl CairoSerialize for LiftingLogSize {
+    fn serialize(&self, output: &mut Vec<FieldElement>) {
+        match self {
+            LiftingLogSize::Fixed(log_size) => {
+                output.push(FieldElement::ZERO);
+                log_size.serialize(output);
+            }
+            LiftingLogSize::Auto => output.push(FieldElement::ONE),
+            LiftingLogSize::AtLeast(log_size) => {
+                output.push(FieldElement::TWO);
+                log_size.serialize(output);
+            }
         }
     }
 }

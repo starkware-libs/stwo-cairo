@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use stwo::core::channel::MerkleChannel;
 use stwo::core::fields::m31::BaseField;
+use stwo::core::pcs::LiftingLogSize;
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo::prover::backend::simd::SimdBackend;
@@ -24,7 +25,7 @@ use crate::prover::warm_pedersen_pp_trace;
 pub fn generate_preprocessed_commitment_root<MC: MerkleChannel>(
     log_blowup_factor: u32,
     preprocessed_trace: PreProcessedTraceVariant,
-    lifting_log_size: Option<u32>,
+    lifting_log_size: LiftingLogSize,
 ) -> <<MC as MerkleChannel>::H as MerkleHasherLifted>::Hash
 where
     SimdBackend: BackendForChannel<MC>,
@@ -34,10 +35,12 @@ where
 
     // Precompute twiddles for the commitment scheme.
     let mut max_log_size = preprocessed_trace.log_sizes().into_iter().max().unwrap();
-    if let Some(lifting_log_size) = lifting_log_size {
-        assert!(lifting_log_size >= max_log_size, "Lifting log size must be greater than or equal to the maximum log size of the preprocessed trace");
-        max_log_size = lifting_log_size
-    }
+    let resolved_lifting_log_size = lifting_log_size.resolve(max_log_size);
+    assert!(
+        resolved_lifting_log_size >= max_log_size,
+        "Lifting log size must be greater than or equal to the maximum log size of the preprocessed trace"
+    );
+    max_log_size = resolved_lifting_log_size;
     let twiddles = SimdBackend::precompute_twiddles(
         CanonicCoset::new(max_log_size + log_blowup_factor)
             .circle_domain()
@@ -83,7 +86,7 @@ fn test_canonical_preprocessed_root_regression() {
     let root = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(
         log_blowup_factor,
         PreProcessedTraceVariant::Canonical,
-        None,
+        LiftingLogSize::Auto,
     );
 
     assert_eq!(root, expected);
@@ -104,7 +107,7 @@ fn test_small_canonical_preprocessed_root_regression() {
     let root = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(
         log_blowup_factor,
         PreProcessedTraceVariant::CanonicalSmall,
-        None,
+        LiftingLogSize::Auto,
     );
 
     assert_eq!(root, expected);

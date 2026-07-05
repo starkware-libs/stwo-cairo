@@ -16,7 +16,7 @@ use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::fri::FriConfig;
 use stwo::core::pcs::utils::InvalidLiftingLogSizeError;
-use stwo::core::pcs::PcsConfig;
+use stwo::core::pcs::{LiftingLogSize, PcsConfig};
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::proof_of_work::GrindOps;
 use stwo::core::utils::MaybeOwned;
@@ -137,17 +137,16 @@ where
             pcs_config.fri_config.log_blowup_factor,
         );
 
-    if let Some(lifting_log_size) = pcs_config.lifting_log_size {
-        if lifting_log_size < max_domain_log_size {
-            return Err(ProvingError::InvalidLiftingLogSize(
-                InvalidLiftingLogSizeError {
-                    lifting_log_size,
-                    min_log_size: max_domain_log_size,
-                },
-            ));
-        }
-        max_domain_log_size = lifting_log_size;
+    let lifting_log_size = pcs_config.lifting_log_size.resolve(max_domain_log_size);
+    if lifting_log_size < max_domain_log_size {
+        return Err(ProvingError::InvalidLiftingLogSize(
+            InvalidLiftingLogSizeError {
+                lifting_log_size,
+                min_log_size: max_domain_log_size,
+            },
+        ));
     }
+    max_domain_log_size = lifting_log_size;
     let span = span!(Level::INFO, "Precompute Twiddles").entered();
     let twiddles = SimdBackend::precompute_twiddles(
         CanonicCoset::try_new(max_domain_log_size)?
@@ -410,7 +409,7 @@ pub fn create_and_serialize_proof(
                     n_queries: 70,
                     fold_step: 1,
                 },
-                lifting_log_size: None,
+                lifting_log_size: LiftingLogSize::Auto,
             },
             preprocessed_trace: PreProcessedTraceVariant::Canonical,
             store_polynomials_coefficients: false,
@@ -508,7 +507,7 @@ pub mod tests {
         use std::process::Command;
 
         use stwo::core::fri::FriConfig;
-        use stwo::core::pcs::PcsConfig;
+        use stwo::core::pcs::{LiftingLogSize, PcsConfig};
         use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
         use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTraceVariant;
         use stwo_cairo_dev_utils::utils::get_proof_file_path;
@@ -535,7 +534,7 @@ pub mod tests {
                 pcs_config: PcsConfig {
                     pow_bits: 20,
                     fri_config: FriConfig::new(0, 1, 90, 1),
-                    lifting_log_size: None,
+                    lifting_log_size: LiftingLogSize::Auto,
                 },
                 preprocessed_trace: PreProcessedTraceVariant::CanonicalWithoutPedersen,
                 channel_salt: 42,
@@ -601,7 +600,7 @@ pub mod tests {
         use cairo_air::CairoProofForRustVerifier;
         use itertools::Itertools;
         use stwo::core::fri::FriConfig;
-        use stwo::core::pcs::PcsConfig;
+        use stwo::core::pcs::{LiftingLogSize, PcsConfig};
         use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
         use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
         use stwo_cairo_dev_utils::utils::{get_compiled_cairo_program_path, get_proof_file_path};
@@ -679,7 +678,7 @@ pub mod tests {
                 pcs_config: PcsConfig {
                     pow_bits: 26,
                     fri_config: FriConfig::new(0, 1, 70, 3),
-                    lifting_log_size: None,
+                    lifting_log_size: LiftingLogSize::Auto,
                 },
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
                 channel_salt: 0,
@@ -749,7 +748,7 @@ pub mod tests {
                 pcs_config: PcsConfig {
                     pow_bits: 26,
                     fri_config: FriConfig::new(0, 1, 70, 1),
-                    lifting_log_size: None,
+                    lifting_log_size: LiftingLogSize::Auto,
                 },
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
                 channel_salt: 0,
@@ -831,7 +830,7 @@ pub mod tests {
         pub mod builtin_tests {
             use cairo_vm::types::layout_name::LayoutName;
             use stwo::core::pcs::utils::prepare_preprocessed_query_positions;
-            use stwo::core::pcs::PcsConfig;
+            use stwo::core::pcs::{LiftingLogSize, PcsConfig};
             use stwo_cairo_common::preprocessed_columns::preprocessed_trace::testing_preprocessed_tree;
             use stwo_cairo_dev_utils::vm_utils::{run_and_adapt, ProgramType};
             use stwo_constraint_framework::ORIGINAL_TRACE_IDX;
@@ -929,7 +928,7 @@ pub mod tests {
                     pcs_config: PcsConfig {
                         pow_bits: 10,
                         fri_config: FriConfig::new(0, 1, 1000, 1),
-                        lifting_log_size: None,
+                        lifting_log_size: LiftingLogSize::Auto,
                     },
                     preprocessed_trace: PreProcessedTraceVariant::CanonicalSmall,
                     channel_salt: 43,
