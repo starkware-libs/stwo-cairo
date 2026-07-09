@@ -15,10 +15,6 @@ use stwo_verifier_core::pcs::PcsConfig;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash;
 
-/// Lifting log size of the multiverifier circuit's proof: the value carried in
-/// the proof's `pcs_config.lifting_log_size` (trace_log_size 21 + log_blowup_factor 3).
-pub const LIFTING_LOG_SIZE: u32 = 24;
-
 /// Expected PCS config of the multiverifier circuit's proof.
 ///
 /// Hardcoded so the verifier accepts only proofs produced with the circuit's canonical
@@ -26,8 +22,7 @@ pub const LIFTING_LOG_SIZE: u32 = 24;
 /// smaller blowup, or less proof-of-work — is rejected, independently of stwo's
 /// `security_bits >= SECURITY_BITS` floor) and ties `log_blowup_factor` to the blowup the
 /// hardcoded `preprocessed_root()` was committed at. Must match the rust prover's
-/// multiverifier `PCS_CONFIG` (`get_pcs_config(21, 3)`), with the prover-clamped
-/// `lifting_log_size`.
+/// multiverifier `PCS_CONFIG` (`get_pcs_config(21, 3)`).
 /// Note `pow_bits + log_blowup_factor * n_queries = 27 + 3 * 23 = 96 = SECURITY_BITS`.
 pub fn circuit_pcs_config() -> PcsConfig {
     PcsConfig {
@@ -35,7 +30,6 @@ pub fn circuit_pcs_config() -> PcsConfig {
         fri_config: FriConfig {
             log_blowup_factor: 3, log_last_layer_degree_bound: 0, n_queries: 23, fold_step: 4,
         },
-        lifting_log_size: Option::Some(LIFTING_LOG_SIZE),
     }
 }
 
@@ -98,17 +92,17 @@ pub const PREPROCESSED_COLUMN_LOG_SIZES: [u32; 45] = [
 ];
 
 /// Expected preprocessed-trace root (Merkle commitment, tree 0 of the proof's
-/// commitments) for the multiverifier circuit at `LIFTING_LOG_SIZE`,
-/// as 8 little-endian u32 words of the Blake2s digest. Matches the prover-side
-/// `MULTIVERIFIER_PREPROCESSED_ROOT` in
+/// commitments) for the multiverifier circuit at lifting_log_size = max(preprocessed column log
+/// sizes) + log_blowup_factor, as 8 little-endian u32 words of the Blake2s digest. Matches the
+/// prover-side `MULTIVERIFIER_PREPROCESSED_ROOT` in
 /// `stwo-circuits/crates/circuit_multiverifier/src/verify_test.rs`.
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub fn preprocessed_root() -> Hash {
     Blake2sHash {
         hash: BoxImpl::new(
             [
-                4268871180, 1648605015, 1518856044, 936813334, 8391980, 3571729286, 3315525509,
-                1034558230,
+                299245338, 3245106799, 2582894857, 1660971541, 1264978744, 3663378231, 505079882,
+                3077728512,
             ],
         ),
     }
