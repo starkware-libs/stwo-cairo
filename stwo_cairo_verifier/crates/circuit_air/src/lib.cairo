@@ -4,8 +4,7 @@ use circuit_air::CircuitAirNewImpl;
 use core::dict::{Felt252DictTrait, SquashedFelt252DictTrait};
 use core::num::traits::Zero;
 use privacy_consts::{
-    LIFTING_LOG_SIZE, N_OUTPUTS, PREPROCESSED_COLUMN_LOG_SIZES, circuit_pcs_config,
-    preprocessed_root,
+    N_OUTPUTS, PREPROCESSED_COLUMN_LOG_SIZES, circuit_pcs_config, preprocessed_root,
 };
 use stwo_constraint_framework::LookupElementsImpl;
 pub use stwo_constraint_framework::{RelationUse, RelationUsesDict, accumulate_relation_uses};
@@ -17,6 +16,7 @@ use stwo_verifier_core::fields::qm31::QM31Trait;
 use stwo_verifier_core::fields::qm31::{QM31, QM31Serde};
 use stwo_verifier_core::pcs::PcsConfigTrait;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
+use stwo_verifier_core::utils::SpanExTrait;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash;
 use stwo_verifier_core::verifier::{StarkProof, VerificationError, verify};
@@ -93,12 +93,11 @@ pub fn verify_circuit(proof: CircuitProof) {
     assert!(claim.public_data.output_values.len() == N_OUTPUTS);
 
     // Pin the proof's PCS config to the circuit's hardcoded canonical config. This rejects any
-    // proof produced with weaker/mismatched FRI parameters, and guarantees
-    // `lifting_log_size == LIFTING_LOG_SIZE` and that `log_blowup_factor` matches the blowup the
-    // hardcoded `preprocessed_root()` was committed at.
+    // proof produced with weaker/mismatched FRI parameters, and guarantees that
+    // `log_blowup_factor` matches the blowup the hardcoded `preprocessed_root()` was committed
+    // at.
     let pcs_config = stark_proof.commitment_scheme_proof.config;
     assert!(pcs_config == circuit_pcs_config(), "unexpected proof pcs config");
-    let lifting_log_size = LIFTING_LOG_SIZE;
 
     // Component log sizes are derived verifier-side from the hardcoded preprocessed column log
     // sizes; they are not carried in the claim.
@@ -176,11 +175,12 @@ pub fn verify_circuit(proof: CircuitProof) {
             log_blowup_factor,
         );
 
-    // The circuit commits all trees at the lifted height. `verify` expects the trace's log
-    // degree bound (`trace_log_size = lifting - blowup`); the composition polynomial's raw
-    // degree bound is one higher (degree-2 constraints) but it is split into 2 polynomials
-    // before LDE, bringing its per-column degree bound back down to the trace's.
-    let trace_log_degree_bound = lifting_log_size - log_blowup_factor;
+    // The circuit commits all trees at the lifted height of its largest extended domain (largest
+    // preprocessed column log size + log_blowup_factor). `verify` expects the trace's log degree
+    // bound (`trace_log_size = lifting - blowup`); the composition polynomial's raw degree bound is
+    // one higher (degree-2 constraints) but it is split into 2 polynomials before LDE, bringing its
+    // per-column degree bound back down to the trace's.
+    let trace_log_degree_bound = *preprocessed_column_log_sizes.span().max().unwrap();
     let circuit_air = CircuitAirNewImpl::new(
         component_log_sizes, @common_lookup_elements, @interaction_claim,
     );

@@ -16,15 +16,14 @@ use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
 
 use crate::prover::warm_pedersen_pp_trace;
 
-/// Generates the root of the preprocessed trace commitment tree for a given `log_blowup_factor`.
-/// If `lifting_log_size` is provided, the preprocessed trace will be lifted to the given log size
-/// before generating the root.
+/// Generates the root of the preprocessed trace commitment tree for a given `log_blowup_factor`
+/// and `min_lifting_log_size`.
 // TODO(Shahars): remove allow.
 #[allow(unused)]
 pub fn generate_preprocessed_commitment_root<MC: MerkleChannel>(
     log_blowup_factor: u32,
     preprocessed_trace: PreProcessedTraceVariant,
-    lifting_log_size: Option<u32>,
+    min_lifting_log_size: u32,
 ) -> <<MC as MerkleChannel>::H as MerkleHasherLifted>::Hash
 where
     SimdBackend: BackendForChannel<MC>,
@@ -33,11 +32,12 @@ where
     let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace());
 
     // Precompute twiddles for the commitment scheme.
-    let mut max_log_size = preprocessed_trace.log_sizes().into_iter().max().unwrap();
-    if let Some(lifting_log_size) = lifting_log_size {
-        assert!(lifting_log_size >= max_log_size, "Lifting log size must be greater than or equal to the maximum log size of the preprocessed trace");
-        max_log_size = lifting_log_size
-    }
+    let max_log_size = preprocessed_trace
+        .log_sizes()
+        .into_iter()
+        .max()
+        .unwrap()
+        .max(min_lifting_log_size);
     let twiddles = SimdBackend::precompute_twiddles(
         CanonicCoset::new(max_log_size + log_blowup_factor)
             .circle_domain()
@@ -51,7 +51,7 @@ where
         log_blowup_factor,
         &twiddles,
         false,
-        lifting_log_size,
+        min_lifting_log_size,
         &BaseColumnPool::new(),
     );
 
@@ -83,7 +83,7 @@ fn test_canonical_preprocessed_root_regression() {
     let root = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(
         log_blowup_factor,
         PreProcessedTraceVariant::Canonical,
-        None,
+        0,
     );
 
     assert_eq!(root, expected);
@@ -104,7 +104,7 @@ fn test_small_canonical_preprocessed_root_regression() {
     let root = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(
         log_blowup_factor,
         PreProcessedTraceVariant::CanonicalSmall,
-        None,
+        0,
     );
 
     assert_eq!(root, expected);
