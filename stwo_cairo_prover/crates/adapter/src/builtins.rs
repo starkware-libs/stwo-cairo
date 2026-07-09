@@ -157,7 +157,7 @@ impl BuiltinSegments {
             };
             assert!(
                 original_segment_len.is_multiple_of(cells_per_instance),
-                "builtin segment: {builtin_name} size is {original_segment_len}, which is not divisble by {cells_per_instance}"
+                "builtin segment: {builtin_name} size is {original_segment_len}, which is not divisible by {cells_per_instance}"
             );
 
             if !current_builtin_segment.iter().all(|x| x.is_some()) {
@@ -259,7 +259,7 @@ mod test_builtin_segments {
 
     #[test]
     #[should_panic(
-        expected = "builtin segment: mul_mod_builtin size is 864, which is not divisble by 7"
+        expected = "builtin segment: mul_mod_builtin size is 864, which is not divisible by 7"
     )]
     fn test_builtin_segment_invalid_size() {
         let mul_mod_segment =
