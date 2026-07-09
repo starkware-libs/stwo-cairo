@@ -122,11 +122,16 @@ impl CairoSerialize for PcsConfig {
         let Self {
             pow_bits,
             fri_config,
-            lifting_log_size,
+            min_lifting_log_size,
         } = self;
+        // `min_lifting_log_size` is not carried in the wire format: the Cairo verifier only
+        // accepts proofs created with `0` and mixes `0` into the channel.
+        assert_eq!(
+            *min_lifting_log_size, 0,
+            "proofs for the Cairo verifier must be created with min_lifting_log_size = 0"
+        );
         pow_bits.serialize(output);
         fri_config.serialize(output);
-        lifting_log_size.serialize(output);
     }
 }
 

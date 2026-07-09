@@ -148,11 +148,12 @@ impl CairoDeserialize for PcsConfig {
     fn deserialize<'a>(data: &mut impl Iterator<Item = &'a FieldElement>) -> Self {
         let pow_bits = u32::deserialize(data);
         let fri_config = FriConfig::deserialize(data);
-        let lifting_log_size = Option::<u32>::deserialize(data);
+        // `min_lifting_log_size` is not carried in the wire format (see the `CairoSerialize`
+        // impl); it is always `0` for proofs in this format.
         PcsConfig {
             pow_bits,
             fri_config,
-            lifting_log_size,
+            min_lifting_log_size: 0,
         }
     }
 }
