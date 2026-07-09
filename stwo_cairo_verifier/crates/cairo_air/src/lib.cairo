@@ -180,7 +180,7 @@ pub fn verify_cairo(proof: CairoProof) {
 
     // Verify.
     let pcs_config = stark_proof.commitment_scheme_proof.config;
-    assert!(pcs_config.lifting_log_size.is_none());
+    assert!(pcs_config.min_lifting_log_size == 0);
 
     verify_claim(@claim);
 

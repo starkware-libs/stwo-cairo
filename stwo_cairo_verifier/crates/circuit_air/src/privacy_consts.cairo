@@ -16,7 +16,7 @@ use stwo_verifier_core::pcs::PcsConfig;
 use stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash;
 
 /// Lifting log size of the multiverifier circuit's proof: the value carried in
-/// the proof's `pcs_config.lifting_log_size` (trace_log_size 21 + log_blowup_factor 3).
+/// the proof's `pcs_config.min_lifting_log_size` (trace_log_size 21 + log_blowup_factor 3).
 pub const LIFTING_LOG_SIZE: u32 = 24;
 
 /// Expected PCS config of the multiverifier circuit's proof.
@@ -27,7 +27,7 @@ pub const LIFTING_LOG_SIZE: u32 = 24;
 /// `security_bits >= SECURITY_BITS` floor) and ties `log_blowup_factor` to the blowup the
 /// hardcoded `preprocessed_root()` was committed at. Must match the rust prover's
 /// multiverifier `PCS_CONFIG` (`get_pcs_config(21, 3)`), with the prover-clamped
-/// `lifting_log_size`.
+/// `min_lifting_log_size`.
 /// Note `pow_bits + log_blowup_factor * n_queries = 27 + 3 * 23 = 96 = SECURITY_BITS`.
 pub fn circuit_pcs_config() -> PcsConfig {
     PcsConfig {
@@ -35,7 +35,7 @@ pub fn circuit_pcs_config() -> PcsConfig {
         fri_config: FriConfig {
             log_blowup_factor: 3, log_last_layer_degree_bound: 0, n_queries: 23, fold_step: 4,
         },
-        lifting_log_size: Option::Some(LIFTING_LOG_SIZE),
+        min_lifting_log_size: LIFTING_LOG_SIZE,
     }
 }
 

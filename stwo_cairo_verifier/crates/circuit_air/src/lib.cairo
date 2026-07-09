@@ -94,8 +94,8 @@ pub fn verify_circuit(proof: CircuitProof) {
 
     // Pin the proof's PCS config to the circuit's hardcoded canonical config. This rejects any
     // proof produced with weaker/mismatched FRI parameters, and guarantees
-    // `lifting_log_size == LIFTING_LOG_SIZE` and that `log_blowup_factor` matches the blowup the
-    // hardcoded `preprocessed_root()` was committed at.
+    // `min_lifting_log_size == LIFTING_LOG_SIZE` and that `log_blowup_factor` matches the blowup
+    // the hardcoded `preprocessed_root()` was committed at.
     let pcs_config = stark_proof.commitment_scheme_proof.config;
     assert!(pcs_config == circuit_pcs_config(), "unexpected proof pcs config");
     let lifting_log_size = LIFTING_LOG_SIZE;

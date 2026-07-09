@@ -15,7 +15,7 @@ use stwo::core::channel::{Channel, MerkleChannel};
 use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::fri::FriConfig;
-use stwo::core::pcs::utils::InvalidLiftingLogSizeError;
+use stwo::core::pcs::utils::InvalidMinLiftingLogSizeError;
 use stwo::core::pcs::PcsConfig;
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::proof_of_work::GrindOps;
@@ -102,11 +102,12 @@ where
     let ProverParameters {
         channel_hash: _,
         channel_salt: _,
-        pcs_config,
+        mut pcs_config,
         preprocessed_trace: preprocessed_trace_variant,
         store_polynomials_coefficients,
         include_all_preprocessed_columns: _,
         opt_n_id_to_big_components,
+        raise_min_lifting_to_max_column,
     } = prover_params;
 
     let span = span!(Level::INFO, "Write Preprocessed trace").entered();
@@ -131,23 +132,29 @@ where
     );
 
     let cairo_air_log_degree_bound = 1;
+    // The maximal committed column log size over all trees (including the preprocessed tree).
     let mut max_domain_log_size = max_log_trace_size
         + std::cmp::max(
             cairo_air_log_degree_bound,
             pcs_config.fri_config.log_blowup_factor,
         );
 
-    if let Some(lifting_log_size) = pcs_config.lifting_log_size {
-        if lifting_log_size < max_domain_log_size {
-            return Err(ProvingError::InvalidLiftingLogSize(
-                InvalidLiftingLogSizeError {
-                    lifting_log_size,
-                    min_log_size: max_domain_log_size,
-                },
-            ));
-        }
-        max_domain_log_size = lifting_log_size;
+    if raise_min_lifting_to_max_column {
+        // Pin the lifting size: raise `min_lifting_log_size` to the maximal column log size, so
+        // that the updated config lifts all trees to the same height.
+        pcs_config.min_lifting_log_size = pcs_config.min_lifting_log_size.max(max_domain_log_size);
     }
+
+    let lifting_log_size = pcs_config.min_lifting_log_size;
+    if lifting_log_size > 0 && lifting_log_size < max_domain_log_size {
+        return Err(ProvingError::InvalidLiftingLogSize(
+            InvalidMinLiftingLogSizeError {
+                min_lifting_log_size: lifting_log_size,
+                preprocessed_log_size: max_domain_log_size,
+            },
+        ));
+    }
+    max_domain_log_size = max_domain_log_size.max(lifting_log_size);
     let span = span!(Level::INFO, "Precompute Twiddles").entered();
     let twiddles = SimdBackend::precompute_twiddles(
         CanonicCoset::try_new(max_domain_log_size)?
@@ -166,7 +173,7 @@ where
         pcs_config.fri_config.log_blowup_factor,
         &twiddles,
         store_polynomials_coefficients,
-        pcs_config.lifting_log_size,
+        pcs_config.min_lifting_log_size,
         &base_column_pool,
     ));
     span.exit();
@@ -179,7 +186,10 @@ where
         trace_evals,
         claim,
         interaction_generator,
-        prover_params,
+        ProverParameters {
+            pcs_config,
+            ..prover_params
+        },
     )
 }
 
@@ -195,6 +205,13 @@ where
     SimdBackend: BackendForChannel<MC>,
 {
     let _span = span!(Level::INFO, "prove_cairo").entered();
+
+    // The preprocessed tree and twiddles are already computed, so the lifting size can no longer
+    // be adjusted to the trace.
+    assert!(
+        !prover_params.raise_min_lifting_to_max_column,
+        "raise_min_lifting_to_max_column is not supported with a precomputed preprocessed tree"
+    );
 
     // Run Cairo.
     let cairo_claim_generator = create_cairo_claim_generator(input, preprocessed_trace.clone());
@@ -237,6 +254,7 @@ where
         store_polynomials_coefficients,
         include_all_preprocessed_columns,
         opt_n_id_to_big_components: _,
+        raise_min_lifting_to_max_column: _,
     } = prover_params;
 
     // Setup protocol.
@@ -362,6 +380,13 @@ pub struct ProverParameters {
     /// Optional number of components for the memory id to big claim.
     /// If not provided, the number of components will be inferred from the input.
     pub opt_n_id_to_big_components: Option<usize>,
+
+    /// If `true`, after writing the trace the prover raises `pcs_config.min_lifting_log_size` to
+    /// the maximal committed column log size over all trees (including the preprocessed tree).
+    /// The updated config thus lifts all trees to the same height. Otherwise, the given
+    /// `min_lifting_log_size` is used as is. Default is `false`.
+    #[serde(default)]
+    pub raise_min_lifting_to_max_column: bool,
 }
 
 /// The hash function used for commitments, for the prover-verifier channel,
@@ -410,12 +435,13 @@ pub fn create_and_serialize_proof(
                     n_queries: 70,
                     fold_step: 1,
                 },
-                lifting_log_size: None,
+                min_lifting_log_size: 0,
             },
             preprocessed_trace: PreProcessedTraceVariant::Canonical,
             store_polynomials_coefficients: false,
             include_all_preprocessed_columns: false,
             opt_n_id_to_big_components: None,
+            raise_min_lifting_to_max_column: false,
         }
     };
 
@@ -535,13 +561,14 @@ pub mod tests {
                 pcs_config: PcsConfig {
                     pow_bits: 20,
                     fri_config: FriConfig::new(0, 1, 90, 1),
-                    lifting_log_size: None,
+                    min_lifting_log_size: 0,
                 },
                 preprocessed_trace: PreProcessedTraceVariant::CanonicalWithoutPedersen,
                 channel_salt: 42,
                 store_polynomials_coefficients: false,
                 include_all_preprocessed_columns: false,
                 opt_n_id_to_big_components: None,
+                raise_min_lifting_to_max_column: false,
             };
             let cairo_proof =
                 prove_cairo::<Poseidon252MerkleChannel>(input, prover_params).unwrap();
@@ -658,6 +685,7 @@ pub mod tests {
                 store_polynomials_coefficients: true,
                 include_all_preprocessed_columns: false,
                 opt_n_id_to_big_components: None,
+                raise_min_lifting_to_max_column: false,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
@@ -679,13 +707,14 @@ pub mod tests {
                 pcs_config: PcsConfig {
                     pow_bits: 26,
                     fri_config: FriConfig::new(0, 1, 70, 3),
-                    lifting_log_size: None,
+                    min_lifting_log_size: 0,
                 },
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
                 channel_salt: 0,
                 store_polynomials_coefficients: false,
                 include_all_preprocessed_columns: false,
                 opt_n_id_to_big_components: None,
+                raise_min_lifting_to_max_column: false,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
             let mut proof_file = NamedTempFile::new().unwrap();
@@ -749,13 +778,14 @@ pub mod tests {
                 pcs_config: PcsConfig {
                     pow_bits: 26,
                     fri_config: FriConfig::new(0, 1, 70, 1),
-                    lifting_log_size: None,
+                    min_lifting_log_size: 0,
                 },
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
                 channel_salt: 0,
                 store_polynomials_coefficients: false,
                 include_all_preprocessed_columns: false,
                 opt_n_id_to_big_components: None,
+                raise_min_lifting_to_max_column: false,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
             let mut proof_file = NamedTempFile::new().unwrap();
@@ -803,6 +833,7 @@ pub mod tests {
                 store_polynomials_coefficients: false,
                 include_all_preprocessed_columns: false,
                 opt_n_id_to_big_components: None,
+                raise_min_lifting_to_max_column: false,
             };
             let proofs = (0..n_proofs_to_compare)
                 .map(|_| {
@@ -875,6 +906,7 @@ pub mod tests {
                     store_polynomials_coefficients: false,
                     include_all_preprocessed_columns: false,
                     opt_n_id_to_big_components: None,
+                    raise_min_lifting_to_max_column: false,
                 };
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
@@ -900,14 +932,56 @@ pub mod tests {
                     store_polynomials_coefficients: false,
                     include_all_preprocessed_columns: false,
                     opt_n_id_to_big_components: None,
+                    raise_min_lifting_to_max_column: false,
                 };
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
             }
 
-            /// Exercises the path where `lifting_log_size > pp_log_size`, producing *unsorted*
-            /// preprocessed query positions that the Merkle verifier must sort.
+            /// Exercises `raise_min_lifting_to_max_column`: the mixed config must record the
+            /// maximal committed column log size, and all trees are lifted to that (uniform)
+            /// height.
+            #[test]
+            fn test_prove_verify_raise_min_lifting_to_max_column() {
+                let compiled_program =
+                    get_compiled_cairo_program_path("test_prove_verify_pedersen_builtin");
+                let input = run_and_adapt(
+                    &compiled_program,
+                    ProgramType::Json,
+                    LayoutName::stwo_no_ecop,
+                    None,
+                )
+                .unwrap();
+                let prover_params = ProverParameters {
+                    channel_hash: ChannelHash::Blake2s,
+                    pcs_config: PcsConfig::default(),
+                    preprocessed_trace: PreProcessedTraceVariant::CanonicalSmall,
+                    channel_salt: 0,
+                    store_polynomials_coefficients: false,
+                    include_all_preprocessed_columns: false,
+                    opt_n_id_to_big_components: None,
+                    raise_min_lifting_to_max_column: true,
+                };
+                assert_eq!(prover_params.pcs_config.min_lifting_log_size, 0);
+                let cairo_proof =
+                    prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+
+                let config = cairo_proof.extended_stark_proof.proof.config;
+                let max_log_trace_size = cairo_proof.claim.log_sizes().iter().flatten().fold(
+                    PreProcessedTraceVariant::CanonicalSmall.max_log_trace_size(),
+                    |max, &size| max.max(size),
+                );
+                let max_column_log_size =
+                    max_log_trace_size + std::cmp::max(1, config.fri_config.log_blowup_factor);
+                assert_eq!(config.min_lifting_log_size, max_column_log_size);
+
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
+            }
+
+            /// Exercises the path where the lifting log size exceeds `pp_log_size`, producing
+            /// *unsorted* preprocessed query positions that the Merkle verifier must
+            /// sort.
             ///
             /// `channel_salt = 17` with `n_queries = 1000` is a seed where the folded positions
             /// come out unsorted.
@@ -929,13 +1003,14 @@ pub mod tests {
                     pcs_config: PcsConfig {
                         pow_bits: 10,
                         fri_config: FriConfig::new(0, 1, 1000, 1),
-                        lifting_log_size: None,
+                        min_lifting_log_size: 0,
                     },
                     preprocessed_trace: PreProcessedTraceVariant::CanonicalSmall,
                     channel_salt: 17,
                     store_polynomials_coefficients: false,
                     include_all_preprocessed_columns: false,
                     opt_n_id_to_big_components: None,
+                    raise_min_lifting_to_max_column: false,
                 };
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
@@ -1091,6 +1166,7 @@ pub mod tests {
                     store_polynomials_coefficients: false,
                     include_all_preprocessed_columns: false,
                     opt_n_id_to_big_components: None,
+                    raise_min_lifting_to_max_column: false,
                 };
 
                 // Run poseidon builtin with 15 different instances.
@@ -1162,6 +1238,7 @@ pub mod tests {
                     store_polynomials_coefficients: false,
                     include_all_preprocessed_columns: false,
                     opt_n_id_to_big_components: None,
+                    raise_min_lifting_to_max_column: false,
                 };
 
                 // Run pedersen builtin with 15 different instances.
