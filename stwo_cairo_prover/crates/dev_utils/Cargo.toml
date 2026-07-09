@@ -15,18 +15,13 @@ anyhow.workspace = true
 cairo-air = { path = "../cairo-air", version = "~1.2.2" }
 clap.workspace = true
 serde.workspace = true
-starknet-ff.workspace = true
 sonic-rs.workspace = true
 stwo-cairo-adapter = { path = "../adapter", version = "~1.2.2" }
-stwo-cairo-serialize = { path = "../cairo-serialize", version = "~1.2.2" }
 stwo.workspace = true
 stwo-cairo-prover = { path = "../prover", version = "~1.2.2" }
 tracing-subscriber.workspace = true
-thiserror.workspace = true
 tracing.workspace = true
 log.workspace = true
-regex = "1.11.1"
-num-bigint = "0.4.6"
 bincode = "1.3.3"
 cairo-lang-runner = "=2.15.0"
 cairo-lang-executable = "=2.15.0"
