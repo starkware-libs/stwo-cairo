@@ -94,7 +94,7 @@ mod tests {
             .map(u32x16::from_array)
             .map(PackedUInt32::from_simd);
         let preprocessed_trace = Arc::new(PreProcessedTrace::canonical());
-        let veirfy_bitwise_xor_8_trace_gen =
+        let verify_bitwise_xor_8_trace_gen =
             &verify_bitwise_xor_8::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
         let triple_xor_32_trace_gen = triple_xor_32::ClaimGenerator::new();
         triple_xor_32_trace_gen.add_packed_inputs(&[input], 0);
@@ -108,7 +108,7 @@ mod tests {
 
         // Base trace.
         let (trace, _, interaction_gen) =
-            triple_xor_32_trace_gen.write_trace(veirfy_bitwise_xor_8_trace_gen);
+            triple_xor_32_trace_gen.write_trace(verify_bitwise_xor_8_trace_gen);
         mock_tree_builder.extend_evals(trace.to_evals());
         mock_tree_builder.finalize_interaction();
         let mut mock_tree_builder = mock_commitment_scheme.tree_builder();
