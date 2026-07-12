@@ -13,7 +13,7 @@ pub fn derive_cairo_serialize(input: TokenStream) -> TokenStream {
     // Extract the fields of the struct.
     let fields = match input.data {
         Data::Struct(ref data_struct) => match &data_struct.fields {
-            Fields::Named(ref fields_named) => &fields_named.named,
+            Fields::Named(fields_named) => &fields_named.named,
             Fields::Unnamed(_) | Fields::Unit => {
                 return syn::Error::new_spanned(
                     struct_name,
@@ -64,7 +64,7 @@ pub fn derive_cairo_deserialize(input: TokenStream) -> TokenStream {
     // Extract the fields of the struct.
     let fields = match input.data {
         Data::Struct(ref data_struct) => match &data_struct.fields {
-            Fields::Named(ref fields_named) => &fields_named.named,
+            Fields::Named(fields_named) => &fields_named.named,
             Fields::Unnamed(_) | Fields::Unit => {
                 return syn::Error::new_spanned(
                     struct_name,
