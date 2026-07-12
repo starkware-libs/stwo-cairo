@@ -146,6 +146,8 @@ pub fn verify_circuit(proof: CircuitProof) {
             log_blowup_factor,
         );
 
+    // Mix the circuit hash into the channel.
+    mix_circuit_hash(ref channel, component_log_sizes, log_blowup_factor);
     // Claim and base trace.
     claim.mix_into(ref channel);
     commitment_scheme.commit(trace_commitment, trace_log_sizes, ref channel, log_blowup_factor);
@@ -194,6 +196,30 @@ pub fn verify_circuit(proof: CircuitProof) {
         ref channel,
         SECURITY_BITS,
     );
+}
+
+/// Computes the circuit hash `blake2s(config_words || preprocessed_root)` and mixes it into the
+/// channel.
+#[cfg(not(feature: "poseidon252_verifier"))]
+fn mix_circuit_hash(
+    ref channel: Channel, component_log_sizes: [u32; N_COMPONENTS], log_blowup_factor: u32,
+) {
+    let [c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10] = component_log_sizes;
+    let word0 = log_blowup_factor + c0 * 0x100 + c1 * 0x10000 + c2 * 0x1000000;
+    let word1 = c3 + c4 * 0x100 + c5 * 0x10000 + c6 * 0x1000000;
+    let word2 = c7 + c8 * 0x100 + c9 * 0x10000 + c10 * 0x1000000;
+    let [r0, r1, r2, r3, r4, r5, r6, r7] = preprocessed_root().hash.unbox();
+    let circuit_hash = hash_u32s(
+        array![word0, word1, word2, r0, r1, r2, r3, r4, r5, r6, r7].span(),
+    );
+    channel.mix_commitment(Blake2sHash { hash: circuit_hash });
+}
+
+#[cfg(feature: "poseidon252_verifier")]
+fn mix_circuit_hash(
+    ref channel: Channel, _component_log_sizes: [u32; N_COMPONENTS], _log_blowup_factor: u32,
+) {
+    panic!("the privacy recursive circuit verifier only supports the blake2s hasher")
 }
 
 /// Verifies the claim of the circuit proof.
