@@ -254,7 +254,7 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
+            sum += c.assign(&assignment) * rng.random::<QM31>();
         }
 
         constraints_regression_test_values::ADD_OPCODE_SMALL.assert_debug_eq(&sum);

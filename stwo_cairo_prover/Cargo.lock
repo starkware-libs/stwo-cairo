@@ -621,7 +621,7 @@ dependencies = [
  "log",
  "num-traits",
  "paste",
- "rand 0.8.6",
+ "rand 0.9.4",
  "serde",
  "serde_json",
  "sonic-rs",
@@ -3513,7 +3513,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo"
 version = "2.2.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=960b2529#960b252951a90675acfe68126bc3fabc35bdc1cd"
+source = "git+https://github.com/starkware-libs/stwo?rev=8f9b7be#8f9b7be99de6f8f6f116036da23f5d050945bd8c"
 dependencies = [
  "blake2",
  "blake3",
@@ -3527,7 +3527,7 @@ dependencies = [
  "indexmap",
  "itertools 0.12.1",
  "num-traits",
- "rand 0.8.6",
+ "rand 0.9.4",
  "rayon",
  "serde",
  "sha3 0.11.0",
@@ -3542,7 +3542,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils"
 version = "2.2.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=960b2529#960b252951a90675acfe68126bc3fabc35bdc1cd"
+source = "git+https://github.com/starkware-libs/stwo?rev=8f9b7be#8f9b7be99de6f8f6f116036da23f5d050945bd8c"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -3554,7 +3554,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "2.2.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=960b2529#960b252951a90675acfe68126bc3fabc35bdc1cd"
+source = "git+https://github.com/starkware-libs/stwo?rev=8f9b7be#8f9b7be99de6f8f6f116036da23f5d050945bd8c"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3573,7 +3573,7 @@ dependencies = [
  "crypto-bigint",
  "dashmap",
  "itertools 0.12.1",
- "rand 0.8.6",
+ "rand 0.9.4",
  "rayon",
  "serde",
  "serde_json",
@@ -3590,7 +3590,7 @@ version = "1.2.2"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
- "rand 0.8.6",
+ "rand 0.9.4",
  "rayon",
  "ruint",
  "serde",
@@ -3643,7 +3643,7 @@ dependencies = [
  "indexmap",
  "itertools 0.12.1",
  "num-traits",
- "rand 0.8.6",
+ "rand 0.9.4",
  "rayon",
  "serde",
  "serde_json",
@@ -3695,12 +3695,12 @@ dependencies = [
 [[package]]
 name = "stwo-constraint-framework"
 version = "2.2.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=960b2529#960b252951a90675acfe68126bc3fabc35bdc1cd"
+source = "git+https://github.com/starkware-libs/stwo?rev=8f9b7be#8f9b7be99de6f8f6f116036da23f5d050945bd8c"
 dependencies = [
  "hashbrown 0.15.5",
  "itertools 0.12.1",
  "num-traits",
- "rand 0.8.6",
+ "rand 0.9.4",
  "rayon",
  "stwo",
  "stwo-std-shims",

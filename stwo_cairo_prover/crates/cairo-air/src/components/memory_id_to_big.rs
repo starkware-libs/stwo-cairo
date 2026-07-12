@@ -312,7 +312,7 @@ mod tests {
 
         let mut big_sum = QM31::zero();
         for c in big_expr_eval.constraints {
-            big_sum += c.assign(&big_assignment) * rng.gen::<QM31>();
+            big_sum += c.assign(&big_assignment) * rng.random::<QM31>();
         }
 
         BIG_MEMORY_ID_TO_BIG.assert_debug_eq(&big_sum);
