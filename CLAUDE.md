@@ -22,8 +22,8 @@ All agent behavior is governed by this hierarchy. No exception, no override.
 
 | Layer | Technology | Notes |
 |-------|-----------|-------|
-| Prover language | Rust nightly-2025-06-23 | See `stwo_cairo_prover/rust-toolchain.toml` |
-| Cairo verifier language | Cairo (2024_07 edition) | Scarb 2.15.0, for recursive verification |
+| Prover language | Rust | See `stwo_cairo_prover/rust-toolchain.toml` |
+| Cairo verifier language | Cairo | See `.tool-versions` |
 | Field | Mersenne31 (M31) | CM31, QM31 extension tower. p = 2^31 - 1 |
 | Proof system | Circle STARKs (via [stwo](https://github.com/starkware-libs/stwo)) | FRI-based, circle group C(F_p) |
 | Cairo VM | cairo-vm 3.2.0 | Trace extraction from Cairo CPU execution |
