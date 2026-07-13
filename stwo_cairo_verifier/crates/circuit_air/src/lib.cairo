@@ -26,13 +26,13 @@ use stwo_verifier_utils::blake2s::hash_u32s;
 pub mod circuit_air;
 
 pub mod claims;
-pub mod component_indices;
+pub mod per_component;
 use claims::{
     CircuitClaim, CircuitClaimImpl, CircuitInteractionClaim, CircuitInteractionClaimImpl,
     accumulate_circuit_relation_uses, column_log_sizes_per_tree, derive_component_log_sizes,
     lookup_sum,
 };
-use component_indices::N_COMPONENTS;
+use per_component::PerComponent;
 pub mod components;
 pub mod prelude;
 pub mod preprocessed_columns;
@@ -206,7 +206,7 @@ pub fn verify_circuit(proof: CircuitProof) {
 /// In Cairo we have native `u64` arithmetic, so the accumulator in
 /// `stwo_constraint_framework::accumulate_relation_uses` already sums directly — the check
 /// here is the plain `< P` bound on that accumulated `u64`.
-fn verify_claim(component_log_sizes: [u32; N_COMPONENTS]) {
+fn verify_claim(component_log_sizes: PerComponent<u32>) {
     let mut relation_uses: RelationUsesDict = Default::default();
     accumulate_circuit_relation_uses(component_log_sizes, ref relation_uses);
 

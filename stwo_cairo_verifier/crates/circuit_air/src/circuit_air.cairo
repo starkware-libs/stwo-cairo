@@ -8,10 +8,10 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::verifier::Air;
 use stwo_verifier_core::{ColumnSpan, TreeSpan};
 use crate::claims::CircuitInteractionClaim;
-use crate::component_indices::*;
 use crate::components;
+use crate::per_component::*;
 
-/// Circuit components, in `crate::component_indices` order.
+/// Circuit components, in `crate::per_component` order.
 #[derive(Drop)]
 pub struct CircuitAir {
     pub eq: components::eq::Component,
@@ -30,78 +30,71 @@ pub struct CircuitAir {
 #[generate_trait]
 pub impl CircuitAirNewImpl of CircuitAirNewTrait {
     /// Builds the circuit components. Component log sizes are derived verifier-side (they are
-    /// not part of the claim); `component_log_sizes` is indexed by COMPONENT_IDX. The circuit
+    /// not part of the claim); `component_log_sizes` holds one entry per component. The circuit
     /// is fixed-size, so every component is present.
     fn new(
-        component_log_sizes: [u32; N_COMPONENTS],
+        component_log_sizes: PerComponent<u32>,
         common_lookup_elements: @CommonLookupElements,
         interaction_claim: @CircuitInteractionClaim,
     ) -> CircuitAir {
-        let log_sizes = component_log_sizes.span();
-        // Each component's interaction claim is its single `claimed_sum`, taken from the
-        // shared array by COMPONENT_IDX.
-        let claimed_sums = interaction_claim.claimed_sum.span();
+        // Each component's interaction claim is its single `claimed_sum`, and its log size is the
+        // matching field of `component_log_sizes`.
+        let claimed_sums = interaction_claim.claimed_sum;
 
         CircuitAir {
             eq: components::eq::NewComponentImpl::new(
-                @components::eq::Claim { log_size: *log_sizes.at(EQ_COMPONENT_IDX) },
-                *claimed_sums.at(EQ_COMPONENT_IDX),
+                @components::eq::Claim { log_size: component_log_sizes.eq },
+                *claimed_sums.eq,
                 common_lookup_elements,
             ),
             qm31_ops: components::qm31_ops::NewComponentImpl::new(
-                @components::qm31_ops::Claim { log_size: *log_sizes.at(QM31_OPS_COMPONENT_IDX) },
-                *claimed_sums.at(QM31_OPS_COMPONENT_IDX),
+                @components::qm31_ops::Claim { log_size: component_log_sizes.qm31_ops },
+                *claimed_sums.qm31_ops,
                 common_lookup_elements,
             ),
             triple_xor: components::triple_xor::NewComponentImpl::new(
-                @components::triple_xor::Claim {
-                    log_size: *log_sizes.at(TRIPLE_XOR_COMPONENT_IDX),
-                },
-                *claimed_sums.at(TRIPLE_XOR_COMPONENT_IDX),
+                @components::triple_xor::Claim { log_size: component_log_sizes.triple_xor },
+                *claimed_sums.triple_xor,
                 common_lookup_elements,
             ),
             m_31_to_u_32: components::m_31_to_u_32::NewComponentImpl::new(
-                @components::m_31_to_u_32::Claim {
-                    log_size: *log_sizes.at(M_31_TO_U_32_COMPONENT_IDX),
-                },
-                *claimed_sums.at(M_31_TO_U_32_COMPONENT_IDX),
+                @components::m_31_to_u_32::Claim { log_size: component_log_sizes.m_31_to_u_32 },
+                *claimed_sums.m_31_to_u_32,
                 common_lookup_elements,
             ),
             blake_g_gate: components::blake_g_gate::NewComponentImpl::new(
-                @components::blake_g_gate::Claim {
-                    log_size: *log_sizes.at(BLAKE_G_GATE_COMPONENT_IDX),
-                },
-                *claimed_sums.at(BLAKE_G_GATE_COMPONENT_IDX),
+                @components::blake_g_gate::Claim { log_size: component_log_sizes.blake_g_gate },
+                *claimed_sums.blake_g_gate,
                 common_lookup_elements,
             ),
             verify_bitwise_xor_8: components::verify_bitwise_xor_8::NewComponentImpl::new(
                 @components::verify_bitwise_xor_8::Claim {},
-                *claimed_sums.at(VERIFY_BITWISE_XOR_8_COMPONENT_IDX),
+                *claimed_sums.verify_bitwise_xor_8,
                 common_lookup_elements,
             ),
             verify_bitwise_xor_12: components::verify_bitwise_xor_12::NewComponentImpl::new(
                 @components::verify_bitwise_xor_12::Claim {},
-                *claimed_sums.at(VERIFY_BITWISE_XOR_12_COMPONENT_IDX),
+                *claimed_sums.verify_bitwise_xor_12,
                 common_lookup_elements,
             ),
             verify_bitwise_xor_4: components::verify_bitwise_xor_4::NewComponentImpl::new(
                 @components::verify_bitwise_xor_4::Claim {},
-                *claimed_sums.at(VERIFY_BITWISE_XOR_4_COMPONENT_IDX),
+                *claimed_sums.verify_bitwise_xor_4,
                 common_lookup_elements,
             ),
             verify_bitwise_xor_7: components::verify_bitwise_xor_7::NewComponentImpl::new(
                 @components::verify_bitwise_xor_7::Claim {},
-                *claimed_sums.at(VERIFY_BITWISE_XOR_7_COMPONENT_IDX),
+                *claimed_sums.verify_bitwise_xor_7,
                 common_lookup_elements,
             ),
             verify_bitwise_xor_9: components::verify_bitwise_xor_9::NewComponentImpl::new(
                 @components::verify_bitwise_xor_9::Claim {},
-                *claimed_sums.at(VERIFY_BITWISE_XOR_9_COMPONENT_IDX),
+                *claimed_sums.verify_bitwise_xor_9,
                 common_lookup_elements,
             ),
             range_check_16: components::range_check_16::NewComponentImpl::new(
                 @components::range_check_16::Claim {},
-                *claimed_sums.at(RANGE_CHECK_16_COMPONENT_IDX),
+                *claimed_sums.range_check_16,
                 common_lookup_elements,
             ),
         }
