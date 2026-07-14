@@ -749,27 +749,27 @@ impl CairoClaimGenerator {
         let mut ret_opcode_result = None;
 
         scope(|s| {
-            if let Some(gen) = self.add_opcode {
+            if let Some(generator) = self.add_opcode {
                 s.spawn(|_| {
-                    add_opcode_result = Some(gen.write_trace(
+                    add_opcode_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
                     ));
                 });
             }
-            if let Some(gen) = self.add_opcode_small {
+            if let Some(generator) = self.add_opcode_small {
                 s.spawn(|_| {
-                    add_opcode_small_result = Some(gen.write_trace(
+                    add_opcode_small_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
                     ));
                 });
             }
-            if let Some(gen) = self.add_ap_opcode {
+            if let Some(generator) = self.add_ap_opcode {
                 s.spawn(|_| {
-                    add_ap_opcode_result = Some(gen.write_trace(
+                    add_ap_opcode_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
@@ -778,36 +778,36 @@ impl CairoClaimGenerator {
                     ));
                 });
             }
-            if let Some(gen) = self.assert_eq_opcode {
+            if let Some(generator) = self.assert_eq_opcode {
                 s.spawn(|_| {
-                    assert_eq_opcode_result = Some(gen.write_trace(
+                    assert_eq_opcode_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
                     ));
                 });
             }
-            if let Some(gen) = self.assert_eq_opcode_imm {
+            if let Some(generator) = self.assert_eq_opcode_imm {
                 s.spawn(|_| {
-                    assert_eq_opcode_imm_result = Some(gen.write_trace(
+                    assert_eq_opcode_imm_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
                     ));
                 });
             }
-            if let Some(gen) = self.assert_eq_opcode_double_deref {
+            if let Some(generator) = self.assert_eq_opcode_double_deref {
                 s.spawn(|_| {
-                    assert_eq_opcode_double_deref_result = Some(gen.write_trace(
+                    assert_eq_opcode_double_deref_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
                     ));
                 });
             }
-            if let Some(gen) = self.blake_compress_opcode {
+            if let Some(generator) = self.blake_compress_opcode {
                 s.spawn(|_| {
-                    blake_compress_opcode_result = Some(gen.write_trace(
+                    blake_compress_opcode_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
@@ -818,27 +818,27 @@ impl CairoClaimGenerator {
                     ));
                 });
             }
-            if let Some(gen) = self.call_opcode_abs {
+            if let Some(generator) = self.call_opcode_abs {
                 s.spawn(|_| {
-                    call_opcode_abs_result = Some(gen.write_trace(
+                    call_opcode_abs_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
                     ));
                 });
             }
-            if let Some(gen) = self.call_opcode_rel_imm {
+            if let Some(generator) = self.call_opcode_rel_imm {
                 s.spawn(|_| {
-                    call_opcode_rel_imm_result = Some(gen.write_trace(
+                    call_opcode_rel_imm_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
                     ));
                 });
             }
-            if let Some(gen) = self.generic_opcode {
+            if let Some(generator) = self.generic_opcode {
                 s.spawn(|_| {
-                    generic_opcode_result = Some(gen.write_trace(
+                    generic_opcode_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
@@ -849,63 +849,63 @@ impl CairoClaimGenerator {
                     ));
                 });
             }
-            if let Some(gen) = self.jnz_opcode_non_taken {
+            if let Some(generator) = self.jnz_opcode_non_taken {
                 s.spawn(|_| {
-                    jnz_opcode_non_taken_result = Some(gen.write_trace(
+                    jnz_opcode_non_taken_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
                     ));
                 });
             }
-            if let Some(gen) = self.jnz_opcode_taken {
+            if let Some(generator) = self.jnz_opcode_taken {
                 s.spawn(|_| {
-                    jnz_opcode_taken_result = Some(gen.write_trace(
+                    jnz_opcode_taken_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
                     ));
                 });
             }
-            if let Some(gen) = self.jump_opcode_abs {
+            if let Some(generator) = self.jump_opcode_abs {
                 s.spawn(|_| {
-                    jump_opcode_abs_result = Some(gen.write_trace(
+                    jump_opcode_abs_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
                     ));
                 });
             }
-            if let Some(gen) = self.jump_opcode_double_deref {
+            if let Some(generator) = self.jump_opcode_double_deref {
                 s.spawn(|_| {
-                    jump_opcode_double_deref_result = Some(gen.write_trace(
+                    jump_opcode_double_deref_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
                     ));
                 });
             }
-            if let Some(gen) = self.jump_opcode_rel {
+            if let Some(generator) = self.jump_opcode_rel {
                 s.spawn(|_| {
-                    jump_opcode_rel_result = Some(gen.write_trace(
+                    jump_opcode_rel_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
                     ));
                 });
             }
-            if let Some(gen) = self.jump_opcode_rel_imm {
+            if let Some(generator) = self.jump_opcode_rel_imm {
                 s.spawn(|_| {
-                    jump_opcode_rel_imm_result = Some(gen.write_trace(
+                    jump_opcode_rel_imm_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
                     ));
                 });
             }
-            if let Some(gen) = self.mul_opcode {
+            if let Some(generator) = self.mul_opcode {
                 s.spawn(|_| {
-                    mul_opcode_result = Some(gen.write_trace(
+                    mul_opcode_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
@@ -913,9 +913,9 @@ impl CairoClaimGenerator {
                     ));
                 });
             }
-            if let Some(gen) = self.mul_opcode_small {
+            if let Some(generator) = self.mul_opcode_small {
                 s.spawn(|_| {
-                    mul_opcode_small_result = Some(gen.write_trace(
+                    mul_opcode_small_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
@@ -923,9 +923,9 @@ impl CairoClaimGenerator {
                     ));
                 });
             }
-            if let Some(gen) = self.qm_31_add_mul_opcode {
+            if let Some(generator) = self.qm_31_add_mul_opcode {
                 s.spawn(|_| {
-                    qm_31_add_mul_opcode_result = Some(gen.write_trace(
+                    qm_31_add_mul_opcode_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
@@ -933,9 +933,9 @@ impl CairoClaimGenerator {
                     ));
                 });
             }
-            if let Some(gen) = self.ret_opcode {
+            if let Some(generator) = self.ret_opcode {
                 s.spawn(|_| {
-                    ret_opcode_result = Some(gen.write_trace(
+                    ret_opcode_result = Some(generator.write_trace(
                         self.memory_address_to_id.as_ref().unwrap(),
                         self.memory_id_to_big.as_ref().unwrap(),
                         self.verify_instruction.as_ref().unwrap(),
@@ -1075,8 +1075,8 @@ impl CairoClaimGenerator {
 
         let (verify_instruction_claim, verify_instruction_interaction_gen) = self
             .verify_instruction
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.range_check_7_2_5.as_ref().unwrap(),
                     self.range_check_4_3.as_ref().unwrap(),
                     self.memory_address_to_id.as_ref().unwrap(),
@@ -1088,8 +1088,8 @@ impl CairoClaimGenerator {
             .unzip();
         let (blake_round_claim, blake_round_interaction_gen) = self
             .blake_round
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.blake_round_sigma.as_ref().unwrap(),
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.memory_id_to_big.as_ref().unwrap(),
@@ -1102,8 +1102,8 @@ impl CairoClaimGenerator {
             .unzip();
         let (blake_g_claim, blake_g_interaction_gen) = self
             .blake_g
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.verify_bitwise_xor_8.as_ref().unwrap(),
                     self.verify_bitwise_xor_12.as_ref().unwrap(),
                     self.verify_bitwise_xor_4.as_ref().unwrap(),
@@ -1116,33 +1116,33 @@ impl CairoClaimGenerator {
             .unzip();
         let (blake_round_sigma_claim, blake_round_sigma_interaction_gen) = self
             .blake_round_sigma
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (triple_xor_32_claim, triple_xor_32_interaction_gen) = self
             .triple_xor_32
-            .map(|gen| {
+            .map(|generator| {
                 let (trace, claim, interaction_gen) =
-                    gen.write_trace(self.verify_bitwise_xor_8.as_ref().unwrap());
+                    generator.write_trace(self.verify_bitwise_xor_8.as_ref().unwrap());
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (verify_bitwise_xor_12_claim, verify_bitwise_xor_12_interaction_gen) = self
             .verify_bitwise_xor_12
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace);
                 (claim, interaction_gen)
             })
             .unzip();
         let (add_mod_builtin_claim, add_mod_builtin_interaction_gen) = self
             .add_mod_builtin
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.memory_id_to_big.as_ref().unwrap(),
                 );
@@ -1152,8 +1152,8 @@ impl CairoClaimGenerator {
             .unzip();
         let (bitwise_builtin_claim, bitwise_builtin_interaction_gen) = self
             .bitwise_builtin
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.memory_id_to_big.as_ref().unwrap(),
                     self.verify_bitwise_xor_9.as_ref().unwrap(),
@@ -1165,8 +1165,8 @@ impl CairoClaimGenerator {
             .unzip();
         let (mul_mod_builtin_claim, mul_mod_builtin_interaction_gen) = self
             .mul_mod_builtin
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.memory_id_to_big.as_ref().unwrap(),
                     self.range_check_12.as_ref().unwrap(),
@@ -1179,8 +1179,8 @@ impl CairoClaimGenerator {
             .unzip();
         let (pedersen_builtin_claim, pedersen_builtin_interaction_gen) = self
             .pedersen_builtin
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.pedersen_aggregator_window_bits_18.as_ref().unwrap(),
                 );
@@ -1193,8 +1193,8 @@ impl CairoClaimGenerator {
             pedersen_builtin_narrow_windows_interaction_gen,
         ) = self
             .pedersen_builtin_narrow_windows
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.pedersen_aggregator_window_bits_9.as_ref().unwrap(),
                 );
@@ -1204,8 +1204,8 @@ impl CairoClaimGenerator {
             .unzip();
         let (poseidon_builtin_claim, poseidon_builtin_interaction_gen) = self
             .poseidon_builtin
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.poseidon_aggregator.as_ref().unwrap(),
                 );
@@ -1215,8 +1215,8 @@ impl CairoClaimGenerator {
             .unzip();
         let (range_check96_builtin_claim, range_check96_builtin_interaction_gen) = self
             .range_check96_builtin
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.memory_id_to_big.as_ref().unwrap(),
                     self.range_check_6.as_ref().unwrap(),
@@ -1227,8 +1227,8 @@ impl CairoClaimGenerator {
             .unzip();
         let (range_check_builtin_claim, range_check_builtin_interaction_gen) = self
             .range_check_builtin
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.memory_id_to_big.as_ref().unwrap(),
                 );
@@ -1238,8 +1238,8 @@ impl CairoClaimGenerator {
             .unzip();
         let (ec_op_builtin_claim, ec_op_builtin_interaction_gen) = self
             .ec_op_builtin
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.memory_address_to_id.as_ref().unwrap(),
                     self.memory_id_to_big.as_ref().unwrap(),
                     self.range_check_8.as_ref().unwrap(),
@@ -1251,8 +1251,8 @@ impl CairoClaimGenerator {
             .unzip();
         let (partial_ec_mul_generic_claim, partial_ec_mul_generic_interaction_gen) = self
             .partial_ec_mul_generic
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.range_check_8.as_ref().unwrap(),
                     self.range_check_9_9.as_ref().unwrap(),
                     self.range_check_20.as_ref().unwrap(),
@@ -1266,8 +1266,8 @@ impl CairoClaimGenerator {
             pedersen_aggregator_window_bits_18_interaction_gen,
         ) = self
             .pedersen_aggregator_window_bits_18
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.memory_id_to_big.as_ref().unwrap(),
                     self.range_check_8.as_ref().unwrap(),
                     self.partial_ec_mul_window_bits_18.as_ref().unwrap(),
@@ -1278,8 +1278,8 @@ impl CairoClaimGenerator {
             .unzip();
         let (partial_ec_mul_window_bits_18_claim, partial_ec_mul_window_bits_18_interaction_gen) =
             self.partial_ec_mul_window_bits_18
-                .map(|gen| {
-                    let (trace, claim, interaction_gen) = gen.write_trace(
+                .map(|generator| {
+                    let (trace, claim, interaction_gen) = generator.write_trace(
                         self.pedersen_points_table_window_bits_18.as_ref().unwrap(),
                         self.range_check_9_9.as_ref().unwrap(),
                         self.range_check_20.as_ref().unwrap(),
@@ -1293,8 +1293,8 @@ impl CairoClaimGenerator {
             pedersen_points_table_window_bits_18_interaction_gen,
         ) = self
             .pedersen_points_table_window_bits_18
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
@@ -1304,8 +1304,8 @@ impl CairoClaimGenerator {
             pedersen_aggregator_window_bits_9_interaction_gen,
         ) = self
             .pedersen_aggregator_window_bits_9
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.memory_id_to_big.as_ref().unwrap(),
                     self.range_check_8.as_ref().unwrap(),
                     self.partial_ec_mul_window_bits_9.as_ref().unwrap(),
@@ -1316,8 +1316,8 @@ impl CairoClaimGenerator {
             .unzip();
         let (partial_ec_mul_window_bits_9_claim, partial_ec_mul_window_bits_9_interaction_gen) =
             self.partial_ec_mul_window_bits_9
-                .map(|gen| {
-                    let (trace, claim, interaction_gen) = gen.write_trace(
+                .map(|generator| {
+                    let (trace, claim, interaction_gen) = generator.write_trace(
                         self.pedersen_points_table_window_bits_9.as_ref().unwrap(),
                         self.range_check_9_9.as_ref().unwrap(),
                         self.range_check_20.as_ref().unwrap(),
@@ -1331,16 +1331,16 @@ impl CairoClaimGenerator {
             pedersen_points_table_window_bits_9_interaction_gen,
         ) = self
             .pedersen_points_table_window_bits_9
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (poseidon_aggregator_claim, poseidon_aggregator_interaction_gen) = self
             .poseidon_aggregator
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.memory_id_to_big.as_ref().unwrap(),
                     self.poseidon_full_round_chain.as_ref().unwrap(),
                     self.range_check_252_width_27.as_ref().unwrap(),
@@ -1359,8 +1359,8 @@ impl CairoClaimGenerator {
             poseidon_3_partial_rounds_chain_interaction_gen,
         ) = self
             .poseidon_3_partial_rounds_chain
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.poseidon_round_keys.as_ref().unwrap(),
                     self.cube_252.as_ref().unwrap(),
                     self.range_check_4_4_4_4.as_ref().unwrap(),
@@ -1373,8 +1373,8 @@ impl CairoClaimGenerator {
             .unzip();
         let (poseidon_full_round_chain_claim, poseidon_full_round_chain_interaction_gen) = self
             .poseidon_full_round_chain
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.cube_252.as_ref().unwrap(),
                     self.poseidon_round_keys.as_ref().unwrap(),
                     self.range_check_3_3_3_3_3.as_ref().unwrap(),
@@ -1385,8 +1385,8 @@ impl CairoClaimGenerator {
             .unzip();
         let (cube_252_claim, cube_252_interaction_gen) = self
             .cube_252
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.range_check_9_9.as_ref().unwrap(),
                     self.range_check_20.as_ref().unwrap(),
                 );
@@ -1396,16 +1396,16 @@ impl CairoClaimGenerator {
             .unzip();
         let (poseidon_round_keys_claim, poseidon_round_keys_interaction_gen) = self
             .poseidon_round_keys
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (range_check_252_width_27_claim, range_check_252_width_27_interaction_gen) = self
             .range_check_252_width_27
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace(
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace(
                     self.range_check_9_9.as_ref().unwrap(),
                     self.range_check_18.as_ref().unwrap(),
                 );
@@ -1415,17 +1415,17 @@ impl CairoClaimGenerator {
             .unzip();
         let (memory_address_to_id_claim, memory_address_to_id_interaction_gen) = self
             .memory_address_to_id
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace);
                 (claim, interaction_gen)
             })
             .unzip();
         let (memory_id_to_big_claim, memory_id_to_big_interaction_gen) = self
             .memory_id_to_big
-            .map(|gen| {
+            .map(|generator| {
                 const LOG_MAX_BIG_SIZE: u32 = MAX_SEQUENCE_LOG_SIZE;
-                let (big_traces, small_trace, claim, interaction_gen) = gen.write_trace(
+                let (big_traces, small_trace, claim, interaction_gen) = generator.write_trace(
                     self.range_check_9_9.as_ref().unwrap(),
                     LOG_MAX_BIG_SIZE,
                     opt_n_id_to_big_components,
@@ -1439,136 +1439,136 @@ impl CairoClaimGenerator {
             .unzip();
         let (range_check_6_claim, range_check_6_interaction_gen) = self
             .range_check_6
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (range_check_8_claim, range_check_8_interaction_gen) = self
             .range_check_8
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (range_check_11_claim, range_check_11_interaction_gen) = self
             .range_check_11
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (range_check_12_claim, range_check_12_interaction_gen) = self
             .range_check_12
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (range_check_18_claim, range_check_18_interaction_gen) = self
             .range_check_18
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (range_check_20_claim, range_check_20_interaction_gen) = self
             .range_check_20
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (range_check_4_3_claim, range_check_4_3_interaction_gen) = self
             .range_check_4_3
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (range_check_4_4_claim, range_check_4_4_interaction_gen) = self
             .range_check_4_4
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (range_check_9_9_claim, range_check_9_9_interaction_gen) = self
             .range_check_9_9
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (range_check_7_2_5_claim, range_check_7_2_5_interaction_gen) = self
             .range_check_7_2_5
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (range_check_3_6_6_3_claim, range_check_3_6_6_3_interaction_gen) = self
             .range_check_3_6_6_3
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (range_check_4_4_4_4_claim, range_check_4_4_4_4_interaction_gen) = self
             .range_check_4_4_4_4
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (range_check_3_3_3_3_3_claim, range_check_3_3_3_3_3_interaction_gen) = self
             .range_check_3_3_3_3_3
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (verify_bitwise_xor_4_claim, verify_bitwise_xor_4_interaction_gen) = self
             .verify_bitwise_xor_4
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (verify_bitwise_xor_7_claim, verify_bitwise_xor_7_interaction_gen) = self
             .verify_bitwise_xor_7
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (verify_bitwise_xor_8_claim, verify_bitwise_xor_8_interaction_gen) = self
             .verify_bitwise_xor_8
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
             .unzip();
         let (verify_bitwise_xor_9_claim, verify_bitwise_xor_9_interaction_gen) = self
             .verify_bitwise_xor_9
-            .map(|gen| {
-                let (trace, claim, interaction_gen) = gen.write_trace();
+            .map(|generator| {
+                let (trace, claim, interaction_gen) = generator.write_trace();
                 evals.extend(trace.to_evals());
                 (claim, interaction_gen)
             })
@@ -1883,400 +1883,406 @@ impl CairoInteractionClaimGenerator {
         let mut verify_bitwise_xor_9_result = None;
 
         scope(|s| {
-            if let Some(gen) = self.add_opcode {
+            if let Some(generator) = self.add_opcode {
                 s.spawn(|_| {
-                    add_opcode_result = Some(gen.write_interaction_trace(common_lookup_elements));
+                    add_opcode_result =
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.add_opcode_small {
+            if let Some(generator) = self.add_opcode_small {
                 s.spawn(|_| {
                     add_opcode_small_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.add_ap_opcode {
+            if let Some(generator) = self.add_ap_opcode {
                 s.spawn(|_| {
                     add_ap_opcode_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.assert_eq_opcode {
+            if let Some(generator) = self.assert_eq_opcode {
                 s.spawn(|_| {
                     assert_eq_opcode_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.assert_eq_opcode_imm {
+            if let Some(generator) = self.assert_eq_opcode_imm {
                 s.spawn(|_| {
                     assert_eq_opcode_imm_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.assert_eq_opcode_double_deref {
+            if let Some(generator) = self.assert_eq_opcode_double_deref {
                 s.spawn(|_| {
                     assert_eq_opcode_double_deref_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.blake_compress_opcode {
+            if let Some(generator) = self.blake_compress_opcode {
                 s.spawn(|_| {
                     blake_compress_opcode_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.call_opcode_abs {
+            if let Some(generator) = self.call_opcode_abs {
                 s.spawn(|_| {
                     call_opcode_abs_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.call_opcode_rel_imm {
+            if let Some(generator) = self.call_opcode_rel_imm {
                 s.spawn(|_| {
                     call_opcode_rel_imm_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.generic_opcode {
+            if let Some(generator) = self.generic_opcode {
                 s.spawn(|_| {
                     generic_opcode_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.jnz_opcode_non_taken {
+            if let Some(generator) = self.jnz_opcode_non_taken {
                 s.spawn(|_| {
                     jnz_opcode_non_taken_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.jnz_opcode_taken {
+            if let Some(generator) = self.jnz_opcode_taken {
                 s.spawn(|_| {
                     jnz_opcode_taken_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.jump_opcode_abs {
+            if let Some(generator) = self.jump_opcode_abs {
                 s.spawn(|_| {
                     jump_opcode_abs_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.jump_opcode_double_deref {
+            if let Some(generator) = self.jump_opcode_double_deref {
                 s.spawn(|_| {
                     jump_opcode_double_deref_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.jump_opcode_rel {
+            if let Some(generator) = self.jump_opcode_rel {
                 s.spawn(|_| {
                     jump_opcode_rel_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.jump_opcode_rel_imm {
+            if let Some(generator) = self.jump_opcode_rel_imm {
                 s.spawn(|_| {
                     jump_opcode_rel_imm_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.mul_opcode {
+            if let Some(generator) = self.mul_opcode {
                 s.spawn(|_| {
-                    mul_opcode_result = Some(gen.write_interaction_trace(common_lookup_elements));
+                    mul_opcode_result =
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.mul_opcode_small {
+            if let Some(generator) = self.mul_opcode_small {
                 s.spawn(|_| {
                     mul_opcode_small_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.qm_31_add_mul_opcode {
+            if let Some(generator) = self.qm_31_add_mul_opcode {
                 s.spawn(|_| {
                     qm_31_add_mul_opcode_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.ret_opcode {
+            if let Some(generator) = self.ret_opcode {
                 s.spawn(|_| {
-                    ret_opcode_result = Some(gen.write_interaction_trace(common_lookup_elements));
+                    ret_opcode_result =
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.verify_instruction {
+            if let Some(generator) = self.verify_instruction {
                 s.spawn(|_| {
                     verify_instruction_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.blake_round {
+            if let Some(generator) = self.blake_round {
                 s.spawn(|_| {
-                    blake_round_result = Some(gen.write_interaction_trace(common_lookup_elements));
+                    blake_round_result =
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.blake_g {
+            if let Some(generator) = self.blake_g {
                 s.spawn(|_| {
-                    blake_g_result = Some(gen.write_interaction_trace(common_lookup_elements));
+                    blake_g_result =
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.blake_round_sigma {
+            if let Some(generator) = self.blake_round_sigma {
                 s.spawn(|_| {
                     blake_round_sigma_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.triple_xor_32 {
+            if let Some(generator) = self.triple_xor_32 {
                 s.spawn(|_| {
                     triple_xor_32_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.verify_bitwise_xor_12 {
+            if let Some(generator) = self.verify_bitwise_xor_12 {
                 s.spawn(|_| {
                     verify_bitwise_xor_12_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.add_mod_builtin {
+            if let Some(generator) = self.add_mod_builtin {
                 s.spawn(|_| {
                     add_mod_builtin_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.bitwise_builtin {
+            if let Some(generator) = self.bitwise_builtin {
                 s.spawn(|_| {
                     bitwise_builtin_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.mul_mod_builtin {
+            if let Some(generator) = self.mul_mod_builtin {
                 s.spawn(|_| {
                     mul_mod_builtin_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.pedersen_builtin {
+            if let Some(generator) = self.pedersen_builtin {
                 s.spawn(|_| {
                     pedersen_builtin_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.pedersen_builtin_narrow_windows {
+            if let Some(generator) = self.pedersen_builtin_narrow_windows {
                 s.spawn(|_| {
                     pedersen_builtin_narrow_windows_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.poseidon_builtin {
+            if let Some(generator) = self.poseidon_builtin {
                 s.spawn(|_| {
                     poseidon_builtin_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.range_check96_builtin {
+            if let Some(generator) = self.range_check96_builtin {
                 s.spawn(|_| {
                     range_check96_builtin_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.range_check_builtin {
+            if let Some(generator) = self.range_check_builtin {
                 s.spawn(|_| {
                     range_check_builtin_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.ec_op_builtin {
+            if let Some(generator) = self.ec_op_builtin {
                 s.spawn(|_| {
                     ec_op_builtin_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.partial_ec_mul_generic {
+            if let Some(generator) = self.partial_ec_mul_generic {
                 s.spawn(|_| {
                     partial_ec_mul_generic_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.pedersen_aggregator_window_bits_18 {
+            if let Some(generator) = self.pedersen_aggregator_window_bits_18 {
                 s.spawn(|_| {
                     pedersen_aggregator_window_bits_18_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.partial_ec_mul_window_bits_18 {
+            if let Some(generator) = self.partial_ec_mul_window_bits_18 {
                 s.spawn(|_| {
                     partial_ec_mul_window_bits_18_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.pedersen_points_table_window_bits_18 {
+            if let Some(generator) = self.pedersen_points_table_window_bits_18 {
                 s.spawn(|_| {
                     pedersen_points_table_window_bits_18_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.pedersen_aggregator_window_bits_9 {
+            if let Some(generator) = self.pedersen_aggregator_window_bits_9 {
                 s.spawn(|_| {
                     pedersen_aggregator_window_bits_9_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.partial_ec_mul_window_bits_9 {
+            if let Some(generator) = self.partial_ec_mul_window_bits_9 {
                 s.spawn(|_| {
                     partial_ec_mul_window_bits_9_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.pedersen_points_table_window_bits_9 {
+            if let Some(generator) = self.pedersen_points_table_window_bits_9 {
                 s.spawn(|_| {
                     pedersen_points_table_window_bits_9_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.poseidon_aggregator {
+            if let Some(generator) = self.poseidon_aggregator {
                 s.spawn(|_| {
                     poseidon_aggregator_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.poseidon_3_partial_rounds_chain {
+            if let Some(generator) = self.poseidon_3_partial_rounds_chain {
                 s.spawn(|_| {
                     poseidon_3_partial_rounds_chain_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.poseidon_full_round_chain {
+            if let Some(generator) = self.poseidon_full_round_chain {
                 s.spawn(|_| {
                     poseidon_full_round_chain_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.cube_252 {
+            if let Some(generator) = self.cube_252 {
                 s.spawn(|_| {
-                    cube_252_result = Some(gen.write_interaction_trace(common_lookup_elements));
+                    cube_252_result =
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.poseidon_round_keys {
+            if let Some(generator) = self.poseidon_round_keys {
                 s.spawn(|_| {
                     poseidon_round_keys_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.range_check_252_width_27 {
+            if let Some(generator) = self.range_check_252_width_27 {
                 s.spawn(|_| {
                     range_check_252_width_27_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.memory_address_to_id {
+            if let Some(generator) = self.memory_address_to_id {
                 s.spawn(|_| {
                     memory_address_to_id_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.memory_id_to_big {
+            if let Some(generator) = self.memory_id_to_big {
                 s.spawn(|_| {
                     memory_id_to_big_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.range_check_6 {
+            if let Some(generator) = self.range_check_6 {
                 s.spawn(|_| {
                     range_check_6_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.range_check_8 {
+            if let Some(generator) = self.range_check_8 {
                 s.spawn(|_| {
                     range_check_8_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.range_check_11 {
+            if let Some(generator) = self.range_check_11 {
                 s.spawn(|_| {
                     range_check_11_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.range_check_12 {
+            if let Some(generator) = self.range_check_12 {
                 s.spawn(|_| {
                     range_check_12_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.range_check_18 {
+            if let Some(generator) = self.range_check_18 {
                 s.spawn(|_| {
                     range_check_18_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.range_check_20 {
+            if let Some(generator) = self.range_check_20 {
                 s.spawn(|_| {
                     range_check_20_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.range_check_4_3 {
+            if let Some(generator) = self.range_check_4_3 {
                 s.spawn(|_| {
                     range_check_4_3_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.range_check_4_4 {
+            if let Some(generator) = self.range_check_4_4 {
                 s.spawn(|_| {
                     range_check_4_4_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.range_check_9_9 {
+            if let Some(generator) = self.range_check_9_9 {
                 s.spawn(|_| {
                     range_check_9_9_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.range_check_7_2_5 {
+            if let Some(generator) = self.range_check_7_2_5 {
                 s.spawn(|_| {
                     range_check_7_2_5_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.range_check_3_6_6_3 {
+            if let Some(generator) = self.range_check_3_6_6_3 {
                 s.spawn(|_| {
                     range_check_3_6_6_3_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.range_check_4_4_4_4 {
+            if let Some(generator) = self.range_check_4_4_4_4 {
                 s.spawn(|_| {
                     range_check_4_4_4_4_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.range_check_3_3_3_3_3 {
+            if let Some(generator) = self.range_check_3_3_3_3_3 {
                 s.spawn(|_| {
                     range_check_3_3_3_3_3_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.verify_bitwise_xor_4 {
+            if let Some(generator) = self.verify_bitwise_xor_4 {
                 s.spawn(|_| {
                     verify_bitwise_xor_4_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.verify_bitwise_xor_7 {
+            if let Some(generator) = self.verify_bitwise_xor_7 {
                 s.spawn(|_| {
                     verify_bitwise_xor_7_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.verify_bitwise_xor_8 {
+            if let Some(generator) = self.verify_bitwise_xor_8 {
                 s.spawn(|_| {
                     verify_bitwise_xor_8_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
-            if let Some(gen) = self.verify_bitwise_xor_9 {
+            if let Some(generator) = self.verify_bitwise_xor_9 {
                 s.spawn(|_| {
                     verify_bitwise_xor_9_result =
-                        Some(gen.write_interaction_trace(common_lookup_elements));
+                        Some(generator.write_interaction_trace(common_lookup_elements));
                 });
             }
         });

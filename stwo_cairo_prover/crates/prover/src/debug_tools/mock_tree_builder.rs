@@ -90,7 +90,7 @@ mod tests {
     #[test]
     fn test_mock_commitment_scheme() {
         let mut rng = SmallRng::seed_from_u64(0);
-        let input = array::from_fn(|_| array::from_fn(|_| rng.gen()))
+        let input = array::from_fn(|_| array::from_fn(|_| rng.random()))
             .map(u32x16::from_array)
             .map(PackedUInt32::from_simd);
         let preprocessed_trace = Arc::new(PreProcessedTrace::canonical());

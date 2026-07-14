@@ -941,14 +941,14 @@ mod tests {
         let eval = Eval {
             claim: Claim { log_size: 4 },
             common_lookup_elements: relations::CommonLookupElements::dummy(),
-            ec_op_builtin_segment_start: rng.r#gen::<u32>(),
+            ec_op_builtin_segment_start: rng.random::<u32>(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.r#gen::<QM31>();
+            sum += c.assign(&assignment) * rng.random::<QM31>();
         }
 
         constraints_regression_test_values::EC_OP_BUILTIN.assert_debug_eq(&sum);
