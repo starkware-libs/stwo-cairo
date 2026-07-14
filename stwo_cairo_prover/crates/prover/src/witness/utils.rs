@@ -333,7 +333,7 @@ mod tests {
 
         let multiplicity_column = super::AtomicMultiplicityColumn::new(cpu_length);
         (0..10 * N_LANES).for_each(|_| {
-            let addr = rng.gen_range(0..cpu_length as u32);
+            let addr = rng.random_range(0..cpu_length as u32);
             multiplicity_column.increase_at(addr);
         });
         let actual_length = multiplicity_column.into_simd_vec().len();

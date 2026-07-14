@@ -683,10 +683,10 @@ mod tests {
             ..Default::default()
         });
         for i in 1..n_values {
-            mem.set(i, MemoryValue::F252(rng.gen()));
+            mem.set(i, MemoryValue::F252(rng.random()));
         }
         for i in n_values..n_values * 2 {
-            mem.set(i, MemoryValue::Small(rng.gen()));
+            mem.set(i, MemoryValue::Small(rng.random()));
         }
         let memory = Arc::new(mem.build().0);
 
@@ -761,10 +761,10 @@ mod tests {
             ..Default::default()
         });
         for i in 1..n_large_values {
-            mem.set(i, MemoryValue::F252(rng.gen()));
+            mem.set(i, MemoryValue::F252(rng.random()));
         }
         for i in n_large_values..n_large_values + n_small_values {
-            mem.set(i, MemoryValue::Small(rng.gen()));
+            mem.set(i, MemoryValue::Small(rng.random()));
         }
         let memory = Arc::new(mem.build().0);
         let preprocessed_trace = Arc::new(PreProcessedTrace::canonical());

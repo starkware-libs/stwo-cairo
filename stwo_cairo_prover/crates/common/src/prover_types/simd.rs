@@ -715,7 +715,7 @@ mod tests {
 
     fn rand_f252(rng: &mut SmallRng) -> Felt252 {
         Felt252 {
-            limbs: [rng.gen(), rng.gen(), rng.gen(), 0],
+            limbs: [rng.random(), rng.random(), rng.random(), 0],
         }
     }
 
@@ -739,7 +739,7 @@ mod tests {
     #[test]
     fn test_packed_f252_from_m31() {
         let mut rng = SmallRng::seed_from_u64(0u64);
-        let input = std::array::from_fn(|_| M31(rng.gen::<u32>() % P));
+        let input = std::array::from_fn(|_| M31(rng.random::<u32>() % P));
         let expected = input.map(Felt252::from_m31);
 
         let packed_from = PackedFelt252::from_m31(PackedM31::from_array(input));
@@ -750,8 +750,8 @@ mod tests {
     #[test]
     fn test_div_extend() {
         let mut rng = SmallRng::seed_from_u64(0u64);
-        let a = std::array::from_fn(|_| M31(rng.gen::<u32>() % P));
-        let b = std::array::from_fn(|_| M31(rng.gen::<u32>() % P));
+        let a = std::array::from_fn(|_| M31(rng.random::<u32>() % P));
+        let b = std::array::from_fn(|_| M31(rng.random::<u32>() % P));
         let expected_div = std::array::from_fn(|i| a[i] / b[i]);
 
         let div_result = PackedM31::from_array(a).div(PackedM31::from_array(b));
