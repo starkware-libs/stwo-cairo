@@ -108,17 +108,17 @@ pub fn lookup_sum(
 /// `LOG_SIZE` constant.
 pub fn derive_component_log_sizes(preprocessed_column_log_sizes: Span<u32>) -> PerComponent<u32> {
     PerComponent {
-        eq: *preprocessed_column_log_sizes.at(EQ_IN0_ADDRESS_IDX),
-        qm31_ops: *preprocessed_column_log_sizes.at(OP_0_ADDR_IDX),
-        triple_xor: *preprocessed_column_log_sizes.at(TRIPLE_XOR_INPUT_ADDR_0_IDX),
-        m_31_to_u_32: *preprocessed_column_log_sizes.at(M_31_TO_U_32_INPUT_ADDR_IDX),
-        blake_g_gate: *preprocessed_column_log_sizes.at(BLAKE_G_GATE_INPUT_ADDR_A_IDX),
-        verify_bitwise_xor_8: components::verify_bitwise_xor_8::LOG_SIZE,
-        verify_bitwise_xor_12: components::verify_bitwise_xor_12::LOG_SIZE,
         verify_bitwise_xor_4: components::verify_bitwise_xor_4::LOG_SIZE,
         verify_bitwise_xor_7: components::verify_bitwise_xor_7::LOG_SIZE,
-        verify_bitwise_xor_9: components::verify_bitwise_xor_9::LOG_SIZE,
+        verify_bitwise_xor_8: components::verify_bitwise_xor_8::LOG_SIZE,
         range_check_16: components::range_check_16::LOG_SIZE,
+        eq: *preprocessed_column_log_sizes.at(EQ_IN0_ADDRESS_IDX),
+        triple_xor: *preprocessed_column_log_sizes.at(TRIPLE_XOR_INPUT_ADDR_0_IDX),
+        m_31_to_u_32: *preprocessed_column_log_sizes.at(M_31_TO_U_32_INPUT_ADDR_IDX),
+        verify_bitwise_xor_9: components::verify_bitwise_xor_9::LOG_SIZE,
+        blake_g_gate: *preprocessed_column_log_sizes.at(BLAKE_G_GATE_INPUT_ADDR_A_IDX),
+        verify_bitwise_xor_12: components::verify_bitwise_xor_12::LOG_SIZE,
+        qm31_ops: *preprocessed_column_log_sizes.at(OP_0_ADDR_IDX),
     }
 }
 
@@ -157,11 +157,6 @@ pub fn accumulate_circuit_relation_uses(
     );
     accumulate_relation_uses(
         ref relation_uses,
-        components::qm31_ops::RELATION_USES_PER_ROW.span(),
-        component_log_sizes.qm31_ops,
-    );
-    accumulate_relation_uses(
-        ref relation_uses,
         components::triple_xor::RELATION_USES_PER_ROW.span(),
         component_log_sizes.triple_xor,
     );
@@ -174,5 +169,10 @@ pub fn accumulate_circuit_relation_uses(
         ref relation_uses,
         components::blake_g_gate::RELATION_USES_PER_ROW.span(),
         component_log_sizes.blake_g_gate,
+    );
+    accumulate_relation_uses(
+        ref relation_uses,
+        components::qm31_ops::RELATION_USES_PER_ROW.span(),
+        component_log_sizes.qm31_ops,
     );
 }
