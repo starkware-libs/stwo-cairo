@@ -122,7 +122,7 @@ mod tests {
 
         let mut sum = QM31::zero();
         for c in expr_eval.constraints {
-            sum += c.assign(&assignment) * rng.gen::<QM31>();
+            sum += c.assign(&assignment) * rng.random::<QM31>();
         }
 
         MEMORY_ADDRESS_TO_ID.assert_debug_eq(&sum);
