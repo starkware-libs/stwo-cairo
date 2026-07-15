@@ -54,24 +54,20 @@ pub struct CircuitProof {
     pub channel_salt: u32,
 }
 
-/// The output of a circuit verification: `blake2s(preprocessed_root || output_values)`,
-/// where `preprocessed_root` is the proof's preprocessed-trace (tree 0) commitment.
+/// The output of a circuit verification: `blake2s(circuit_hash || output_values)`.
 #[derive(Drop, Serde)]
 pub struct VerificationOutput {
     pub output_hash: Hash,
 }
 
-/// Returns the output of the verifier: `blake2s(preprocessed_root || output_values)`, where
-/// `preprocessed_root` is the proof's preprocessed-trace (tree 0) commitment.
+/// Returns the output of the verifier: `blake2s(circuit_hash || output_values)`.
 #[cfg(not(feature: "poseidon252_verifier"))]
-pub fn get_verification_output(proof: @CircuitProof) -> VerificationOutput {
-    let commitments: @Box<[Hash; 4]> = (*proof.stark_proof.commitment_scheme_proof.commitments)
-        .try_into()
-        .unwrap();
-    let [preprocessed_commitment, _, _, _] = commitments.unbox();
-    let [r0, r1, r2, r3, r4, r5, r6, r7] = preprocessed_commitment.hash.unbox();
-    let mut words = array![r0, r1, r2, r3, r4, r5, r6, r7];
-    for value in proof.claim.public_data.output_values.span() {
+pub fn get_verification_output(
+    output_values: Span<QM31>, circuit_hash: Box<[u32; 8]>,
+) -> VerificationOutput {
+    let [h0, h1, h2, h3, h4, h5, h6, h7] = circuit_hash.unbox();
+    let mut words = array![h0, h1, h2, h3, h4, h5, h6, h7];
+    for value in output_values {
         let [c0, c1, c2, c3] = (*value).to_fixed_array();
         words.append(c0.into());
         words.append(c1.into());
@@ -82,7 +78,9 @@ pub fn get_verification_output(proof: @CircuitProof) -> VerificationOutput {
 }
 
 #[cfg(feature: "poseidon252_verifier")]
-pub fn get_verification_output(_proof: @CircuitProof) -> VerificationOutput {
+pub fn get_verification_output(
+    _output_values: Span<QM31>, _circuit_hash: Box<[u32; 8]>,
+) -> VerificationOutput {
     panic!("the privacy recursive circuit verifier only supports the blake2s hasher")
 }
 
