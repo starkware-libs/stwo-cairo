@@ -4,9 +4,9 @@ use std::iter::once;
 use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::{Channel, MerkleChannel};
+use stwo::core::fields::FieldExpOps;
 use stwo::core::fields::m31::M31;
 use stwo::core::fields::qm31::QM31;
-use stwo::core::fields::FieldExpOps;
 use stwo::core::proof::{ExtendedStarkProof, StarkProof};
 use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTraceVariant;
@@ -98,11 +98,7 @@ impl PublicData {
         let mut values_to_inverse = vec![];
         // Use public memory in the memory relations.
         self.public_memory
-            .get_entries(
-                self.initial_state.pc.0,
-                self.initial_state.ap.0,
-                self.final_state.ap.0,
-            )
+            .get_entries(self.initial_state.pc.0, self.initial_state.ap.0, self.final_state.ap.0)
             .for_each(|(addr, id, val)| {
                 values_to_inverse.push(
                     <relations::CommonLookupElements as Relation<M31, QM31>>::combine(
@@ -126,25 +122,19 @@ impl PublicData {
                 );
             });
 
-        let final_state_tuple = once(OPCODES_RELATION_ID)
-            .chain(self.final_state.values())
-            .collect_vec();
-        let initial_state_tuple = once(OPCODES_RELATION_ID)
-            .chain(self.initial_state.values())
-            .collect_vec();
+        let final_state_tuple =
+            once(OPCODES_RELATION_ID).chain(self.final_state.values()).collect_vec();
+        let initial_state_tuple =
+            once(OPCODES_RELATION_ID).chain(self.initial_state.values()).collect_vec();
         // Yield initial state and use the final.
-        values_to_inverse.push(
-            <relations::CommonLookupElements as Relation<M31, QM31>>::combine(
-                common_lookup_elements,
-                &final_state_tuple,
-            ),
-        );
-        values_to_inverse.push(
-            -<relations::CommonLookupElements as Relation<M31, QM31>>::combine(
-                common_lookup_elements,
-                &initial_state_tuple,
-            ),
-        );
+        values_to_inverse.push(<relations::CommonLookupElements as Relation<M31, QM31>>::combine(
+            common_lookup_elements,
+            &final_state_tuple,
+        ));
+        values_to_inverse.push(-<relations::CommonLookupElements as Relation<M31, QM31>>::combine(
+            common_lookup_elements,
+            &initial_state_tuple,
+        ));
 
         let inverted_values = QM31::batch_inverse(&values_to_inverse);
         inverted_values.iter().sum::<QM31>()
@@ -155,11 +145,7 @@ impl PublicData {
         channel.mix_felts(&pack_into_secure_felts(public_claim.into_iter()));
         let mut hasher = MC::H::default();
         hasher.update_leaf(
-            output_claim
-                .iter()
-                .map(|x| M31::from_u32_unchecked(*x))
-                .collect::<Vec<_>>()
-                .as_slice(),
+            output_claim.iter().map(|x| M31::from_u32_unchecked(*x)).collect::<Vec<_>>().as_slice(),
         );
         MC::mix_root(channel, hasher.finalize());
 
@@ -178,35 +164,13 @@ impl PublicData {
     /// Returns the output and program values separately.
     pub fn pack_into_u32s(&self) -> (Vec<u32>, Vec<u32>, Vec<u32>) {
         let PublicData {
-            initial_state:
-                CasmState {
-                    pc: initial_pc,
-                    ap: initial_ap,
-                    fp: initial_fp,
-                },
-            final_state:
-                CasmState {
-                    pc: final_pc,
-                    ap: final_ap,
-                    fp: final_fp,
-                },
-            public_memory:
-                PublicMemory {
-                    public_segments,
-                    output,
-                    safe_call_ids,
-                    program,
-                },
+            initial_state: CasmState { pc: initial_pc, ap: initial_ap, fp: initial_fp },
+            final_state: CasmState { pc: final_pc, ap: final_ap, fp: final_fp },
+            public_memory: PublicMemory { public_segments, output, safe_call_ids, program },
         } = self;
 
-        let mut public_claim = vec![
-            initial_pc.0,
-            initial_ap.0,
-            initial_fp.0,
-            final_pc.0,
-            final_ap.0,
-            final_fp.0,
-        ];
+        let mut public_claim =
+            vec![initial_pc.0, initial_ap.0, initial_fp.0, final_pc.0, final_ap.0, final_fp.0];
         let PublicSegmentRanges {
             output: output_ranges,
             pedersen,
@@ -411,22 +375,14 @@ impl PublicSegmentRanges {
         segments
             .into_iter()
             .enumerate()
-            .flat_map(
-                move |(
-                    i,
-                    SegmentRange {
-                        start_ptr,
-                        stop_ptr,
-                    },
-                )| {
-                    let start_address = initial_ap + i as u32;
-                    let stop_address = final_ap - n_segments + i as u32;
-                    [
-                        (start_address, start_ptr.id, start_ptr.value),
-                        (stop_address, stop_ptr.id, stop_ptr.value),
-                    ]
-                },
-            )
+            .flat_map(move |(i, SegmentRange { start_ptr, stop_ptr })| {
+                let start_address = initial_ap + i as u32;
+                let stop_address = final_ap - n_segments + i as u32;
+                [
+                    (start_address, start_ptr.id, start_ptr.value),
+                    (stop_address, stop_ptr.id, stop_ptr.value),
+                ]
+            })
             .map(|(addr, id, value)| (addr, id, [value, 0, 0, 0, 0, 0, 0, 0]))
     }
 
@@ -504,10 +460,8 @@ impl PublicMemory {
             [&self.program, &self.output].map(|section| section.clone().into_iter().enumerate());
         let program_iter = program.map(move |(i, (id, value))| (initial_pc + i as u32, id, value));
 
-        let SegmentRange {
-            start_ptr: output_start_ptr,
-            stop_ptr: output_stop_ptr,
-        } = self.public_segments.output;
+        let SegmentRange { start_ptr: output_start_ptr, stop_ptr: output_stop_ptr } =
+            self.public_segments.output;
 
         // The output segment's declared length (`output_stop_ptr` - `output_start_ptr`) must match
         // the number of output values.
@@ -520,19 +474,12 @@ impl PublicMemory {
         // The safe call area should be [initial_fp, 0] and initial_fp should be the same as
         // initial_ap.
         let safe_call_iter = [
-            (
-                initial_ap - 2,
-                safe_call_id0,
-                [initial_ap, 0, 0, 0, 0, 0, 0, 0],
-            ),
+            (initial_ap - 2, safe_call_id0, [initial_ap, 0, 0, 0, 0, 0, 0, 0]),
             (initial_ap - 1, safe_call_id1, [0, 0, 0, 0, 0, 0, 0, 0]),
         ];
         let segment_ranges_iter = self.public_segments.memory_entries(initial_ap, final_ap);
 
-        program_iter
-            .chain(safe_call_iter)
-            .chain(segment_ranges_iter)
-            .chain(output_iter)
+        program_iter.chain(safe_call_iter).chain(segment_ranges_iter).chain(output_iter)
     }
 }
 
@@ -570,8 +517,8 @@ mod tests {
     use stwo_cairo_common::prover_types::cpu::CasmState;
 
     use crate::air::{
-        accumulate_relation_uses, MemorySmallValue, PubMemoryValue, PublicData, PublicMemory,
-        PublicSegmentRanges, SegmentRange,
+        MemorySmallValue, PubMemoryValue, PublicData, PublicMemory, PublicSegmentRanges,
+        SegmentRange, accumulate_relation_uses,
     };
     use crate::relations::CommonLookupElements;
     use crate::verifier::RelationUse;
@@ -581,14 +528,8 @@ mod tests {
         let mut relation_uses = HashMap::from([("relation_1", 4), ("relation_2", 10)]);
         let log_size = 2;
         let relation_uses_per_row = [
-            RelationUse {
-                relation_id: "relation_1",
-                uses: 2,
-            },
-            RelationUse {
-                relation_id: "relation_2",
-                uses: 4,
-            },
+            RelationUse { relation_id: "relation_1", uses: 2 },
+            RelationUse { relation_id: "relation_2", uses: 4 },
         ];
 
         accumulate_relation_uses(&mut relation_uses, relation_uses_per_row, log_size);
@@ -627,48 +568,24 @@ mod tests {
                 program,
                 public_segments: PublicSegmentRanges {
                     output: SegmentRange {
-                        start_ptr: MemorySmallValue {
-                            id: 228,
-                            value: 2520,
-                        },
-                        stop_ptr: MemorySmallValue {
-                            id: 228,
-                            value: 2520,
-                        },
+                        start_ptr: MemorySmallValue { id: 228, value: 2520 },
+                        stop_ptr: MemorySmallValue { id: 228, value: 2520 },
                     },
                     pedersen: Some(SegmentRange {
-                        start_ptr: MemorySmallValue {
-                            id: 228,
-                            value: 2520,
-                        },
-                        stop_ptr: MemorySmallValue {
-                            id: 228,
-                            value: 2520,
-                        },
+                        start_ptr: MemorySmallValue { id: 228, value: 2520 },
+                        stop_ptr: MemorySmallValue { id: 228, value: 2520 },
                     }),
                     range_check_128: Some(SegmentRange {
-                        start_ptr: MemorySmallValue {
-                            id: 228,
-                            value: 2520,
-                        },
-                        stop_ptr: MemorySmallValue {
-                            id: 228,
-                            value: 2520,
-                        },
+                        start_ptr: MemorySmallValue { id: 228, value: 2520 },
+                        stop_ptr: MemorySmallValue { id: 228, value: 2520 },
                     }),
                     ecdsa: Some(SegmentRange {
                         start_ptr: MemorySmallValue { id: 5, value: 0 },
                         stop_ptr: MemorySmallValue { id: 5, value: 0 },
                     }),
                     bitwise: Some(SegmentRange {
-                        start_ptr: MemorySmallValue {
-                            id: 228,
-                            value: 2520,
-                        },
-                        stop_ptr: MemorySmallValue {
-                            id: 228,
-                            value: 2520,
-                        },
+                        start_ptr: MemorySmallValue { id: 228, value: 2520 },
+                        stop_ptr: MemorySmallValue { id: 228, value: 2520 },
                     }),
                     ec_op: Some(SegmentRange {
                         start_ptr: MemorySmallValue { id: 5, value: 0 },
@@ -679,44 +596,20 @@ mod tests {
                         stop_ptr: MemorySmallValue { id: 5, value: 0 },
                     }),
                     poseidon: Some(SegmentRange {
-                        start_ptr: MemorySmallValue {
-                            id: 228,
-                            value: 2520,
-                        },
-                        stop_ptr: MemorySmallValue {
-                            id: 228,
-                            value: 2520,
-                        },
+                        start_ptr: MemorySmallValue { id: 228, value: 2520 },
+                        stop_ptr: MemorySmallValue { id: 228, value: 2520 },
                     }),
                     range_check_96: Some(SegmentRange {
-                        start_ptr: MemorySmallValue {
-                            id: 228,
-                            value: 2520,
-                        },
-                        stop_ptr: MemorySmallValue {
-                            id: 228,
-                            value: 2520,
-                        },
+                        start_ptr: MemorySmallValue { id: 228, value: 2520 },
+                        stop_ptr: MemorySmallValue { id: 228, value: 2520 },
                     }),
                     add_mod: Some(SegmentRange {
-                        start_ptr: MemorySmallValue {
-                            id: 228,
-                            value: 2520,
-                        },
-                        stop_ptr: MemorySmallValue {
-                            id: 228,
-                            value: 2520,
-                        },
+                        start_ptr: MemorySmallValue { id: 228, value: 2520 },
+                        stop_ptr: MemorySmallValue { id: 228, value: 2520 },
                     }),
                     mul_mod: Some(SegmentRange {
-                        start_ptr: MemorySmallValue {
-                            id: 228,
-                            value: 2520,
-                        },
-                        stop_ptr: MemorySmallValue {
-                            id: 228,
-                            value: 2520,
-                        },
+                        start_ptr: MemorySmallValue { id: 228, value: 2520 },
+                        stop_ptr: MemorySmallValue { id: 228, value: 2520 },
                     }),
                 },
                 output: vec![],
@@ -739,14 +632,8 @@ mod tests {
         // Expected value with the new program data:
 
         let expected = QM31(
-            CM31(
-                M31::from_u32_unchecked(908842852),
-                M31::from_u32_unchecked(42171643),
-            ),
-            CM31(
-                M31::from_u32_unchecked(313383432),
-                M31::from_u32_unchecked(1019452808),
-            ),
+            CM31(M31::from_u32_unchecked(908842852), M31::from_u32_unchecked(42171643)),
+            CM31(M31::from_u32_unchecked(313383432), M31::from_u32_unchecked(1019452808)),
         );
         assert_eq!(
             sum, expected,

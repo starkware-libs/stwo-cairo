@@ -18,12 +18,8 @@ impl ClaimGenerator {
     pub fn new(preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
         let mults = from_fn(|_| AtomicMultiplicityColumn::new(1 << LOG_SIZE));
         let column_ids = [
-            PreProcessedColumnId {
-                id: "range_check_9_9_column_0".to_owned(),
-            },
-            PreProcessedColumnId {
-                id: "range_check_9_9_column_1".to_owned(),
-            },
+            PreProcessedColumnId { id: "range_check_9_9_column_0".to_owned() },
+            PreProcessedColumnId { id: "range_check_9_9_column_1".to_owned() },
         ];
 
         Self {
@@ -35,16 +31,8 @@ impl ClaimGenerator {
 
     pub fn write_trace(
         self,
-    ) -> (
-        ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
-        InteractionClaimGenerator,
-    ) {
-        let mults = self
-            .mults
-            .into_iter()
-            .map(|v| v.into_simd_vec())
-            .collect::<Vec<_>>();
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator) {
+        let mults = self.mults.into_iter().map(|v| v.into_simd_vec()).collect::<Vec<_>>();
 
         let (trace, lookup_data) = write_trace_simd(&self.preprocessed_trace, mults);
 
@@ -93,17 +81,13 @@ fn write_trace_simd(
     let M31_1897792095 = PackedM31::broadcast(M31::from(1897792095));
     let M31_2065568285 = PackedM31::broadcast(M31::from(2065568285));
     let M31_517791011 = PackedM31::broadcast(M31::from(517791011));
-    let range_check_9_9_column_0 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "range_check_9_9_column_0".to_owned(),
-    });
-    let range_check_9_9_column_1 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "range_check_9_9_column_1".to_owned(),
-    });
+    let range_check_9_9_column_0 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "range_check_9_9_column_0".to_owned() });
+    let range_check_9_9_column_1 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "range_check_9_9_column_1".to_owned() });
 
-    (trace.par_iter_mut(), lookup_data.par_iter_mut())
-        .into_par_iter()
-        .enumerate()
-        .for_each(|(row_index, (row, lookup_data))| {
+    (trace.par_iter_mut(), lookup_data.par_iter_mut()).into_par_iter().enumerate().for_each(
+        |(row_index, (row, lookup_data))| {
             let range_check_9_9_column_0 = range_check_9_9_column_0.packed_at(row_index);
             let range_check_9_9_column_1 = range_check_9_9_column_1.packed_at(row_index);
             let multiplicity_0_col0 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
@@ -122,46 +106,22 @@ fn write_trace_simd(
             *row[6] = multiplicity_6_col6;
             let multiplicity_7_col7 = *mults[7].get(row_index).unwrap_or(&PackedM31::zero());
             *row[7] = multiplicity_7_col7;
-            *lookup_data.range_check_9_9_0 = [
-                M31_517791011,
-                range_check_9_9_column_0,
-                range_check_9_9_column_1,
-            ];
-            *lookup_data.range_check_9_9_b_1 = [
-                M31_1897792095,
-                range_check_9_9_column_0,
-                range_check_9_9_column_1,
-            ];
-            *lookup_data.range_check_9_9_c_2 = [
-                M31_1881014476,
-                range_check_9_9_column_0,
-                range_check_9_9_column_1,
-            ];
-            *lookup_data.range_check_9_9_d_3 = [
-                M31_1864236857,
-                range_check_9_9_column_0,
-                range_check_9_9_column_1,
-            ];
-            *lookup_data.range_check_9_9_e_4 = [
-                M31_1847459238,
-                range_check_9_9_column_0,
-                range_check_9_9_column_1,
-            ];
-            *lookup_data.range_check_9_9_f_5 = [
-                M31_1830681619,
-                range_check_9_9_column_0,
-                range_check_9_9_column_1,
-            ];
-            *lookup_data.range_check_9_9_g_6 = [
-                M31_1813904000,
-                range_check_9_9_column_0,
-                range_check_9_9_column_1,
-            ];
-            *lookup_data.range_check_9_9_h_7 = [
-                M31_2065568285,
-                range_check_9_9_column_0,
-                range_check_9_9_column_1,
-            ];
+            *lookup_data.range_check_9_9_0 =
+                [M31_517791011, range_check_9_9_column_0, range_check_9_9_column_1];
+            *lookup_data.range_check_9_9_b_1 =
+                [M31_1897792095, range_check_9_9_column_0, range_check_9_9_column_1];
+            *lookup_data.range_check_9_9_c_2 =
+                [M31_1881014476, range_check_9_9_column_0, range_check_9_9_column_1];
+            *lookup_data.range_check_9_9_d_3 =
+                [M31_1864236857, range_check_9_9_column_0, range_check_9_9_column_1];
+            *lookup_data.range_check_9_9_e_4 =
+                [M31_1847459238, range_check_9_9_column_0, range_check_9_9_column_1];
+            *lookup_data.range_check_9_9_f_5 =
+                [M31_1830681619, range_check_9_9_column_0, range_check_9_9_column_1];
+            *lookup_data.range_check_9_9_g_6 =
+                [M31_1813904000, range_check_9_9_column_0, range_check_9_9_column_1];
+            *lookup_data.range_check_9_9_h_7 =
+                [M31_2065568285, range_check_9_9_column_0, range_check_9_9_column_1];
             *lookup_data.mults_0 = multiplicity_0_col0;
             *lookup_data.mults_1 = multiplicity_1_col1;
             *lookup_data.mults_2 = multiplicity_2_col2;
@@ -170,7 +130,8 @@ fn write_trace_simd(
             *lookup_data.mults_5 = multiplicity_5_col5;
             *lookup_data.mults_6 = multiplicity_6_col6;
             *lookup_data.mults_7 = multiplicity_7_col7;
-        });
+        },
+    );
 
     (trace, lookup_data)
 }
@@ -202,10 +163,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(LOG_SIZE) };
 
         // Sum logup terms in pairs.

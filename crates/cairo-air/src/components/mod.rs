@@ -81,8 +81,5 @@ pub(crate) fn indented_component_display<E: FrameworkEval>(
     component: &FrameworkComponent<E>,
 ) -> String {
     let component_display = &format!("\n{component}");
-    component_display
-        .lines()
-        .map(|line| format!("\t{line}"))
-        .join("\n")
+    component_display.lines().map(|line| format!("\t{line}")).join("\n")
 }

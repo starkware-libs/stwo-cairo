@@ -5,16 +5,14 @@ use num_traits::{One, Zero};
 use starknet_types_core::curve::ProjectivePoint;
 use stwo::prover::backend::simd::conversion::{Pack, Unpack};
 use stwo::prover::backend::simd::m31::PackedM31;
-use stwo_cairo_common::preprocessed_columns::pedersen::{PEDERSEN_TABLE_18, PEDERSEN_TABLE_9};
+use stwo_cairo_common::preprocessed_columns::pedersen::{PEDERSEN_TABLE_9, PEDERSEN_TABLE_18};
 use stwo_cairo_common::prover_types::cpu::{Felt252, M31};
 use stwo_cairo_common::prover_types::simd::PackedFelt252;
 
 pub struct PackedPedersenPointsTableWindowBits9 {}
 impl PackedPedersenPointsTableWindowBits9 {
     pub fn deduce_output([input]: [PackedM31; 1]) -> [PackedFelt252; 2] {
-        let arr = input
-            .to_array()
-            .map(|i| PEDERSEN_TABLE_9.get_row_coordinates(i.0 as usize));
+        let arr = input.to_array().map(|i| PEDERSEN_TABLE_9.get_row_coordinates(i.0 as usize));
         <_ as Pack>::pack(arr)
     }
 }
@@ -22,9 +20,7 @@ impl PackedPedersenPointsTableWindowBits9 {
 pub struct PackedPedersenPointsTableWindowBits18 {}
 impl PackedPedersenPointsTableWindowBits18 {
     pub fn deduce_output([input]: [PackedM31; 1]) -> [PackedFelt252; 2] {
-        let arr = input
-            .to_array()
-            .map(|i| PEDERSEN_TABLE_18.get_row_coordinates(i.0 as usize));
+        let arr = input.to_array().map(|i| PEDERSEN_TABLE_18.get_row_coordinates(i.0 as usize));
         <_ as Pack>::pack(arr)
     }
 }
@@ -58,41 +54,23 @@ impl<const NUM_WINDOWS: usize> PartialEcMul<NUM_WINDOWS> {
         let table_point = ProjectivePoint::from_affine(affine_point.x, affine_point.y)
             .expect("Table point should be on curve");
 
-        let new_accumulator_point = (accumulator_point + table_point)
-            .to_affine()
-            .expect("New accumulator is not infinity");
+        let new_accumulator_point =
+            (accumulator_point + table_point).to_affine().expect("New accumulator is not infinity");
         let new_accumulator_x: Felt252 = new_accumulator_point.x().into();
         let new_accumulator_y: Felt252 = new_accumulator_point.y().into();
 
-        let new_m_shifted: [M31; NUM_WINDOWS] = from_fn(|i| {
-            if i < m_shifted.len() - 1 {
-                m_shifted[i + 1]
-            } else {
-                M31::zero()
-            }
-        });
+        let new_m_shifted: [M31; NUM_WINDOWS] =
+            from_fn(|i| if i < m_shifted.len() - 1 { m_shifted[i + 1] } else { M31::zero() });
 
-        (
-            chain,
-            round + M31::one(),
-            (new_m_shifted, [new_accumulator_x, new_accumulator_y]),
-        )
+        (chain, round + M31::one(), (new_m_shifted, [new_accumulator_x, new_accumulator_y]))
     }
 }
 
 pub struct PackedPartialEcMul<const NUM_WINDOWS: usize> {}
 impl<const NUM_WINDOWS: usize> PackedPartialEcMul<NUM_WINDOWS> {
     pub fn deduce_output(
-        input: (
-            PackedM31,
-            PackedM31,
-            ([PackedM31; NUM_WINDOWS], [PackedFelt252; 2]),
-        ),
-    ) -> (
-        PackedM31,
-        PackedM31,
-        ([PackedM31; NUM_WINDOWS], [PackedFelt252; 2]),
-    ) {
+        input: (PackedM31, PackedM31, ([PackedM31; NUM_WINDOWS], [PackedFelt252; 2])),
+    ) -> (PackedM31, PackedM31, ([PackedM31; NUM_WINDOWS], [PackedFelt252; 2])) {
         let unpacked_inputs = input.unpack();
         <_ as Pack>::pack(unpacked_inputs.map(|(chain, round, state)| {
             PartialEcMul::<NUM_WINDOWS>::deduce_output(chain, round, state)
@@ -133,9 +111,8 @@ mod tests {
         let p1 = ProjectivePoint::from_affine(PEDERSEN_P1.x(), PEDERSEN_P1.y()).unwrap();
         let p2 = ProjectivePoint::from_affine(PEDERSEN_P2.x(), PEDERSEN_P2.y()).unwrap();
         let shift_point = ProjectivePoint::from_affine(SHIFT_POINT.x(), SHIFT_POINT.y()).unwrap();
-        let expected_new_accumulator = (p1 + &p2 * Felt::from(56 << window_bits) - shift_point)
-            .to_affine()
-            .unwrap();
+        let expected_new_accumulator =
+            (p1 + &p2 * Felt::from(56 << window_bits) - shift_point).to_affine().unwrap();
 
         assert_eq!(new_chain, chain);
         assert_eq!(new_round, round + M31::from_u32_unchecked(1));
@@ -167,10 +144,8 @@ mod tests {
         let shifted_p0 = &p0
             * (Felt::from(1u128 << (window_bits * (NUM_WINDOWS / 2)))
                 * Felt::from(1u128 << (window_bits * (NUM_WINDOWS / 2 - 1))));
-        let expected_new_accumulator = (&p1 * Felt::from(3) + &shifted_p0 * Felt::from(5)
-            - shift_point)
-            .to_affine()
-            .unwrap();
+        let expected_new_accumulator =
+            (&p1 * Felt::from(3) + &shifted_p0 * Felt::from(5) - shift_point).to_affine().unwrap();
 
         assert_eq!(new_chain, chain);
         assert_eq!(new_round, round + M31::from_u32_unchecked(1));

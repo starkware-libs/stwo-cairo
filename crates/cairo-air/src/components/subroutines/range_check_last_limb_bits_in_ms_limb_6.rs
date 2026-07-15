@@ -23,10 +23,7 @@ impl RangeCheckLastLimbBitsInMsLimb6 {
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
             E::EF::from(enabler.clone()),
-            &[
-                M31_1185356339.clone(),
-                range_check_last_limb_bits_in_ms_limb_6_input.clone(),
-            ],
+            &[M31_1185356339.clone(), range_check_last_limb_bits_in_ms_limb_6_input.clone()],
         ));
 
         []

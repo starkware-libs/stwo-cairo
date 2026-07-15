@@ -1,5 +1,5 @@
-use std::collections::hash_map::Entry;
 use std::collections::HashMap;
+use std::collections::hash_map::Entry;
 use std::ops::{Deref, DerefMut};
 
 use bytemuck::{Pod, Zeroable};
@@ -7,7 +7,7 @@ use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, N_M31_IN_SMALL_FELT252};
 use stwo_cairo_common::prover_types::cpu::FELT252_BITS_PER_WORD;
-use tracing::{span, Level};
+use tracing::{Level, span};
 
 /// P is 2^251 + 17 * 2^192 - 1.
 /// All constants below are in little endian.
@@ -58,18 +58,12 @@ pub struct MemoryConfig {
 impl MemoryConfig {
     pub fn new(small_max: u128, log_small_value_capacity: u32) -> MemoryConfig {
         assert!(small_max < 1 << (N_M31_IN_SMALL_FELT252 * FELT252_BITS_PER_WORD));
-        MemoryConfig {
-            small_max,
-            log_small_value_capacity,
-        }
+        MemoryConfig { small_max, log_small_value_capacity }
     }
 }
 impl Default for MemoryConfig {
     fn default() -> Self {
-        MemoryConfig {
-            small_max: (1 << 72) - 1,
-            log_small_value_capacity: 24,
-        }
+        MemoryConfig { small_max: (1 << 72) - 1, log_small_value_capacity: 24 }
     }
 }
 
@@ -152,8 +146,7 @@ impl MemoryBuilder {
 
     pub fn set(&mut self, addr: u32, value: MemoryValue) {
         if addr as usize >= self.address_to_id.len() {
-            self.address_to_id
-                .resize(addr as usize + 1, EncodedMemoryValueId::default());
+            self.address_to_id.resize(addr as usize + 1, EncodedMemoryValueId::default());
         }
 
         let res = EncodedMemoryValueId::encode(match value {
@@ -312,12 +305,7 @@ impl MemoryValue {
 }
 
 pub fn u128_to_4_limbs(x: u128) -> [u32; 4] {
-    [
-        x as u32,
-        (x >> 32) as u32,
-        (x >> 64) as u32,
-        (x >> 96) as u32,
-    ]
+    [x as u32, (x >> 32) as u32, (x >> 64) as u32, (x >> 96) as u32]
 }
 
 pub fn limbs_to_u128(limbs: [u32; 4]) -> u128 {
@@ -339,59 +327,23 @@ mod tests {
     #[test]
     fn test_memory() {
         let entries = [
-            MemoryEntry {
-                address: 0,
-                value: [1; 8],
-            },
-            MemoryEntry {
-                address: 1,
-                value: [6, 0, 0, 0, 0, 0, 0, 0],
-            },
-            MemoryEntry {
-                address: 2,
-                value: [1, 2, 0, 0, 0, 0, 0, 0],
-            },
-            MemoryEntry {
-                address: 5,
-                value: [1 << 24, 0, 0, 0, 0, 0, 0, 0],
-            },
-            MemoryEntry {
-                address: 8,
-                value: P_MIN_1,
-            },
-            MemoryEntry {
-                address: 9,
-                value: P_MIN_2,
-            },
+            MemoryEntry { address: 0, value: [1; 8] },
+            MemoryEntry { address: 1, value: [6, 0, 0, 0, 0, 0, 0, 0] },
+            MemoryEntry { address: 2, value: [1, 2, 0, 0, 0, 0, 0, 0] },
+            MemoryEntry { address: 5, value: [1 << 24, 0, 0, 0, 0, 0, 0, 0] },
+            MemoryEntry { address: 8, value: P_MIN_1 },
+            MemoryEntry { address: 9, value: P_MIN_2 },
             // Duplicates.
-            MemoryEntry {
-                address: 100,
-                value: [1; 8],
-            },
-            MemoryEntry {
-                address: 105,
-                value: [1 << 24, 0, 0, 0, 0, 0, 0, 0],
-            },
-            MemoryEntry {
-                address: 200,
-                value: [1, 1, 1, 0, 0, 0, 0, 0],
-            },
-            MemoryEntry {
-                address: 201,
-                value: [1, 1, 1 << 10, 0, 0, 0, 0, 0],
-            },
+            MemoryEntry { address: 100, value: [1; 8] },
+            MemoryEntry { address: 105, value: [1 << 24, 0, 0, 0, 0, 0, 0, 0] },
+            MemoryEntry { address: 200, value: [1, 1, 1, 0, 0, 0, 0, 0] },
+            MemoryEntry { address: 201, value: [1, 1, 1 << 10, 0, 0, 0, 0, 0] },
         ];
         let memory = MemoryBuilder::from_iter(MemoryConfig::default(), entries.iter().cloned());
         assert_eq!(memory.get(0), MemoryValue::F252([1; 8]));
         assert_eq!(memory.get(1), MemoryValue::Small(6));
-        assert_eq!(
-            memory.get(200),
-            MemoryValue::Small(1 + (1 << 32) + (1 << 64))
-        );
-        assert_eq!(
-            memory.get(201),
-            MemoryValue::F252([1, 1, 1 << 10, 0, 0, 0, 0, 0])
-        );
+        assert_eq!(memory.get(200), MemoryValue::Small(1 + (1 << 32) + (1 << 64)));
+        assert_eq!(memory.get(201), MemoryValue::F252([1, 1, 1 << 10, 0, 0, 0, 0, 0]));
         assert_eq!(memory.get(8), MemoryValue::F252(P_MIN_1));
         assert_eq!(memory.get(9), MemoryValue::F252(P_MIN_2));
         // Duplicates.
@@ -413,14 +365,8 @@ mod tests {
     #[test]
     fn test_memory_holes_have_default_id() {
         let entries = [
-            MemoryEntry {
-                address: 0,
-                value: [1; 8],
-            },
-            MemoryEntry {
-                address: 2,
-                value: [1, 2, 0, 0, 0, 0, 0, 0],
-            },
+            MemoryEntry { address: 0, value: [1; 8] },
+            MemoryEntry { address: 2, value: [1, 2, 0, 0, 0, 0, 0, 0] },
         ];
         let expxcted_id_addr_0 = EncodedMemoryValueId::encode(MemoryValueId::F252(0));
         let expxcted_id_addr_1 = EncodedMemoryValueId::default();
@@ -463,14 +409,8 @@ mod tests {
     #[test]
     fn test_access_invalid_address() {
         let entries = [
-            MemoryEntry {
-                address: 0,
-                value: [1; 8],
-            },
-            MemoryEntry {
-                address: 2,
-                value: [1, 2, 0, 0, 0, 0, 0, 0],
-            },
+            MemoryEntry { address: 0, value: [1; 8] },
+            MemoryEntry { address: 2, value: [1, 2, 0, 0, 0, 0, 0, 0] },
         ];
         let (memory, ..) = MemoryBuilder::from_iter(MemoryConfig::default(), entries).build();
 

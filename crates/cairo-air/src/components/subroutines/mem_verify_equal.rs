@@ -33,11 +33,7 @@ impl MemVerifyEqual {
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
             E::EF::from(enabler.clone()),
-            &[
-                M31_1444891767.clone(),
-                mem_verify_equal_input_address2.clone(),
-                id_col0.clone(),
-            ],
+            &[M31_1444891767.clone(), mem_verify_equal_input_address2.clone(), id_col0.clone()],
         ));
 
         []

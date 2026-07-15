@@ -1,8 +1,8 @@
 // This file was created by the AIR team.
 
 use cairo_air::cairo_components::CairoComponents;
-use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::ComponentProver;
+use stwo::prover::backend::simd::SimdBackend;
 
 pub fn cairo_provers(components: &CairoComponents) -> Vec<&dyn ComponentProver<SimdBackend>> {
     let mut vec: Vec<&dyn ComponentProver<SimdBackend>> = vec![];

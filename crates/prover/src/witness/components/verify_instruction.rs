@@ -27,11 +27,7 @@ impl ClaimGenerator {
         range_check_4_3_state: &range_check_4_3::ClaimGenerator,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-    ) -> (
-        ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
-        InteractionClaimGenerator,
-    ) {
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator) {
         let mut inputs_mults = self
             .mults
             .iter()
@@ -74,14 +70,7 @@ impl ClaimGenerator {
             add_inputs(memory_id_to_big_state, &inputs, size, 0);
         }
 
-        (
-            trace,
-            Claim { log_size },
-            InteractionClaimGenerator {
-                log_size,
-                lookup_data,
-            },
-        )
+        (trace, Claim { log_size }, InteractionClaimGenerator { log_size, lookup_data })
     }
 }
 
@@ -138,11 +127,7 @@ fn write_trace_simd(
     range_check_4_3_state: &range_check_4_3::ClaimGenerator,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-) -> (
-    ComponentTrace<N_TRACE_COLUMNS>,
-    LookupData,
-    SubComponentInputs,
-) {
+) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData, SubComponentInputs) {
     let log_n_packed_rows = inputs.len().ilog2();
     let log_size = log_n_packed_rows + LOG_N_LANES;
     let (mut trace, mut lookup_data, mut sub_component_inputs) = unsafe {
@@ -234,12 +219,8 @@ fn write_trace_simd(
                 *row[15] = offset2_high_col15;
                 *sub_component_inputs.range_check_7_2_5[0] =
                     [offset0_mid_col9, offset1_low_col10, offset1_high_col12];
-                *lookup_data.range_check_7_2_5_0 = [
-                    M31_371240602,
-                    offset0_mid_col9,
-                    offset1_low_col10,
-                    offset1_high_col12,
-                ];
+                *lookup_data.range_check_7_2_5_0 =
+                    [M31_371240602, offset0_mid_col9, offset1_low_col10, offset1_high_col12];
                 *sub_component_inputs.range_check_4_3[0] = [offset2_low_col13, offset2_high_col15];
                 *lookup_data.range_check_4_3_1 =
                     [M31_1567323731, offset2_low_col13, offset2_high_col15];
@@ -335,10 +316,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
 
         // Sum logup terms in pairs.
@@ -376,11 +354,7 @@ impl InteractionClaimGenerator {
 
         // Sum last logup term.
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.verify_instruction_4,
-            self.lookup_data.mults_1,
-        )
+        (col_gen.par_iter_mut(), &self.lookup_data.verify_instruction_4, self.lookup_data.mults_1)
             .into_par_iter()
             .for_each(|(writer, values, mult)| {
                 let denom = common_lookup_elements.combine(values);

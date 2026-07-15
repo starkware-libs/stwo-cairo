@@ -43,9 +43,7 @@ impl FrameworkEval for Eval {
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1109051422 = E::F::from(M31::from(1109051422));
         let M31_1424798916 = E::F::from(M31::from(1424798916));
-        let seq_18 = eval.get_preprocessed_column(PreProcessedColumnId {
-            id: "seq_18".to_owned(),
-        });
+        let seq_18 = eval.get_preprocessed_column(PreProcessedColumnId { id: "seq_18".to_owned() });
         let multiplicity_0_col0 = eval.next_trace_mask();
         let multiplicity_1_col1 = eval.next_trace_mask();
 

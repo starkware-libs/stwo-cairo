@@ -33,21 +33,14 @@ mod tests {
     #[test]
     fn test_batch_inverse() {
         assert_eq!(felt_batch_inverse(&[1.into()]), [1.into()]);
-        assert_eq!(
-            felt_batch_inverse(&[Felt::from(17).inverse().unwrap()]),
-            [17.into()]
-        );
+        assert_eq!(felt_batch_inverse(&[Felt::from(17).inverse().unwrap()]), [17.into()]);
         assert_eq!(
             felt_batch_inverse(&(1..100).map(Felt::from).collect::<Vec<_>>()),
-            (1..100)
-                .map(|x| Felt::from(x).inverse().unwrap())
-                .collect::<Vec<_>>()
+            (1..100).map(|x| Felt::from(x).inverse().unwrap()).collect::<Vec<_>>()
         );
         assert_eq!(
             felt_batch_inverse(
-                &(1..100)
-                    .map(|x| Felt::from(x).inverse().unwrap())
-                    .collect::<Vec<_>>()
+                &(1..100).map(|x| Felt::from(x).inverse().unwrap()).collect::<Vec<_>>()
             ),
             (1..100).map(Felt::from).collect::<Vec<_>>()
         );

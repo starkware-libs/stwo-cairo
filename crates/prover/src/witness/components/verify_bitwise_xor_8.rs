@@ -20,15 +20,9 @@ impl ClaimGenerator {
     pub fn new(preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
         let mults = from_fn(|_| AtomicMultiplicityColumn::new(1 << LOG_SIZE));
         let column_ids = [
-            PreProcessedColumnId {
-                id: "bitwise_xor_8_0".to_owned(),
-            },
-            PreProcessedColumnId {
-                id: "bitwise_xor_8_1".to_owned(),
-            },
-            PreProcessedColumnId {
-                id: "bitwise_xor_8_2".to_owned(),
-            },
+            PreProcessedColumnId { id: "bitwise_xor_8_0".to_owned() },
+            PreProcessedColumnId { id: "bitwise_xor_8_1".to_owned() },
+            PreProcessedColumnId { id: "bitwise_xor_8_2".to_owned() },
         ];
 
         Self {
@@ -40,16 +34,8 @@ impl ClaimGenerator {
 
     pub fn write_trace(
         self,
-    ) -> (
-        ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
-        InteractionClaimGenerator,
-    ) {
-        let mults = self
-            .mults
-            .into_iter()
-            .map(|v| v.into_simd_vec())
-            .collect::<Vec<_>>();
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator) {
+        let mults = self.mults.into_iter().map(|v| v.into_simd_vec()).collect::<Vec<_>>();
 
         let (trace, lookup_data) = write_trace_simd(&self.preprocessed_trace, mults);
 
@@ -92,20 +78,15 @@ fn write_trace_simd(
 
     let M31_112558620 = PackedM31::broadcast(M31::from(112558620));
     let M31_521092554 = PackedM31::broadcast(M31::from(521092554));
-    let bitwise_xor_8_0 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "bitwise_xor_8_0".to_owned(),
-    });
-    let bitwise_xor_8_1 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "bitwise_xor_8_1".to_owned(),
-    });
-    let bitwise_xor_8_2 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "bitwise_xor_8_2".to_owned(),
-    });
+    let bitwise_xor_8_0 =
+        preprocessed_trace.get_column(&PreProcessedColumnId { id: "bitwise_xor_8_0".to_owned() });
+    let bitwise_xor_8_1 =
+        preprocessed_trace.get_column(&PreProcessedColumnId { id: "bitwise_xor_8_1".to_owned() });
+    let bitwise_xor_8_2 =
+        preprocessed_trace.get_column(&PreProcessedColumnId { id: "bitwise_xor_8_2".to_owned() });
 
-    (trace.par_iter_mut(), lookup_data.par_iter_mut())
-        .into_par_iter()
-        .enumerate()
-        .for_each(|(row_index, (row, lookup_data))| {
+    (trace.par_iter_mut(), lookup_data.par_iter_mut()).into_par_iter().enumerate().for_each(
+        |(row_index, (row, lookup_data))| {
             let bitwise_xor_8_0 = bitwise_xor_8_0.packed_at(row_index);
             let bitwise_xor_8_1 = bitwise_xor_8_1.packed_at(row_index);
             let bitwise_xor_8_2 = bitwise_xor_8_2.packed_at(row_index);
@@ -113,21 +94,14 @@ fn write_trace_simd(
             *row[0] = multiplicity_0_col0;
             let multiplicity_1_col1 = *mults[1].get(row_index).unwrap_or(&PackedM31::zero());
             *row[1] = multiplicity_1_col1;
-            *lookup_data.verify_bitwise_xor_8_0 = [
-                M31_112558620,
-                bitwise_xor_8_0,
-                bitwise_xor_8_1,
-                bitwise_xor_8_2,
-            ];
-            *lookup_data.verify_bitwise_xor_8_b_1 = [
-                M31_521092554,
-                bitwise_xor_8_0,
-                bitwise_xor_8_1,
-                bitwise_xor_8_2,
-            ];
+            *lookup_data.verify_bitwise_xor_8_0 =
+                [M31_112558620, bitwise_xor_8_0, bitwise_xor_8_1, bitwise_xor_8_2];
+            *lookup_data.verify_bitwise_xor_8_b_1 =
+                [M31_521092554, bitwise_xor_8_0, bitwise_xor_8_1, bitwise_xor_8_2];
             *lookup_data.mults_0 = multiplicity_0_col0;
             *lookup_data.mults_1 = multiplicity_1_col1;
-        });
+        },
+    );
 
     (trace, lookup_data)
 }
@@ -147,10 +121,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(LOG_SIZE) };
 
         // Sum logup terms in pairs.

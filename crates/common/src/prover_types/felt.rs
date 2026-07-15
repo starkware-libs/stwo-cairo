@@ -4,7 +4,7 @@ use std::simd::u32x16;
 
 use stwo::core::fields::m31::M31;
 #[cfg(feature = "prover")]
-use stwo::prover::backend::simd::m31::{PackedM31, N_LANES};
+use stwo::prover::backend::simd::m31::{N_LANES, PackedM31};
 
 use super::cpu::{FELT252_BITS_PER_WORD, FELT252_N_WORDS};
 
@@ -57,11 +57,8 @@ where
 /// Splits a 252 bit dense representation into felts, each with FELT252_BITS_PER_WORD bits.
 #[cfg(feature = "prover")]
 pub fn split_f252_simd(x: [u32x16; 8]) -> [PackedM31; FELT252_N_WORDS] {
-    split(
-        x,
-        u32x16::from_array([(1 << FELT252_BITS_PER_WORD) - 1; N_LANES]),
-    )
-    .map(|x| PackedM31::from(x.to_array().map(M31::from_u32_unchecked)))
+    split(x, u32x16::from_array([(1 << FELT252_BITS_PER_WORD) - 1; N_LANES]))
+        .map(|x| PackedM31::from(x.to_array().map(M31::from_u32_unchecked)))
 }
 
 /// Splits a 252 bit dense representation into felts, each with FELT252_BITS_PER_WORD bits.

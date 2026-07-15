@@ -2,7 +2,7 @@ use starknet_ff::FieldElement;
 use stwo::prover::backend::simd::conversion::{Pack, Unpack};
 use stwo::prover::backend::simd::m31::PackedM31;
 use stwo_cairo_common::preprocessed_columns::poseidon_round_keys::{
-    round_keys, POSEIDON_ROUND_KEYS,
+    POSEIDON_ROUND_KEYS, round_keys,
 };
 use stwo_cairo_common::prover_types::cpu::{Felt252Width27, M31};
 use stwo_cairo_common::prover_types::simd::PackedFelt252Width27;
@@ -166,10 +166,7 @@ mod tests {
 
     #[test]
     fn test_cube252() {
-        assert_eq!(
-            Cube252::deduce_output(into_felt252(3, 0)),
-            into_felt252(27, 0)
-        );
+        assert_eq!(Cube252::deduce_output(into_felt252(3, 0)), into_felt252(27, 0));
 
         assert_eq!(
             Cube252::deduce_output(into_felt252(1_u128 << 64, 0)),

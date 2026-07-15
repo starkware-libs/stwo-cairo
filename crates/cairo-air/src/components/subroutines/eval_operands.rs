@@ -18,7 +18,24 @@ impl EvalOperands {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [eval_operands_input_pc, eval_operands_input_ap, eval_operands_input_fp, eval_operands_input_dst_base_fp, eval_operands_input_op0_base_fp, eval_operands_input_op1_imm, eval_operands_input_op1_base_fp, eval_operands_input_op1_base_ap, eval_operands_input_res_add, eval_operands_input_res_mul, eval_operands_input_pc_update_jnz, eval_operands_input_op1_base_op0, eval_operands_input_res_op1, eval_operands_input_offset0, eval_operands_input_offset1, eval_operands_input_offset2]: [E::F; 16],
+        [
+            eval_operands_input_pc,
+            eval_operands_input_ap,
+            eval_operands_input_fp,
+            eval_operands_input_dst_base_fp,
+            eval_operands_input_op0_base_fp,
+            eval_operands_input_op1_imm,
+            eval_operands_input_op1_base_fp,
+            eval_operands_input_op1_base_ap,
+            eval_operands_input_res_add,
+            eval_operands_input_res_mul,
+            eval_operands_input_pc_update_jnz,
+            eval_operands_input_op1_base_op0,
+            eval_operands_input_res_op1,
+            eval_operands_input_offset0,
+            eval_operands_input_offset1,
+            eval_operands_input_offset2,
+        ]: [E::F; 16],
         enabler: E::F,
         dst_src_col0: E::F,
         dst_id_col1: E::F,

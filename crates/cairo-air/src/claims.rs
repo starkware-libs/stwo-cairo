@@ -8,7 +8,7 @@ use stwo::core::pcs::TreeVec;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 
 use super::flat_claims::FlatClaim;
-use crate::air::{accumulate_relation_uses, PublicData, RelationUsesDict};
+use crate::air::{PublicData, RelationUsesDict, accumulate_relation_uses};
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
 use crate::components::memory_id_to_big::accumulate_relation_memory;
 use crate::components::*;
@@ -230,11 +230,7 @@ impl CairoClaim {
             )
         });
         self.blake_round.as_ref().inspect(|c| {
-            accumulate_relation_uses(
-                relation_uses,
-                blake_round::RELATION_USES_PER_ROW,
-                c.log_size,
-            )
+            accumulate_relation_uses(relation_uses, blake_round::RELATION_USES_PER_ROW, c.log_size)
         });
         self.blake_g.as_ref().inspect(|c| {
             accumulate_relation_uses(relation_uses, blake_g::RELATION_USES_PER_ROW, c.log_size)
@@ -316,15 +312,13 @@ impl CairoClaim {
                 c.log_size,
             )
         });
-        self.pedersen_aggregator_window_bits_18
-            .as_ref()
-            .inspect(|c| {
-                accumulate_relation_uses(
-                    relation_uses,
-                    pedersen_aggregator_window_bits_18::RELATION_USES_PER_ROW,
-                    c.log_size,
-                )
-            });
+        self.pedersen_aggregator_window_bits_18.as_ref().inspect(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                pedersen_aggregator_window_bits_18::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
         self.partial_ec_mul_window_bits_18.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
@@ -332,15 +326,13 @@ impl CairoClaim {
                 c.log_size,
             )
         });
-        self.pedersen_aggregator_window_bits_9
-            .as_ref()
-            .inspect(|c| {
-                accumulate_relation_uses(
-                    relation_uses,
-                    pedersen_aggregator_window_bits_9::RELATION_USES_PER_ROW,
-                    c.log_size,
-                )
-            });
+        self.pedersen_aggregator_window_bits_9.as_ref().inspect(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                pedersen_aggregator_window_bits_9::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
         self.partial_ec_mul_window_bits_9.as_ref().inspect(|c| {
             accumulate_relation_uses(
                 relation_uses,
@@ -398,210 +390,86 @@ impl CairoClaim {
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let mut log_sizes_list = vec![];
-        self.add_opcode
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.add_opcode_small
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.add_ap_opcode
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.assert_eq_opcode
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.assert_eq_opcode_imm
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.assert_eq_opcode_double_deref
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.blake_compress_opcode
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.call_opcode_abs
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.call_opcode_rel_imm
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.generic_opcode
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.jnz_opcode_non_taken
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.jnz_opcode_taken
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.jump_opcode_abs
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.jump_opcode_double_deref
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.jump_opcode_rel
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.jump_opcode_rel_imm
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.mul_opcode
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.mul_opcode_small
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.qm_31_add_mul_opcode
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.ret_opcode
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.verify_instruction
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.blake_round
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.blake_g
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.blake_round_sigma
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.triple_xor_32
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.verify_bitwise_xor_12
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.add_mod_builtin
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.bitwise_builtin
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.mul_mod_builtin
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.pedersen_builtin
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.add_opcode.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.add_opcode_small.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.add_ap_opcode.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.assert_eq_opcode.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.assert_eq_opcode_imm.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.assert_eq_opcode_double_deref.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.blake_compress_opcode.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.call_opcode_abs.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.call_opcode_rel_imm.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.generic_opcode.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.jnz_opcode_non_taken.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.jnz_opcode_taken.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.jump_opcode_abs.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.jump_opcode_double_deref.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.jump_opcode_rel.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.jump_opcode_rel_imm.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.mul_opcode.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.mul_opcode_small.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.qm_31_add_mul_opcode.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.ret_opcode.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.verify_instruction.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.blake_round.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.blake_g.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.blake_round_sigma.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.triple_xor_32.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.verify_bitwise_xor_12.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.add_mod_builtin.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.bitwise_builtin.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.mul_mod_builtin.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.pedersen_builtin.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
         self.pedersen_builtin_narrow_windows
             .as_ref()
             .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.poseidon_builtin
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.range_check96_builtin
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.range_check_builtin
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.ec_op_builtin
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.partial_ec_mul_generic
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.poseidon_builtin.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check96_builtin.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_builtin.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.ec_op_builtin.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.partial_ec_mul_generic.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
         self.pedersen_aggregator_window_bits_18
             .as_ref()
             .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.partial_ec_mul_window_bits_18
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.partial_ec_mul_window_bits_18.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
         self.pedersen_points_table_window_bits_18
             .as_ref()
             .inspect(|c| log_sizes_list.push(c.log_sizes()));
         self.pedersen_aggregator_window_bits_9
             .as_ref()
             .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.partial_ec_mul_window_bits_9
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.partial_ec_mul_window_bits_9.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
         self.pedersen_points_table_window_bits_9
             .as_ref()
             .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.poseidon_aggregator
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.poseidon_aggregator.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
         self.poseidon_3_partial_rounds_chain
             .as_ref()
             .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.poseidon_full_round_chain
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.cube_252
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.poseidon_round_keys
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.range_check_252_width_27
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.memory_address_to_id
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.memory_id_to_big
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.memory_id_to_small
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.range_check_6
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.range_check_8
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.range_check_11
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.range_check_12
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.range_check_18
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.range_check_20
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.range_check_4_3
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.range_check_4_4
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.range_check_9_9
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.range_check_7_2_5
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.range_check_3_6_6_3
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.range_check_4_4_4_4
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.range_check_3_3_3_3_3
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.verify_bitwise_xor_4
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.verify_bitwise_xor_7
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.verify_bitwise_xor_8
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        self.verify_bitwise_xor_9
-            .as_ref()
-            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.poseidon_full_round_chain.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.cube_252.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.poseidon_round_keys.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_252_width_27.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.memory_address_to_id.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.memory_id_to_big.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.memory_id_to_small.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_6.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_8.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_11.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_12.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_18.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_20.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_4_3.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_4_4.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_9_9.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_7_2_5.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_3_6_6_3.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_4_4_4_4.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_3_3_3_3_3.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.verify_bitwise_xor_4.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.verify_bitwise_xor_7.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.verify_bitwise_xor_8.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.verify_bitwise_xor_9.as_ref().inspect(|c| log_sizes_list.push(c.log_sizes()));
         TreeVec::concat_cols(log_sizes_list.into_iter())
     }
 
@@ -909,10 +777,8 @@ impl CairoClaim {
             component_log_sizes.push(*log_size);
             component_enable_bits.push(true);
         }
-        component_enable_bits.extend(std::iter::repeat_n(
-            false,
-            MEMORY_ADDRESS_TO_ID_SPLIT - big_log_sizes.len(),
-        ));
+        component_enable_bits
+            .extend(std::iter::repeat_n(false, MEMORY_ADDRESS_TO_ID_SPLIT - big_log_sizes.len()));
         if let Some(c) = self.memory_id_to_small {
             component_log_sizes.push(c.log_size);
             component_enable_bits.push(true);
@@ -1266,10 +1132,8 @@ impl CairoInteractionClaim {
         if let Some(c) = self.memory_address_to_id {
             claimed_sums.push(c.claimed_sum);
         }
-        let memory_id_to_big::InteractionClaim {
-            big_claimed_sums,
-            claimed_sum: _,
-        } = self.memory_id_to_big.as_ref().unwrap();
+        let memory_id_to_big::InteractionClaim { big_claimed_sums, claimed_sum: _ } =
+            self.memory_id_to_big.as_ref().unwrap();
         assert!(big_claimed_sums.len() <= MEMORY_ADDRESS_TO_ID_SPLIT);
         for claimed_sum in big_claimed_sums {
             claimed_sums.push(*claimed_sum);
@@ -1352,75 +1216,51 @@ pub fn lookup_sum(
     interaction_claim.assert_eq_opcode.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
-    interaction_claim
-        .assert_eq_opcode_imm
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .assert_eq_opcode_double_deref
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .blake_compress_opcode
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
+    interaction_claim.assert_eq_opcode_imm.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.assert_eq_opcode_double_deref.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.blake_compress_opcode.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
     interaction_claim.call_opcode_abs.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
-    interaction_claim
-        .call_opcode_rel_imm
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
+    interaction_claim.call_opcode_rel_imm.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
     interaction_claim.generic_opcode.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
-    interaction_claim
-        .jnz_opcode_non_taken
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
+    interaction_claim.jnz_opcode_non_taken.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
     interaction_claim.jnz_opcode_taken.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
     interaction_claim.jump_opcode_abs.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
-    interaction_claim
-        .jump_opcode_double_deref
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
+    interaction_claim.jump_opcode_double_deref.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
     interaction_claim.jump_opcode_rel.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
-    interaction_claim
-        .jump_opcode_rel_imm
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
+    interaction_claim.jump_opcode_rel_imm.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
     interaction_claim.mul_opcode.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
     interaction_claim.mul_opcode_small.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
-    interaction_claim
-        .qm_31_add_mul_opcode
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
+    interaction_claim.qm_31_add_mul_opcode.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
     interaction_claim.ret_opcode.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
@@ -1439,12 +1279,9 @@ pub fn lookup_sum(
     interaction_claim.triple_xor_32.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
-    interaction_claim
-        .verify_bitwise_xor_12
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
+    interaction_claim.verify_bitwise_xor_12.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
     interaction_claim.add_mod_builtin.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
@@ -1457,111 +1294,63 @@ pub fn lookup_sum(
     interaction_claim.pedersen_builtin.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
-    interaction_claim
-        .pedersen_builtin_narrow_windows
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
+    interaction_claim.pedersen_builtin_narrow_windows.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
     interaction_claim.poseidon_builtin.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
-    interaction_claim
-        .range_check96_builtin
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .range_check_builtin
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
+    interaction_claim.range_check96_builtin.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.range_check_builtin.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
     interaction_claim.ec_op_builtin.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
-    interaction_claim
-        .partial_ec_mul_generic
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .pedersen_aggregator_window_bits_18
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .partial_ec_mul_window_bits_18
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .pedersen_points_table_window_bits_18
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .pedersen_aggregator_window_bits_9
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .partial_ec_mul_window_bits_9
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .pedersen_points_table_window_bits_9
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .poseidon_aggregator
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .poseidon_3_partial_rounds_chain
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .poseidon_full_round_chain
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
+    interaction_claim.partial_ec_mul_generic.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.pedersen_aggregator_window_bits_18.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.partial_ec_mul_window_bits_18.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.pedersen_points_table_window_bits_18.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.pedersen_aggregator_window_bits_9.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.partial_ec_mul_window_bits_9.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.pedersen_points_table_window_bits_9.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.poseidon_aggregator.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.poseidon_3_partial_rounds_chain.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.poseidon_full_round_chain.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
     interaction_claim.cube_252.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
-    interaction_claim
-        .poseidon_round_keys
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .range_check_252_width_27
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .memory_address_to_id
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
+    interaction_claim.poseidon_round_keys.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.range_check_252_width_27.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.memory_address_to_id.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
     interaction_claim.memory_id_to_big.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
@@ -1598,47 +1387,26 @@ pub fn lookup_sum(
     interaction_claim.range_check_7_2_5.as_ref().inspect(|ic| {
         sum += ic.claimed_sum;
     });
-    interaction_claim
-        .range_check_3_6_6_3
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .range_check_4_4_4_4
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .range_check_3_3_3_3_3
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .verify_bitwise_xor_4
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .verify_bitwise_xor_7
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .verify_bitwise_xor_8
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
-    interaction_claim
-        .verify_bitwise_xor_9
-        .as_ref()
-        .inspect(|ic| {
-            sum += ic.claimed_sum;
-        });
+    interaction_claim.range_check_3_6_6_3.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.range_check_4_4_4_4.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.range_check_3_3_3_3_3.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.verify_bitwise_xor_4.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.verify_bitwise_xor_7.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.verify_bitwise_xor_8.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.verify_bitwise_xor_9.as_ref().inspect(|ic| {
+        sum += ic.claimed_sum;
+    });
     sum
 }

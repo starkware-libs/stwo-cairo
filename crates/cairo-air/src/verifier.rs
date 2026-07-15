@@ -7,46 +7,31 @@ use stwo::core::channel::{Channel, MerkleChannel};
 use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::pcs::CommitmentSchemeVerifier;
-use stwo::core::verifier::{verify_ex, VerificationError};
+use stwo::core::verifier::{VerificationError, verify_ex};
 use stwo_cairo_common::builtins::*;
 use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, LOG_MEMORY_ADDRESS_BOUND};
 use stwo_cairo_common::prover_types::cpu::{CasmState, PRIME};
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
 use thiserror::Error;
-use tracing::{span, Level};
+use tracing::{Level, span};
 
+use crate::CairoProofForRustVerifier;
 use crate::air::{MemorySection, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange};
 use crate::cairo_components::CairoComponents;
-use crate::claims::{lookup_sum, CairoClaim};
+use crate::claims::{CairoClaim, lookup_sum};
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
 use crate::components::{
     add_mod_builtin, bitwise_builtin, ec_op_builtin, mul_mod_builtin, pedersen_builtin,
-    pedersen_builtin_narrow_windows, poseidon_builtin, range_check96_builtin, range_check_builtin,
+    pedersen_builtin_narrow_windows, poseidon_builtin, range_check_builtin, range_check96_builtin,
 };
 use crate::relations::CommonLookupElements;
-use crate::CairoProofForRustVerifier;
 
 fn verify_claim(claim: &CairoClaim) {
     let PublicData {
         public_memory:
-            PublicMemory {
-                program,
-                public_segments,
-                output: _output,
-                safe_call_ids: _safe_call_ids,
-            },
-        initial_state:
-            CasmState {
-                pc: initial_pc,
-                ap: initial_ap,
-                fp: initial_fp,
-            },
-        final_state:
-            CasmState {
-                pc: final_pc,
-                ap: final_ap,
-                fp: final_fp,
-            },
+            PublicMemory { program, public_segments, output: _output, safe_call_ids: _safe_call_ids },
+        initial_state: CasmState { pc: initial_pc, ap: initial_ap, fp: initial_fp },
+        final_state: CasmState { pc: final_pc, ap: final_ap, fp: final_fp },
     } = &claim.public_data;
 
     verify_builtins(
@@ -67,7 +52,8 @@ fn verify_claim(claim: &CairoClaim) {
     assert_eq!(*initial_pc, BaseField::one());
     assert!(
         *initial_pc + BaseField::from(2) < *initial_ap,
-        "Initial pc + 2 must be less than initial ap, but got initial_pc: {initial_pc}, initial_ap: {initial_ap}"
+        "Initial pc + 2 must be less than initial ap, but got initial_pc: {initial_pc}, \
+         initial_ap: {initial_ap}"
     );
     assert_eq!(initial_fp, final_fp);
     assert_eq!(initial_fp, initial_ap);
@@ -98,10 +84,8 @@ fn check_relation_uses(relation_uses: &HashMap<&'static str, u64>) {
     let all_relation_uses_pretty = to_string_pretty(&relation_uses).unwrap();
     log::info!("All relation uses:\n{all_relation_uses_pretty}");
 
-    let outstanding_relations = relation_uses
-        .iter()
-        .filter(|&(_, &uses)| uses >= PRIME.into())
-        .collect::<Vec<_>>();
+    let outstanding_relations =
+        relation_uses.iter().filter(|&(_, &uses)| uses >= PRIME.into()).collect::<Vec<_>>();
 
     if !outstanding_relations.is_empty() {
         let outstanding_relations_pretty = to_string_pretty(&outstanding_relations).unwrap();
@@ -147,16 +131,10 @@ fn verify_builtins(
     } = *segment_ranges;
     // Check that non-supported builtins aren't used.
     if let Some(ecdsa) = ecdsa {
-        assert_eq!(
-            ecdsa.start_ptr.value, ecdsa.stop_ptr.value,
-            "ECDSA segment is not empty"
-        );
+        assert_eq!(ecdsa.start_ptr.value, ecdsa.stop_ptr.value, "ECDSA segment is not empty");
     }
     if let Some(keccak) = keccak {
-        assert_eq!(
-            keccak.start_ptr.value, keccak.stop_ptr.value,
-            "Keccak segment is not empty"
-        );
+        assert_eq!(keccak.start_ptr.value, keccak.stop_ptr.value, "Keccak segment is not empty");
     }
 
     // Output builtin.
@@ -192,14 +170,11 @@ fn verify_builtins(
     );
     assert!(
         !(pedersen_builtin_claim.is_some() && pedersen_builtin_narrow_windows_claim.is_some()),
-        "Both pedersen_builtin_claim and pedersen_builtin_narrow_windows_claim builtins cannot be used together");
+        "Both pedersen_builtin_claim and pedersen_builtin_narrow_windows_claim builtins cannot be \
+         used together"
+    );
     if let Some(claim) = pedersen_builtin_claim {
-        check_builtin(
-            Some(claim.log_size),
-            pedersen,
-            "pedersen",
-            PEDERSEN_BUILTIN_MEMORY_CELLS,
-        );
+        check_builtin(Some(claim.log_size), pedersen, "pedersen", PEDERSEN_BUILTIN_MEMORY_CELLS);
     } else {
         check_builtin(
             pedersen_builtin_narrow_windows_claim.map(|claim| claim.log_size),
@@ -256,22 +231,14 @@ fn check_builtin(
     let segment_end = start_ptr + (1 << log_size) * n_cells as u32;
     assert!(
         (stop_ptr - start_ptr).is_multiple_of(n_cells as u32),
-        "Builtin segment range must divisible by {n_cells} cells, but got start_ptr: {start_ptr}, stop_ptr: {stop_ptr}"
+        "Builtin segment range must divisible by {n_cells} cells, but got start_ptr: {start_ptr}, \
+         stop_ptr: {stop_ptr}"
     );
 
     // Check that start_ptr <= stop_ptr <= segment_end < 2**31.
-    assert!(
-        start_ptr <= stop_ptr,
-        "Range start should be less than or equal to range stop"
-    );
-    assert!(
-        stop_ptr <= segment_end,
-        "Builtin stop pointer must be within the builtin segment"
-    );
-    assert!(
-        segment_end < 1 << 31,
-        "segment_end must be less than 2^31, but got {segment_end}"
-    );
+    assert!(start_ptr <= stop_ptr, "Range start should be less than or equal to range stop");
+    assert!(stop_ptr <= segment_end, "Builtin stop pointer must be within the builtin segment");
+    assert!(segment_end < 1 << 31, "segment_end must be less than 2^31, but got {segment_end}");
 }
 
 /// Logup security is defined by the `QM31` space (~124 bits) + `INTERACTION_POW_BITS` -
@@ -318,9 +285,7 @@ pub fn verify_cairo_ex<MC: MerkleChannel>(
     let mut log_sizes = claim.log_sizes();
     log_sizes.insert(
         PREPROCESSED_TRACE_IDX,
-        preprocessed_trace_variant
-            .to_preprocessed_trace()
-            .log_sizes(),
+        preprocessed_trace_variant.to_preprocessed_trace().log_sizes(),
     );
 
     // Preproccessed trace.

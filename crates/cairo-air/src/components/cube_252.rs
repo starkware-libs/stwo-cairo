@@ -7,70 +7,22 @@ use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 141;
 pub const RELATION_USES_PER_ROW: [RelationUse; 16] = [
-    RelationUse {
-        relation_id: "RangeCheck_20",
-        uses: 8,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_B",
-        uses: 8,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_C",
-        uses: 8,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_D",
-        uses: 8,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_E",
-        uses: 6,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_F",
-        uses: 6,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_G",
-        uses: 6,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_H",
-        uses: 6,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9",
-        uses: 6,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_B",
-        uses: 6,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_C",
-        uses: 6,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_D",
-        uses: 6,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_E",
-        uses: 6,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_F",
-        uses: 6,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_G",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_H",
-        uses: 3,
-    },
+    RelationUse { relation_id: "RangeCheck_20", uses: 8 },
+    RelationUse { relation_id: "RangeCheck_20_B", uses: 8 },
+    RelationUse { relation_id: "RangeCheck_20_C", uses: 8 },
+    RelationUse { relation_id: "RangeCheck_20_D", uses: 8 },
+    RelationUse { relation_id: "RangeCheck_20_E", uses: 6 },
+    RelationUse { relation_id: "RangeCheck_20_F", uses: 6 },
+    RelationUse { relation_id: "RangeCheck_20_G", uses: 6 },
+    RelationUse { relation_id: "RangeCheck_20_H", uses: 6 },
+    RelationUse { relation_id: "RangeCheck_9_9", uses: 6 },
+    RelationUse { relation_id: "RangeCheck_9_9_B", uses: 6 },
+    RelationUse { relation_id: "RangeCheck_9_9_C", uses: 6 },
+    RelationUse { relation_id: "RangeCheck_9_9_D", uses: 6 },
+    RelationUse { relation_id: "RangeCheck_9_9_E", uses: 6 },
+    RelationUse { relation_id: "RangeCheck_9_9_F", uses: 6 },
+    RelationUse { relation_id: "RangeCheck_9_9_G", uses: 3 },
+    RelationUse { relation_id: "RangeCheck_9_9_H", uses: 3 },
 ];
 
 pub struct Eval {
@@ -259,42 +211,52 @@ impl FrameworkEval for Eval {
         eval.add_constraint(((enabler_col0.clone() * enabler_col0.clone()) - enabler_col0.clone()));
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_2, felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_5, felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_8, felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_11, felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_14, felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_17, felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_20, felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_23, felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_26, felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_27] =
-            Felt252UnpackFrom27RangeCheckOutput::evaluate(
-                [
-                    input_limb_0_col1.clone(),
-                    input_limb_1_col2.clone(),
-                    input_limb_2_col3.clone(),
-                    input_limb_3_col4.clone(),
-                    input_limb_4_col5.clone(),
-                    input_limb_5_col6.clone(),
-                    input_limb_6_col7.clone(),
-                    input_limb_7_col8.clone(),
-                    input_limb_8_col9.clone(),
-                    input_limb_9_col10.clone(),
-                ],
-                enabler_col0.clone(),
-                unpacked_limb_0_col11.clone(),
-                unpacked_limb_1_col12.clone(),
-                unpacked_limb_3_col13.clone(),
-                unpacked_limb_4_col14.clone(),
-                unpacked_limb_6_col15.clone(),
-                unpacked_limb_7_col16.clone(),
-                unpacked_limb_9_col17.clone(),
-                unpacked_limb_10_col18.clone(),
-                unpacked_limb_12_col19.clone(),
-                unpacked_limb_13_col20.clone(),
-                unpacked_limb_15_col21.clone(),
-                unpacked_limb_16_col22.clone(),
-                unpacked_limb_18_col23.clone(),
-                unpacked_limb_19_col24.clone(),
-                unpacked_limb_21_col25.clone(),
-                unpacked_limb_22_col26.clone(),
-                unpacked_limb_24_col27.clone(),
-                unpacked_limb_25_col28.clone(),
-                &self.common_lookup_elements,
-                &mut eval,
-            );
+        let [
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_2,
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_5,
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_8,
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_11,
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_14,
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_17,
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_20,
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_23,
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_26,
+            felt_252_unpack_from_27_range_check_output_output_tmp_715f4_2_limb_27,
+        ] = Felt252UnpackFrom27RangeCheckOutput::evaluate(
+            [
+                input_limb_0_col1.clone(),
+                input_limb_1_col2.clone(),
+                input_limb_2_col3.clone(),
+                input_limb_3_col4.clone(),
+                input_limb_4_col5.clone(),
+                input_limb_5_col6.clone(),
+                input_limb_6_col7.clone(),
+                input_limb_7_col8.clone(),
+                input_limb_8_col9.clone(),
+                input_limb_9_col10.clone(),
+            ],
+            enabler_col0.clone(),
+            unpacked_limb_0_col11.clone(),
+            unpacked_limb_1_col12.clone(),
+            unpacked_limb_3_col13.clone(),
+            unpacked_limb_4_col14.clone(),
+            unpacked_limb_6_col15.clone(),
+            unpacked_limb_7_col16.clone(),
+            unpacked_limb_9_col17.clone(),
+            unpacked_limb_10_col18.clone(),
+            unpacked_limb_12_col19.clone(),
+            unpacked_limb_13_col20.clone(),
+            unpacked_limb_15_col21.clone(),
+            unpacked_limb_16_col22.clone(),
+            unpacked_limb_18_col23.clone(),
+            unpacked_limb_19_col24.clone(),
+            unpacked_limb_21_col25.clone(),
+            unpacked_limb_22_col26.clone(),
+            unpacked_limb_24_col27.clone(),
+            unpacked_limb_25_col28.clone(),
+            &self.common_lookup_elements,
+            &mut eval,
+        );
         Mul252::evaluate(
             [
                 unpacked_limb_0_col11.clone(),

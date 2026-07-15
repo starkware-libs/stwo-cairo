@@ -6,12 +6,8 @@ use stwo_cairo_common::prover_types::cpu::{Felt252, Felt252Width27, M31};
 use stwo_cairo_common::prover_types::simd::{PackedFelt252, PackedFelt252Width27};
 
 type PartialEcMulGenericState = (Felt252Width27, [Felt252; 2], [Felt252; 2], M31);
-type PackedPartialEcMulGenericState = (
-    PackedFelt252Width27,
-    [PackedFelt252; 2],
-    [PackedFelt252; 2],
-    PackedM31,
-);
+type PackedPartialEcMulGenericState =
+    (PackedFelt252Width27, [PackedFelt252; 2], [PackedFelt252; 2], PackedM31);
 
 #[derive(Debug)]
 pub struct PartialEcMulGeneric {}
@@ -38,10 +34,7 @@ impl PartialEcMulGeneric {
             accumulator
         };
 
-        let double_q_point = q_point
-            .double()
-            .to_affine()
-            .expect("Double q is not infinity");
+        let double_q_point = q_point.double().to_affine().expect("Double q is not infinity");
         let new_q = [double_q_point.x().into(), double_q_point.y().into()];
 
         let (new_m, new_counter) = if counter.0 == 0 {
@@ -70,11 +63,7 @@ impl PartialEcMulGeneric {
             )
         };
 
-        (
-            chain,
-            round + M31::one(),
-            (new_m, new_q, new_accumulator, new_counter),
-        )
+        (chain, round + M31::one(), (new_m, new_q, new_accumulator, new_counter))
     }
 }
 
@@ -87,9 +76,11 @@ impl PackedPartialEcMulGeneric {
         input: (PackedM31, PackedM31, PackedPartialEcMulGenericState),
     ) -> Box<(PackedM31, PackedM31, PackedPartialEcMulGenericState)> {
         let unpacked_inputs = input.unpack();
-        Box::new(<_ as Pack>::pack(unpacked_inputs.map(
-            |(chain, round, state)| PartialEcMulGeneric::deduce_output(chain, round, state),
-        )))
+        Box::new(<_ as Pack>::pack(
+            unpacked_inputs.map(|(chain, round, state)| {
+                PartialEcMulGeneric::deduce_output(chain, round, state)
+            }),
+        ))
     }
 }
 
@@ -145,10 +136,7 @@ mod tests {
         let expected_accumulator2 = (p1.clone() + p3).to_affine().unwrap();
         assert_eq!(
             accumulator2,
-            [
-                expected_accumulator2.x().into(),
-                expected_accumulator2.y().into()
-            ]
+            [expected_accumulator2.x().into(), expected_accumulator2.y().into()]
         );
 
         let (chain3, round3, (m3, q3, accumulator3, counter3)) =
@@ -197,12 +185,7 @@ mod tests {
         assert_eq!(
             m_spec2,
             Felt252Width27 {
-                limbs: [
-                    0x3579bdff_db97530f,
-                    0xca864200_2468acf1,
-                    0x3579bdff_db97530e,
-                    0x2468acf1,
-                ]
+                limbs: [0x3579bdff_db97530f, 0xca864200_2468acf1, 0x3579bdff_db97530e, 0x2468acf1,]
             }
         );
 

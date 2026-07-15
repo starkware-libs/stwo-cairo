@@ -24,11 +24,7 @@ impl ReadId {
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
             E::EF::from(enabler.clone()),
-            &[
-                M31_1444891767.clone(),
-                read_id_input.clone(),
-                id_col0.clone(),
-            ],
+            &[M31_1444891767.clone(), read_id_input.clone(), id_col0.clone()],
         ));
 
         []

@@ -4,34 +4,13 @@ use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 20;
 pub const RELATION_USES_PER_ROW: [RelationUse; 7] = [
-    RelationUse {
-        relation_id: "RangeCheck_18",
-        uses: 7,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_18_B",
-        uses: 2,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_B",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_C",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_D",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_E",
-        uses: 1,
-    },
+    RelationUse { relation_id: "RangeCheck_18", uses: 7 },
+    RelationUse { relation_id: "RangeCheck_18_B", uses: 2 },
+    RelationUse { relation_id: "RangeCheck_9_9", uses: 1 },
+    RelationUse { relation_id: "RangeCheck_9_9_B", uses: 1 },
+    RelationUse { relation_id: "RangeCheck_9_9_C", uses: 1 },
+    RelationUse { relation_id: "RangeCheck_9_9_D", uses: 1 },
+    RelationUse { relation_id: "RangeCheck_9_9_E", uses: 1 },
 ];
 
 pub struct Eval {
@@ -107,11 +86,7 @@ impl FrameworkEval for Eval {
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
             E::EF::from(enabler_col0.clone()),
-            &[
-                M31_517791011.clone(),
-                limb_0_high_part_col11.clone(),
-                limb_1_low_part_col12.clone(),
-            ],
+            &[M31_517791011.clone(), limb_0_high_part_col11.clone(), limb_1_low_part_col12.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(
@@ -219,11 +194,7 @@ impl FrameworkEval for Eval {
         eval.add_to_relation(RelationEntry::new(
             &self.common_lookup_elements,
             E::EF::from(enabler_col0.clone()),
-            &[
-                M31_1847459238.clone(),
-                limb_8_high_part_col19.clone(),
-                input_limb_9_col10.clone(),
-            ],
+            &[M31_1847459238.clone(), limb_8_high_part_col19.clone(), input_limb_9_col10.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(

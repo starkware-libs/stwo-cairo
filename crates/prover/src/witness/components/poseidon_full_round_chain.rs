@@ -25,11 +25,7 @@ impl ClaimGenerator {
         cube_252_state: &cube_252::ClaimGenerator,
         poseidon_round_keys_state: &poseidon_round_keys::ClaimGenerator,
         range_check_3_3_3_3_3_state: &range_check_3_3_3_3_3::ClaimGenerator,
-    ) -> (
-        ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
-        InteractionClaimGenerator,
-    ) {
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator) {
         let mut packed_inputs = self.packed_inputs.into_inner().unwrap();
         let remainder_inputs = self.remainder_inputs.into_inner().unwrap();
         let n_active_rows = packed_inputs.len() * N_LANES + remainder_inputs.len();
@@ -57,14 +53,7 @@ impl ClaimGenerator {
             add_inputs(range_check_3_3_3_3_3_state, &inputs, n_active_rows, 0);
         }
 
-        (
-            trace,
-            Claim { log_size },
-            InteractionClaimGenerator {
-                log_size,
-                lookup_data,
-            },
-        )
+        (trace, Claim { log_size }, InteractionClaimGenerator { log_size, lookup_data })
     }
 }
 
@@ -97,11 +86,7 @@ fn write_trace_simd(
     cube_252_state: &cube_252::ClaimGenerator,
     poseidon_round_keys_state: &poseidon_round_keys::ClaimGenerator,
     range_check_3_3_3_3_3_state: &range_check_3_3_3_3_3::ClaimGenerator,
-) -> (
-    ComponentTrace<N_TRACE_COLUMNS>,
-    LookupData,
-    SubComponentInputs,
-) {
+) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData, SubComponentInputs) {
     let log_n_packed_rows = inputs.len().ilog2();
     let log_size = log_n_packed_rows + LOG_N_LANES;
     let (mut trace, mut lookup_data, mut sub_component_inputs) = unsafe {
@@ -1022,10 +1007,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
 
         // Sum logup terms in pairs.

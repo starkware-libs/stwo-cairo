@@ -4,12 +4,12 @@ use stwo::core::channel::MerkleChannel;
 use stwo::core::fields::m31::BaseField;
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
-use stwo::prover::backend::simd::SimdBackend;
-use stwo::prover::backend::BackendForChannel;
-use stwo::prover::mempool::BaseColumnPool;
-use stwo::prover::poly::circle::{CircleEvaluation, PolyOps};
-use stwo::prover::poly::BitReversedOrder;
 use stwo::prover::CommitmentTreeProver;
+use stwo::prover::backend::BackendForChannel;
+use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::mempool::BaseColumnPool;
+use stwo::prover::poly::BitReversedOrder;
+use stwo::prover::poly::circle::{CircleEvaluation, PolyOps};
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
     PreProcessedTrace, PreProcessedTraceVariant,
 };
@@ -32,16 +32,10 @@ where
     let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace());
 
     // Precompute twiddles for the commitment scheme.
-    let max_log_size = preprocessed_trace
-        .log_sizes()
-        .into_iter()
-        .max()
-        .unwrap()
-        .max(min_lifting_log_size);
+    let max_log_size =
+        preprocessed_trace.log_sizes().into_iter().max().unwrap().max(min_lifting_log_size);
     let twiddles = SimdBackend::precompute_twiddles(
-        CanonicCoset::new(max_log_size + log_blowup_factor)
-            .circle_domain()
-            .half_coset,
+        CanonicCoset::new(max_log_size + log_blowup_factor).circle_domain().half_coset,
     );
 
     // Generate the commitment tree.
@@ -61,11 +55,7 @@ where
 pub fn gen_trace(
     preprocessed_trace: Arc<PreProcessedTrace>,
 ) -> Vec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>> {
-    preprocessed_trace
-        .columns
-        .iter()
-        .map(|c| c.gen_column_simd())
-        .collect()
+    preprocessed_trace.columns.iter().map(|c| c.gen_column_simd()).collect()
 }
 
 #[cfg(feature = "slow-tests")]

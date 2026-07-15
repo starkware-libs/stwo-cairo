@@ -4,9 +4,9 @@ use anyhow::Result;
 use cairo_air::utils::ProofFormat;
 use cairo_vm::types::layout_name::LayoutName;
 use clap::Parser;
-use stwo_cairo_dev_utils::vm_utils::{run_and_adapt, ProgramType};
+use stwo_cairo_dev_utils::vm_utils::{ProgramType, run_and_adapt};
 use stwo_cairo_prover::prover::create_and_serialize_proof;
-use tracing::{span, Level};
+use tracing::{Level, span};
 use tracing_subscriber::fmt::format::FmtSpan;
 
 // Command line arguments for 'prove_from_compiled_program'.
@@ -65,9 +65,7 @@ struct Args {
 
 fn main() -> Result<()> {
     let args = Args::parse();
-    tracing_subscriber::fmt()
-        .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
-        .init();
+    tracing_subscriber::fmt().with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE).init();
     let _span = span!(Level::INFO, "run_and_prove").entered();
 
     let prover_input = run_and_adapt(

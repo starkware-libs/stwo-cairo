@@ -19,9 +19,7 @@ pub struct ClaimGenerator {
 impl ClaimGenerator {
     pub fn new(preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
         let mults = from_fn(|_| AtomicMultiplicityColumn::new(1 << LOG_SIZE));
-        let column_ids = [PreProcessedColumnId {
-            id: "seq_15".to_owned(),
-        }];
+        let column_ids = [PreProcessedColumnId { id: "seq_15".to_owned() }];
 
         Self {
             mults,
@@ -32,16 +30,8 @@ impl ClaimGenerator {
 
     pub fn write_trace(
         self,
-    ) -> (
-        ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
-        InteractionClaimGenerator,
-    ) {
-        let mults = self
-            .mults
-            .into_iter()
-            .map(|v| v.into_simd_vec())
-            .collect::<Vec<_>>();
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator) {
+        let mults = self.mults.into_iter().map(|v| v.into_simd_vec()).collect::<Vec<_>>();
 
         let (trace, lookup_data) = write_trace_simd(&self.preprocessed_trace, mults);
 
@@ -83,182 +73,122 @@ fn write_trace_simd(
     };
 
     let M31_1791500038 = PackedM31::broadcast(M31::from(1791500038));
-    let seq_15 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "seq_15".to_owned(),
-    });
-    let pedersen_points_small_0 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_0".to_owned(),
-    });
-    let pedersen_points_small_1 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_1".to_owned(),
-    });
-    let pedersen_points_small_2 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_2".to_owned(),
-    });
-    let pedersen_points_small_3 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_3".to_owned(),
-    });
-    let pedersen_points_small_4 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_4".to_owned(),
-    });
-    let pedersen_points_small_5 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_5".to_owned(),
-    });
-    let pedersen_points_small_6 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_6".to_owned(),
-    });
-    let pedersen_points_small_7 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_7".to_owned(),
-    });
-    let pedersen_points_small_8 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_8".to_owned(),
-    });
-    let pedersen_points_small_9 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_9".to_owned(),
-    });
-    let pedersen_points_small_10 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_10".to_owned(),
-    });
-    let pedersen_points_small_11 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_11".to_owned(),
-    });
-    let pedersen_points_small_12 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_12".to_owned(),
-    });
-    let pedersen_points_small_13 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_13".to_owned(),
-    });
-    let pedersen_points_small_14 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_14".to_owned(),
-    });
-    let pedersen_points_small_15 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_15".to_owned(),
-    });
-    let pedersen_points_small_16 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_16".to_owned(),
-    });
-    let pedersen_points_small_17 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_17".to_owned(),
-    });
-    let pedersen_points_small_18 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_18".to_owned(),
-    });
-    let pedersen_points_small_19 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_19".to_owned(),
-    });
-    let pedersen_points_small_20 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_20".to_owned(),
-    });
-    let pedersen_points_small_21 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_21".to_owned(),
-    });
-    let pedersen_points_small_22 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_22".to_owned(),
-    });
-    let pedersen_points_small_23 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_23".to_owned(),
-    });
-    let pedersen_points_small_24 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_24".to_owned(),
-    });
-    let pedersen_points_small_25 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_25".to_owned(),
-    });
-    let pedersen_points_small_26 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_26".to_owned(),
-    });
-    let pedersen_points_small_27 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_27".to_owned(),
-    });
-    let pedersen_points_small_28 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_28".to_owned(),
-    });
-    let pedersen_points_small_29 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_29".to_owned(),
-    });
-    let pedersen_points_small_30 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_30".to_owned(),
-    });
-    let pedersen_points_small_31 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_31".to_owned(),
-    });
-    let pedersen_points_small_32 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_32".to_owned(),
-    });
-    let pedersen_points_small_33 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_33".to_owned(),
-    });
-    let pedersen_points_small_34 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_34".to_owned(),
-    });
-    let pedersen_points_small_35 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_35".to_owned(),
-    });
-    let pedersen_points_small_36 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_36".to_owned(),
-    });
-    let pedersen_points_small_37 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_37".to_owned(),
-    });
-    let pedersen_points_small_38 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_38".to_owned(),
-    });
-    let pedersen_points_small_39 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_39".to_owned(),
-    });
-    let pedersen_points_small_40 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_40".to_owned(),
-    });
-    let pedersen_points_small_41 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_41".to_owned(),
-    });
-    let pedersen_points_small_42 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_42".to_owned(),
-    });
-    let pedersen_points_small_43 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_43".to_owned(),
-    });
-    let pedersen_points_small_44 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_44".to_owned(),
-    });
-    let pedersen_points_small_45 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_45".to_owned(),
-    });
-    let pedersen_points_small_46 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_46".to_owned(),
-    });
-    let pedersen_points_small_47 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_47".to_owned(),
-    });
-    let pedersen_points_small_48 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_48".to_owned(),
-    });
-    let pedersen_points_small_49 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_49".to_owned(),
-    });
-    let pedersen_points_small_50 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_50".to_owned(),
-    });
-    let pedersen_points_small_51 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_51".to_owned(),
-    });
-    let pedersen_points_small_52 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_52".to_owned(),
-    });
-    let pedersen_points_small_53 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_53".to_owned(),
-    });
-    let pedersen_points_small_54 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_54".to_owned(),
-    });
-    let pedersen_points_small_55 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "pedersen_points_small_55".to_owned(),
-    });
+    let seq_15 = preprocessed_trace.get_column(&PreProcessedColumnId { id: "seq_15".to_owned() });
+    let pedersen_points_small_0 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_0".to_owned() });
+    let pedersen_points_small_1 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_1".to_owned() });
+    let pedersen_points_small_2 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_2".to_owned() });
+    let pedersen_points_small_3 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_3".to_owned() });
+    let pedersen_points_small_4 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_4".to_owned() });
+    let pedersen_points_small_5 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_5".to_owned() });
+    let pedersen_points_small_6 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_6".to_owned() });
+    let pedersen_points_small_7 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_7".to_owned() });
+    let pedersen_points_small_8 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_8".to_owned() });
+    let pedersen_points_small_9 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_9".to_owned() });
+    let pedersen_points_small_10 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_10".to_owned() });
+    let pedersen_points_small_11 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_11".to_owned() });
+    let pedersen_points_small_12 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_12".to_owned() });
+    let pedersen_points_small_13 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_13".to_owned() });
+    let pedersen_points_small_14 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_14".to_owned() });
+    let pedersen_points_small_15 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_15".to_owned() });
+    let pedersen_points_small_16 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_16".to_owned() });
+    let pedersen_points_small_17 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_17".to_owned() });
+    let pedersen_points_small_18 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_18".to_owned() });
+    let pedersen_points_small_19 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_19".to_owned() });
+    let pedersen_points_small_20 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_20".to_owned() });
+    let pedersen_points_small_21 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_21".to_owned() });
+    let pedersen_points_small_22 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_22".to_owned() });
+    let pedersen_points_small_23 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_23".to_owned() });
+    let pedersen_points_small_24 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_24".to_owned() });
+    let pedersen_points_small_25 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_25".to_owned() });
+    let pedersen_points_small_26 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_26".to_owned() });
+    let pedersen_points_small_27 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_27".to_owned() });
+    let pedersen_points_small_28 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_28".to_owned() });
+    let pedersen_points_small_29 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_29".to_owned() });
+    let pedersen_points_small_30 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_30".to_owned() });
+    let pedersen_points_small_31 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_31".to_owned() });
+    let pedersen_points_small_32 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_32".to_owned() });
+    let pedersen_points_small_33 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_33".to_owned() });
+    let pedersen_points_small_34 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_34".to_owned() });
+    let pedersen_points_small_35 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_35".to_owned() });
+    let pedersen_points_small_36 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_36".to_owned() });
+    let pedersen_points_small_37 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_37".to_owned() });
+    let pedersen_points_small_38 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_38".to_owned() });
+    let pedersen_points_small_39 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_39".to_owned() });
+    let pedersen_points_small_40 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_40".to_owned() });
+    let pedersen_points_small_41 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_41".to_owned() });
+    let pedersen_points_small_42 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_42".to_owned() });
+    let pedersen_points_small_43 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_43".to_owned() });
+    let pedersen_points_small_44 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_44".to_owned() });
+    let pedersen_points_small_45 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_45".to_owned() });
+    let pedersen_points_small_46 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_46".to_owned() });
+    let pedersen_points_small_47 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_47".to_owned() });
+    let pedersen_points_small_48 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_48".to_owned() });
+    let pedersen_points_small_49 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_49".to_owned() });
+    let pedersen_points_small_50 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_50".to_owned() });
+    let pedersen_points_small_51 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_51".to_owned() });
+    let pedersen_points_small_52 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_52".to_owned() });
+    let pedersen_points_small_53 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_53".to_owned() });
+    let pedersen_points_small_54 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_54".to_owned() });
+    let pedersen_points_small_55 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "pedersen_points_small_55".to_owned() });
 
-    (trace.par_iter_mut(), lookup_data.par_iter_mut())
-        .into_par_iter()
-        .enumerate()
-        .for_each(|(row_index, (row, lookup_data))| {
+    (trace.par_iter_mut(), lookup_data.par_iter_mut()).into_par_iter().enumerate().for_each(
+        |(row_index, (row, lookup_data))| {
             let seq_15 = seq_15.packed_at(row_index);
             let pedersen_points_small_0 = pedersen_points_small_0.packed_at(row_index);
             let pedersen_points_small_1 = pedersen_points_small_1.packed_at(row_index);
@@ -379,7 +309,8 @@ fn write_trace_simd(
                 pedersen_points_small_55,
             ];
             *lookup_data.mults_0 = multiplicity_0_col0;
-        });
+        },
+    );
 
     (trace, lookup_data)
 }
@@ -397,10 +328,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(LOG_SIZE) };
 
         // Sum last logup term.

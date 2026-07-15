@@ -11,24 +11,20 @@ use stwo::core::pcs::{TreeSubspan, TreeVec};
 use stwo::core::utils::SliceExt;
 use stwo::core::vcs_lifted::blake2_merkle::{Blake2sM31MerkleChannel, Blake2sMerkleChannel};
 use stwo::prover::backend::simd::conversion::{Pack, Unpack};
-use stwo::prover::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
+use stwo::prover::backend::simd::m31::{LOG_N_LANES, N_LANES, PackedBaseField, PackedM31};
 use stwo::prover::backend::{Backend, BackendForChannel};
-use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
+use stwo::prover::poly::circle::CircleEvaluation;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
     PreProcessedTrace, PreProcessedTraceVariant,
 };
-use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
+use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
 use crate::witness::preprocessed_trace::generate_preprocessed_commitment_root;
 
 pub fn pack_values<T: Pack>(values: &[T]) -> Vec<T::SimdType> {
-    values
-        .checked_as_chunks::<N_LANES>()
-        .iter()
-        .map(|c| T::pack(*c))
-        .collect()
+    values.checked_as_chunks::<N_LANES>().iter().map(|c| T::pack(*c)).collect()
 }
 
 /// A column of multiplicities for lookup arguments. Allows increasing the multiplicity at a given
@@ -40,9 +36,7 @@ impl AtomicMultiplicityColumn {
     /// Creates a new `AtomicMultiplicityColumn` with the given size. The elements are initialized
     /// to 0.
     pub fn new(size: usize) -> Self {
-        Self {
-            data: vec![PackedBaseField::zeroed(); size.div_ceil(N_LANES)],
-        }
+        Self { data: vec![PackedBaseField::zeroed(); size.div_ceil(N_LANES)] }
     }
 
     /// Atomically increments the multiplicity address by 1.
@@ -114,11 +108,7 @@ impl<B: BackendForChannel<MC>, MC: MerkleChannel> TreeBuilder<B>
 fn tree_trace_cells(tree_log_sizes: TreeVec<Vec<u32>>) -> Vec<u64> {
     tree_log_sizes
         .iter()
-        .map(|tree| {
-            tree.iter()
-                .map(|col_log_size| 1 << col_log_size)
-                .sum::<u64>()
-        })
+        .map(|tree| tree.iter().map(|col_log_size| 1 << col_log_size).sum::<u64>())
         .collect()
 }
 
@@ -209,10 +199,7 @@ pub fn make_input_to_row<const N: usize>(
 ) -> HashMap<[M31; N], usize> {
     let mut result: HashMap<[M31; N], usize> = HashMap::new();
 
-    let columns = column_ids
-        .iter()
-        .map(|id| preprocessed_trace.get_column(id))
-        .collect_vec();
+    let columns = column_ids.iter().map(|id| preprocessed_trace.get_column(id)).collect_vec();
     let log_size = columns[0].log_size();
     assert!(
         columns.iter().all(|c| c.log_size() == log_size),
@@ -220,10 +207,8 @@ pub fn make_input_to_row<const N: usize>(
     );
 
     for packed_row in 0..(1 << (log_size - LOG_N_LANES)) {
-        let packed_values = columns
-            .iter()
-            .map(|c| c.packed_at(packed_row).to_array())
-            .collect_vec();
+        let packed_values =
+            columns.iter().map(|c| c.packed_at(packed_row).to_array()).collect_vec();
         for i in 0..N_LANES {
             let key: [M31; N] = packed_values
                 .iter()
@@ -315,10 +300,7 @@ mod tests {
         (0..n_threads).into_par_iter().for_each(|_| {
             (0..size * n_loops).for_each(|i| col.increase_at((i % size) as u32));
         });
-        let result = col
-            .into_simd_vec()
-            .into_iter()
-            .flat_map(|p| p.to_array().map(|v| v.0));
+        let result = col.into_simd_vec().into_iter().flat_map(|p| p.to_array().map(|v| v.0));
 
         for value in result {
             assert_eq!(value, n_threads * n_loops as u32);
@@ -357,14 +339,8 @@ mod tests {
     fn test_enabler_packed_row_n_lanes() {
         let enabler_column = Enabler::new(N_LANES);
 
-        assert_eq!(
-            enabler_column.packed_at(0).to_array(),
-            [1; N_LANES].map(M31::from)
-        );
-        assert_eq!(
-            enabler_column.packed_at(1).to_array(),
-            [0; N_LANES].map(M31::from)
-        );
+        assert_eq!(enabler_column.packed_at(0).to_array(), [1; N_LANES].map(M31::from));
+        assert_eq!(enabler_column.packed_at(1).to_array(), [0; N_LANES].map(M31::from));
     }
 
     #[test]
@@ -373,18 +349,12 @@ mod tests {
 
         let enabler_column = Enabler::new(n_calls);
 
-        assert_eq!(
-            enabler_column.packed_at(0).to_array(),
-            [1; N_LANES].map(M31::from)
-        );
+        assert_eq!(enabler_column.packed_at(0).to_array(), [1; N_LANES].map(M31::from));
         assert_eq!(
             enabler_column.packed_at(1).to_array(),
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0].map(M31::from)
         );
-        assert_eq!(
-            enabler_column.packed_at(2).to_array(),
-            [0; N_LANES].map(M31::from)
-        );
+        assert_eq!(enabler_column.packed_at(2).to_array(), [0; N_LANES].map(M31::from));
     }
 
     #[test]

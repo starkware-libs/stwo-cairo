@@ -67,11 +67,7 @@ impl EncodeOffsets {
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
             E::EF::from(enabler.clone()),
-            &[
-                M31_1567323731.clone(),
-                offset2_low_col5.clone(),
-                offset2_high_col7.clone(),
-            ],
+            &[M31_1567323731.clone(), offset2_low_col5.clone(), offset2_high_col7.clone()],
         ));
 
         [

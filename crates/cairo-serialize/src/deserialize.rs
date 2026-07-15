@@ -1,6 +1,7 @@
 use std::array;
 
 use starknet_ff::FieldElement;
+use stwo::core::ColumnVec;
 use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::fri::{FriConfig, FriLayerProof, FriProof};
@@ -9,9 +10,8 @@ use stwo::core::pcs::{PcsConfig, TreeVec};
 use stwo::core::poly::line::LinePoly;
 use stwo::core::proof::StarkProof;
 use stwo::core::vcs::blake2_hash::Blake2sHash;
-use stwo::core::vcs_lifted::verifier::MerkleDecommitmentLifted;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
-use stwo::core::ColumnVec;
+use stwo::core::vcs_lifted::verifier::MerkleDecommitmentLifted;
 pub use stwo_cairo_serialize_derive::CairoDeserialize;
 
 /// Deserializes types from a format serialized by corresponding `CairoSerialize` implementations.
@@ -99,11 +99,7 @@ where
         let fri_witness = Vec::deserialize(data);
         let decommitment = MerkleDecommitmentLifted::deserialize(data);
         let commitment = H::Hash::deserialize(data);
-        FriLayerProof {
-            fri_witness,
-            decommitment,
-            commitment,
-        }
+        FriLayerProof { fri_witness, decommitment, commitment }
     }
 }
 
@@ -115,11 +111,7 @@ where
         let first_layer = FriLayerProof::deserialize(data);
         let inner_layers = Vec::deserialize(data);
         let last_layer_poly = LinePoly::deserialize(data);
-        FriProof {
-            first_layer,
-            inner_layers,
-            last_layer_poly,
-        }
+        FriProof { first_layer, inner_layers, last_layer_poly }
     }
 }
 
@@ -135,12 +127,7 @@ impl CairoDeserialize for FriConfig {
         let log_last_layer_degree_bound = u32::deserialize(data);
         let n_queries = usize::deserialize(data);
         let fold_step = u32::deserialize(data);
-        FriConfig {
-            log_blowup_factor,
-            log_last_layer_degree_bound,
-            n_queries,
-            fold_step,
-        }
+        FriConfig { log_blowup_factor, log_last_layer_degree_bound, n_queries, fold_step }
     }
 }
 
@@ -150,11 +137,7 @@ impl CairoDeserialize for PcsConfig {
         let fri_config = FriConfig::deserialize(data);
         // `min_lifting_log_size` is not carried in the wire format (see the `CairoSerialize`
         // impl); it is always `0` for proofs in this format.
-        PcsConfig {
-            pow_bits,
-            fri_config,
-            min_lifting_log_size: 0,
-        }
+        PcsConfig { pow_bits, fri_config, min_lifting_log_size: 0 }
     }
 }
 

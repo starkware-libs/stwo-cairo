@@ -3,25 +3,25 @@ use std::fs::File;
 use std::io::{Read, Write};
 use std::path::Path;
 
+use bzip2::Compression;
 use bzip2::read::BzDecoder;
 use bzip2::write::BzEncoder;
-use bzip2::Compression;
 use clap::ValueEnum;
 use itertools::Itertools;
 use num_traits::Zero;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use stwo::core::fields::m31::BaseField;
-use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
+use stwo::core::fields::qm31::{SECURE_EXTENSION_DEGREE, SecureField};
 use stwo::core::pcs::TreeVec;
 use stwo::core::vcs::blake2_hash::Blake2sHasher;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::{INTERACTION_TRACE_IDX, ORIGINAL_TRACE_IDX};
-use tracing::{span, Level};
+use tracing::{Level, span};
 
-use crate::air::{CairoProof, MemorySection, PublicMemory};
 use crate::CairoProofForRustVerifier;
+use crate::air::{CairoProof, MemorySection, PublicMemory};
 
 mod json {
     #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
@@ -105,10 +105,8 @@ where
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
             CairoSerialize::serialize(proof, &mut serialized);
 
-            let hex_strings: Vec<String> = serialized
-                .into_iter()
-                .map(|felt| format!("0x{felt:x}"))
-                .collect();
+            let hex_strings: Vec<String> =
+                serialized.into_iter().map(|felt| format!("0x{felt:x}")).collect();
 
             proof_file.write_all(json::to_string_pretty(&hex_strings)?.as_bytes())?;
         }
@@ -165,15 +163,8 @@ pub struct VerificationOutput {
 /// Extract program hash (blake2s) and public output from the public memory.
 pub fn get_verification_output(public_memory: &PublicMemory) -> VerificationOutput {
     let program_hash = construct_f252(&encode_and_hash_memory_section(&public_memory.program));
-    let output = public_memory
-        .output
-        .iter()
-        .map(|(_, entry)| construct_f252(entry))
-        .collect();
-    VerificationOutput {
-        program_hash,
-        output,
-    }
+    let output = public_memory.output.iter().map(|(_, entry)| construct_f252(entry)).collect();
+    VerificationOutput { program_hash, output }
 }
 
 /// Encodes a memory section and hashes it using Cairo blake.
@@ -191,10 +182,8 @@ pub fn encode_and_hash_memory_section(section: &MemorySection) -> [u32; 8] {
 
     // Cairo blake uses little-endian byte order for the output as well, so we need to reverse each
     // 4-byte limb.
-    let limbs: Vec<u32> = digest_bytes
-        .chunks_exact(4)
-        .map(|l| u32::from_le_bytes(l.try_into().unwrap()))
-        .collect();
+    let limbs: Vec<u32> =
+        digest_bytes.chunks_exact(4).map(|l| u32::from_le_bytes(l.try_into().unwrap())).collect();
 
     limbs.try_into().unwrap()
 }
@@ -258,11 +247,8 @@ pub fn sort_and_transpose_queried_values(
             .map(|(vals, _)| vals.iter())
             .collect();
         for _ in 0..n_queries {
-            new_queried_values.extend(
-                sorted_queries
-                    .iter_mut()
-                    .map(|col_iter| *col_iter.next().unwrap()),
-            );
+            new_queried_values
+                .extend(sorted_queries.iter_mut().map(|col_iter| *col_iter.next().unwrap()));
         }
         new_queried_values_per_tree.push(new_queried_values)
     }
@@ -287,9 +273,8 @@ mod tests {
     #[test]
     fn test_encode_felt_in_limbs() {
         let felt0 = [0x12345678, 0x70000000, 0, 0, 0, 0, 0, 0];
-        let felt1 = [
-            0x12345678, 0x90abcdef, 0xabcdef12, 0x34567890, 0x01234567, 0x89abcdef, 0x01234567, 0,
-        ];
+        let felt1 =
+            [0x12345678, 0x90abcdef, 0xabcdef12, 0x34567890, 0x01234567, 0x89abcdef, 0x01234567, 0];
         let limbs0 = encode_felt_in_limbs(felt0);
         let limbs1 = encode_felt_in_limbs(felt1);
         assert_eq!(limbs0, vec![1879048192, 305419896]);
@@ -345,10 +330,7 @@ mod tests {
     fn test_sort_queried_values() {
         let trace_and_interaction_trace_log_sizes = [vec![4, 3, 2, 1], vec![4, 1, 3, 2]];
         let trace_and_interaction_trace_log_sizes: Vec<&[u32]> =
-            trace_and_interaction_trace_log_sizes
-                .iter()
-                .map(|v| v.as_slice())
-                .collect();
+            trace_and_interaction_trace_log_sizes.iter().map(|v| v.as_slice()).collect();
         let unsorted_queried_values = TreeVec(vec![
             vec![
                 vec![M31::from(1), M31::from(2)],

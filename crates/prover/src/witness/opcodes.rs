@@ -17,10 +17,7 @@ pub fn get_opcodes(casm_states_by_opcode: &CasmStatesByOpcode) -> Vec<&'static s
     if !casm_states_by_opcode.assert_eq_opcode_imm.is_empty() {
         opcodes.push("assert_eq_opcode_imm");
     }
-    if !casm_states_by_opcode
-        .assert_eq_opcode_double_deref
-        .is_empty()
-    {
+    if !casm_states_by_opcode.assert_eq_opcode_double_deref.is_empty() {
         opcodes.push("assert_eq_opcode_double_deref");
     }
     if !casm_states_by_opcode.blake_compress_opcode.is_empty() {

@@ -17,21 +17,14 @@ pub struct ClaimGenerator {
 impl ClaimGenerator {
     pub fn new(log_size: u32, pedersen_builtin_segment_start: u32) -> Self {
         assert!(log_size >= LOG_N_LANES);
-        Self {
-            log_size,
-            pedersen_builtin_segment_start,
-        }
+        Self { log_size, pedersen_builtin_segment_start }
     }
 
     pub fn write_trace(
         self,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         pedersen_aggregator_window_bits_9_state: &pedersen_aggregator_window_bits_9::ClaimGenerator,
-    ) -> (
-        ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
-        InteractionClaimGenerator,
-    ) {
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator) {
         let log_size = self.log_size;
         let size = 1 << log_size;
 
@@ -48,14 +41,7 @@ impl ClaimGenerator {
             add_inputs(pedersen_aggregator_window_bits_9_state, &inputs, size, 0);
         }
 
-        (
-            trace,
-            Claim { log_size },
-            InteractionClaimGenerator {
-                log_size,
-                lookup_data,
-            },
-        )
+        (trace, Claim { log_size }, InteractionClaimGenerator { log_size, lookup_data })
     }
 }
 
@@ -74,11 +60,7 @@ fn write_trace_simd(
     pedersen_builtin_segment_start: u32,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     pedersen_aggregator_window_bits_9_state: &pedersen_aggregator_window_bits_9::ClaimGenerator,
-) -> (
-    ComponentTrace<N_TRACE_COLUMNS>,
-    LookupData,
-    SubComponentInputs,
-) {
+) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData, SubComponentInputs) {
     let log_n_packed_rows = log_size - LOG_N_LANES;
     let (mut trace, mut lookup_data, mut sub_component_inputs) = unsafe {
         (
@@ -95,11 +77,7 @@ fn write_trace_simd(
     let M31_3 = PackedM31::broadcast(M31::from(3));
     let seq = Seq::new(log_size);
 
-    (
-        trace.par_iter_mut(),
-        lookup_data.par_iter_mut(),
-        sub_component_inputs.par_iter_mut(),
-    )
+    (trace.par_iter_mut(), lookup_data.par_iter_mut(), sub_component_inputs.par_iter_mut())
         .into_par_iter()
         .enumerate()
         .for_each(|(row_index, (row, lookup_data, sub_component_inputs))| {
@@ -114,11 +92,8 @@ fn write_trace_simd(
             let input_state_0_id_col0 = memory_address_to_id_value_tmp_364c7_1;
             *row[0] = input_state_0_id_col0;
             *sub_component_inputs.memory_address_to_id[0] = instance_addr_tmp_364c7_0;
-            *lookup_data.memory_address_to_id_0 = [
-                M31_1444891767,
-                instance_addr_tmp_364c7_0,
-                input_state_0_id_col0,
-            ];
+            *lookup_data.memory_address_to_id_0 =
+                [M31_1444891767, instance_addr_tmp_364c7_0, input_state_0_id_col0];
 
             // Read Id.
 
@@ -127,11 +102,8 @@ fn write_trace_simd(
             let input_state_1_id_col1 = memory_address_to_id_value_tmp_364c7_3;
             *row[1] = input_state_1_id_col1;
             *sub_component_inputs.memory_address_to_id[1] = ((instance_addr_tmp_364c7_0) + (M31_1));
-            *lookup_data.memory_address_to_id_1 = [
-                M31_1444891767,
-                ((instance_addr_tmp_364c7_0) + (M31_1)),
-                input_state_1_id_col1,
-            ];
+            *lookup_data.memory_address_to_id_1 =
+                [M31_1444891767, ((instance_addr_tmp_364c7_0) + (M31_1)), input_state_1_id_col1];
 
             // Read Id.
 
@@ -140,22 +112,13 @@ fn write_trace_simd(
             let output_state_id_col2 = memory_address_to_id_value_tmp_364c7_5;
             *row[2] = output_state_id_col2;
             *sub_component_inputs.memory_address_to_id[2] = ((instance_addr_tmp_364c7_0) + (M31_2));
-            *lookup_data.memory_address_to_id_2 = [
-                M31_1444891767,
-                ((instance_addr_tmp_364c7_0) + (M31_2)),
-                output_state_id_col2,
-            ];
+            *lookup_data.memory_address_to_id_2 =
+                [M31_1444891767, ((instance_addr_tmp_364c7_0) + (M31_2)), output_state_id_col2];
 
-            *sub_component_inputs.pedersen_aggregator_window_bits_9[0] = (
-                [input_state_0_id_col0, input_state_1_id_col1],
-                output_state_id_col2,
-            );
-            *lookup_data.pedersen_aggregator_window_bits_9_3 = [
-                M31_194336987,
-                input_state_0_id_col0,
-                input_state_1_id_col1,
-                output_state_id_col2,
-            ];
+            *sub_component_inputs.pedersen_aggregator_window_bits_9[0] =
+                ([input_state_0_id_col0, input_state_1_id_col1], output_state_id_col2);
+            *lookup_data.pedersen_aggregator_window_bits_9_3 =
+                [M31_194336987, input_state_0_id_col0, input_state_1_id_col1, output_state_id_col2];
             *lookup_data.mults_0 = M31_1;
         });
 
@@ -179,10 +142,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
 
         // Sum logup terms in pairs.

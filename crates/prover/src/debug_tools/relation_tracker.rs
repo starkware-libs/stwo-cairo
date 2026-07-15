@@ -6,13 +6,13 @@ use stwo::core::channel::MerkleChannel;
 use stwo::core::fields::m31::{BaseField, M31};
 use stwo::core::pcs::TreeVec;
 use stwo::core::poly::circle::CanonicCoset;
+use stwo::prover::CommitmentSchemeProver;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::{BackendForChannel, Col, Column};
 use stwo::prover::poly::circle::CircleCoefficients;
-use stwo::prover::CommitmentSchemeProver;
 use stwo_cairo_common::prover_types::felt::split_f252;
 use stwo_constraint_framework::relation_tracker::{
-    add_to_relation_entries, RelationSummary, RelationTrackerEntry,
+    RelationSummary, RelationTrackerEntry, add_to_relation_entries,
 };
 
 pub fn track_and_summarize_cairo_relations<MC: MerkleChannel>(
@@ -59,10 +59,8 @@ where
     let initial_pc = public_data.initial_state.pc.0;
     let initial_ap = public_data.initial_state.ap.0;
     let final_ap = public_data.final_state.ap.0;
-    public_data
-        .public_memory
-        .get_entries(initial_pc, initial_ap, final_ap)
-        .for_each(|(addr, id, val)| {
+    public_data.public_memory.get_entries(initial_pc, initial_ap, final_ap).for_each(
+        |(addr, id, val)| {
             entries.push(RelationTrackerEntry {
                 relation: "MemoryAddressToId".to_string(),
                 mult: M31::one(),
@@ -71,13 +69,11 @@ where
             entries.push(RelationTrackerEntry {
                 relation: "MemoryIdToBig".to_string(),
                 mult: M31::one(),
-                values: [
-                    [M31::from_u32_unchecked(id)].as_slice(),
-                    split_f252(val).as_slice(),
-                ]
-                .concat(),
+                values: [[M31::from_u32_unchecked(id)].as_slice(), split_f252(val).as_slice()]
+                    .concat(),
             });
-        });
+        },
+    );
     entries.push(RelationTrackerEntry {
         relation: "Opcodes".to_string(),
         mult: M31::one(),

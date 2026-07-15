@@ -13,7 +13,24 @@ impl VerifyMulSmall {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [verify_mul_small_input_a_limb_0, verify_mul_small_input_a_limb_1, verify_mul_small_input_a_limb_2, verify_mul_small_input_a_limb_3, verify_mul_small_input_b_limb_0, verify_mul_small_input_b_limb_1, verify_mul_small_input_b_limb_2, verify_mul_small_input_b_limb_3, verify_mul_small_input_c_limb_0, verify_mul_small_input_c_limb_1, verify_mul_small_input_c_limb_2, verify_mul_small_input_c_limb_3, verify_mul_small_input_c_limb_4, verify_mul_small_input_c_limb_5, verify_mul_small_input_c_limb_6, verify_mul_small_input_c_limb_7]: [E::F; 16],
+        [
+            verify_mul_small_input_a_limb_0,
+            verify_mul_small_input_a_limb_1,
+            verify_mul_small_input_a_limb_2,
+            verify_mul_small_input_a_limb_3,
+            verify_mul_small_input_b_limb_0,
+            verify_mul_small_input_b_limb_1,
+            verify_mul_small_input_b_limb_2,
+            verify_mul_small_input_b_limb_3,
+            verify_mul_small_input_c_limb_0,
+            verify_mul_small_input_c_limb_1,
+            verify_mul_small_input_c_limb_2,
+            verify_mul_small_input_c_limb_3,
+            verify_mul_small_input_c_limb_4,
+            verify_mul_small_input_c_limb_5,
+            verify_mul_small_input_c_limb_6,
+            verify_mul_small_input_c_limb_7,
+        ]: [E::F; 16],
         enabler: E::F,
         carry_1_col0: E::F,
         carry_3_col1: E::F,

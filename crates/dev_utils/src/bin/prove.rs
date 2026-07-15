@@ -7,7 +7,7 @@ use clap::Parser;
 use serde_json::from_reader;
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_prover::prover::create_and_serialize_proof;
-use tracing::{span, Level};
+use tracing::{Level, span};
 use tracing_subscriber::fmt::format::FmtSpan;
 
 // Command line arguments for 'prove_from_compiled_program'.
@@ -61,9 +61,7 @@ struct Args {
 fn main() -> Result<()> {
     let args = Args::parse();
 
-    tracing_subscriber::fmt()
-        .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
-        .init();
+    tracing_subscriber::fmt().with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE).init();
     let _span = span!(Level::INFO, "prove").entered();
 
     let prover_input: ProverInput = from_reader(File::open(args.prover_input_path)?)?;

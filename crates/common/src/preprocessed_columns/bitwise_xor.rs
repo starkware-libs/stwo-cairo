@@ -50,17 +50,13 @@ impl PreProcessedColumn for BitwiseXor {
         CircleEvaluation::new(
             CanonicCoset::new(self.log_size()).circle_domain(),
             BaseColumn::from_simd(
-                (0..(1 << (self.log_size() - LOG_N_LANES)))
-                    .map(|i| self.packed_at(i))
-                    .collect(),
+                (0..(1 << (self.log_size() - LOG_N_LANES))).map(|i| self.packed_at(i)).collect(),
             ),
         )
     }
 
     fn id(&self) -> PreProcessedColumnId {
-        PreProcessedColumnId {
-            id: format!("bitwise_xor_{}_{}", self.n_bits, self.col_index),
-        }
+        PreProcessedColumnId { id: format!("bitwise_xor_{}_{}", self.n_bits, self.col_index) }
     }
 }
 

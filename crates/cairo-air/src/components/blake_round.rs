@@ -6,30 +6,12 @@ use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 212;
 pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
-    RelationUse {
-        relation_id: "BlakeG",
-        uses: 8,
-    },
-    RelationUse {
-        relation_id: "BlakeRound",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "BlakeRoundSigma",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "MemoryAddressToId",
-        uses: 16,
-    },
-    RelationUse {
-        relation_id: "MemoryIdToBig",
-        uses: 16,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_7_2_5",
-        uses: 16,
-    },
+    RelationUse { relation_id: "BlakeG", uses: 8 },
+    RelationUse { relation_id: "BlakeRound", uses: 1 },
+    RelationUse { relation_id: "BlakeRoundSigma", uses: 1 },
+    RelationUse { relation_id: "MemoryAddressToId", uses: 16 },
+    RelationUse { relation_id: "MemoryIdToBig", uses: 16 },
+    RelationUse { relation_id: "RangeCheck_7_2_5", uses: 16 },
 ];
 
 pub struct Eval {

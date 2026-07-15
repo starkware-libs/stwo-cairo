@@ -10,9 +10,9 @@ use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_adapter::{ProverInput, PublicSegmentContext};
 
 use crate::witness::builtins::get_builtins;
-use crate::witness::cairo_claim_generator::{get_sub_components, CairoClaimGenerator};
+use crate::witness::cairo_claim_generator::{CairoClaimGenerator, get_sub_components};
 use crate::witness::opcodes::get_opcodes;
-use crate::witness::prelude::{AddInputs, PreProcessedTrace, M31};
+use crate::witness::prelude::{AddInputs, M31, PreProcessedTrace};
 use crate::witness::range_checks::get_range_checks;
 
 fn extract_public_segments(
@@ -31,20 +31,12 @@ fn extract_public_segments(
 
     let start_ptrs = (initial_ap..initial_ap + n_public_segments).map(to_memory_value);
     let end_ptrs = (final_ap - n_public_segments..final_ap).map(to_memory_value);
-    let mut ranges = start_ptrs
-        .zip(end_ptrs)
-        .map(|(start_ptr, stop_ptr)| SegmentRange {
-            start_ptr,
-            stop_ptr,
-        });
+    let mut ranges =
+        start_ptrs.zip(end_ptrs).map(|(start_ptr, stop_ptr)| SegmentRange { start_ptr, stop_ptr });
     let mut present = public_segment_context.into_iter();
     let mut next = || {
         let present = present.next().unwrap();
-        if present {
-            ranges.next()
-        } else {
-            None
-        }
+        if present { ranges.next() } else { None }
     };
 
     PublicSegmentRanges {
@@ -75,20 +67,16 @@ fn extract_sections_from_memory(
     let safe_call_addresses = initial_ap - 2..initial_ap;
     let output_memory_addresses =
         public_segments.output.start_ptr.value..public_segments.output.stop_ptr.value;
-    let [program, safe_call, output] = [
-        program_memory_addresses,
-        safe_call_addresses,
-        output_memory_addresses,
-    ]
-    .map(|range| {
-        range
-            .map(|addr| {
-                let id = memory.get_raw_id(addr);
-                let value = memory.get(addr).as_u256();
-                (id, value)
-            })
-            .collect_vec()
-    });
+    let [program, safe_call, output] =
+        [program_memory_addresses, safe_call_addresses, output_memory_addresses].map(|range| {
+            range
+                .map(|addr| {
+                    let id = memory.get_raw_id(addr);
+                    let value = memory.get(addr).as_u256();
+                    (id, value)
+                })
+                .collect_vec()
+        });
 
     assert!(safe_call.len() == 2);
 
@@ -146,16 +134,9 @@ pub fn create_cairo_claim_generator(
         public_segment_context,
     );
 
-    let public_data = PublicData {
-        public_memory,
-        initial_state,
-        final_state,
-    };
+    let public_data = PublicData { public_memory, initial_state, final_state };
 
-    let mut cairo_claim_generator = CairoClaimGenerator {
-        public_data,
-        ..Default::default()
-    };
+    let mut cairo_claim_generator = CairoClaimGenerator { public_data, ..Default::default() };
     cairo_claim_generator.fill_components(
         &all_components,
         state_transitions.casm_states_by_opcode,
@@ -169,11 +150,7 @@ pub fn create_cairo_claim_generator(
     let memory_id_to_value_trace_generator =
         cairo_claim_generator.memory_id_to_big.as_ref().unwrap();
     // Yield public memory.
-    for addr in public_memory_addresses
-        .iter()
-        .copied()
-        .map(M31::from_u32_unchecked)
-    {
+    for addr in public_memory_addresses.iter().copied().map(M31::from_u32_unchecked) {
         let id = memory_address_to_id_trace_generator.get_id(addr);
         memory_address_to_id_trace_generator.add_input(&addr, 0);
         memory_id_to_value_trace_generator.add_input(&id, 0);

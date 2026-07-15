@@ -5,12 +5,12 @@ use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::builtins::{
-    ADD_MOD_BUILTIN_MEMORY_CELLS, BITWISE_BUILTIN_MEMORY_CELLS, ECDSA_MEMORY_CELLS,
-    EC_OP_BUILTIN_MEMORY_CELLS, KECCAK_MEMORY_CELLS, MUL_MOD_BUILTIN_MEMORY_CELLS,
-    OUTPUT_MEMORY_CELLS, PEDERSEN_BUILTIN_MEMORY_CELLS, POSEIDON_BUILTIN_MEMORY_CELLS,
+    ADD_MOD_BUILTIN_MEMORY_CELLS, BITWISE_BUILTIN_MEMORY_CELLS, EC_OP_BUILTIN_MEMORY_CELLS,
+    ECDSA_MEMORY_CELLS, KECCAK_MEMORY_CELLS, MUL_MOD_BUILTIN_MEMORY_CELLS, OUTPUT_MEMORY_CELLS,
+    PEDERSEN_BUILTIN_MEMORY_CELLS, POSEIDON_BUILTIN_MEMORY_CELLS,
     RANGE_CHECK_96_BUILTIN_MEMORY_CELLS, RANGE_CHECK_BUILTIN_MEMORY_CELLS,
 };
-use tracing::{info, span, Level};
+use tracing::{Level, info, span};
 
 // Minimal builtins instances per segment, chosen to fit SIMD requirements.
 pub const MIN_SEGMENT_SIZE: usize = 16;
@@ -24,10 +24,7 @@ pub struct MemorySegmentAddresses {
 
 impl From<VMMemorySegmentAddresses> for MemorySegmentAddresses {
     fn from(addresses: VMMemorySegmentAddresses) -> Self {
-        MemorySegmentAddresses {
-            begin_addr: addresses.begin_addr,
-            stop_ptr: addresses.stop_ptr,
-        }
+        MemorySegmentAddresses { begin_addr: addresses.begin_addr, stop_ptr: addresses.stop_ptr }
     }
 }
 
@@ -57,21 +54,9 @@ impl BuiltinSegments {
             );
         };
 
-        insert_builtin(
-            BuiltinName::add_mod,
-            &self.add_mod_builtin,
-            ADD_MOD_BUILTIN_MEMORY_CELLS,
-        );
-        insert_builtin(
-            BuiltinName::bitwise,
-            &self.bitwise_builtin,
-            BITWISE_BUILTIN_MEMORY_CELLS,
-        );
-        insert_builtin(
-            BuiltinName::mul_mod,
-            &self.mul_mod_builtin,
-            MUL_MOD_BUILTIN_MEMORY_CELLS,
-        );
+        insert_builtin(BuiltinName::add_mod, &self.add_mod_builtin, ADD_MOD_BUILTIN_MEMORY_CELLS);
+        insert_builtin(BuiltinName::bitwise, &self.bitwise_builtin, BITWISE_BUILTIN_MEMORY_CELLS);
+        insert_builtin(BuiltinName::mul_mod, &self.mul_mod_builtin, MUL_MOD_BUILTIN_MEMORY_CELLS);
         insert_builtin(
             BuiltinName::pedersen,
             &self.pedersen_builtin,
@@ -92,11 +77,7 @@ impl BuiltinSegments {
             &self.range_check96_builtin,
             RANGE_CHECK_96_BUILTIN_MEMORY_CELLS,
         );
-        insert_builtin(
-            BuiltinName::ec_op,
-            &self.ec_op_builtin,
-            EC_OP_BUILTIN_MEMORY_CELLS,
-        );
+        insert_builtin(BuiltinName::ec_op, &self.ec_op_builtin, EC_OP_BUILTIN_MEMORY_CELLS);
         insert_builtin(BuiltinName::output, &self.output, OUTPUT_MEMORY_CELLS);
         counts
     }
@@ -157,12 +138,14 @@ impl BuiltinSegments {
             };
             assert!(
                 original_segment_len.is_multiple_of(cells_per_instance),
-                "builtin segment: {builtin_name} size is {original_segment_len}, which is not divisible by {cells_per_instance}"
+                "builtin segment: {builtin_name} size is {original_segment_len}, which is not \
+                 divisible by {cells_per_instance}"
             );
 
             if !current_builtin_segment.iter().all(|x| x.is_some()) {
                 panic!(
-                    "Builtins segments '{builtin_name}' at segment index: {segment_index}, contains a hole."
+                    "Builtins segments '{builtin_name}' at segment index: {segment_index}, \
+                     contains a hole."
                 );
             }
 
@@ -215,12 +198,8 @@ mod test_builtin_segments {
             .iter()
             .map(|&x| Some(MaybeRelocatable::Int(x.into())))
             .collect::<Vec<_>>();
-        let segment0_extended = segment0
-            .clone()
-            .into_iter()
-            .cycle()
-            .take(18 * 5)
-            .collect::<Vec<_>>();
+        let segment0_extended =
+            segment0.clone().into_iter().cycle().take(18 * 5).collect::<Vec<_>>();
 
         let ec_op_instance = [1, 2, 3, 4, 5, 6, 7];
         let segment1 = ec_op_instance
@@ -245,10 +224,8 @@ mod test_builtin_segments {
 
         // Check that the values in the extended segment are identical to the original segment.
         let last_bitwise_instance = &segment0[5..10];
-        for (value, expected_value) in relocatable_memory[0]
-            .iter()
-            .skip(17 * 5)
-            .zip(last_bitwise_instance.iter().cycle())
+        for (value, expected_value) in
+            relocatable_memory[0].iter().skip(17 * 5).zip(last_bitwise_instance.iter().cycle())
         {
             assert_eq!(value, expected_value);
         }

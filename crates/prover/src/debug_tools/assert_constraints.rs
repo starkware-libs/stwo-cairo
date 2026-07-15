@@ -10,7 +10,7 @@ use stwo::core::pcs::TreeVec;
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 use stwo_constraint_framework::{
-    assert_constraints_on_trace, FrameworkComponent, FrameworkEval, PREPROCESSED_TRACE_IDX,
+    FrameworkComponent, FrameworkEval, PREPROCESSED_TRACE_IDX, assert_constraints_on_trace,
 };
 
 use crate::debug_tools::mock_tree_builder::MockCommitmentScheme;

@@ -27,11 +27,7 @@ impl ClaimGenerator {
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
         verify_instruction_state: &verify_instruction::ClaimGenerator,
         range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
-    ) -> (
-        ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
-        InteractionClaimGenerator,
-    ) {
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator) {
         let n_active_rows = self.inputs.len();
         assert_ne!(n_active_rows, 0);
         let size = std::cmp::max(n_active_rows.next_power_of_two(), N_LANES);
@@ -60,14 +56,7 @@ impl ClaimGenerator {
             add_inputs(range_check_4_4_4_4_state, &inputs, n_active_rows, 0);
         }
 
-        (
-            trace,
-            Claim { log_size },
-            InteractionClaimGenerator {
-                log_size,
-                lookup_data,
-            },
-        )
+        (trace, Claim { log_size }, InteractionClaimGenerator { log_size, lookup_data })
     }
 }
 
@@ -90,11 +79,7 @@ fn write_trace_simd(
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
     verify_instruction_state: &verify_instruction::ClaimGenerator,
     range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
-) -> (
-    ComponentTrace<N_TRACE_COLUMNS>,
-    LookupData,
-    SubComponentInputs,
-) {
+) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData, SubComponentInputs) {
     let log_n_packed_rows = inputs.len().ilog2();
     let log_size = log_n_packed_rows + LOG_N_LANES;
     let (mut trace, mut lookup_data, mut sub_component_inputs) = unsafe {
@@ -445,17 +430,11 @@ fn write_trace_simd(
                         M31_0,
                     ]);
 
-                let read_positive_num_bits_144_output_tmp_48ee6_17 = (
-                    read_positive_known_id_num_bits_144_output_tmp_48ee6_16,
-                    dst_id_col16,
-                );
+                let read_positive_num_bits_144_output_tmp_48ee6_17 =
+                    (read_positive_known_id_num_bits_144_output_tmp_48ee6_16, dst_id_col16);
 
-                *sub_component_inputs.range_check_4_4_4_4[0] = [
-                    dst_limb_3_col20,
-                    dst_limb_7_col24,
-                    dst_limb_11_col28,
-                    dst_limb_15_col32,
-                ];
+                *sub_component_inputs.range_check_4_4_4_4[0] =
+                    [dst_limb_3_col20, dst_limb_7_col24, dst_limb_11_col28, dst_limb_15_col32];
                 *lookup_data.range_check_4_4_4_4_3 = [
                     M31_1027333874,
                     dst_limb_3_col20,
@@ -620,17 +599,11 @@ fn write_trace_simd(
                         M31_0,
                     ]);
 
-                let read_positive_num_bits_144_output_tmp_48ee6_23 = (
-                    read_positive_known_id_num_bits_144_output_tmp_48ee6_22,
-                    op0_id_col35,
-                );
+                let read_positive_num_bits_144_output_tmp_48ee6_23 =
+                    (read_positive_known_id_num_bits_144_output_tmp_48ee6_22, op0_id_col35);
 
-                *sub_component_inputs.range_check_4_4_4_4[1] = [
-                    op0_limb_3_col39,
-                    op0_limb_7_col43,
-                    op0_limb_11_col47,
-                    op0_limb_15_col51,
-                ];
+                *sub_component_inputs.range_check_4_4_4_4[1] =
+                    [op0_limb_3_col39, op0_limb_7_col43, op0_limb_11_col47, op0_limb_15_col51];
                 *lookup_data.range_check_4_4_4_4_6 = [
                     M31_1027333874,
                     op0_limb_3_col39,
@@ -795,17 +768,11 @@ fn write_trace_simd(
                         M31_0,
                     ]);
 
-                let read_positive_num_bits_144_output_tmp_48ee6_29 = (
-                    read_positive_known_id_num_bits_144_output_tmp_48ee6_28,
-                    op1_id_col54,
-                );
+                let read_positive_num_bits_144_output_tmp_48ee6_29 =
+                    (read_positive_known_id_num_bits_144_output_tmp_48ee6_28, op1_id_col54);
 
-                *sub_component_inputs.range_check_4_4_4_4[2] = [
-                    op1_limb_3_col58,
-                    op1_limb_7_col62,
-                    op1_limb_11_col66,
-                    op1_limb_15_col70,
-                ];
+                *sub_component_inputs.range_check_4_4_4_4[2] =
+                    [op1_limb_3_col58, op1_limb_7_col62, op1_limb_11_col66, op1_limb_15_col70];
                 *lookup_data.range_check_4_4_4_4_9 = [
                     M31_1027333874,
                     op1_limb_3_col58,
@@ -889,10 +856,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
 
         // Sum logup terms in pairs.

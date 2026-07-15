@@ -3,7 +3,7 @@
 #![allow(unused_parens)]
 use cairo_air::components::range_check_252_width_27::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
-use crate::witness::components::{range_check_18, range_check_9_9};
+use crate::witness::components::{range_check_9_9, range_check_18};
 use crate::witness::prelude::*;
 
 pub type InputType = Felt252Width27;
@@ -24,11 +24,7 @@ impl ClaimGenerator {
         self,
         range_check_9_9_state: &range_check_9_9::ClaimGenerator,
         range_check_18_state: &range_check_18::ClaimGenerator,
-    ) -> (
-        ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
-        InteractionClaimGenerator,
-    ) {
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator) {
         let mut packed_inputs = self.packed_inputs.into_inner().unwrap();
         let remainder_inputs = self.remainder_inputs.into_inner().unwrap();
         let n_active_rows = packed_inputs.len() * N_LANES + remainder_inputs.len();
@@ -67,14 +63,7 @@ impl ClaimGenerator {
             add_inputs(range_check_9_9_state, &inputs, n_active_rows, 4);
         }
 
-        (
-            trace,
-            Claim { log_size },
-            InteractionClaimGenerator {
-                log_size,
-                lookup_data,
-            },
-        )
+        (trace, Claim { log_size }, InteractionClaimGenerator { log_size, lookup_data })
     }
 }
 
@@ -110,11 +99,7 @@ fn write_trace_simd(
     n_rows: usize,
     range_check_9_9_state: &range_check_9_9::ClaimGenerator,
     range_check_18_state: &range_check_18::ClaimGenerator,
-) -> (
-    ComponentTrace<N_TRACE_COLUMNS>,
-    LookupData,
-    SubComponentInputs,
-) {
+) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData, SubComponentInputs) {
     let log_n_packed_rows = inputs.len().ilog2();
     let log_size = log_n_packed_rows + LOG_N_LANES;
     let (mut trace, mut lookup_data, mut sub_component_inputs) = unsafe {
@@ -200,11 +185,8 @@ fn write_trace_simd(
                 *row[14] = limb_3_low_part_col14;
                 *sub_component_inputs.range_check_9_9_b[0] =
                     [limb_2_high_part_col13, limb_3_low_part_col14];
-                *lookup_data.range_check_9_9_b_3 = [
-                    M31_1897792095,
-                    limb_2_high_part_col13,
-                    limb_3_low_part_col14,
-                ];
+                *lookup_data.range_check_9_9_b_3 =
+                    [M31_1897792095, limb_2_high_part_col13, limb_3_low_part_col14];
                 *sub_component_inputs.range_check_18_b[0] =
                     [((input_limb_2_col3) - ((limb_2_high_part_col13) * (M31_262144)))];
                 *lookup_data.range_check_18_b_4 = [
@@ -223,11 +205,8 @@ fn write_trace_simd(
                 *row[16] = limb_5_low_part_col16;
                 *sub_component_inputs.range_check_9_9_c[0] =
                     [limb_4_high_part_col15, limb_5_low_part_col16];
-                *lookup_data.range_check_9_9_c_6 = [
-                    M31_1881014476,
-                    limb_4_high_part_col15,
-                    limb_5_low_part_col16,
-                ];
+                *lookup_data.range_check_9_9_c_6 =
+                    [M31_1881014476, limb_4_high_part_col15, limb_5_low_part_col16];
                 *sub_component_inputs.range_check_18[3] =
                     [((input_limb_4_col5) - ((limb_4_high_part_col15) * (M31_262144)))];
                 *lookup_data.range_check_18_7 = [
@@ -246,11 +225,8 @@ fn write_trace_simd(
                 *row[18] = limb_7_low_part_col18;
                 *sub_component_inputs.range_check_9_9_d[0] =
                     [limb_6_high_part_col17, limb_7_low_part_col18];
-                *lookup_data.range_check_9_9_d_9 = [
-                    M31_1864236857,
-                    limb_6_high_part_col17,
-                    limb_7_low_part_col18,
-                ];
+                *lookup_data.range_check_9_9_d_9 =
+                    [M31_1864236857, limb_6_high_part_col17, limb_7_low_part_col18];
                 *sub_component_inputs.range_check_18_b[1] =
                     [((input_limb_6_col7) - ((limb_6_high_part_col17) * (M31_262144)))];
                 *lookup_data.range_check_18_b_10 = [
@@ -323,10 +299,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
 
         // Sum logup terms in pairs.
