@@ -3,9 +3,7 @@
 use circuit_air::CircuitAirNewImpl;
 use core::dict::{Felt252DictTrait, SquashedFelt252DictTrait};
 use core::num::traits::Zero;
-use privacy_consts::{
-    N_OUTPUTS, PREPROCESSED_COLUMN_LOG_SIZES, circuit_pcs_config, preprocessed_root,
-};
+use privacy_consts::{N_OUTPUTS, PREPROCESSED_COLUMN_LOG_SIZES, circuit_pcs_config};
 use stwo_constraint_framework::LookupElementsImpl;
 pub use stwo_constraint_framework::{RelationUse, RelationUsesDict, accumulate_relation_uses};
 use stwo_verifier_core::Hash;
@@ -55,16 +53,22 @@ pub struct CircuitProof {
     pub channel_salt: u32,
 }
 
-/// The output of a circuit verification: `blake2s(preprocessed_root || output_values)`
+/// The output of a circuit verification: `blake2s(preprocessed_root || output_values)`,
+/// where `preprocessed_root` is the proof's preprocessed-trace (tree 0) commitment.
 #[derive(Drop, Serde)]
 pub struct VerificationOutput {
     pub output_hash: Hash,
 }
 
-/// Returns the output of the verifier: `blake2s(preprocessed_root || output_values)`.
+/// Returns the output of the verifier: `blake2s(preprocessed_root || output_values)`, where
+/// `preprocessed_root` is the proof's preprocessed-trace (tree 0) commitment.
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub fn get_verification_output(proof: @CircuitProof) -> VerificationOutput {
-    let [r0, r1, r2, r3, r4, r5, r6, r7] = preprocessed_root().hash.unbox();
+    let commitments: @Box<[Hash; 4]> = (*proof.stark_proof.commitment_scheme_proof.commitments)
+        .try_into()
+        .unwrap();
+    let [preprocessed_commitment, _, _, _] = commitments.unbox();
+    let [r0, r1, r2, r3, r4, r5, r6, r7] = preprocessed_commitment.hash.unbox();
     let mut words = array![r0, r1, r2, r3, r4, r5, r6, r7];
     for value in proof.claim.public_data.output_values.span() {
         let [c0, c1, c2, c3] = (*value).to_fixed_array();
@@ -93,9 +97,7 @@ pub fn verify_circuit(proof: CircuitProof) {
     assert!(claim.public_data.output_values.len() == N_OUTPUTS);
 
     // Pin the proof's PCS config to the circuit's hardcoded canonical config. This rejects any
-    // proof produced with weaker/mismatched FRI parameters, and guarantees that
-    // `log_blowup_factor` matches the blowup the hardcoded `preprocessed_root()` was committed
-    // at.
+    // proof produced with weaker/mismatched FRI parameters.
     let pcs_config = stark_proof.commitment_scheme_proof.config;
     assert!(pcs_config == circuit_pcs_config(), "unexpected proof pcs config");
 
@@ -135,8 +137,9 @@ pub fn verify_circuit(proof: CircuitProof) {
     let log_blowup_factor = pcs_config.fri_config.log_blowup_factor;
 
     // Preprocessed trace. The preprocessed column log sizes are the hardcoded ones rather than
-    // the values derived from `component_log_sizes`.
-    assert!(preprocessed_commitment == preprocessed_root());
+    // the values derived from `component_log_sizes`. The preprocessed-trace commitment itself is
+    // taken from the proof and exposed in the verification output; binding it to the expected
+    // circuit topology is the responsibility of whoever consumes that output.
     commitment_scheme
         .commit(
             preprocessed_commitment,
