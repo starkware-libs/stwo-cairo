@@ -100,7 +100,7 @@ fn check_relation_uses(relation_uses: &HashMap<&'static str, u64>) {
 
     let outstanding_relations = relation_uses
         .iter()
-        .filter(|(_, &uses)| uses >= PRIME.into())
+        .filter(|&(_, &uses)| uses >= PRIME.into())
         .collect::<Vec<_>>();
 
     if !outstanding_relations.is_empty() {
