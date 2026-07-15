@@ -27,10 +27,9 @@ pub mod claims;
 pub mod per_component;
 use claims::{
     CircuitClaim, CircuitClaimImpl, CircuitInteractionClaim, CircuitInteractionClaimImpl,
-    accumulate_circuit_relation_uses, column_log_sizes_per_tree, derive_component_log_sizes,
-    lookup_sum,
+    accumulate_circuit_relation_uses, column_log_sizes_per_tree, lookup_sum,
 };
-use per_component::PerComponent;
+use per_component::{COMPONENT_LOG_SIZES, PerComponent};
 pub mod components;
 pub mod prelude;
 pub mod preprocessed_columns;
@@ -101,9 +100,10 @@ pub fn verify_circuit(proof: CircuitProof) {
     let pcs_config = stark_proof.commitment_scheme_proof.config;
     assert!(pcs_config == circuit_pcs_config(), "unexpected proof pcs config");
 
-    // Component log sizes are derived verifier-side from the hardcoded preprocessed column log
-    // sizes; they are not carried in the claim.
-    let component_log_sizes = derive_component_log_sizes(preprocessed_column_log_sizes.span());
+    // Component log sizes are hardcoded from the circuit topology; they are not carried in the
+    // claim. `claims::tests::hardcoded_component_log_sizes_match_derived` pins them against the
+    // values derived from the preprocessed column log sizes.
+    let component_log_sizes = COMPONENT_LOG_SIZES;
 
     verify_claim(component_log_sizes);
 
