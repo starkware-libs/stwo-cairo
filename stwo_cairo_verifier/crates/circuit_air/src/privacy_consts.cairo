@@ -3,25 +3,18 @@
 //! These must match the recursive-verification circuit topology produced by the rust
 //! prover (`stwo-circuits/crates/circuit_verifier/src/verify.rs::build_verification_circuit`
 //! on the privacy circuit, plus the preprocessed trace built for that circuit). They are
-//! baked in at build time so the executable's `main` takes only a proof — mirroring how
-//! `cairo_air::verify_cairo` hardcodes its preprocessed root.
+//! baked in at build time so the executable's `main` takes only a proof.
 //!
-// TODO(Gali): Change to MultiVerifier consts.
 
-use core::box::BoxImpl;
-use stwo_verifier_core::Hash;
 use stwo_verifier_core::fri::FriConfig;
 use stwo_verifier_core::pcs::PcsConfig;
-#[cfg(not(feature: "poseidon252_verifier"))]
-use stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash;
 
 /// Expected PCS config of the multiverifier circuit's proof.
 ///
 /// Hardcoded so the verifier accepts only proofs produced with the circuit's canonical
 /// configuration. This pins every FRI security parameter (a weaker config — fewer queries,
 /// smaller blowup, or less proof-of-work — is rejected, independently of stwo's
-/// `security_bits >= SECURITY_BITS` floor) and ties `log_blowup_factor` to the blowup the
-/// hardcoded `preprocessed_root()` was committed at. Must match the rust prover's
+/// `security_bits >= SECURITY_BITS` floor). Must match the rust prover's
 /// multiverifier `PCS_CONFIG` (`get_pcs_config(21, 3)`).
 /// Note `pow_bits + log_blowup_factor * n_queries = 27 + 3 * 23 = 96 = SECURITY_BITS`.
 pub fn circuit_pcs_config() -> PcsConfig {
@@ -90,25 +83,3 @@ pub const PREPROCESSED_COLUMN_LOG_SIZES: [u32; 45] = [
     21, // qm31_ops_out_address
     21 // qm31_ops_mults
 ];
-
-/// Expected preprocessed-trace root (Merkle commitment, tree 0 of the proof's
-/// commitments) for the multiverifier circuit at lifting_log_size = max(preprocessed column log
-/// sizes) + log_blowup_factor, as 8 little-endian u32 words of the Blake2s digest. Matches the
-/// prover-side `MULTIVERIFIER_PREPROCESSED_ROOT` in
-/// `stwo-circuits/crates/circuit_multiverifier/src/verify_test.rs`.
-#[cfg(not(feature: "poseidon252_verifier"))]
-pub fn preprocessed_root() -> Hash {
-    Blake2sHash {
-        hash: BoxImpl::new(
-            [
-                782313078, 3006801796, 1628870233, 3508238254, 21018123, 2160767231, 1298399148,
-                2430969455,
-            ],
-        ),
-    }
-}
-
-#[cfg(feature: "poseidon252_verifier")]
-pub fn preprocessed_root() -> Hash {
-    panic!("the privacy recursive circuit verifier only supports the blake2s hasher")
-}
