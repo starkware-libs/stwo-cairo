@@ -3,7 +3,9 @@
 use circuit_air::CircuitAirNewImpl;
 use core::dict::{Felt252DictTrait, SquashedFelt252DictTrait};
 use core::num::traits::Zero;
-use multiverifier_consts::{N_OUTPUTS, PREPROCESSED_COLUMN_LOG_SIZES, circuit_pcs_config};
+use multiverifier_consts::{
+    COMPONENT_LOG_SIZES, N_OUTPUTS, PREPROCESSED_COLUMN_LOG_SIZES, circuit_pcs_config,
+};
 use stwo_constraint_framework::LookupElementsImpl;
 pub use stwo_constraint_framework::{RelationUse, RelationUsesDict, accumulate_relation_uses};
 use stwo_verifier_core::Hash;
@@ -27,8 +29,7 @@ pub mod claims;
 pub mod per_component;
 use claims::{
     CircuitClaim, CircuitClaimImpl, CircuitInteractionClaim, CircuitInteractionClaimImpl,
-    accumulate_circuit_relation_uses, column_log_sizes_per_tree, derive_component_log_sizes,
-    lookup_sum,
+    accumulate_circuit_relation_uses, column_log_sizes_per_tree, lookup_sum,
 };
 use per_component::PerComponent;
 pub mod components;
@@ -102,10 +103,7 @@ pub fn verify_circuit(proof: CircuitProof) {
     let pcs_config = stark_proof.commitment_scheme_proof.config;
     assert!(pcs_config == circuit_pcs_config(), "unexpected proof pcs config");
 
-    // Component log sizes are derived verifier-side from the hardcoded preprocessed column log
-    // sizes; they are not carried in the claim.
-    let component_log_sizes = derive_component_log_sizes(preprocessed_column_log_sizes.span());
-
+    let component_log_sizes = COMPONENT_LOG_SIZES;
     verify_claim(component_log_sizes);
 
     let mut channel: Channel = Default::default();
