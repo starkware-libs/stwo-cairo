@@ -19,11 +19,7 @@ pub struct ClaimGenerator {
 impl ClaimGenerator {
     pub fn new(memory: Arc<Memory>) -> Self {
         let state = BlakeRound::new(memory);
-        Self {
-            packed_inputs: Mutex::new(vec![]),
-            remainder_inputs: Mutex::new(vec![]),
-            state,
-        }
+        Self { packed_inputs: Mutex::new(vec![]), remainder_inputs: Mutex::new(vec![]), state }
     }
 
     pub fn write_trace(
@@ -33,11 +29,7 @@ impl ClaimGenerator {
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
         range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
         blake_g_state: &blake_g::ClaimGenerator,
-    ) -> (
-        ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
-        InteractionClaimGenerator,
-    ) {
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator) {
         let mut packed_inputs = self.packed_inputs.into_inner().unwrap();
         let remainder_inputs = self.remainder_inputs.into_inner().unwrap();
         let n_active_rows = packed_inputs.len() * N_LANES + remainder_inputs.len();
@@ -73,14 +65,7 @@ impl ClaimGenerator {
             add_inputs(blake_g_state, &inputs, n_active_rows, 0);
         }
 
-        (
-            trace,
-            Claim { log_size },
-            InteractionClaimGenerator {
-                log_size,
-                lookup_data,
-            },
-        )
+        (trace, Claim { log_size }, InteractionClaimGenerator { log_size, lookup_data })
     }
 
     pub fn deduce_output(
@@ -124,11 +109,7 @@ fn write_trace_simd(
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
     range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
     blake_g_state: &blake_g::ClaimGenerator,
-) -> (
-    ComponentTrace<N_TRACE_COLUMNS>,
-    LookupData,
-    SubComponentInputs,
-) {
+) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData, SubComponentInputs) {
     let log_n_packed_rows = inputs.len().ilog2();
     let log_size = log_n_packed_rows + LOG_N_LANES;
     let (mut trace, mut lookup_data, mut sub_component_inputs) = unsafe {
@@ -172,71 +153,71 @@ fn write_trace_simd(
                 *row[1] = input_limb_0_col1;
                 let input_limb_1_col2 = blake_round_input.1;
                 *row[2] = input_limb_1_col2;
-                let input_limb_2_col3 = blake_round_input.2 .0[0].low().as_m31();
+                let input_limb_2_col3 = blake_round_input.2.0[0].low().as_m31();
                 *row[3] = input_limb_2_col3;
-                let input_limb_3_col4 = blake_round_input.2 .0[0].high().as_m31();
+                let input_limb_3_col4 = blake_round_input.2.0[0].high().as_m31();
                 *row[4] = input_limb_3_col4;
-                let input_limb_4_col5 = blake_round_input.2 .0[1].low().as_m31();
+                let input_limb_4_col5 = blake_round_input.2.0[1].low().as_m31();
                 *row[5] = input_limb_4_col5;
-                let input_limb_5_col6 = blake_round_input.2 .0[1].high().as_m31();
+                let input_limb_5_col6 = blake_round_input.2.0[1].high().as_m31();
                 *row[6] = input_limb_5_col6;
-                let input_limb_6_col7 = blake_round_input.2 .0[2].low().as_m31();
+                let input_limb_6_col7 = blake_round_input.2.0[2].low().as_m31();
                 *row[7] = input_limb_6_col7;
-                let input_limb_7_col8 = blake_round_input.2 .0[2].high().as_m31();
+                let input_limb_7_col8 = blake_round_input.2.0[2].high().as_m31();
                 *row[8] = input_limb_7_col8;
-                let input_limb_8_col9 = blake_round_input.2 .0[3].low().as_m31();
+                let input_limb_8_col9 = blake_round_input.2.0[3].low().as_m31();
                 *row[9] = input_limb_8_col9;
-                let input_limb_9_col10 = blake_round_input.2 .0[3].high().as_m31();
+                let input_limb_9_col10 = blake_round_input.2.0[3].high().as_m31();
                 *row[10] = input_limb_9_col10;
-                let input_limb_10_col11 = blake_round_input.2 .0[4].low().as_m31();
+                let input_limb_10_col11 = blake_round_input.2.0[4].low().as_m31();
                 *row[11] = input_limb_10_col11;
-                let input_limb_11_col12 = blake_round_input.2 .0[4].high().as_m31();
+                let input_limb_11_col12 = blake_round_input.2.0[4].high().as_m31();
                 *row[12] = input_limb_11_col12;
-                let input_limb_12_col13 = blake_round_input.2 .0[5].low().as_m31();
+                let input_limb_12_col13 = blake_round_input.2.0[5].low().as_m31();
                 *row[13] = input_limb_12_col13;
-                let input_limb_13_col14 = blake_round_input.2 .0[5].high().as_m31();
+                let input_limb_13_col14 = blake_round_input.2.0[5].high().as_m31();
                 *row[14] = input_limb_13_col14;
-                let input_limb_14_col15 = blake_round_input.2 .0[6].low().as_m31();
+                let input_limb_14_col15 = blake_round_input.2.0[6].low().as_m31();
                 *row[15] = input_limb_14_col15;
-                let input_limb_15_col16 = blake_round_input.2 .0[6].high().as_m31();
+                let input_limb_15_col16 = blake_round_input.2.0[6].high().as_m31();
                 *row[16] = input_limb_15_col16;
-                let input_limb_16_col17 = blake_round_input.2 .0[7].low().as_m31();
+                let input_limb_16_col17 = blake_round_input.2.0[7].low().as_m31();
                 *row[17] = input_limb_16_col17;
-                let input_limb_17_col18 = blake_round_input.2 .0[7].high().as_m31();
+                let input_limb_17_col18 = blake_round_input.2.0[7].high().as_m31();
                 *row[18] = input_limb_17_col18;
-                let input_limb_18_col19 = blake_round_input.2 .0[8].low().as_m31();
+                let input_limb_18_col19 = blake_round_input.2.0[8].low().as_m31();
                 *row[19] = input_limb_18_col19;
-                let input_limb_19_col20 = blake_round_input.2 .0[8].high().as_m31();
+                let input_limb_19_col20 = blake_round_input.2.0[8].high().as_m31();
                 *row[20] = input_limb_19_col20;
-                let input_limb_20_col21 = blake_round_input.2 .0[9].low().as_m31();
+                let input_limb_20_col21 = blake_round_input.2.0[9].low().as_m31();
                 *row[21] = input_limb_20_col21;
-                let input_limb_21_col22 = blake_round_input.2 .0[9].high().as_m31();
+                let input_limb_21_col22 = blake_round_input.2.0[9].high().as_m31();
                 *row[22] = input_limb_21_col22;
-                let input_limb_22_col23 = blake_round_input.2 .0[10].low().as_m31();
+                let input_limb_22_col23 = blake_round_input.2.0[10].low().as_m31();
                 *row[23] = input_limb_22_col23;
-                let input_limb_23_col24 = blake_round_input.2 .0[10].high().as_m31();
+                let input_limb_23_col24 = blake_round_input.2.0[10].high().as_m31();
                 *row[24] = input_limb_23_col24;
-                let input_limb_24_col25 = blake_round_input.2 .0[11].low().as_m31();
+                let input_limb_24_col25 = blake_round_input.2.0[11].low().as_m31();
                 *row[25] = input_limb_24_col25;
-                let input_limb_25_col26 = blake_round_input.2 .0[11].high().as_m31();
+                let input_limb_25_col26 = blake_round_input.2.0[11].high().as_m31();
                 *row[26] = input_limb_25_col26;
-                let input_limb_26_col27 = blake_round_input.2 .0[12].low().as_m31();
+                let input_limb_26_col27 = blake_round_input.2.0[12].low().as_m31();
                 *row[27] = input_limb_26_col27;
-                let input_limb_27_col28 = blake_round_input.2 .0[12].high().as_m31();
+                let input_limb_27_col28 = blake_round_input.2.0[12].high().as_m31();
                 *row[28] = input_limb_27_col28;
-                let input_limb_28_col29 = blake_round_input.2 .0[13].low().as_m31();
+                let input_limb_28_col29 = blake_round_input.2.0[13].low().as_m31();
                 *row[29] = input_limb_28_col29;
-                let input_limb_29_col30 = blake_round_input.2 .0[13].high().as_m31();
+                let input_limb_29_col30 = blake_round_input.2.0[13].high().as_m31();
                 *row[30] = input_limb_29_col30;
-                let input_limb_30_col31 = blake_round_input.2 .0[14].low().as_m31();
+                let input_limb_30_col31 = blake_round_input.2.0[14].low().as_m31();
                 *row[31] = input_limb_30_col31;
-                let input_limb_31_col32 = blake_round_input.2 .0[14].high().as_m31();
+                let input_limb_31_col32 = blake_round_input.2.0[14].high().as_m31();
                 *row[32] = input_limb_31_col32;
-                let input_limb_32_col33 = blake_round_input.2 .0[15].low().as_m31();
+                let input_limb_32_col33 = blake_round_input.2.0[15].low().as_m31();
                 *row[33] = input_limb_32_col33;
-                let input_limb_33_col34 = blake_round_input.2 .0[15].high().as_m31();
+                let input_limb_33_col34 = blake_round_input.2.0[15].high().as_m31();
                 *row[34] = input_limb_33_col34;
-                let input_limb_34_col35 = blake_round_input.2 .1;
+                let input_limb_34_col35 = blake_round_input.2.1;
                 *row[35] = input_limb_34_col35;
                 *sub_component_inputs.blake_round_sigma[0] = [input_limb_1_col2];
                 let blake_round_sigma_output_tmp_9aaf1_0 =
@@ -338,11 +319,8 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_9aaf1_8 = ((high_14_ms_bits_tmp_9aaf1_6) >> (UInt16_9));
                 let high_5_ms_bits_col56 = high_5_ms_bits_tmp_9aaf1_8.as_m31();
                 *row[56] = high_5_ms_bits_col56;
-                *sub_component_inputs.range_check_7_2_5[0] = [
-                    low_7_ms_bits_col54,
-                    high_2_ls_bits_tmp_9aaf1_7,
-                    high_5_ms_bits_col56,
-                ];
+                *sub_component_inputs.range_check_7_2_5[0] =
+                    [low_7_ms_bits_col54, high_2_ls_bits_tmp_9aaf1_7, high_5_ms_bits_col56];
                 *lookup_data.range_check_7_2_5_1 = [
                     M31_371240602,
                     low_7_ms_bits_col54,
@@ -442,11 +420,8 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_9aaf1_19 = ((high_14_ms_bits_tmp_9aaf1_17) >> (UInt16_9));
                 let high_5_ms_bits_col62 = high_5_ms_bits_tmp_9aaf1_19.as_m31();
                 *row[62] = high_5_ms_bits_col62;
-                *sub_component_inputs.range_check_7_2_5[1] = [
-                    low_7_ms_bits_col60,
-                    high_2_ls_bits_tmp_9aaf1_18,
-                    high_5_ms_bits_col62,
-                ];
+                *sub_component_inputs.range_check_7_2_5[1] =
+                    [low_7_ms_bits_col60, high_2_ls_bits_tmp_9aaf1_18, high_5_ms_bits_col62];
                 *lookup_data.range_check_7_2_5_4 = [
                     M31_371240602,
                     low_7_ms_bits_col60,
@@ -546,11 +521,8 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_9aaf1_30 = ((high_14_ms_bits_tmp_9aaf1_28) >> (UInt16_9));
                 let high_5_ms_bits_col68 = high_5_ms_bits_tmp_9aaf1_30.as_m31();
                 *row[68] = high_5_ms_bits_col68;
-                *sub_component_inputs.range_check_7_2_5[2] = [
-                    low_7_ms_bits_col66,
-                    high_2_ls_bits_tmp_9aaf1_29,
-                    high_5_ms_bits_col68,
-                ];
+                *sub_component_inputs.range_check_7_2_5[2] =
+                    [low_7_ms_bits_col66, high_2_ls_bits_tmp_9aaf1_29, high_5_ms_bits_col68];
                 *lookup_data.range_check_7_2_5_7 = [
                     M31_371240602,
                     low_7_ms_bits_col66,
@@ -650,11 +622,8 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_9aaf1_41 = ((high_14_ms_bits_tmp_9aaf1_39) >> (UInt16_9));
                 let high_5_ms_bits_col74 = high_5_ms_bits_tmp_9aaf1_41.as_m31();
                 *row[74] = high_5_ms_bits_col74;
-                *sub_component_inputs.range_check_7_2_5[3] = [
-                    low_7_ms_bits_col72,
-                    high_2_ls_bits_tmp_9aaf1_40,
-                    high_5_ms_bits_col74,
-                ];
+                *sub_component_inputs.range_check_7_2_5[3] =
+                    [low_7_ms_bits_col72, high_2_ls_bits_tmp_9aaf1_40, high_5_ms_bits_col74];
                 *lookup_data.range_check_7_2_5_10 = [
                     M31_371240602,
                     low_7_ms_bits_col72,
@@ -754,11 +723,8 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_9aaf1_52 = ((high_14_ms_bits_tmp_9aaf1_50) >> (UInt16_9));
                 let high_5_ms_bits_col80 = high_5_ms_bits_tmp_9aaf1_52.as_m31();
                 *row[80] = high_5_ms_bits_col80;
-                *sub_component_inputs.range_check_7_2_5[4] = [
-                    low_7_ms_bits_col78,
-                    high_2_ls_bits_tmp_9aaf1_51,
-                    high_5_ms_bits_col80,
-                ];
+                *sub_component_inputs.range_check_7_2_5[4] =
+                    [low_7_ms_bits_col78, high_2_ls_bits_tmp_9aaf1_51, high_5_ms_bits_col80];
                 *lookup_data.range_check_7_2_5_13 = [
                     M31_371240602,
                     low_7_ms_bits_col78,
@@ -858,11 +824,8 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_9aaf1_63 = ((high_14_ms_bits_tmp_9aaf1_61) >> (UInt16_9));
                 let high_5_ms_bits_col86 = high_5_ms_bits_tmp_9aaf1_63.as_m31();
                 *row[86] = high_5_ms_bits_col86;
-                *sub_component_inputs.range_check_7_2_5[5] = [
-                    low_7_ms_bits_col84,
-                    high_2_ls_bits_tmp_9aaf1_62,
-                    high_5_ms_bits_col86,
-                ];
+                *sub_component_inputs.range_check_7_2_5[5] =
+                    [low_7_ms_bits_col84, high_2_ls_bits_tmp_9aaf1_62, high_5_ms_bits_col86];
                 *lookup_data.range_check_7_2_5_16 = [
                     M31_371240602,
                     low_7_ms_bits_col84,
@@ -962,11 +925,8 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_9aaf1_74 = ((high_14_ms_bits_tmp_9aaf1_72) >> (UInt16_9));
                 let high_5_ms_bits_col92 = high_5_ms_bits_tmp_9aaf1_74.as_m31();
                 *row[92] = high_5_ms_bits_col92;
-                *sub_component_inputs.range_check_7_2_5[6] = [
-                    low_7_ms_bits_col90,
-                    high_2_ls_bits_tmp_9aaf1_73,
-                    high_5_ms_bits_col92,
-                ];
+                *sub_component_inputs.range_check_7_2_5[6] =
+                    [low_7_ms_bits_col90, high_2_ls_bits_tmp_9aaf1_73, high_5_ms_bits_col92];
                 *lookup_data.range_check_7_2_5_19 = [
                     M31_371240602,
                     low_7_ms_bits_col90,
@@ -1066,11 +1026,8 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_9aaf1_85 = ((high_14_ms_bits_tmp_9aaf1_83) >> (UInt16_9));
                 let high_5_ms_bits_col98 = high_5_ms_bits_tmp_9aaf1_85.as_m31();
                 *row[98] = high_5_ms_bits_col98;
-                *sub_component_inputs.range_check_7_2_5[7] = [
-                    low_7_ms_bits_col96,
-                    high_2_ls_bits_tmp_9aaf1_84,
-                    high_5_ms_bits_col98,
-                ];
+                *sub_component_inputs.range_check_7_2_5[7] =
+                    [low_7_ms_bits_col96, high_2_ls_bits_tmp_9aaf1_84, high_5_ms_bits_col98];
                 *lookup_data.range_check_7_2_5_22 = [
                     M31_371240602,
                     low_7_ms_bits_col96,
@@ -1170,11 +1127,8 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_9aaf1_96 = ((high_14_ms_bits_tmp_9aaf1_94) >> (UInt16_9));
                 let high_5_ms_bits_col104 = high_5_ms_bits_tmp_9aaf1_96.as_m31();
                 *row[104] = high_5_ms_bits_col104;
-                *sub_component_inputs.range_check_7_2_5[8] = [
-                    low_7_ms_bits_col102,
-                    high_2_ls_bits_tmp_9aaf1_95,
-                    high_5_ms_bits_col104,
-                ];
+                *sub_component_inputs.range_check_7_2_5[8] =
+                    [low_7_ms_bits_col102, high_2_ls_bits_tmp_9aaf1_95, high_5_ms_bits_col104];
                 *lookup_data.range_check_7_2_5_25 = [
                     M31_371240602,
                     low_7_ms_bits_col102,
@@ -1275,11 +1229,8 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_9aaf1_107 = ((high_14_ms_bits_tmp_9aaf1_105) >> (UInt16_9));
                 let high_5_ms_bits_col110 = high_5_ms_bits_tmp_9aaf1_107.as_m31();
                 *row[110] = high_5_ms_bits_col110;
-                *sub_component_inputs.range_check_7_2_5[9] = [
-                    low_7_ms_bits_col108,
-                    high_2_ls_bits_tmp_9aaf1_106,
-                    high_5_ms_bits_col110,
-                ];
+                *sub_component_inputs.range_check_7_2_5[9] =
+                    [low_7_ms_bits_col108, high_2_ls_bits_tmp_9aaf1_106, high_5_ms_bits_col110];
                 *lookup_data.range_check_7_2_5_28 = [
                     M31_371240602,
                     low_7_ms_bits_col108,
@@ -1380,11 +1331,8 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_9aaf1_118 = ((high_14_ms_bits_tmp_9aaf1_116) >> (UInt16_9));
                 let high_5_ms_bits_col116 = high_5_ms_bits_tmp_9aaf1_118.as_m31();
                 *row[116] = high_5_ms_bits_col116;
-                *sub_component_inputs.range_check_7_2_5[10] = [
-                    low_7_ms_bits_col114,
-                    high_2_ls_bits_tmp_9aaf1_117,
-                    high_5_ms_bits_col116,
-                ];
+                *sub_component_inputs.range_check_7_2_5[10] =
+                    [low_7_ms_bits_col114, high_2_ls_bits_tmp_9aaf1_117, high_5_ms_bits_col116];
                 *lookup_data.range_check_7_2_5_31 = [
                     M31_371240602,
                     low_7_ms_bits_col114,
@@ -1485,11 +1433,8 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_9aaf1_129 = ((high_14_ms_bits_tmp_9aaf1_127) >> (UInt16_9));
                 let high_5_ms_bits_col122 = high_5_ms_bits_tmp_9aaf1_129.as_m31();
                 *row[122] = high_5_ms_bits_col122;
-                *sub_component_inputs.range_check_7_2_5[11] = [
-                    low_7_ms_bits_col120,
-                    high_2_ls_bits_tmp_9aaf1_128,
-                    high_5_ms_bits_col122,
-                ];
+                *sub_component_inputs.range_check_7_2_5[11] =
+                    [low_7_ms_bits_col120, high_2_ls_bits_tmp_9aaf1_128, high_5_ms_bits_col122];
                 *lookup_data.range_check_7_2_5_34 = [
                     M31_371240602,
                     low_7_ms_bits_col120,
@@ -1590,11 +1535,8 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_9aaf1_140 = ((high_14_ms_bits_tmp_9aaf1_138) >> (UInt16_9));
                 let high_5_ms_bits_col128 = high_5_ms_bits_tmp_9aaf1_140.as_m31();
                 *row[128] = high_5_ms_bits_col128;
-                *sub_component_inputs.range_check_7_2_5[12] = [
-                    low_7_ms_bits_col126,
-                    high_2_ls_bits_tmp_9aaf1_139,
-                    high_5_ms_bits_col128,
-                ];
+                *sub_component_inputs.range_check_7_2_5[12] =
+                    [low_7_ms_bits_col126, high_2_ls_bits_tmp_9aaf1_139, high_5_ms_bits_col128];
                 *lookup_data.range_check_7_2_5_37 = [
                     M31_371240602,
                     low_7_ms_bits_col126,
@@ -1695,11 +1637,8 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_9aaf1_151 = ((high_14_ms_bits_tmp_9aaf1_149) >> (UInt16_9));
                 let high_5_ms_bits_col134 = high_5_ms_bits_tmp_9aaf1_151.as_m31();
                 *row[134] = high_5_ms_bits_col134;
-                *sub_component_inputs.range_check_7_2_5[13] = [
-                    low_7_ms_bits_col132,
-                    high_2_ls_bits_tmp_9aaf1_150,
-                    high_5_ms_bits_col134,
-                ];
+                *sub_component_inputs.range_check_7_2_5[13] =
+                    [low_7_ms_bits_col132, high_2_ls_bits_tmp_9aaf1_150, high_5_ms_bits_col134];
                 *lookup_data.range_check_7_2_5_40 = [
                     M31_371240602,
                     low_7_ms_bits_col132,
@@ -1800,11 +1739,8 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_9aaf1_162 = ((high_14_ms_bits_tmp_9aaf1_160) >> (UInt16_9));
                 let high_5_ms_bits_col140 = high_5_ms_bits_tmp_9aaf1_162.as_m31();
                 *row[140] = high_5_ms_bits_col140;
-                *sub_component_inputs.range_check_7_2_5[14] = [
-                    low_7_ms_bits_col138,
-                    high_2_ls_bits_tmp_9aaf1_161,
-                    high_5_ms_bits_col140,
-                ];
+                *sub_component_inputs.range_check_7_2_5[14] =
+                    [low_7_ms_bits_col138, high_2_ls_bits_tmp_9aaf1_161, high_5_ms_bits_col140];
                 *lookup_data.range_check_7_2_5_43 = [
                     M31_371240602,
                     low_7_ms_bits_col138,
@@ -1905,11 +1841,8 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_9aaf1_173 = ((high_14_ms_bits_tmp_9aaf1_171) >> (UInt16_9));
                 let high_5_ms_bits_col146 = high_5_ms_bits_tmp_9aaf1_173.as_m31();
                 *row[146] = high_5_ms_bits_col146;
-                *sub_component_inputs.range_check_7_2_5[15] = [
-                    low_7_ms_bits_col144,
-                    high_2_ls_bits_tmp_9aaf1_172,
-                    high_5_ms_bits_col146,
-                ];
+                *sub_component_inputs.range_check_7_2_5[15] =
+                    [low_7_ms_bits_col144, high_2_ls_bits_tmp_9aaf1_172, high_5_ms_bits_col146];
                 *lookup_data.range_check_7_2_5_46 = [
                     M31_371240602,
                     low_7_ms_bits_col144,
@@ -1972,18 +1905,18 @@ fn write_trace_simd(
                 let read_u_32_output_tmp_9aaf1_176 = expected_word_tmp_9aaf1_169;
 
                 *sub_component_inputs.blake_g[0] = [
-                    blake_round_input.2 .0[0],
-                    blake_round_input.2 .0[4],
-                    blake_round_input.2 .0[8],
-                    blake_round_input.2 .0[12],
+                    blake_round_input.2.0[0],
+                    blake_round_input.2.0[4],
+                    blake_round_input.2.0[8],
+                    blake_round_input.2.0[12],
                     read_u_32_output_tmp_9aaf1_11,
                     read_u_32_output_tmp_9aaf1_22,
                 ];
                 let blake_g_output_tmp_9aaf1_177 = PackedBlakeG::deduce_output([
-                    blake_round_input.2 .0[0],
-                    blake_round_input.2 .0[4],
-                    blake_round_input.2 .0[8],
-                    blake_round_input.2 .0[12],
+                    blake_round_input.2.0[0],
+                    blake_round_input.2.0[4],
+                    blake_round_input.2.0[8],
+                    blake_round_input.2.0[12],
                     read_u_32_output_tmp_9aaf1_11,
                     read_u_32_output_tmp_9aaf1_22,
                 ]);
@@ -2027,18 +1960,18 @@ fn write_trace_simd(
                     blake_g_output_limb_7_col155,
                 ];
                 *sub_component_inputs.blake_g[1] = [
-                    blake_round_input.2 .0[1],
-                    blake_round_input.2 .0[5],
-                    blake_round_input.2 .0[9],
-                    blake_round_input.2 .0[13],
+                    blake_round_input.2.0[1],
+                    blake_round_input.2.0[5],
+                    blake_round_input.2.0[9],
+                    blake_round_input.2.0[13],
                     read_u_32_output_tmp_9aaf1_33,
                     read_u_32_output_tmp_9aaf1_44,
                 ];
                 let blake_g_output_tmp_9aaf1_178 = PackedBlakeG::deduce_output([
-                    blake_round_input.2 .0[1],
-                    blake_round_input.2 .0[5],
-                    blake_round_input.2 .0[9],
-                    blake_round_input.2 .0[13],
+                    blake_round_input.2.0[1],
+                    blake_round_input.2.0[5],
+                    blake_round_input.2.0[9],
+                    blake_round_input.2.0[13],
                     read_u_32_output_tmp_9aaf1_33,
                     read_u_32_output_tmp_9aaf1_44,
                 ]);
@@ -2082,18 +2015,18 @@ fn write_trace_simd(
                     blake_g_output_limb_7_col163,
                 ];
                 *sub_component_inputs.blake_g[2] = [
-                    blake_round_input.2 .0[2],
-                    blake_round_input.2 .0[6],
-                    blake_round_input.2 .0[10],
-                    blake_round_input.2 .0[14],
+                    blake_round_input.2.0[2],
+                    blake_round_input.2.0[6],
+                    blake_round_input.2.0[10],
+                    blake_round_input.2.0[14],
                     read_u_32_output_tmp_9aaf1_55,
                     read_u_32_output_tmp_9aaf1_66,
                 ];
                 let blake_g_output_tmp_9aaf1_179 = PackedBlakeG::deduce_output([
-                    blake_round_input.2 .0[2],
-                    blake_round_input.2 .0[6],
-                    blake_round_input.2 .0[10],
-                    blake_round_input.2 .0[14],
+                    blake_round_input.2.0[2],
+                    blake_round_input.2.0[6],
+                    blake_round_input.2.0[10],
+                    blake_round_input.2.0[14],
                     read_u_32_output_tmp_9aaf1_55,
                     read_u_32_output_tmp_9aaf1_66,
                 ]);
@@ -2137,18 +2070,18 @@ fn write_trace_simd(
                     blake_g_output_limb_7_col171,
                 ];
                 *sub_component_inputs.blake_g[3] = [
-                    blake_round_input.2 .0[3],
-                    blake_round_input.2 .0[7],
-                    blake_round_input.2 .0[11],
-                    blake_round_input.2 .0[15],
+                    blake_round_input.2.0[3],
+                    blake_round_input.2.0[7],
+                    blake_round_input.2.0[11],
+                    blake_round_input.2.0[15],
                     read_u_32_output_tmp_9aaf1_77,
                     read_u_32_output_tmp_9aaf1_88,
                 ];
                 let blake_g_output_tmp_9aaf1_180 = PackedBlakeG::deduce_output([
-                    blake_round_input.2 .0[3],
-                    blake_round_input.2 .0[7],
-                    blake_round_input.2 .0[11],
-                    blake_round_input.2 .0[15],
+                    blake_round_input.2.0[3],
+                    blake_round_input.2.0[7],
+                    blake_round_input.2.0[11],
+                    blake_round_input.2.0[15],
                     read_u_32_output_tmp_9aaf1_77,
                     read_u_32_output_tmp_9aaf1_88,
                 ]);
@@ -2566,10 +2499,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
 
         // Sum logup terms in pairs.
@@ -3039,11 +2969,7 @@ impl InteractionClaimGenerator {
 
         // Sum last logup term.
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.blake_round_58,
-            self.lookup_data.mults_0,
-        )
+        (col_gen.par_iter_mut(), &self.lookup_data.blake_round_58, self.lookup_data.mults_0)
             .into_par_iter()
             .for_each(|(writer, values, mult)| {
                 let denom = common_lookup_elements.combine(values);

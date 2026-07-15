@@ -9,94 +9,28 @@ use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 243;
 pub const RELATION_USES_PER_ROW: [RelationUse; 22] = [
-    RelationUse {
-        relation_id: "MemoryAddressToId",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "MemoryIdToBig",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "Opcodes",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_11",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_18",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_B",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_C",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_D",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_E",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_F",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_G",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_H",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_B",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_C",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_D",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_E",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_F",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_G",
-        uses: 2,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_H",
-        uses: 2,
-    },
-    RelationUse {
-        relation_id: "VerifyInstruction",
-        uses: 1,
-    },
+    RelationUse { relation_id: "MemoryAddressToId", uses: 3 },
+    RelationUse { relation_id: "MemoryIdToBig", uses: 3 },
+    RelationUse { relation_id: "Opcodes", uses: 1 },
+    RelationUse { relation_id: "RangeCheck_11", uses: 1 },
+    RelationUse { relation_id: "RangeCheck_18", uses: 1 },
+    RelationUse { relation_id: "RangeCheck_20", uses: 4 },
+    RelationUse { relation_id: "RangeCheck_20_B", uses: 4 },
+    RelationUse { relation_id: "RangeCheck_20_C", uses: 4 },
+    RelationUse { relation_id: "RangeCheck_20_D", uses: 4 },
+    RelationUse { relation_id: "RangeCheck_20_E", uses: 3 },
+    RelationUse { relation_id: "RangeCheck_20_F", uses: 3 },
+    RelationUse { relation_id: "RangeCheck_20_G", uses: 3 },
+    RelationUse { relation_id: "RangeCheck_20_H", uses: 3 },
+    RelationUse { relation_id: "RangeCheck_9_9", uses: 4 },
+    RelationUse { relation_id: "RangeCheck_9_9_B", uses: 4 },
+    RelationUse { relation_id: "RangeCheck_9_9_C", uses: 4 },
+    RelationUse { relation_id: "RangeCheck_9_9_D", uses: 4 },
+    RelationUse { relation_id: "RangeCheck_9_9_E", uses: 4 },
+    RelationUse { relation_id: "RangeCheck_9_9_F", uses: 4 },
+    RelationUse { relation_id: "RangeCheck_9_9_G", uses: 2 },
+    RelationUse { relation_id: "RangeCheck_9_9_H", uses: 2 },
+    RelationUse { relation_id: "VerifyInstruction", uses: 1 },
 ];
 
 pub struct Eval {
@@ -385,31 +319,39 @@ impl FrameworkEval for Eval {
         eval.add_constraint(((enabler_col0.clone() * enabler_col0.clone()) - enabler_col0.clone()));
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_generic_instruction_output_tmp_c8168_26_op1_base_op0, decode_generic_instruction_output_tmp_c8168_26_res_op1, decode_generic_instruction_output_tmp_c8168_26_pc_update_regular, decode_generic_instruction_output_tmp_c8168_26_fp_update_regular, decode_generic_instruction_output_tmp_c8168_26_instruction_size, decode_generic_instruction_output_tmp_c8168_26_offset0, decode_generic_instruction_output_tmp_c8168_26_offset1, decode_generic_instruction_output_tmp_c8168_26_offset2] =
-            DecodeGenericInstruction::evaluate(
-                [input_pc_col1.clone()],
-                enabler_col0.clone(),
-                offset0_col4.clone(),
-                offset1_col5.clone(),
-                offset2_col6.clone(),
-                dst_base_fp_col7.clone(),
-                op0_base_fp_col8.clone(),
-                op1_imm_col9.clone(),
-                op1_base_fp_col10.clone(),
-                op1_base_ap_col11.clone(),
-                res_add_col12.clone(),
-                res_mul_col13.clone(),
-                pc_update_jump_col14.clone(),
-                pc_update_jump_rel_col15.clone(),
-                pc_update_jnz_col16.clone(),
-                ap_update_add_col17.clone(),
-                ap_update_add_1_col18.clone(),
-                opcode_call_col19.clone(),
-                opcode_ret_col20.clone(),
-                opcode_assert_eq_col21.clone(),
-                &self.common_lookup_elements,
-                &mut eval,
-            );
+        let [
+            decode_generic_instruction_output_tmp_c8168_26_op1_base_op0,
+            decode_generic_instruction_output_tmp_c8168_26_res_op1,
+            decode_generic_instruction_output_tmp_c8168_26_pc_update_regular,
+            decode_generic_instruction_output_tmp_c8168_26_fp_update_regular,
+            decode_generic_instruction_output_tmp_c8168_26_instruction_size,
+            decode_generic_instruction_output_tmp_c8168_26_offset0,
+            decode_generic_instruction_output_tmp_c8168_26_offset1,
+            decode_generic_instruction_output_tmp_c8168_26_offset2,
+        ] = DecodeGenericInstruction::evaluate(
+            [input_pc_col1.clone()],
+            enabler_col0.clone(),
+            offset0_col4.clone(),
+            offset1_col5.clone(),
+            offset2_col6.clone(),
+            dst_base_fp_col7.clone(),
+            op0_base_fp_col8.clone(),
+            op1_imm_col9.clone(),
+            op1_base_fp_col10.clone(),
+            op1_base_ap_col11.clone(),
+            res_add_col12.clone(),
+            res_mul_col13.clone(),
+            pc_update_jump_col14.clone(),
+            pc_update_jump_rel_col15.clone(),
+            pc_update_jnz_col16.clone(),
+            ap_update_add_col17.clone(),
+            ap_update_add_1_col18.clone(),
+            opcode_call_col19.clone(),
+            opcode_ret_col20.clone(),
+            opcode_assert_eq_col21.clone(),
+            &self.common_lookup_elements,
+            &mut eval,
+        );
         EvalOperands::evaluate(
             [
                 input_pc_col1.clone(),

@@ -20,15 +20,9 @@ impl ClaimGenerator {
     pub fn new(preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
         let mults = from_fn(|_| AtomicMultiplicityColumn::new(1 << LOG_SIZE));
         let column_ids = [
-            PreProcessedColumnId {
-                id: "range_check_7_2_5_column_0".to_owned(),
-            },
-            PreProcessedColumnId {
-                id: "range_check_7_2_5_column_1".to_owned(),
-            },
-            PreProcessedColumnId {
-                id: "range_check_7_2_5_column_2".to_owned(),
-            },
+            PreProcessedColumnId { id: "range_check_7_2_5_column_0".to_owned() },
+            PreProcessedColumnId { id: "range_check_7_2_5_column_1".to_owned() },
+            PreProcessedColumnId { id: "range_check_7_2_5_column_2".to_owned() },
         ];
 
         Self {
@@ -40,16 +34,8 @@ impl ClaimGenerator {
 
     pub fn write_trace(
         self,
-    ) -> (
-        ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
-        InteractionClaimGenerator,
-    ) {
-        let mults = self
-            .mults
-            .into_iter()
-            .map(|v| v.into_simd_vec())
-            .collect::<Vec<_>>();
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator) {
+        let mults = self.mults.into_iter().map(|v| v.into_simd_vec()).collect::<Vec<_>>();
 
         let (trace, lookup_data) = write_trace_simd(&self.preprocessed_trace, mults);
 
@@ -91,20 +77,15 @@ fn write_trace_simd(
     };
 
     let M31_371240602 = PackedM31::broadcast(M31::from(371240602));
-    let range_check_7_2_5_column_0 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "range_check_7_2_5_column_0".to_owned(),
-    });
-    let range_check_7_2_5_column_1 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "range_check_7_2_5_column_1".to_owned(),
-    });
-    let range_check_7_2_5_column_2 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "range_check_7_2_5_column_2".to_owned(),
-    });
+    let range_check_7_2_5_column_0 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "range_check_7_2_5_column_0".to_owned() });
+    let range_check_7_2_5_column_1 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "range_check_7_2_5_column_1".to_owned() });
+    let range_check_7_2_5_column_2 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "range_check_7_2_5_column_2".to_owned() });
 
-    (trace.par_iter_mut(), lookup_data.par_iter_mut())
-        .into_par_iter()
-        .enumerate()
-        .for_each(|(row_index, (row, lookup_data))| {
+    (trace.par_iter_mut(), lookup_data.par_iter_mut()).into_par_iter().enumerate().for_each(
+        |(row_index, (row, lookup_data))| {
             let range_check_7_2_5_column_0 = range_check_7_2_5_column_0.packed_at(row_index);
             let range_check_7_2_5_column_1 = range_check_7_2_5_column_1.packed_at(row_index);
             let range_check_7_2_5_column_2 = range_check_7_2_5_column_2.packed_at(row_index);
@@ -117,7 +98,8 @@ fn write_trace_simd(
                 range_check_7_2_5_column_2,
             ];
             *lookup_data.mults_0 = multiplicity_0_col0;
-        });
+        },
+    );
 
     (trace, lookup_data)
 }
@@ -135,19 +117,12 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(LOG_SIZE) };
 
         // Sum last logup term.
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_7_2_5_0,
-            self.lookup_data.mults_0,
-        )
+        (col_gen.par_iter_mut(), &self.lookup_data.range_check_7_2_5_0, self.lookup_data.mults_0)
             .into_par_iter()
             .for_each(|(writer, values, mult)| {
                 let denom = common_lookup_elements.combine(values);

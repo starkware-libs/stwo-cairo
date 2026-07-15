@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use stwo::core::fields::m31::M31;
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use stwo_cairo_common::prover_types::cpu::CasmState;
-use tracing::{span, Level};
+use tracing::{Level, span};
 
 use super::decode::{Instruction, OpcodeExtension};
 use super::memory::{MemoryBuilder, MemoryValue};
@@ -109,7 +109,8 @@ impl CasmStatesByOpcode {
                 assert_eq!(
                     (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
                     1,
-                    "add_ap opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
+                    "add_ap opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap \
+                     must be true"
                 );
                 assert!(
                     (!op_1_imm) || offset2 == 1,
@@ -332,7 +333,8 @@ impl CasmStatesByOpcode {
                 assert_eq!(
                     (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
                     1,
-                    "mul opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
+                    "mul opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must \
+                     be true"
                 );
                 assert!(
                     (!op_1_imm) || offset2 == 1,
@@ -389,7 +391,8 @@ impl CasmStatesByOpcode {
                 assert_eq!(
                     (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
                     1,
-                    "add opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
+                    "add opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must \
+                     be true"
                 );
                 assert!(
                     (!op_1_imm) || offset2 == 1,
@@ -457,7 +460,8 @@ impl CasmStatesByOpcode {
                 assert_eq!(
                     (op_1_imm as u8) + (op_1_base_fp as u8) + (op_1_base_ap as u8),
                     1,
-                    "qm31_add_mul opcode requires exactly one of op_1_imm, op_1_base_fp, op_1_base_ap must be true"
+                    "qm31_add_mul opcode requires exactly one of op_1_imm, op_1_base_fp, \
+                     op_1_base_ap must be true"
                 );
                 assert!(
                     res_add ^ res_mul,
@@ -510,8 +514,7 @@ impl CasmStatesByOpcode {
         self.add_opcode.extend(add_opcode);
         self.add_opcode_small.extend(add_opcode_small);
         self.assert_eq_opcode.extend(assert_eq_opcode);
-        self.assert_eq_opcode_double_deref
-            .extend(assert_eq_opcode_double_deref);
+        self.assert_eq_opcode_double_deref.extend(assert_eq_opcode_double_deref);
         self.assert_eq_opcode_imm.extend(assert_eq_opcode_imm);
         self.call_opcode_abs.extend(call_opcode_abs);
         self.call_opcode_rel_imm.extend(call_opcode_rel_imm);
@@ -519,8 +522,7 @@ impl CasmStatesByOpcode {
         self.jnz_opcode_taken.extend(jnz_opcode_taken);
         self.jump_opcode_rel_imm.extend(jump_opcode_rel_imm);
         self.jump_opcode_rel.extend(jump_opcode_rel);
-        self.jump_opcode_double_deref
-            .extend(jump_opcode_double_deref);
+        self.jump_opcode_double_deref.extend(jump_opcode_double_deref);
         self.jump_opcode_abs.extend(jump_opcode_abs);
         self.mul_opcode_small.extend(mul_opcode_small);
         self.mul_opcode.extend(mul_opcode);
@@ -536,45 +538,21 @@ impl CasmStatesByOpcode {
             ("add_opcode".to_string(), self.add_opcode.len()),
             ("add_opcode_small".to_string(), self.add_opcode_small.len()),
             ("assert_eq_opcode".to_string(), self.assert_eq_opcode.len()),
-            (
-                "assert_eq_opcode_double_deref".to_string(),
-                self.assert_eq_opcode_double_deref.len(),
-            ),
-            (
-                "assert_eq_opcode_imm".to_string(),
-                self.assert_eq_opcode_imm.len(),
-            ),
+            ("assert_eq_opcode_double_deref".to_string(), self.assert_eq_opcode_double_deref.len()),
+            ("assert_eq_opcode_imm".to_string(), self.assert_eq_opcode_imm.len()),
             ("call_opcode_abs".to_string(), self.call_opcode_abs.len()),
-            (
-                "call_opcode_rel_imm".to_string(),
-                self.call_opcode_rel_imm.len(),
-            ),
-            (
-                "jnz_opcode_non_taken".to_string(),
-                self.jnz_opcode_non_taken.len(),
-            ),
+            ("call_opcode_rel_imm".to_string(), self.call_opcode_rel_imm.len()),
+            ("jnz_opcode_non_taken".to_string(), self.jnz_opcode_non_taken.len()),
             ("jnz_opcode_taken".to_string(), self.jnz_opcode_taken.len()),
-            (
-                "jump_opcode_rel_imm".to_string(),
-                self.jump_opcode_rel_imm.len(),
-            ),
+            ("jump_opcode_rel_imm".to_string(), self.jump_opcode_rel_imm.len()),
             ("jump_opcode_rel".to_string(), self.jump_opcode_rel.len()),
-            (
-                "jump_opcode_double_deref".to_string(),
-                self.jump_opcode_double_deref.len(),
-            ),
+            ("jump_opcode_double_deref".to_string(), self.jump_opcode_double_deref.len()),
             ("jump_opcode_abs".to_string(), self.jump_opcode_abs.len()),
             ("mul_opcode_small".to_string(), self.mul_opcode_small.len()),
             ("mul_opcode".to_string(), self.mul_opcode.len()),
             ("ret_opcode".to_string(), self.ret_opcode.len()),
-            (
-                "blake_compress_opcode".to_string(),
-                self.blake_compress_opcode.len(),
-            ),
-            (
-                "qm_31_add_mul_opcode".to_string(),
-                self.qm_31_add_mul_opcode.len(),
-            ),
+            ("blake_compress_opcode".to_string(), self.blake_compress_opcode.len()),
+            ("qm_31_add_mul_opcode".to_string(), self.qm_31_add_mul_opcode.len()),
         ]
     }
 }
@@ -594,11 +572,7 @@ impl Display for CasmStatesByOpcode {
 }
 
 fn into_casm_state(entry: &RelocatedTraceEntry) -> CasmState {
-    CasmState {
-        pc: M31(entry.pc as u32),
-        ap: M31(entry.ap as u32),
-        fp: M31(entry.fp as u32),
-    }
+    CasmState { pc: M31(entry.pc as u32), ap: M31(entry.ap as u32), fp: M31(entry.fp as u32) }
 }
 
 fn assert_state_in_address_space(casm_state: CasmState) {
@@ -653,11 +627,7 @@ impl StateTransitions {
 
         let states = CasmStatesByOpcode::from_iter(iter, memory);
 
-        StateTransitions {
-            initial_state,
-            final_state,
-            casm_states_by_opcode: states,
-        }
+        StateTransitions { initial_state, final_state, casm_states_by_opcode: states }
     }
 
     pub fn from_slice_parallel(trace: &[RelocatedTraceEntry], memory: &MemoryBuilder) -> Self {
@@ -681,11 +651,7 @@ impl StateTransitions {
                 acc
             });
 
-        StateTransitions {
-            initial_state,
-            final_state,
-            casm_states_by_opcode,
-        }
+        StateTransitions { initial_state, final_state, casm_states_by_opcode }
     }
 }
 
@@ -744,11 +710,11 @@ mod mappings_tests {
     use crate::adapter::adapt;
     use crate::decode::{Instruction, OpcodeExtension};
     use crate::memory::*;
-    use crate::opcodes::{is_small_add, CasmStatesByOpcode, StateTransitions};
-    use crate::relocator::relocator_tests::get_test_relocatble_trace;
+    use crate::opcodes::{CasmStatesByOpcode, StateTransitions, is_small_add};
     use crate::relocator::Relocator;
+    use crate::relocator::relocator_tests::get_test_relocatble_trace;
     use crate::test_utils::program_from_casm;
-    use crate::{casm_state, relocated_trace_entry, ProverInput};
+    use crate::{ProverInput, casm_state, relocated_trace_entry};
 
     /// Translates a plain casm into a ProverInput by running the program and extracting the memory
     /// and the state transitions.
@@ -1282,9 +1248,7 @@ mod mappings_tests {
         memory_builder.set(85, memory_value);
 
         let state_transitions = StateTransitions::from_iter(
-            relocator
-                .relocate_trace(&get_test_relocatble_trace())
-                .into_iter(),
+            relocator.relocate_trace(&get_test_relocatble_trace()).into_iter(),
             &memory_builder,
         );
         assert_eq!(

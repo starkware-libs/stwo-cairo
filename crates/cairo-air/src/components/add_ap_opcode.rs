@@ -8,30 +8,12 @@ use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 17;
 pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
-    RelationUse {
-        relation_id: "MemoryAddressToId",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "MemoryIdToBig",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "Opcodes",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_11",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_18",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "VerifyInstruction",
-        uses: 1,
-    },
+    RelationUse { relation_id: "MemoryAddressToId", uses: 1 },
+    RelationUse { relation_id: "MemoryIdToBig", uses: 1 },
+    RelationUse { relation_id: "Opcodes", uses: 1 },
+    RelationUse { relation_id: "RangeCheck_11", uses: 1 },
+    RelationUse { relation_id: "RangeCheck_18", uses: 1 },
+    RelationUse { relation_id: "VerifyInstruction", uses: 1 },
 ];
 
 pub struct Eval {
@@ -95,16 +77,18 @@ impl FrameworkEval for Eval {
         eval.add_constraint(((enabler_col0.clone() * enabler_col0.clone()) - enabler_col0.clone()));
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_89ffb_output_tmp_44683_6_offset2, decode_instruction_89ffb_output_tmp_44683_6_op1_base_ap] =
-            DecodeInstruction89Ffb::evaluate(
-                [input_pc_col1.clone()],
-                enabler_col0.clone(),
-                offset2_col4.clone(),
-                op1_imm_col5.clone(),
-                op1_base_fp_col6.clone(),
-                &self.common_lookup_elements,
-                &mut eval,
-            );
+        let [
+            decode_instruction_89ffb_output_tmp_44683_6_offset2,
+            decode_instruction_89ffb_output_tmp_44683_6_op1_base_ap,
+        ] = DecodeInstruction89Ffb::evaluate(
+            [input_pc_col1.clone()],
+            enabler_col0.clone(),
+            offset2_col4.clone(),
+            op1_imm_col5.clone(),
+            op1_base_fp_col6.clone(),
+            &self.common_lookup_elements,
+            &mut eval,
+        );
         // if imm then offset2 is 1.
         eval.add_constraint(
             (op1_imm_col5.clone()

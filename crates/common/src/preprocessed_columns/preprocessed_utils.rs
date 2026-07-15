@@ -7,8 +7,5 @@ where
     F: Fn(usize, usize) -> M31,
 {
     let n = padding_offset.next_power_of_two();
-    (0..n)
-        .map(|i| if i < padding_offset { i } else { 0 })
-        .map(|i| get_m31(i, col))
-        .collect()
+    (0..n).map(|i| if i < padding_offset { i } else { 0 }).map(|i| get_m31(i, col)).collect()
 }

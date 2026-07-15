@@ -4,7 +4,7 @@ use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::trace::trace_entry::{RelocatedTraceEntry, TraceEntry};
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
-use tracing::{span, Level};
+use tracing::{Level, span};
 
 use super::builtins::{BuiltinSegments, MemorySegmentAddresses};
 use super::memory::MemoryEntry;
@@ -28,7 +28,8 @@ impl Relocator {
             let addr = relocation_table.last().unwrap() + segment_size as u32;
             assert!(
                 addr <= MEMORY_ADDRESS_BOUND as u32,
-                "Relocated address: {addr} for segment: {segment_index} exceeded the maximum address value."
+                "Relocated address: {addr} for segment: {segment_index} exceeded the maximum \
+                 address value."
             );
             relocation_table.push(addr);
         }
@@ -191,21 +192,9 @@ pub mod relocator_tests {
 
     pub fn get_test_relocatble_trace() -> Vec<TraceEntry> {
         vec![
-            TraceEntry {
-                pc: relocatable!(0, 0),
-                ap: 1,
-                fp: 1,
-            },
-            TraceEntry {
-                pc: relocatable!(1, 1),
-                ap: 2,
-                fp: 2,
-            },
-            TraceEntry {
-                pc: relocatable!(2, 1),
-                ap: 2,
-                fp: 2,
-            },
+            TraceEntry { pc: relocatable!(0, 0), ap: 1, fp: 1 },
+            TraceEntry { pc: relocatable!(1, 1), ap: 2, fp: 2 },
+            TraceEntry { pc: relocatable!(2, 1), ap: 2, fp: 2 },
         ]
     }
 
@@ -232,58 +221,37 @@ pub mod relocator_tests {
         let relocated_memory = relocator.relocate_memory(&memory);
         assert_eq!(
             relocated_memory[0],
-            MemoryEntry {
-                address: 1,
-                value: [1, 0, 0, 0, 0, 0, 0, 0]
-            }
+            MemoryEntry { address: 1, value: [1, 0, 0, 0, 0, 0, 0, 0] }
         );
 
         assert_eq!(
             relocated_memory[1],
-            MemoryEntry {
-                address: 2,
-                value: [9, 0, 0, 0, 0, 0, 0, 0]
-            }
+            MemoryEntry { address: 2, value: [9, 0, 0, 0, 0, 0, 0, 0] }
         );
 
         assert_eq!(
             relocated_memory[2],
-            MemoryEntry {
-                address: 3,
-                value: [85, 0, 0, 0, 0, 0, 0, 0]
-            }
+            MemoryEntry { address: 3, value: [85, 0, 0, 0, 0, 0, 0, 0] }
         );
 
         assert_eq!(
             relocated_memory[3],
-            MemoryEntry {
-                address: 4,
-                value: [2, 0, 0, 0, 0, 0, 0, 0],
-            }
+            MemoryEntry { address: 4, value: [2, 0, 0, 0, 0, 0, 0, 0] }
         );
 
         assert_eq!(
             relocated_memory[83],
-            MemoryEntry {
-                address: 84,
-                value: [1, 0, 0, 0, 0, 0, 0, 0],
-            }
+            MemoryEntry { address: 84, value: [1, 0, 0, 0, 0, 0, 0, 0] }
         );
 
         assert_eq!(
             relocated_memory[84],
-            MemoryEntry {
-                address: 85,
-                value: [2, 0, 0, 0, 0, 0, 0, 0],
-            }
+            MemoryEntry { address: 85, value: [2, 0, 0, 0, 0, 0, 0, 0] }
         );
 
         assert_eq!(
             relocated_memory[85],
-            MemoryEntry {
-                address: 86,
-                value: [3, 0, 0, 0, 0, 0, 0, 0],
-            }
+            MemoryEntry { address: 86, value: [3, 0, 0, 0, 0, 0, 0, 0] }
         );
     }
 
@@ -296,12 +264,8 @@ pub mod relocator_tests {
             Some(MaybeRelocatable::Int(5498.into())),
             Some(MaybeRelocatable::RelocatableValue(relocatable!(2, 1478))),
         ];
-        let segment0 = builtin_segment0
-            .clone()
-            .into_iter()
-            .cycle()
-            .take(16 * 5)
-            .collect::<Vec<_>>();
+        let segment0 =
+            builtin_segment0.clone().into_iter().cycle().take(16 * 5).collect::<Vec<_>>();
 
         let builtin_segment1 =
             vec![Some(MaybeRelocatable::RelocatableValue(relocatable!(0, 1))); 16];
@@ -320,17 +284,11 @@ pub mod relocator_tests {
 
         assert_eq!(
             builtin_segments.bitwise_builtin,
-            Some(MemorySegmentAddresses {
-                begin_addr: 1,
-                stop_ptr: 81
-            })
+            Some(MemorySegmentAddresses { begin_addr: 1, stop_ptr: 81 })
         );
         assert_eq!(
             builtin_segments.range_check_builtin,
-            Some(MemorySegmentAddresses {
-                begin_addr: 81,
-                stop_ptr: 97
-            })
+            Some(MemorySegmentAddresses { begin_addr: 81, stop_ptr: 97 })
         );
     }
 

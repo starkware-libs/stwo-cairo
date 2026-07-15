@@ -15,7 +15,7 @@ use super::felt_batch_inverse::felt_batch_inverse;
 use super::preprocessed_trace::PreProcessedColumn;
 #[cfg(feature = "prover")]
 use super::simd_prelude::*;
-use crate::prover_types::cpu::{Felt252, FELT252_N_WORDS};
+use crate::prover_types::cpu::{FELT252_N_WORDS, Felt252};
 
 pub static PEDERSEN_TABLE_9: LazyLock<PedersenPointsTable<9>> =
     LazyLock::new(PedersenPointsTable::new);
@@ -32,8 +32,8 @@ fn require_initialized<const WINDOW_BITS: usize>(
 ) -> &'static PedersenPointsTable<WINDOW_BITS> {
     LazyLock::get(table).unwrap_or_else(|| {
         panic!(
-            "PEDERSEN_TABLE_{WINDOW_BITS} accessed before initialization; \
-             call LazyLock::force on it before the parallel region"
+            "PEDERSEN_TABLE_{WINDOW_BITS} accessed before initialization; call LazyLock::force on \
+             it before the parallel region"
         )
     })
 }
@@ -79,21 +79,16 @@ impl<const WINDOW_BITS: usize> PreProcessedColumn for PedersenPoints<WINDOW_BITS
 
     fn id(&self) -> PreProcessedColumnId {
         match WINDOW_BITS {
-            9 => PreProcessedColumnId {
-                id: format!("pedersen_points_small_{}", self.index),
-            },
-            18 => PreProcessedColumnId {
-                id: format!("pedersen_points_{}", self.index),
-            },
+            9 => PreProcessedColumnId { id: format!("pedersen_points_small_{}", self.index) },
+            18 => PreProcessedColumnId { id: format!("pedersen_points_{}", self.index) },
             _ => panic!("Unsupported window_bits value {WINDOW_BITS}"),
         }
     }
 
     #[cfg(feature = "prover")]
     fn packed_at(&self, vec_row: usize) -> PackedM31 {
-        let array = self.get_data()[(vec_row * N_LANES)..((vec_row + 1) * N_LANES)]
-            .try_into()
-            .unwrap();
+        let array =
+            self.get_data()[(vec_row * N_LANES)..((vec_row + 1) * N_LANES)].try_into().unwrap();
         PackedM31::from_array(array)
     }
 
@@ -146,10 +141,7 @@ impl<const WINDOW_BITS: usize> PedersenPointsTable<WINDOW_BITS> {
 
     fn new() -> Self {
         let rows = create_table_rows(WINDOW_BITS);
-        Self {
-            column_data: rows_to_columns(&rows),
-            rows,
-        }
+        Self { column_data: rows_to_columns(&rows), rows }
     }
 }
 
@@ -179,10 +171,7 @@ fn create_block(
         .iter()
         .zip_eq(block_points_ys.iter())
         .zip_eq(z_inverses.iter())
-        .map(|((x, y), z_inv)| SimpleAffinePoint {
-            x: x * z_inv,
-            y: y * z_inv,
-        })
+        .map(|((x, y), z_inv)| SimpleAffinePoint { x: x * z_inv, y: y * z_inv })
         .collect()
 }
 
@@ -301,10 +290,6 @@ fn rows_to_columns(rows: &[SimpleAffinePoint]) -> [Vec<BaseField>; PEDERSEN_TABL
         .collect();
 
     columns_vec.try_into().unwrap_or_else(|v: Vec<_>| {
-        panic!(
-            "Expected {} columns, got {}",
-            PEDERSEN_TABLE_N_COLUMNS,
-            v.len()
-        )
+        panic!("Expected {} columns, got {}", PEDERSEN_TABLE_N_COLUMNS, v.len())
     })
 }

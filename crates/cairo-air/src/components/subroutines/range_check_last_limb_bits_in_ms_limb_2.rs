@@ -24,10 +24,7 @@ impl RangeCheckLastLimbBitsInMsLimb2 {
         let M31_1 = E::F::from(M31::from(1));
 
         CondRangeCheck2::evaluate(
-            [
-                range_check_last_limb_bits_in_ms_limb_2_input.clone(),
-                M31_1.clone(),
-            ],
+            [range_check_last_limb_bits_in_ms_limb_2_input.clone(), M31_1.clone()],
             enabler.clone(),
             partial_limb_msb_col0.clone(),
             common_lookup_elements,

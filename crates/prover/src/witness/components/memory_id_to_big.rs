@@ -14,12 +14,12 @@ use cairo_air::relations::{
     RANGE_CHECK_9_9_F_RELATION_ID, RANGE_CHECK_9_9_G_RELATION_ID, RANGE_CHECK_9_9_H_RELATION_ID,
     RANGE_CHECK_9_9_RELATION_ID,
 };
-use itertools::{chain, Itertools};
+use itertools::{Itertools, chain};
 use rayon::iter::{
     IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelIterator,
 };
 use stwo::core::fields::qm31::SecureField;
-use stwo_cairo_adapter::memory::{u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId};
+use stwo_cairo_adapter::memory::{EncodedMemoryValueId, Memory, MemoryValueId, u128_to_4_limbs};
 use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, N_M31_IN_SMALL_FELT252};
 use stwo_cairo_common::prover_types::cpu::FELT252_N_WORDS;
 use stwo_cairo_common::prover_types::felt::split_f252_simd;
@@ -57,38 +57,28 @@ impl ClaimGenerator {
         small_values.resize(simd_padded_small_size, 0);
         let small_mults = AtomicMultiplicityColumn::new(simd_padded_small_size);
 
-        Self {
-            small_values,
-            big_values,
-            small_mults,
-            big_mults,
-        }
+        Self { small_values, big_values, small_mults, big_mults }
     }
 
     pub fn deduce_output(&self, ids: PackedM31) -> PackedFelt252 {
         let values = std::array::from_fn(|j| {
-            Simd::from_array(
-                ids.to_array()
-                    .map(|M31(i)| match EncodedMemoryValueId(i).decode() {
-                        MemoryValueId::F252(id) => self.big_values[id as usize][j],
-                        MemoryValueId::Small(id) => {
-                            if j >= 4 {
-                                0
-                            } else {
-                                let small = self.small_values[id as usize];
-                                u128_to_4_limbs(small)[j]
-                            }
-                        }
-                        MemoryValueId::Empty => {
-                            panic!("Attempted deduce_output on empty memory cell.")
-                        }
-                    }),
-            )
+            Simd::from_array(ids.to_array().map(|M31(i)| match EncodedMemoryValueId(i).decode() {
+                MemoryValueId::F252(id) => self.big_values[id as usize][j],
+                MemoryValueId::Small(id) => {
+                    if j >= 4 {
+                        0
+                    } else {
+                        let small = self.small_values[id as usize];
+                        u128_to_4_limbs(small)[j]
+                    }
+                }
+                MemoryValueId::Empty => {
+                    panic!("Attempted deduce_output on empty memory cell.")
+                }
+            }))
         });
 
-        PackedFelt252 {
-            value: split_f252_simd(values),
-        }
+        PackedFelt252 { value: split_f252_simd(values) }
     }
 
     pub fn add_inputs(&self, inputs: &[InputType]) {
@@ -109,12 +99,7 @@ impl ClaimGenerator {
         range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
         log_max_big_size: u32,
         opt_n_components: Option<usize>,
-    ) -> (
-        BigTraces,
-        SmallTrace,
-        (BigClaim, SmallClaim),
-        InteractionClaimGenerator,
-    ) {
+    ) -> (BigTraces, SmallTrace, (BigClaim, SmallClaim), InteractionClaimGenerator) {
         let big_table_traces = gen_big_memory_traces(
             self.big_values,
             self.big_mults.into_simd_vec(),
@@ -129,10 +114,8 @@ impl ClaimGenerator {
             .iter()
             .map(|trace| std::array::from_fn(|i| trace[i + 1].data.clone()))
             .collect_vec();
-        let big_multiplicities = big_table_traces
-            .iter()
-            .map(|trace| trace.first().unwrap().data.clone())
-            .collect_vec();
+        let big_multiplicities =
+            big_table_traces.iter().map(|trace| trace.first().unwrap().data.clone()).collect_vec();
         let small_values: [_; N_M31_IN_SMALL_FELT252] =
             std::array::from_fn(|i| small_table_trace[i + 1].data.clone());
         let small_multiplicities = small_table_trace.first().unwrap().data.clone();
@@ -141,54 +124,30 @@ impl ClaimGenerator {
         for values in &big_components_values {
             for (i, (col0, col1)) in values.iter().tuples().enumerate() {
                 match i % 8 {
-                    0 => col0
-                        .par_iter()
-                        .zip(col1.par_iter())
-                        .for_each(|(val0, val1)| {
-                            range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 0);
-                        }),
-                    1 => col0
-                        .par_iter()
-                        .zip(col1.par_iter())
-                        .for_each(|(val0, val1)| {
-                            range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 1);
-                        }),
-                    2 => col0
-                        .par_iter()
-                        .zip(col1.par_iter())
-                        .for_each(|(val0, val1)| {
-                            range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 2);
-                        }),
-                    3 => col0
-                        .par_iter()
-                        .zip(col1.par_iter())
-                        .for_each(|(val0, val1)| {
-                            range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 3);
-                        }),
-                    4 => col0
-                        .par_iter()
-                        .zip(col1.par_iter())
-                        .for_each(|(val0, val1)| {
-                            range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 4);
-                        }),
-                    5 => col0
-                        .par_iter()
-                        .zip(col1.par_iter())
-                        .for_each(|(val0, val1)| {
-                            range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 5);
-                        }),
-                    6 => col0
-                        .par_iter()
-                        .zip(col1.par_iter())
-                        .for_each(|(val0, val1)| {
-                            range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 6);
-                        }),
-                    7 => col0
-                        .par_iter()
-                        .zip(col1.par_iter())
-                        .for_each(|(val0, val1)| {
-                            range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 7);
-                        }),
+                    0 => col0.par_iter().zip(col1.par_iter()).for_each(|(val0, val1)| {
+                        range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 0);
+                    }),
+                    1 => col0.par_iter().zip(col1.par_iter()).for_each(|(val0, val1)| {
+                        range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 1);
+                    }),
+                    2 => col0.par_iter().zip(col1.par_iter()).for_each(|(val0, val1)| {
+                        range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 2);
+                    }),
+                    3 => col0.par_iter().zip(col1.par_iter()).for_each(|(val0, val1)| {
+                        range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 3);
+                    }),
+                    4 => col0.par_iter().zip(col1.par_iter()).for_each(|(val0, val1)| {
+                        range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 4);
+                    }),
+                    5 => col0.par_iter().zip(col1.par_iter()).for_each(|(val0, val1)| {
+                        range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 5);
+                    }),
+                    6 => col0.par_iter().zip(col1.par_iter()).for_each(|(val0, val1)| {
+                        range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 6);
+                    }),
+                    7 => col0.par_iter().zip(col1.par_iter()).for_each(|(val0, val1)| {
+                        range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 7);
+                    }),
                     _ => {
                         unreachable!("There are only 8 possible values for i % 8.",)
                     }
@@ -198,30 +157,18 @@ impl ClaimGenerator {
 
         for (i, (col0, col1)) in small_values.iter().tuples().enumerate() {
             match i % 4 {
-                0 => col0
-                    .par_iter()
-                    .zip(col1.par_iter())
-                    .for_each(|(val0, val1)| {
-                        range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 0);
-                    }),
-                1 => col0
-                    .par_iter()
-                    .zip(col1.par_iter())
-                    .for_each(|(val0, val1)| {
-                        range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 1);
-                    }),
-                2 => col0
-                    .par_iter()
-                    .zip(col1.par_iter())
-                    .for_each(|(val0, val1)| {
-                        range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 2);
-                    }),
-                3 => col0
-                    .par_iter()
-                    .zip(col1.par_iter())
-                    .for_each(|(val0, val1)| {
-                        range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 3);
-                    }),
+                0 => col0.par_iter().zip(col1.par_iter()).for_each(|(val0, val1)| {
+                    range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 0);
+                }),
+                1 => col0.par_iter().zip(col1.par_iter()).for_each(|(val0, val1)| {
+                    range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 1);
+                }),
+                2 => col0.par_iter().zip(col1.par_iter()).for_each(|(val0, val1)| {
+                    range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 2);
+                }),
+                3 => col0.par_iter().zip(col1.par_iter()).for_each(|(val0, val1)| {
+                    range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]], 3);
+                }),
                 _ => {
                     unreachable!("There are only 4 possible values for i % 4.",)
                 }
@@ -259,12 +206,7 @@ impl ClaimGenerator {
         (
             big_traces,
             small_trace,
-            (
-                BigClaim { big_log_sizes },
-                SmallClaim {
-                    log_size: small_log_size,
-                },
-            ),
+            (BigClaim { big_log_sizes }, SmallClaim { log_size: small_log_size }),
             InteractionClaimGenerator {
                 big_components_values,
                 big_multiplicities,
@@ -311,10 +253,7 @@ fn gen_big_memory_traces(
     assert_eq!(values.len() / N_LANES, mults.len());
     let mut traces = vec![];
 
-    for (values, mults) in values
-        .chunks(max_big_size)
-        .zip(mults.chunks(max_big_size / N_LANES))
-    {
+    for (values, mults) in values.chunks(max_big_size).zip(mults.chunks(max_big_size / N_LANES)) {
         let trace = gen_single_big_memory_trace(values, mults);
         traces.push(trace);
     }
@@ -421,12 +360,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        BigTraces,
-        SmallTrace,
-        BigInteractionClaim,
-        SmallInteractionClaim,
-    ) {
+    ) -> (BigTraces, SmallTrace, BigInteractionClaim, SmallInteractionClaim) {
         let mut offset = 0;
         let (big_traces, big_claimed_sums): (Vec<_>, Vec<_>) = self
             .big_components_values
@@ -451,13 +385,8 @@ impl InteractionClaimGenerator {
         (
             big_traces,
             small_trace,
-            BigInteractionClaim {
-                big_claimed_sums,
-                claimed_sum,
-            },
-            SmallInteractionClaim {
-                claimed_sum: small_claimed_sum,
-            },
+            BigInteractionClaim { big_claimed_sums, claimed_sum },
+            SmallInteractionClaim { claimed_sum: small_claimed_sum },
         )
     }
 
@@ -466,13 +395,8 @@ impl InteractionClaimGenerator {
         big_multiplicities: &[PackedM31],
         offset: u32,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        QM31,
-    ) {
-        assert!(big_components_values
-            .iter()
-            .all(|v| v.len() == big_multiplicities.len()));
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, QM31) {
+        assert!(big_components_values.iter().all(|v| v.len() == big_multiplicities.len()));
         let big_table_log_size = big_components_values[0].len().ilog2() + LOG_N_LANES;
         let mut big_values_logup_gen =
             unsafe { LogupTraceGenerator::uninitialized(big_table_log_size) };
@@ -480,9 +404,8 @@ impl InteractionClaimGenerator {
         // Every element is 9-bit.
         for (i, (limb0, limb1, limb2, limb3)) in big_components_values.iter().tuples().enumerate() {
             let mut col_gen = big_values_logup_gen.new_col();
-            (col_gen.par_iter_mut(), limb0, limb1, limb2, limb3)
-                .into_par_iter()
-                .for_each(|(writer, limb0, limb1, limb2, limb3)| {
+            (col_gen.par_iter_mut(), limb0, limb1, limb2, limb3).into_par_iter().for_each(
+                |(writer, limb0, limb1, limb2, limb3)| {
                     let (denom0, denom1): (PackedQM31, PackedQM31) = match i % 4 {
                         0 => (
                             common_lookup_elements.combine(&[
@@ -537,7 +460,8 @@ impl InteractionClaimGenerator {
                         }
                     };
                     writer.write_frac(denom0 + denom1, denom0 * denom1);
-                });
+                },
+            );
             col_gen.finalize_col();
         }
 
@@ -571,10 +495,7 @@ impl InteractionClaimGenerator {
     fn gen_small_memory_interaction_trace(
         &self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        QM31,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, QM31) {
         let small_table_log_size = self.small_values[0].len().ilog2() + LOG_N_LANES;
         let mut small_values_logup_gen =
             unsafe { LogupTraceGenerator::uninitialized(small_table_log_size) };
@@ -582,9 +503,8 @@ impl InteractionClaimGenerator {
         // Every element is 9-bit.
         for (i, (limb0, limb1, limb2, limb3)) in self.small_values.iter().tuples().enumerate() {
             let mut col_gen = small_values_logup_gen.new_col();
-            (col_gen.par_iter_mut(), limb0, limb1, limb2, limb3)
-                .into_par_iter()
-                .for_each(|(writer, limb0, limb1, limb2, limb3)| {
+            (col_gen.par_iter_mut(), limb0, limb1, limb2, limb3).into_par_iter().for_each(
+                |(writer, limb0, limb1, limb2, limb3)| {
                     let (denom0, denom1): (PackedQM31, PackedQM31) = match i % 2 {
                         0 => (
                             common_lookup_elements.combine(&[
@@ -615,7 +535,8 @@ impl InteractionClaimGenerator {
                         }
                     };
                     writer.write_frac(denom0 + denom1, denom0 * denom1);
-                });
+                },
+            );
             col_gen.finalize_col();
         }
 
@@ -658,7 +579,7 @@ mod tests {
     use stwo::core::fields::m31::M31;
     use stwo::prover::backend::simd::m31::PackedM31;
     use stwo_cairo_adapter::memory::{
-        value_from_felt252, MemoryBuilder, MemoryConfig, MemoryValue,
+        MemoryBuilder, MemoryConfig, MemoryValue, value_from_felt252,
     };
     use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
         PreProcessedTrace, PreProcessedTraceVariant,
@@ -774,9 +695,8 @@ mod tests {
         let expected_first_big_log_size = log_max_seq_size;
         let big_value_overflow = n_large_values - (1 << log_max_seq_size);
         let small_value_overflow = n_small_values - (1 << log_max_seq_size);
-        let expected_second_big_log_size = (big_value_overflow + small_value_overflow)
-            .next_power_of_two()
-            .ilog2();
+        let expected_second_big_log_size =
+            (big_value_overflow + small_value_overflow).next_power_of_two().ilog2();
         let expected_big_log_sizes =
             vec![expected_first_big_log_size, expected_second_big_log_size];
 
@@ -796,11 +716,8 @@ mod tests {
         // The expected values will alternate between small felts and big felts.
         let mut expected = (0..memory_addresses.len() as u32)
             .map(|i| {
-                let arr: [u32; 8] = if i.is_multiple_of(2) {
-                    [i, 0, 0, 0, 0, 0, 0, 0]
-                } else {
-                    [i; 8]
-                };
+                let arr: [u32; 8] =
+                    if i.is_multiple_of(2) { [i, 0, 0, 0, 0, 0, 0, 0] } else { [i; 8] };
                 arr
             })
             .collect_vec();

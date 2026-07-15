@@ -13,7 +13,16 @@ impl RangeCheckMemValueN8 {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [range_check_mem_value_n_8_input_limb_0, range_check_mem_value_n_8_input_limb_1, range_check_mem_value_n_8_input_limb_2, range_check_mem_value_n_8_input_limb_3, range_check_mem_value_n_8_input_limb_4, range_check_mem_value_n_8_input_limb_5, range_check_mem_value_n_8_input_limb_6, range_check_mem_value_n_8_input_limb_7]: [E::F; 8],
+        [
+            range_check_mem_value_n_8_input_limb_0,
+            range_check_mem_value_n_8_input_limb_1,
+            range_check_mem_value_n_8_input_limb_2,
+            range_check_mem_value_n_8_input_limb_3,
+            range_check_mem_value_n_8_input_limb_4,
+            range_check_mem_value_n_8_input_limb_5,
+            range_check_mem_value_n_8_input_limb_6,
+            range_check_mem_value_n_8_input_limb_7,
+        ]: [E::F; 8],
         enabler: E::F,
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,

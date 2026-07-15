@@ -153,17 +153,8 @@ mod tests {
 
     #[test]
     fn test_g() {
-        let input0 = [
-            305419896_u32,
-            4294967295,
-            2147483647,
-            123456789,
-            987654321,
-            468798,
-        ];
-        let input1 = [
-            3694142613, 170668591, 2859583592, 2750542364, 101488500, 3940201164,
-        ];
+        let input0 = [305419896_u32, 4294967295, 2147483647, 123456789, 987654321, 468798];
+        let input1 = [3694142613, 170668591, 2859583592, 2750542364, 101488500, 3940201164];
         let input = from_fn(|i| {
             PackedUInt32::from_simd(u32x16::from_slice(&[input0[i], input1[i]].repeat(8)))
         });
@@ -281,21 +272,13 @@ mod tests {
         let expected: [PackedUInt32; 16] =
             from_fn(|i| PackedUInt32::from_simd(u32x16::from_slice(&[exp0[i], exp1[i]].repeat(8))));
 
-        let blake_round = BlakeRound {
-            memory: Arc::new(memory),
-        };
+        let blake_round = BlakeRound { memory: Arc::new(memory) };
         let actual = blake_round.deduce_output(chains, rounds, (state, message_pointer));
 
         let (actual_chain, actual_round, (actual_state, actual_message_pointer)) = actual;
         assert_eq!(actual_chain.to_array(), chains.to_array());
-        assert_eq!(
-            actual_round.to_array(),
-            rounds.to_array().map(|round| M31::from(round.0 + 1))
-        );
+        assert_eq!(actual_round.to_array(), rounds.to_array().map(|round| M31::from(round.0 + 1)));
         assert_eq!(actual_state, expected);
-        assert_eq!(
-            actual_message_pointer.to_array(),
-            message_pointer.to_array()
-        );
+        assert_eq!(actual_message_pointer.to_array(), message_pointer.to_array());
     }
 }

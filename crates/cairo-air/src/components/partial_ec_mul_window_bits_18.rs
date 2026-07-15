@@ -6,78 +6,24 @@ use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 297;
 pub const RELATION_USES_PER_ROW: [RelationUse; 18] = [
-    RelationUse {
-        relation_id: "PartialEcMulWindowBits18",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "PedersenPointsTableWindowBits18",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20",
-        uses: 12,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_B",
-        uses: 12,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_C",
-        uses: 12,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_D",
-        uses: 12,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_E",
-        uses: 9,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_F",
-        uses: 9,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_G",
-        uses: 9,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_H",
-        uses: 9,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9",
-        uses: 6,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_B",
-        uses: 6,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_C",
-        uses: 6,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_D",
-        uses: 6,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_E",
-        uses: 6,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_F",
-        uses: 6,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_G",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_H",
-        uses: 3,
-    },
+    RelationUse { relation_id: "PartialEcMulWindowBits18", uses: 1 },
+    RelationUse { relation_id: "PedersenPointsTableWindowBits18", uses: 1 },
+    RelationUse { relation_id: "RangeCheck_20", uses: 12 },
+    RelationUse { relation_id: "RangeCheck_20_B", uses: 12 },
+    RelationUse { relation_id: "RangeCheck_20_C", uses: 12 },
+    RelationUse { relation_id: "RangeCheck_20_D", uses: 12 },
+    RelationUse { relation_id: "RangeCheck_20_E", uses: 9 },
+    RelationUse { relation_id: "RangeCheck_20_F", uses: 9 },
+    RelationUse { relation_id: "RangeCheck_20_G", uses: 9 },
+    RelationUse { relation_id: "RangeCheck_20_H", uses: 9 },
+    RelationUse { relation_id: "RangeCheck_9_9", uses: 6 },
+    RelationUse { relation_id: "RangeCheck_9_9_B", uses: 6 },
+    RelationUse { relation_id: "RangeCheck_9_9_C", uses: 6 },
+    RelationUse { relation_id: "RangeCheck_9_9_D", uses: 6 },
+    RelationUse { relation_id: "RangeCheck_9_9_E", uses: 6 },
+    RelationUse { relation_id: "RangeCheck_9_9_F", uses: 6 },
+    RelationUse { relation_id: "RangeCheck_9_9_G", uses: 3 },
+    RelationUse { relation_id: "RangeCheck_9_9_H", uses: 3 },
 ];
 
 pub struct Eval {

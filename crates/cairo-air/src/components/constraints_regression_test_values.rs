@@ -1,4 +1,4 @@
-use expect_test::{expect, Expect};
+use expect_test::{Expect, expect};
 
 pub const ADD_AP_OPCODE: Expect = expect![[r#"
     (458929235 + 5797669i) + (18630804 + 182006167i)u

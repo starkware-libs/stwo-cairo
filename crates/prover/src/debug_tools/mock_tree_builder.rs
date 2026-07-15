@@ -1,10 +1,10 @@
 use itertools::Itertools;
+use stwo::core::ColumnVec;
 use stwo::core::fields::m31::M31;
 use stwo::core::pcs::{TreeSubspan, TreeVec};
-use stwo::core::ColumnVec;
 use stwo::prover::backend::{Backend, Column};
-use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
+use stwo::prover::poly::circle::CircleEvaluation;
 
 use crate::witness::utils::TreeBuilder;
 
@@ -46,8 +46,7 @@ impl MockTreeBuilder<'_> {
         &mut self,
         columns: Vec<CircleEvaluation<B, M31, BitReversedOrder>>,
     ) {
-        self.evals
-            .extend(columns.into_iter().map(|s| s.to_cpu()).collect_vec());
+        self.evals.extend(columns.into_iter().map(|s| s.to_cpu()).collect_vec());
     }
 
     pub fn finalize_interaction(self) {
@@ -64,11 +63,7 @@ impl<B: Backend> TreeBuilder<B> for MockTreeBuilder<'_> {
         let tree_index = self.tree_index;
         self.extend_evals(columns);
         let col_end = self.evals.len();
-        TreeSubspan {
-            tree_index,
-            col_start,
-            col_end,
-        }
+        TreeSubspan { tree_index, col_start, col_end }
     }
 }
 

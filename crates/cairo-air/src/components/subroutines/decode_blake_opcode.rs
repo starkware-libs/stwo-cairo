@@ -63,21 +63,25 @@ impl DecodeBlakeOpcode {
         let M31_262144 = E::F::from(M31::from(262144));
         let M31_512 = E::F::from(M31::from(512));
 
-        let [decode_instruction_30129_output_tmp_c2bd8_9_offset0, decode_instruction_30129_output_tmp_c2bd8_9_offset1, decode_instruction_30129_output_tmp_c2bd8_9_offset2, decode_instruction_30129_output_tmp_c2bd8_9_op1_base_ap] =
-            DecodeInstruction30129::evaluate(
-                [decode_blake_opcode_input_pc.clone()],
-                enabler.clone(),
-                offset0_col0.clone(),
-                offset1_col1.clone(),
-                offset2_col2.clone(),
-                dst_base_fp_col3.clone(),
-                op0_base_fp_col4.clone(),
-                op1_base_fp_col5.clone(),
-                ap_update_add_1_col6.clone(),
-                opcode_extension_col7.clone(),
-                common_lookup_elements,
-                eval,
-            );
+        let [
+            decode_instruction_30129_output_tmp_c2bd8_9_offset0,
+            decode_instruction_30129_output_tmp_c2bd8_9_offset1,
+            decode_instruction_30129_output_tmp_c2bd8_9_offset2,
+            decode_instruction_30129_output_tmp_c2bd8_9_op1_base_ap,
+        ] = DecodeInstruction30129::evaluate(
+            [decode_blake_opcode_input_pc.clone()],
+            enabler.clone(),
+            offset0_col0.clone(),
+            offset1_col1.clone(),
+            offset2_col2.clone(),
+            dst_base_fp_col3.clone(),
+            op0_base_fp_col4.clone(),
+            op1_base_fp_col5.clone(),
+            ap_update_add_1_col6.clone(),
+            opcode_extension_col7.clone(),
+            common_lookup_elements,
+            eval,
+        );
         // OpcodeExtension is either Blake or BlakeFinalize.
         eval.add_constraint(
             ((opcode_extension_col7.clone() - M31_1.clone())

@@ -34,10 +34,7 @@ where
         let trace_and_interaction_trace_log_sizes = claim.log_sizes();
         let sorted_queried_values = sort_and_transpose_queried_values(
             queried_values,
-            trace_and_interaction_trace_log_sizes
-                .iter()
-                .map(|c| c.as_slice())
-                .collect(),
+            trace_and_interaction_trace_log_sizes.iter().map(|c| c.as_slice()).collect(),
         );
 
         CairoSerialize::serialize(claim, output);

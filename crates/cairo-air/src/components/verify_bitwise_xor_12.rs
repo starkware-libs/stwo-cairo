@@ -50,15 +50,12 @@ impl FrameworkEval for Eval {
         // al, bl are the constant columns for the inputs: All pairs of elements in [0,
         // 2^LIMB_BITS).
         // cl is the constant column for the xor: al ^ bl.
-        let a_low = eval.get_preprocessed_column(PreProcessedColumnId {
-            id: "bitwise_xor_10_0".to_owned(),
-        });
-        let b_low = eval.get_preprocessed_column(PreProcessedColumnId {
-            id: "bitwise_xor_10_1".to_owned(),
-        });
-        let c_low = eval.get_preprocessed_column(PreProcessedColumnId {
-            id: "bitwise_xor_10_2".to_owned(),
-        });
+        let a_low = eval
+            .get_preprocessed_column(PreProcessedColumnId { id: "bitwise_xor_10_0".to_owned() });
+        let b_low = eval
+            .get_preprocessed_column(PreProcessedColumnId { id: "bitwise_xor_10_1".to_owned() });
+        let c_low = eval
+            .get_preprocessed_column(PreProcessedColumnId { id: "bitwise_xor_10_2".to_owned() });
 
         for i in 0..1 << EXPAND_BITS {
             for j in 0..1 << EXPAND_BITS {

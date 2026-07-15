@@ -59,9 +59,6 @@ impl DecodeInstruction89Ffb {
             ],
         ));
 
-        [
-            (offset2_col0.clone() - M31_32768.clone()),
-            op1_base_ap_tmp_89ffb_5.clone(),
-        ]
+        [(offset2_col0.clone() - M31_32768.clone()), op1_base_ap_tmp_89ffb_5.clone()]
     }
 }

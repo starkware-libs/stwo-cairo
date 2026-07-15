@@ -40,31 +40,34 @@ impl DecodeGenericInstruction {
     ) -> [E::F; 8] {
         let M31_1 = E::F::from(M31::from(1));
 
-        let [decode_instruction_a1c8b_output_tmp_e6fd8_20_offset0, decode_instruction_a1c8b_output_tmp_e6fd8_20_offset1, decode_instruction_a1c8b_output_tmp_e6fd8_20_offset2] =
-            DecodeInstructionA1C8B::evaluate(
-                [decode_generic_instruction_input.clone()],
-                enabler.clone(),
-                offset0_col0.clone(),
-                offset1_col1.clone(),
-                offset2_col2.clone(),
-                dst_base_fp_col3.clone(),
-                op0_base_fp_col4.clone(),
-                op1_imm_col5.clone(),
-                op1_base_fp_col6.clone(),
-                op1_base_ap_col7.clone(),
-                res_add_col8.clone(),
-                res_mul_col9.clone(),
-                pc_update_jump_col10.clone(),
-                pc_update_jump_rel_col11.clone(),
-                pc_update_jnz_col12.clone(),
-                ap_update_add_col13.clone(),
-                ap_update_add_1_col14.clone(),
-                opcode_call_col15.clone(),
-                opcode_ret_col16.clone(),
-                opcode_assert_eq_col17.clone(),
-                common_lookup_elements,
-                eval,
-            );
+        let [
+            decode_instruction_a1c8b_output_tmp_e6fd8_20_offset0,
+            decode_instruction_a1c8b_output_tmp_e6fd8_20_offset1,
+            decode_instruction_a1c8b_output_tmp_e6fd8_20_offset2,
+        ] = DecodeInstructionA1C8B::evaluate(
+            [decode_generic_instruction_input.clone()],
+            enabler.clone(),
+            offset0_col0.clone(),
+            offset1_col1.clone(),
+            offset2_col2.clone(),
+            dst_base_fp_col3.clone(),
+            op0_base_fp_col4.clone(),
+            op1_imm_col5.clone(),
+            op1_base_fp_col6.clone(),
+            op1_base_ap_col7.clone(),
+            res_add_col8.clone(),
+            res_mul_col9.clone(),
+            pc_update_jump_col10.clone(),
+            pc_update_jump_rel_col11.clone(),
+            pc_update_jnz_col12.clone(),
+            ap_update_add_col13.clone(),
+            ap_update_add_1_col14.clone(),
+            opcode_call_col15.clone(),
+            opcode_ret_col16.clone(),
+            opcode_assert_eq_col17.clone(),
+            common_lookup_elements,
+            eval,
+        );
         let op1_base_op0_tmp_e6fd8_21 = eval.add_intermediate(
             (((M31_1.clone() - op1_imm_col5.clone()) - op1_base_fp_col6.clone())
                 - op1_base_ap_col7.clone()),

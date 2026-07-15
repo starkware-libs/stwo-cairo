@@ -16,8 +16,8 @@ use cairo_vm::types::layout_name::LayoutName;
 use clap::{Parser, ValueEnum};
 use serde::Serialize;
 use sonic_rs::to_string_pretty;
-use stwo_cairo_dev_utils::vm_utils::{run_and_adapt, ProgramType};
-use tracing::{span, Level};
+use stwo_cairo_dev_utils::vm_utils::{ProgramType, run_and_adapt};
+use tracing::{Level, span};
 use tracing_subscriber::fmt::format::FmtSpan;
 
 #[derive(Clone, Debug, Default, ValueEnum)]
@@ -55,9 +55,7 @@ struct Args {
 fn main() -> Result<()> {
     let args = Args::parse();
 
-    tracing_subscriber::fmt()
-        .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
-        .init();
+    tracing_subscriber::fmt().with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE).init();
     let _span = span!(Level::INFO, "extract_mem_trace").entered();
 
     let prover_input = run_and_adapt(
@@ -101,7 +99,7 @@ mod tests {
     use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
     use stwo_cairo_adapter::memory::MemoryEntry;
     use stwo_cairo_dev_utils::utils::get_compiled_cairo_program_path;
-    use stwo_cairo_dev_utils::vm_utils::{run_and_adapt, ProgramType};
+    use stwo_cairo_dev_utils::vm_utils::{ProgramType, run_and_adapt};
     use tempfile::NamedTempFile;
 
     #[test]
@@ -143,10 +141,7 @@ mod tests {
             .output()
             .expect("Failed to run extract_mem_trace binary for binary format");
 
-        assert!(
-            binary_output.status.success(),
-            "extract_mem_trace failed for binary format"
-        );
+        assert!(binary_output.status.success(), "extract_mem_trace failed for binary format");
 
         let binary_mem_content =
             read(temp_mem_file.path()).expect("Failed to read binary memory file");

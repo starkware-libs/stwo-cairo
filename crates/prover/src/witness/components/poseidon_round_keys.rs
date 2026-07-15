@@ -19,9 +19,7 @@ pub struct ClaimGenerator {
 impl ClaimGenerator {
     pub fn new(preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
         let mults = from_fn(|_| AtomicMultiplicityColumn::new(1 << LOG_SIZE));
-        let column_ids = [PreProcessedColumnId {
-            id: "seq_6".to_owned(),
-        }];
+        let column_ids = [PreProcessedColumnId { id: "seq_6".to_owned() }];
 
         Self {
             mults,
@@ -32,16 +30,8 @@ impl ClaimGenerator {
 
     pub fn write_trace(
         self,
-    ) -> (
-        ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
-        InteractionClaimGenerator,
-    ) {
-        let mults = self
-            .mults
-            .into_iter()
-            .map(|v| v.into_simd_vec())
-            .collect::<Vec<_>>();
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator) {
+        let mults = self.mults.into_iter().map(|v| v.into_simd_vec()).collect::<Vec<_>>();
 
         let (trace, lookup_data) = write_trace_simd(&self.preprocessed_trace, mults);
 
@@ -83,104 +73,70 @@ fn write_trace_simd(
     };
 
     let M31_1024310512 = PackedM31::broadcast(M31::from(1024310512));
-    let seq_6 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "seq_6".to_owned(),
-    });
-    let poseidon_round_keys_0 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_0".to_owned(),
-    });
-    let poseidon_round_keys_1 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_1".to_owned(),
-    });
-    let poseidon_round_keys_2 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_2".to_owned(),
-    });
-    let poseidon_round_keys_3 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_3".to_owned(),
-    });
-    let poseidon_round_keys_4 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_4".to_owned(),
-    });
-    let poseidon_round_keys_5 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_5".to_owned(),
-    });
-    let poseidon_round_keys_6 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_6".to_owned(),
-    });
-    let poseidon_round_keys_7 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_7".to_owned(),
-    });
-    let poseidon_round_keys_8 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_8".to_owned(),
-    });
-    let poseidon_round_keys_9 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_9".to_owned(),
-    });
-    let poseidon_round_keys_10 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_10".to_owned(),
-    });
-    let poseidon_round_keys_11 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_11".to_owned(),
-    });
-    let poseidon_round_keys_12 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_12".to_owned(),
-    });
-    let poseidon_round_keys_13 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_13".to_owned(),
-    });
-    let poseidon_round_keys_14 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_14".to_owned(),
-    });
-    let poseidon_round_keys_15 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_15".to_owned(),
-    });
-    let poseidon_round_keys_16 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_16".to_owned(),
-    });
-    let poseidon_round_keys_17 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_17".to_owned(),
-    });
-    let poseidon_round_keys_18 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_18".to_owned(),
-    });
-    let poseidon_round_keys_19 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_19".to_owned(),
-    });
-    let poseidon_round_keys_20 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_20".to_owned(),
-    });
-    let poseidon_round_keys_21 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_21".to_owned(),
-    });
-    let poseidon_round_keys_22 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_22".to_owned(),
-    });
-    let poseidon_round_keys_23 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_23".to_owned(),
-    });
-    let poseidon_round_keys_24 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_24".to_owned(),
-    });
-    let poseidon_round_keys_25 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_25".to_owned(),
-    });
-    let poseidon_round_keys_26 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_26".to_owned(),
-    });
-    let poseidon_round_keys_27 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_27".to_owned(),
-    });
-    let poseidon_round_keys_28 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_28".to_owned(),
-    });
-    let poseidon_round_keys_29 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "poseidon_round_keys_29".to_owned(),
-    });
+    let seq_6 = preprocessed_trace.get_column(&PreProcessedColumnId { id: "seq_6".to_owned() });
+    let poseidon_round_keys_0 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_0".to_owned() });
+    let poseidon_round_keys_1 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_1".to_owned() });
+    let poseidon_round_keys_2 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_2".to_owned() });
+    let poseidon_round_keys_3 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_3".to_owned() });
+    let poseidon_round_keys_4 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_4".to_owned() });
+    let poseidon_round_keys_5 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_5".to_owned() });
+    let poseidon_round_keys_6 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_6".to_owned() });
+    let poseidon_round_keys_7 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_7".to_owned() });
+    let poseidon_round_keys_8 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_8".to_owned() });
+    let poseidon_round_keys_9 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_9".to_owned() });
+    let poseidon_round_keys_10 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_10".to_owned() });
+    let poseidon_round_keys_11 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_11".to_owned() });
+    let poseidon_round_keys_12 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_12".to_owned() });
+    let poseidon_round_keys_13 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_13".to_owned() });
+    let poseidon_round_keys_14 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_14".to_owned() });
+    let poseidon_round_keys_15 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_15".to_owned() });
+    let poseidon_round_keys_16 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_16".to_owned() });
+    let poseidon_round_keys_17 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_17".to_owned() });
+    let poseidon_round_keys_18 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_18".to_owned() });
+    let poseidon_round_keys_19 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_19".to_owned() });
+    let poseidon_round_keys_20 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_20".to_owned() });
+    let poseidon_round_keys_21 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_21".to_owned() });
+    let poseidon_round_keys_22 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_22".to_owned() });
+    let poseidon_round_keys_23 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_23".to_owned() });
+    let poseidon_round_keys_24 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_24".to_owned() });
+    let poseidon_round_keys_25 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_25".to_owned() });
+    let poseidon_round_keys_26 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_26".to_owned() });
+    let poseidon_round_keys_27 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_27".to_owned() });
+    let poseidon_round_keys_28 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_28".to_owned() });
+    let poseidon_round_keys_29 = preprocessed_trace
+        .get_column(&PreProcessedColumnId { id: "poseidon_round_keys_29".to_owned() });
 
-    (trace.par_iter_mut(), lookup_data.par_iter_mut())
-        .into_par_iter()
-        .enumerate()
-        .for_each(|(row_index, (row, lookup_data))| {
+    (trace.par_iter_mut(), lookup_data.par_iter_mut()).into_par_iter().enumerate().for_each(
+        |(row_index, (row, lookup_data))| {
             let seq_6 = seq_6.packed_at(row_index);
             let poseidon_round_keys_0 = poseidon_round_keys_0.packed_at(row_index);
             let poseidon_round_keys_1 = poseidon_round_keys_1.packed_at(row_index);
@@ -249,7 +205,8 @@ fn write_trace_simd(
                 poseidon_round_keys_29,
             ];
             *lookup_data.mults_0 = multiplicity_0_col0;
-        });
+        },
+    );
 
     (trace, lookup_data)
 }
@@ -267,19 +224,12 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(LOG_SIZE) };
 
         // Sum last logup term.
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.poseidon_round_keys_0,
-            self.lookup_data.mults_0,
-        )
+        (col_gen.par_iter_mut(), &self.lookup_data.poseidon_round_keys_0, self.lookup_data.mults_0)
             .into_par_iter()
             .for_each(|(writer, values, mult)| {
                 let denom = common_lookup_elements.combine(values);

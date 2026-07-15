@@ -3,8 +3,8 @@
 use std::fmt::Display;
 
 use stwo::core::air::Component;
-use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_constraint_framework::TraceLocationAllocator;
+use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
 use crate::claims::{CairoClaim, CairoInteractionClaim};
 use crate::components::{
@@ -15,17 +15,16 @@ use crate::components::{
     jnz_opcode_taken, jump_opcode_abs, jump_opcode_double_deref, jump_opcode_rel,
     jump_opcode_rel_imm, memory_address_to_id, memory_id_to_big, memory_id_to_small,
     mul_mod_builtin, mul_opcode, mul_opcode_small, partial_ec_mul_generic,
-    partial_ec_mul_window_bits_18, partial_ec_mul_window_bits_9,
-    pedersen_aggregator_window_bits_18, pedersen_aggregator_window_bits_9, pedersen_builtin,
-    pedersen_builtin_narrow_windows, pedersen_points_table_window_bits_18,
-    pedersen_points_table_window_bits_9, poseidon_3_partial_rounds_chain, poseidon_aggregator,
-    poseidon_builtin, poseidon_full_round_chain, poseidon_round_keys, qm_31_add_mul_opcode,
-    range_check96_builtin, range_check_11, range_check_12, range_check_18, range_check_20,
-    range_check_252_width_27, range_check_3_3_3_3_3, range_check_3_6_6_3, range_check_4_3,
-    range_check_4_4, range_check_4_4_4_4, range_check_6, range_check_7_2_5, range_check_8,
-    range_check_9_9, range_check_builtin, ret_opcode, triple_xor_32, verify_bitwise_xor_12,
-    verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9,
-    verify_instruction,
+    partial_ec_mul_window_bits_9, partial_ec_mul_window_bits_18, pedersen_aggregator_window_bits_9,
+    pedersen_aggregator_window_bits_18, pedersen_builtin, pedersen_builtin_narrow_windows,
+    pedersen_points_table_window_bits_9, pedersen_points_table_window_bits_18,
+    poseidon_3_partial_rounds_chain, poseidon_aggregator, poseidon_builtin,
+    poseidon_full_round_chain, poseidon_round_keys, qm_31_add_mul_opcode, range_check_3_3_3_3_3,
+    range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4, range_check_6,
+    range_check_7_2_5, range_check_8, range_check_9_9, range_check_11, range_check_12,
+    range_check_18, range_check_20, range_check_252_width_27, range_check_builtin,
+    range_check96_builtin, ret_opcode, triple_xor_32, verify_bitwise_xor_4, verify_bitwise_xor_7,
+    verify_bitwise_xor_8, verify_bitwise_xor_9, verify_bitwise_xor_12, verify_instruction,
 };
 use crate::relations::CommonLookupElements;
 
@@ -153,46 +152,38 @@ impl CairoComponents {
             )
         });
         let assert_eq_opcode_imm_component =
-            cairo_claim
-                .assert_eq_opcode_imm
-                .map(|assert_eq_opcode_imm| {
-                    assert_eq_opcode_imm::Component::new(
-                        tree_span_provider,
-                        assert_eq_opcode_imm::Eval {
-                            claim: assert_eq_opcode_imm,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.assert_eq_opcode_imm.unwrap().claimed_sum,
-                    )
-                });
-        let assert_eq_opcode_double_deref_component = cairo_claim
-            .assert_eq_opcode_double_deref
-            .map(|assert_eq_opcode_double_deref| {
+            cairo_claim.assert_eq_opcode_imm.map(|assert_eq_opcode_imm| {
+                assert_eq_opcode_imm::Component::new(
+                    tree_span_provider,
+                    assert_eq_opcode_imm::Eval {
+                        claim: assert_eq_opcode_imm,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.assert_eq_opcode_imm.unwrap().claimed_sum,
+                )
+            });
+        let assert_eq_opcode_double_deref_component =
+            cairo_claim.assert_eq_opcode_double_deref.map(|assert_eq_opcode_double_deref| {
                 assert_eq_opcode_double_deref::Component::new(
                     tree_span_provider,
                     assert_eq_opcode_double_deref::Eval {
                         claim: assert_eq_opcode_double_deref,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim
-                        .assert_eq_opcode_double_deref
-                        .unwrap()
-                        .claimed_sum,
+                    interaction_claim.assert_eq_opcode_double_deref.unwrap().claimed_sum,
                 )
             });
         let blake_compress_opcode_component =
-            cairo_claim
-                .blake_compress_opcode
-                .map(|blake_compress_opcode| {
-                    blake_compress_opcode::Component::new(
-                        tree_span_provider,
-                        blake_compress_opcode::Eval {
-                            claim: blake_compress_opcode,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.blake_compress_opcode.unwrap().claimed_sum,
-                    )
-                });
+            cairo_claim.blake_compress_opcode.map(|blake_compress_opcode| {
+                blake_compress_opcode::Component::new(
+                    tree_span_provider,
+                    blake_compress_opcode::Eval {
+                        claim: blake_compress_opcode,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.blake_compress_opcode.unwrap().claimed_sum,
+                )
+            });
         let call_opcode_abs_component = cairo_claim.call_opcode_abs.map(|call_opcode_abs| {
             call_opcode_abs::Component::new(
                 tree_span_provider,
@@ -225,18 +216,16 @@ impl CairoComponents {
             )
         });
         let jnz_opcode_non_taken_component =
-            cairo_claim
-                .jnz_opcode_non_taken
-                .map(|jnz_opcode_non_taken| {
-                    jnz_opcode_non_taken::Component::new(
-                        tree_span_provider,
-                        jnz_opcode_non_taken::Eval {
-                            claim: jnz_opcode_non_taken,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.jnz_opcode_non_taken.unwrap().claimed_sum,
-                    )
-                });
+            cairo_claim.jnz_opcode_non_taken.map(|jnz_opcode_non_taken| {
+                jnz_opcode_non_taken::Component::new(
+                    tree_span_provider,
+                    jnz_opcode_non_taken::Eval {
+                        claim: jnz_opcode_non_taken,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.jnz_opcode_non_taken.unwrap().claimed_sum,
+                )
+            });
         let jnz_opcode_taken_component = cairo_claim.jnz_opcode_taken.map(|jnz_opcode_taken| {
             jnz_opcode_taken::Component::new(
                 tree_span_provider,
@@ -258,21 +247,16 @@ impl CairoComponents {
             )
         });
         let jump_opcode_double_deref_component =
-            cairo_claim
-                .jump_opcode_double_deref
-                .map(|jump_opcode_double_deref| {
-                    jump_opcode_double_deref::Component::new(
-                        tree_span_provider,
-                        jump_opcode_double_deref::Eval {
-                            claim: jump_opcode_double_deref,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim
-                            .jump_opcode_double_deref
-                            .unwrap()
-                            .claimed_sum,
-                    )
-                });
+            cairo_claim.jump_opcode_double_deref.map(|jump_opcode_double_deref| {
+                jump_opcode_double_deref::Component::new(
+                    tree_span_provider,
+                    jump_opcode_double_deref::Eval {
+                        claim: jump_opcode_double_deref,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.jump_opcode_double_deref.unwrap().claimed_sum,
+                )
+            });
         let jump_opcode_rel_component = cairo_claim.jump_opcode_rel.map(|jump_opcode_rel| {
             jump_opcode_rel::Component::new(
                 tree_span_provider,
@@ -315,18 +299,16 @@ impl CairoComponents {
             )
         });
         let qm_31_add_mul_opcode_component =
-            cairo_claim
-                .qm_31_add_mul_opcode
-                .map(|qm_31_add_mul_opcode| {
-                    qm_31_add_mul_opcode::Component::new(
-                        tree_span_provider,
-                        qm_31_add_mul_opcode::Eval {
-                            claim: qm_31_add_mul_opcode,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.qm_31_add_mul_opcode.unwrap().claimed_sum,
-                    )
-                });
+            cairo_claim.qm_31_add_mul_opcode.map(|qm_31_add_mul_opcode| {
+                qm_31_add_mul_opcode::Component::new(
+                    tree_span_provider,
+                    qm_31_add_mul_opcode::Eval {
+                        claim: qm_31_add_mul_opcode,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.qm_31_add_mul_opcode.unwrap().claimed_sum,
+                )
+            });
         let ret_opcode_component = cairo_claim.ret_opcode.map(|ret_opcode| {
             ret_opcode::Component::new(
                 tree_span_provider,
@@ -389,18 +371,16 @@ impl CairoComponents {
             )
         });
         let verify_bitwise_xor_12_component =
-            cairo_claim
-                .verify_bitwise_xor_12
-                .map(|verify_bitwise_xor_12| {
-                    verify_bitwise_xor_12::Component::new(
-                        tree_span_provider,
-                        verify_bitwise_xor_12::Eval {
-                            claim: verify_bitwise_xor_12,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.verify_bitwise_xor_12.unwrap().claimed_sum,
-                    )
-                });
+            cairo_claim.verify_bitwise_xor_12.map(|verify_bitwise_xor_12| {
+                verify_bitwise_xor_12::Component::new(
+                    tree_span_provider,
+                    verify_bitwise_xor_12::Eval {
+                        claim: verify_bitwise_xor_12,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.verify_bitwise_xor_12.unwrap().claimed_sum,
+                )
+            });
         let add_mod_builtin_component = cairo_claim.add_mod_builtin.map(|add_mod_builtin| {
             add_mod_builtin::Component::new(
                 tree_span_provider,
@@ -473,9 +453,8 @@ impl CairoComponents {
                 interaction_claim.pedersen_builtin.unwrap().claimed_sum,
             )
         });
-        let pedersen_builtin_narrow_windows_component = cairo_claim
-            .pedersen_builtin_narrow_windows
-            .map(|pedersen_builtin_narrow_windows| {
+        let pedersen_builtin_narrow_windows_component =
+            cairo_claim.pedersen_builtin_narrow_windows.map(|pedersen_builtin_narrow_windows| {
                 pedersen_builtin_narrow_windows::Component::new(
                     tree_span_provider,
                     pedersen_builtin_narrow_windows::Eval {
@@ -490,10 +469,7 @@ impl CairoComponents {
                             .start_ptr
                             .value,
                     },
-                    interaction_claim
-                        .pedersen_builtin_narrow_windows
-                        .unwrap()
-                        .claimed_sum,
+                    interaction_claim.pedersen_builtin_narrow_windows.unwrap().claimed_sum,
                 )
             });
         let poseidon_builtin_component = cairo_claim.poseidon_builtin.map(|poseidon_builtin| {
@@ -515,26 +491,24 @@ impl CairoComponents {
             )
         });
         let range_check96_builtin_component =
-            cairo_claim
-                .range_check96_builtin
-                .map(|range_check96_builtin| {
-                    range_check96_builtin::Component::new(
-                        tree_span_provider,
-                        range_check96_builtin::Eval {
-                            claim: range_check96_builtin,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                            range_check96_builtin_segment_start: cairo_claim
-                                .public_data
-                                .public_memory
-                                .public_segments
-                                .get_segment_range_by_name("range_check96_builtin")
-                                .unwrap()
-                                .start_ptr
-                                .value,
-                        },
-                        interaction_claim.range_check96_builtin.unwrap().claimed_sum,
-                    )
-                });
+            cairo_claim.range_check96_builtin.map(|range_check96_builtin| {
+                range_check96_builtin::Component::new(
+                    tree_span_provider,
+                    range_check96_builtin::Eval {
+                        claim: range_check96_builtin,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                        range_check96_builtin_segment_start: cairo_claim
+                            .public_data
+                            .public_memory
+                            .public_segments
+                            .get_segment_range_by_name("range_check96_builtin")
+                            .unwrap()
+                            .start_ptr
+                            .value,
+                    },
+                    interaction_claim.range_check96_builtin.unwrap().claimed_sum,
+                )
+            });
         let range_check_builtin_component =
             cairo_claim.range_check_builtin.map(|range_check_builtin| {
                 range_check_builtin::Component::new(
@@ -573,21 +547,16 @@ impl CairoComponents {
             )
         });
         let partial_ec_mul_generic_component =
-            cairo_claim
-                .partial_ec_mul_generic
-                .map(|partial_ec_mul_generic| {
-                    partial_ec_mul_generic::Component::new(
-                        tree_span_provider,
-                        partial_ec_mul_generic::Eval {
-                            claim: partial_ec_mul_generic,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim
-                            .partial_ec_mul_generic
-                            .unwrap()
-                            .claimed_sum,
-                    )
-                });
+            cairo_claim.partial_ec_mul_generic.map(|partial_ec_mul_generic| {
+                partial_ec_mul_generic::Component::new(
+                    tree_span_provider,
+                    partial_ec_mul_generic::Eval {
+                        claim: partial_ec_mul_generic,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.partial_ec_mul_generic.unwrap().claimed_sum,
+                )
+            });
         let pedersen_aggregator_window_bits_18_component = cairo_claim
             .pedersen_aggregator_window_bits_18
             .map(|pedersen_aggregator_window_bits_18| {
@@ -597,25 +566,18 @@ impl CairoComponents {
                         claim: pedersen_aggregator_window_bits_18,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim
-                        .pedersen_aggregator_window_bits_18
-                        .unwrap()
-                        .claimed_sum,
+                    interaction_claim.pedersen_aggregator_window_bits_18.unwrap().claimed_sum,
                 )
             });
-        let partial_ec_mul_window_bits_18_component = cairo_claim
-            .partial_ec_mul_window_bits_18
-            .map(|partial_ec_mul_window_bits_18| {
+        let partial_ec_mul_window_bits_18_component =
+            cairo_claim.partial_ec_mul_window_bits_18.map(|partial_ec_mul_window_bits_18| {
                 partial_ec_mul_window_bits_18::Component::new(
                     tree_span_provider,
                     partial_ec_mul_window_bits_18::Eval {
                         claim: partial_ec_mul_window_bits_18,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim
-                        .partial_ec_mul_window_bits_18
-                        .unwrap()
-                        .claimed_sum,
+                    interaction_claim.partial_ec_mul_window_bits_18.unwrap().claimed_sum,
                 )
             });
         let pedersen_points_table_window_bits_18_component = cairo_claim
@@ -627,10 +589,7 @@ impl CairoComponents {
                         claim: pedersen_points_table_window_bits_18,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim
-                        .pedersen_points_table_window_bits_18
-                        .unwrap()
-                        .claimed_sum,
+                    interaction_claim.pedersen_points_table_window_bits_18.unwrap().claimed_sum,
                 )
             });
         let pedersen_aggregator_window_bits_9_component = cairo_claim
@@ -642,28 +601,20 @@ impl CairoComponents {
                         claim: pedersen_aggregator_window_bits_9,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim
-                        .pedersen_aggregator_window_bits_9
-                        .unwrap()
-                        .claimed_sum,
+                    interaction_claim.pedersen_aggregator_window_bits_9.unwrap().claimed_sum,
                 )
             });
         let partial_ec_mul_window_bits_9_component =
-            cairo_claim
-                .partial_ec_mul_window_bits_9
-                .map(|partial_ec_mul_window_bits_9| {
-                    partial_ec_mul_window_bits_9::Component::new(
-                        tree_span_provider,
-                        partial_ec_mul_window_bits_9::Eval {
-                            claim: partial_ec_mul_window_bits_9,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim
-                            .partial_ec_mul_window_bits_9
-                            .unwrap()
-                            .claimed_sum,
-                    )
-                });
+            cairo_claim.partial_ec_mul_window_bits_9.map(|partial_ec_mul_window_bits_9| {
+                partial_ec_mul_window_bits_9::Component::new(
+                    tree_span_provider,
+                    partial_ec_mul_window_bits_9::Eval {
+                        claim: partial_ec_mul_window_bits_9,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.partial_ec_mul_window_bits_9.unwrap().claimed_sum,
+                )
+            });
         let pedersen_points_table_window_bits_9_component = cairo_claim
             .pedersen_points_table_window_bits_9
             .map(|pedersen_points_table_window_bits_9| {
@@ -673,10 +624,7 @@ impl CairoComponents {
                         claim: pedersen_points_table_window_bits_9,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim
-                        .pedersen_points_table_window_bits_9
-                        .unwrap()
-                        .claimed_sum,
+                    interaction_claim.pedersen_points_table_window_bits_9.unwrap().claimed_sum,
                 )
             });
         let poseidon_aggregator_component =
@@ -690,37 +638,28 @@ impl CairoComponents {
                     interaction_claim.poseidon_aggregator.unwrap().claimed_sum,
                 )
             });
-        let poseidon_3_partial_rounds_chain_component = cairo_claim
-            .poseidon_3_partial_rounds_chain
-            .map(|poseidon_3_partial_rounds_chain| {
+        let poseidon_3_partial_rounds_chain_component =
+            cairo_claim.poseidon_3_partial_rounds_chain.map(|poseidon_3_partial_rounds_chain| {
                 poseidon_3_partial_rounds_chain::Component::new(
                     tree_span_provider,
                     poseidon_3_partial_rounds_chain::Eval {
                         claim: poseidon_3_partial_rounds_chain,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim
-                        .poseidon_3_partial_rounds_chain
-                        .unwrap()
-                        .claimed_sum,
+                    interaction_claim.poseidon_3_partial_rounds_chain.unwrap().claimed_sum,
                 )
             });
         let poseidon_full_round_chain_component =
-            cairo_claim
-                .poseidon_full_round_chain
-                .map(|poseidon_full_round_chain| {
-                    poseidon_full_round_chain::Component::new(
-                        tree_span_provider,
-                        poseidon_full_round_chain::Eval {
-                            claim: poseidon_full_round_chain,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim
-                            .poseidon_full_round_chain
-                            .unwrap()
-                            .claimed_sum,
-                    )
-                });
+            cairo_claim.poseidon_full_round_chain.map(|poseidon_full_round_chain| {
+                poseidon_full_round_chain::Component::new(
+                    tree_span_provider,
+                    poseidon_full_round_chain::Eval {
+                        claim: poseidon_full_round_chain,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.poseidon_full_round_chain.unwrap().claimed_sum,
+                )
+            });
         let cube_252_component = cairo_claim.cube_252.map(|cube_252| {
             cube_252::Component::new(
                 tree_span_provider,
@@ -743,41 +682,30 @@ impl CairoComponents {
                 )
             });
         let range_check_252_width_27_component =
-            cairo_claim
-                .range_check_252_width_27
-                .map(|range_check_252_width_27| {
-                    range_check_252_width_27::Component::new(
-                        tree_span_provider,
-                        range_check_252_width_27::Eval {
-                            claim: range_check_252_width_27,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim
-                            .range_check_252_width_27
-                            .unwrap()
-                            .claimed_sum,
-                    )
-                });
+            cairo_claim.range_check_252_width_27.map(|range_check_252_width_27| {
+                range_check_252_width_27::Component::new(
+                    tree_span_provider,
+                    range_check_252_width_27::Eval {
+                        claim: range_check_252_width_27,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.range_check_252_width_27.unwrap().claimed_sum,
+                )
+            });
         let memory_address_to_id_component =
-            cairo_claim
-                .memory_address_to_id
-                .map(|memory_address_to_id| {
-                    memory_address_to_id::Component::new(
-                        tree_span_provider,
-                        memory_address_to_id::Eval {
-                            claim: memory_address_to_id,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.memory_address_to_id.unwrap().claimed_sum,
-                    )
-                });
+            cairo_claim.memory_address_to_id.map(|memory_address_to_id| {
+                memory_address_to_id::Component::new(
+                    tree_span_provider,
+                    memory_address_to_id::Eval {
+                        claim: memory_address_to_id,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.memory_address_to_id.unwrap().claimed_sum,
+                )
+            });
         let memory_id_to_big_component = memory_id_to_big::big_components_from_claim(
             &cairo_claim.memory_id_to_big.as_ref().unwrap().big_log_sizes,
-            &interaction_claim
-                .memory_id_to_big
-                .as_ref()
-                .unwrap()
-                .big_claimed_sums,
+            &interaction_claim.memory_id_to_big.as_ref().unwrap().big_claimed_sums,
             &common_lookup_elements.clone(),
             tree_span_provider,
         );
@@ -915,70 +843,60 @@ impl CairoComponents {
                 )
             });
         let range_check_3_3_3_3_3_component =
-            cairo_claim
-                .range_check_3_3_3_3_3
-                .map(|range_check_3_3_3_3_3| {
-                    range_check_3_3_3_3_3::Component::new(
-                        tree_span_provider,
-                        range_check_3_3_3_3_3::Eval {
-                            claim: range_check_3_3_3_3_3,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.range_check_3_3_3_3_3.unwrap().claimed_sum,
-                    )
-                });
+            cairo_claim.range_check_3_3_3_3_3.map(|range_check_3_3_3_3_3| {
+                range_check_3_3_3_3_3::Component::new(
+                    tree_span_provider,
+                    range_check_3_3_3_3_3::Eval {
+                        claim: range_check_3_3_3_3_3,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.range_check_3_3_3_3_3.unwrap().claimed_sum,
+                )
+            });
         let verify_bitwise_xor_4_component =
-            cairo_claim
-                .verify_bitwise_xor_4
-                .map(|verify_bitwise_xor_4| {
-                    verify_bitwise_xor_4::Component::new(
-                        tree_span_provider,
-                        verify_bitwise_xor_4::Eval {
-                            claim: verify_bitwise_xor_4,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.verify_bitwise_xor_4.unwrap().claimed_sum,
-                    )
-                });
+            cairo_claim.verify_bitwise_xor_4.map(|verify_bitwise_xor_4| {
+                verify_bitwise_xor_4::Component::new(
+                    tree_span_provider,
+                    verify_bitwise_xor_4::Eval {
+                        claim: verify_bitwise_xor_4,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.verify_bitwise_xor_4.unwrap().claimed_sum,
+                )
+            });
         let verify_bitwise_xor_7_component =
-            cairo_claim
-                .verify_bitwise_xor_7
-                .map(|verify_bitwise_xor_7| {
-                    verify_bitwise_xor_7::Component::new(
-                        tree_span_provider,
-                        verify_bitwise_xor_7::Eval {
-                            claim: verify_bitwise_xor_7,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.verify_bitwise_xor_7.unwrap().claimed_sum,
-                    )
-                });
+            cairo_claim.verify_bitwise_xor_7.map(|verify_bitwise_xor_7| {
+                verify_bitwise_xor_7::Component::new(
+                    tree_span_provider,
+                    verify_bitwise_xor_7::Eval {
+                        claim: verify_bitwise_xor_7,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.verify_bitwise_xor_7.unwrap().claimed_sum,
+                )
+            });
         let verify_bitwise_xor_8_component =
-            cairo_claim
-                .verify_bitwise_xor_8
-                .map(|verify_bitwise_xor_8| {
-                    verify_bitwise_xor_8::Component::new(
-                        tree_span_provider,
-                        verify_bitwise_xor_8::Eval {
-                            claim: verify_bitwise_xor_8,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.verify_bitwise_xor_8.unwrap().claimed_sum,
-                    )
-                });
+            cairo_claim.verify_bitwise_xor_8.map(|verify_bitwise_xor_8| {
+                verify_bitwise_xor_8::Component::new(
+                    tree_span_provider,
+                    verify_bitwise_xor_8::Eval {
+                        claim: verify_bitwise_xor_8,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.verify_bitwise_xor_8.unwrap().claimed_sum,
+                )
+            });
         let verify_bitwise_xor_9_component =
-            cairo_claim
-                .verify_bitwise_xor_9
-                .map(|verify_bitwise_xor_9| {
-                    verify_bitwise_xor_9::Component::new(
-                        tree_span_provider,
-                        verify_bitwise_xor_9::Eval {
-                            claim: verify_bitwise_xor_9,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim.verify_bitwise_xor_9.unwrap().claimed_sum,
-                    )
-                });
+            cairo_claim.verify_bitwise_xor_9.map(|verify_bitwise_xor_9| {
+                verify_bitwise_xor_9::Component::new(
+                    tree_span_provider,
+                    verify_bitwise_xor_9::Eval {
+                        claim: verify_bitwise_xor_9,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    interaction_claim.verify_bitwise_xor_9.unwrap().claimed_sum,
+                )
+            });
 
         Self {
             add_opcode: add_opcode_component,
@@ -1269,132 +1187,64 @@ impl Display for CairoComponents {
             writeln!(f, "AddOpcode: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.add_opcode_small {
-            writeln!(
-                f,
-                "AddOpcodeSmall: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "AddOpcodeSmall: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.add_ap_opcode {
             writeln!(f, "AddApOpcode: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.assert_eq_opcode {
-            writeln!(
-                f,
-                "AssertEqOpcode: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "AssertEqOpcode: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.assert_eq_opcode_imm {
-            writeln!(
-                f,
-                "AssertEqOpcodeImm: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "AssertEqOpcodeImm: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.assert_eq_opcode_double_deref {
-            writeln!(
-                f,
-                "AssertEqOpcodeDoubleDeref: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "AssertEqOpcodeDoubleDeref: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.blake_compress_opcode {
-            writeln!(
-                f,
-                "BlakeCompressOpcode: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "BlakeCompressOpcode: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.call_opcode_abs {
-            writeln!(
-                f,
-                "CallOpcodeAbs: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "CallOpcodeAbs: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.call_opcode_rel_imm {
-            writeln!(
-                f,
-                "CallOpcodeRelImm: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "CallOpcodeRelImm: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.generic_opcode {
-            writeln!(
-                f,
-                "GenericOpcode: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "GenericOpcode: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.jnz_opcode_non_taken {
-            writeln!(
-                f,
-                "JnzOpcodeNonTaken: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "JnzOpcodeNonTaken: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.jnz_opcode_taken {
-            writeln!(
-                f,
-                "JnzOpcodeTaken: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "JnzOpcodeTaken: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.jump_opcode_abs {
-            writeln!(
-                f,
-                "JumpOpcodeAbs: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "JumpOpcodeAbs: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.jump_opcode_double_deref {
-            writeln!(
-                f,
-                "JumpOpcodeDoubleDeref: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "JumpOpcodeDoubleDeref: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.jump_opcode_rel {
-            writeln!(
-                f,
-                "JumpOpcodeRel: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "JumpOpcodeRel: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.jump_opcode_rel_imm {
-            writeln!(
-                f,
-                "JumpOpcodeRelImm: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "JumpOpcodeRelImm: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.mul_opcode {
             writeln!(f, "MulOpcode: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.mul_opcode_small {
-            writeln!(
-                f,
-                "MulOpcodeSmall: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "MulOpcodeSmall: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.qm_31_add_mul_opcode {
-            writeln!(
-                f,
-                "Qm31AddMulOpcode: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "Qm31AddMulOpcode: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.ret_opcode {
             writeln!(f, "RetOpcode: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.verify_instruction {
-            writeln!(
-                f,
-                "VerifyInstruction: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "VerifyInstruction: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.blake_round {
             writeln!(f, "BlakeRound: {}", indented_component_display(component))?;
@@ -1403,87 +1253,43 @@ impl Display for CairoComponents {
             writeln!(f, "BlakeG: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.blake_round_sigma {
-            writeln!(
-                f,
-                "BlakeRoundSigma: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "BlakeRoundSigma: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.triple_xor_32 {
             writeln!(f, "TripleXor32: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.verify_bitwise_xor_12 {
-            writeln!(
-                f,
-                "VerifyBitwiseXor12: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "VerifyBitwiseXor12: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.add_mod_builtin {
-            writeln!(
-                f,
-                "AddModBuiltin: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "AddModBuiltin: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.bitwise_builtin {
-            writeln!(
-                f,
-                "BitwiseBuiltin: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "BitwiseBuiltin: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.mul_mod_builtin {
-            writeln!(
-                f,
-                "MulModBuiltin: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "MulModBuiltin: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.pedersen_builtin {
-            writeln!(
-                f,
-                "PedersenBuiltin: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "PedersenBuiltin: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.pedersen_builtin_narrow_windows {
-            writeln!(
-                f,
-                "PedersenBuiltinNarrowWindows: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "PedersenBuiltinNarrowWindows: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.poseidon_builtin {
-            writeln!(
-                f,
-                "PoseidonBuiltin: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "PoseidonBuiltin: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.range_check96_builtin {
-            writeln!(
-                f,
-                "RangeCheck96Builtin: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "RangeCheck96Builtin: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.range_check_builtin {
-            writeln!(
-                f,
-                "RangeCheckBuiltin: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "RangeCheckBuiltin: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.ec_op_builtin {
             writeln!(f, "EcOpBuiltin: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.partial_ec_mul_generic {
-            writeln!(
-                f,
-                "PartialEcMulGeneric: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "PartialEcMulGeneric: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.pedersen_aggregator_window_bits_18 {
             writeln!(
@@ -1493,11 +1299,7 @@ impl Display for CairoComponents {
             )?;
         }
         if let Some(ref component) = self.partial_ec_mul_window_bits_18 {
-            writeln!(
-                f,
-                "PartialEcMulWindowBits18: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "PartialEcMulWindowBits18: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.pedersen_points_table_window_bits_18 {
             writeln!(
@@ -1514,11 +1316,7 @@ impl Display for CairoComponents {
             )?;
         }
         if let Some(ref component) = self.partial_ec_mul_window_bits_9 {
-            writeln!(
-                f,
-                "PartialEcMulWindowBits9: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "PartialEcMulWindowBits9: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.pedersen_points_table_window_bits_9 {
             writeln!(
@@ -1528,63 +1326,31 @@ impl Display for CairoComponents {
             )?;
         }
         if let Some(ref component) = self.poseidon_aggregator {
-            writeln!(
-                f,
-                "PoseidonAggregator: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "PoseidonAggregator: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.poseidon_3_partial_rounds_chain {
-            writeln!(
-                f,
-                "Poseidon3PartialRoundsChain: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "Poseidon3PartialRoundsChain: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.poseidon_full_round_chain {
-            writeln!(
-                f,
-                "PoseidonFullRoundChain: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "PoseidonFullRoundChain: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.cube_252 {
             writeln!(f, "Cube252: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.poseidon_round_keys {
-            writeln!(
-                f,
-                "PoseidonRoundKeys: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "PoseidonRoundKeys: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.range_check_252_width_27 {
-            writeln!(
-                f,
-                "RangeCheck252Width27: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "RangeCheck252Width27: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.memory_address_to_id {
-            writeln!(
-                f,
-                "MemoryAddressToId: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "MemoryAddressToId: {}", indented_component_display(component))?;
         }
         for component in &self.memory_id_to_big {
-            writeln!(
-                f,
-                "MemoryIdToValue: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "MemoryIdToValue: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.memory_id_to_small {
-            writeln!(
-                f,
-                "MemoryIdToSmall: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "MemoryIdToSmall: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.range_check_6 {
             writeln!(f, "RangeCheck6: {}", indented_component_display(component))?;
@@ -1614,60 +1380,28 @@ impl Display for CairoComponents {
             writeln!(f, "RangeCheck99: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.range_check_7_2_5 {
-            writeln!(
-                f,
-                "RangeCheck725: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "RangeCheck725: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.range_check_3_6_6_3 {
-            writeln!(
-                f,
-                "RangeCheck3663: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "RangeCheck3663: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.range_check_4_4_4_4 {
-            writeln!(
-                f,
-                "RangeCheck4444: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "RangeCheck4444: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.range_check_3_3_3_3_3 {
-            writeln!(
-                f,
-                "RangeCheck33333: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "RangeCheck33333: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.verify_bitwise_xor_4 {
-            writeln!(
-                f,
-                "VerifyBitwiseXor4: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "VerifyBitwiseXor4: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.verify_bitwise_xor_7 {
-            writeln!(
-                f,
-                "VerifyBitwiseXor7: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "VerifyBitwiseXor7: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.verify_bitwise_xor_8 {
-            writeln!(
-                f,
-                "VerifyBitwiseXor8: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "VerifyBitwiseXor8: {}", indented_component_display(component))?;
         }
         if let Some(ref component) = self.verify_bitwise_xor_9 {
-            writeln!(
-                f,
-                "VerifyBitwiseXor9: {}",
-                indented_component_display(component)
-            )?;
+            writeln!(f, "VerifyBitwiseXor9: {}", indented_component_display(component))?;
         }
         Ok(())
     }

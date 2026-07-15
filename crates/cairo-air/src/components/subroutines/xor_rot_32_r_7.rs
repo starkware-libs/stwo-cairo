@@ -17,7 +17,12 @@ impl XorRot32R7 {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [xor_rot_32_r_7_input_limb_0, xor_rot_32_r_7_input_limb_1, xor_rot_32_r_7_input_limb_2, xor_rot_32_r_7_input_limb_3]: [E::F; 4],
+        [
+            xor_rot_32_r_7_input_limb_0,
+            xor_rot_32_r_7_input_limb_1,
+            xor_rot_32_r_7_input_limb_2,
+            xor_rot_32_r_7_input_limb_3,
+        ]: [E::F; 4],
         enabler: E::F,
         ms_9_bits_col0: E::F,
         ms_9_bits_col1: E::F,
@@ -98,9 +103,6 @@ impl XorRot32R7 {
             eval.add_intermediate((xor_col5.clone() + (xor_col6.clone() * M31_512.clone())));
         let xor_rot_7_output_tmp_12336_16_limb_1 =
             eval.add_intermediate((xor_col7.clone() + (xor_col4.clone() * M31_512.clone())));
-        [
-            xor_rot_7_output_tmp_12336_16_limb_0.clone(),
-            xor_rot_7_output_tmp_12336_16_limb_1.clone(),
-        ]
+        [xor_rot_7_output_tmp_12336_16_limb_0.clone(), xor_rot_7_output_tmp_12336_16_limb_1.clone()]
     }
 }

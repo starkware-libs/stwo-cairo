@@ -15,8 +15,8 @@ use cairo_vm::types::layout_name::LayoutName;
 use clap::Parser;
 use serde_json::to_string_pretty;
 use stwo_cairo_adapter::ExecutionResources;
-use stwo_cairo_dev_utils::vm_utils::{run_and_adapt, ProgramType};
-use tracing::{span, Level};
+use stwo_cairo_dev_utils::vm_utils::{ProgramType, run_and_adapt};
+use tracing::{Level, span};
 use tracing_subscriber::fmt::format::FmtSpan;
 
 /// A tool to get the execution resources from a compiled Cairo program.
@@ -38,9 +38,7 @@ struct Args {
 
 fn main() -> Result<()> {
     let args = Args::parse();
-    tracing_subscriber::fmt()
-        .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
-        .init();
+    tracing_subscriber::fmt().with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE).init();
     let _span = span!(Level::INFO, "get_execution_resources").entered();
 
     let prover_input = run_and_adapt(

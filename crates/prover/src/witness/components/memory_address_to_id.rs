@@ -8,17 +8,17 @@ use cairo_air::components::memory_address_to_id::{
     N_TRACE_COLUMNS,
 };
 use cairo_air::relations::{self, MEMORY_ADDRESS_TO_ID_RELATION_ID};
-use itertools::{izip, Itertools};
+use itertools::{Itertools, izip};
 use rayon::iter::{IndexedParallelIterator, IntoParallelIterator, ParallelIterator};
 use stwo::core::fields::m31::{BaseField, M31};
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::utils::SliceExt;
-use stwo::prover::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
-use stwo::prover::backend::simd::qm31::PackedQM31;
 use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::simd::m31::{LOG_N_LANES, N_LANES, PackedBaseField, PackedM31};
+use stwo::prover::backend::simd::qm31::PackedQM31;
 use stwo::prover::backend::{Col, Column};
-use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
+use stwo::prover::poly::circle::CircleEvaluation;
 use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{PreProcessedColumn, Seq};
 use stwo_constraint_framework::{LogupTraceGenerator, Relation};
@@ -81,10 +81,7 @@ impl ClaimGenerator {
         );
         let multiplicities = AtomicMultiplicityColumn::new(address_to_raw_id.len());
 
-        Self {
-            address_to_raw_id,
-            multiplicities,
-        }
+        Self { address_to_raw_id, multiplicities }
     }
 
     pub fn deduce_output(&self, input: PackedBaseField) -> PackedBaseField {
@@ -118,11 +115,7 @@ impl ClaimGenerator {
         InteractionClaimGenerator,
     ) {
         let size = std::cmp::max(
-            (self
-                .address_to_raw_id
-                .len()
-                .div_ceil(MEMORY_ADDRESS_TO_ID_SPLIT))
-            .next_power_of_two(),
+            (self.address_to_raw_id.len().div_ceil(MEMORY_ADDRESS_TO_ID_SPLIT)).next_power_of_two(),
             N_LANES,
         );
         let n_packed_rows = size.div_ceil(N_LANES);
@@ -162,14 +155,7 @@ impl ClaimGenerator {
             })
             .collect_vec();
 
-        (
-            trace,
-            Claim { log_size },
-            InteractionClaimGenerator {
-                ids,
-                multiplicities,
-            },
-        )
+        (trace, Claim { log_size }, InteractionClaimGenerator { ids, multiplicities })
     }
 }
 
@@ -197,10 +183,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let packed_size = self.ids[0].len();
         let log_size = packed_size.ilog2() + LOG_N_LANES;
         let n_rows = 1 << log_size;
@@ -254,17 +237,11 @@ mod tests {
         const N_ENTRIES: u32 = 10;
         let (memory, ..) = MemoryBuilder::from_iter(
             MemoryConfig::default(),
-            (0..N_ENTRIES).map(|i| MemoryEntry {
-                address: i as u64,
-                value: [i; 8],
-            }),
+            (0..N_ENTRIES).map(|i| MemoryEntry { address: i as u64, value: [i; 8] }),
         )
         .build();
         let memory_address_to_id_gen = memory_address_to_id::ClaimGenerator::new(Arc::new(memory));
-        let address_usages = [1, 1, 2, 2, 2, 3]
-            .into_iter()
-            .map(BaseField::from)
-            .collect_vec();
+        let address_usages = [1, 1, 2, 2, 2, 3].into_iter().map(BaseField::from).collect_vec();
         // Multiplicities are of addresses offsetted by 1.
         let expected_mults = [2, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0].map(M31);
 

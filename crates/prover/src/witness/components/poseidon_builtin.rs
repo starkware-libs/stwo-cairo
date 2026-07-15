@@ -15,21 +15,14 @@ pub struct ClaimGenerator {
 impl ClaimGenerator {
     pub fn new(log_size: u32, poseidon_builtin_segment_start: u32) -> Self {
         assert!(log_size >= LOG_N_LANES);
-        Self {
-            log_size,
-            poseidon_builtin_segment_start,
-        }
+        Self { log_size, poseidon_builtin_segment_start }
     }
 
     pub fn write_trace(
         self,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         poseidon_aggregator_state: &poseidon_aggregator::ClaimGenerator,
-    ) -> (
-        ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
-        InteractionClaimGenerator,
-    ) {
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator) {
         let log_size = self.log_size;
         let size = 1 << log_size;
 
@@ -46,14 +39,7 @@ impl ClaimGenerator {
             add_inputs(poseidon_aggregator_state, &inputs, size, 0);
         }
 
-        (
-            trace,
-            Claim { log_size },
-            InteractionClaimGenerator {
-                log_size,
-                lookup_data,
-            },
-        )
+        (trace, Claim { log_size }, InteractionClaimGenerator { log_size, lookup_data })
     }
 }
 
@@ -72,11 +58,7 @@ fn write_trace_simd(
     poseidon_builtin_segment_start: u32,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     poseidon_aggregator_state: &poseidon_aggregator::ClaimGenerator,
-) -> (
-    ComponentTrace<N_TRACE_COLUMNS>,
-    LookupData,
-    SubComponentInputs,
-) {
+) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData, SubComponentInputs) {
     let log_n_packed_rows = log_size - LOG_N_LANES;
     let (mut trace, mut lookup_data, mut sub_component_inputs) = unsafe {
         (
@@ -96,11 +78,7 @@ fn write_trace_simd(
     let M31_6 = PackedM31::broadcast(M31::from(6));
     let seq = Seq::new(log_size);
 
-    (
-        trace.par_iter_mut(),
-        lookup_data.par_iter_mut(),
-        sub_component_inputs.par_iter_mut(),
-    )
+    (trace.par_iter_mut(), lookup_data.par_iter_mut(), sub_component_inputs.par_iter_mut())
         .into_par_iter()
         .enumerate()
         .for_each(|(row_index, (row, lookup_data, sub_component_inputs))| {
@@ -115,11 +93,8 @@ fn write_trace_simd(
             let input_state_0_id_col0 = memory_address_to_id_value_tmp_a172e_1;
             *row[0] = input_state_0_id_col0;
             *sub_component_inputs.memory_address_to_id[0] = instance_addr_tmp_a172e_0;
-            *lookup_data.memory_address_to_id_0 = [
-                M31_1444891767,
-                instance_addr_tmp_a172e_0,
-                input_state_0_id_col0,
-            ];
+            *lookup_data.memory_address_to_id_0 =
+                [M31_1444891767, instance_addr_tmp_a172e_0, input_state_0_id_col0];
 
             // Read Id.
 
@@ -128,11 +103,8 @@ fn write_trace_simd(
             let input_state_1_id_col1 = memory_address_to_id_value_tmp_a172e_3;
             *row[1] = input_state_1_id_col1;
             *sub_component_inputs.memory_address_to_id[1] = ((instance_addr_tmp_a172e_0) + (M31_1));
-            *lookup_data.memory_address_to_id_1 = [
-                M31_1444891767,
-                ((instance_addr_tmp_a172e_0) + (M31_1)),
-                input_state_1_id_col1,
-            ];
+            *lookup_data.memory_address_to_id_1 =
+                [M31_1444891767, ((instance_addr_tmp_a172e_0) + (M31_1)), input_state_1_id_col1];
 
             // Read Id.
 
@@ -141,11 +113,8 @@ fn write_trace_simd(
             let input_state_2_id_col2 = memory_address_to_id_value_tmp_a172e_5;
             *row[2] = input_state_2_id_col2;
             *sub_component_inputs.memory_address_to_id[2] = ((instance_addr_tmp_a172e_0) + (M31_2));
-            *lookup_data.memory_address_to_id_2 = [
-                M31_1444891767,
-                ((instance_addr_tmp_a172e_0) + (M31_2)),
-                input_state_2_id_col2,
-            ];
+            *lookup_data.memory_address_to_id_2 =
+                [M31_1444891767, ((instance_addr_tmp_a172e_0) + (M31_2)), input_state_2_id_col2];
 
             // Read Id.
 
@@ -154,11 +123,8 @@ fn write_trace_simd(
             let output_state_0_id_col3 = memory_address_to_id_value_tmp_a172e_7;
             *row[3] = output_state_0_id_col3;
             *sub_component_inputs.memory_address_to_id[3] = ((instance_addr_tmp_a172e_0) + (M31_3));
-            *lookup_data.memory_address_to_id_3 = [
-                M31_1444891767,
-                ((instance_addr_tmp_a172e_0) + (M31_3)),
-                output_state_0_id_col3,
-            ];
+            *lookup_data.memory_address_to_id_3 =
+                [M31_1444891767, ((instance_addr_tmp_a172e_0) + (M31_3)), output_state_0_id_col3];
 
             // Read Id.
 
@@ -167,11 +133,8 @@ fn write_trace_simd(
             let output_state_1_id_col4 = memory_address_to_id_value_tmp_a172e_9;
             *row[4] = output_state_1_id_col4;
             *sub_component_inputs.memory_address_to_id[4] = ((instance_addr_tmp_a172e_0) + (M31_4));
-            *lookup_data.memory_address_to_id_4 = [
-                M31_1444891767,
-                ((instance_addr_tmp_a172e_0) + (M31_4)),
-                output_state_1_id_col4,
-            ];
+            *lookup_data.memory_address_to_id_4 =
+                [M31_1444891767, ((instance_addr_tmp_a172e_0) + (M31_4)), output_state_1_id_col4];
 
             // Read Id.
 
@@ -180,23 +143,12 @@ fn write_trace_simd(
             let output_state_2_id_col5 = memory_address_to_id_value_tmp_a172e_11;
             *row[5] = output_state_2_id_col5;
             *sub_component_inputs.memory_address_to_id[5] = ((instance_addr_tmp_a172e_0) + (M31_5));
-            *lookup_data.memory_address_to_id_5 = [
-                M31_1444891767,
-                ((instance_addr_tmp_a172e_0) + (M31_5)),
-                output_state_2_id_col5,
-            ];
+            *lookup_data.memory_address_to_id_5 =
+                [M31_1444891767, ((instance_addr_tmp_a172e_0) + (M31_5)), output_state_2_id_col5];
 
             *sub_component_inputs.poseidon_aggregator[0] = (
-                [
-                    input_state_0_id_col0,
-                    input_state_1_id_col1,
-                    input_state_2_id_col2,
-                ],
-                [
-                    output_state_0_id_col3,
-                    output_state_1_id_col4,
-                    output_state_2_id_col5,
-                ],
+                [input_state_0_id_col0, input_state_1_id_col1, input_state_2_id_col2],
+                [output_state_0_id_col3, output_state_1_id_col4, output_state_2_id_col5],
             );
             *lookup_data.poseidon_aggregator_6 = [
                 M31_1551892206,
@@ -233,10 +185,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
 
         // Sum logup terms in pairs.
@@ -290,11 +239,7 @@ impl InteractionClaimGenerator {
 
         // Sum last logup term.
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.poseidon_aggregator_6,
-            self.lookup_data.mults_0,
-        )
+        (col_gen.par_iter_mut(), &self.lookup_data.poseidon_aggregator_6, self.lookup_data.mults_0)
             .into_par_iter()
             .for_each(|(writer, values, mult)| {
                 let denom = common_lookup_elements.combine(values);

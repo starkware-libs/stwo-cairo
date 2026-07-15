@@ -1,39 +1,21 @@
 // This file was created by the AIR team.
 
 use subroutines::triple_sum_32::TripleSum32;
-use subroutines::xor_rot_32_r_12::XorRot32R12;
-use subroutines::xor_rot_32_r_16::XorRot32R16;
 use subroutines::xor_rot_32_r_7::XorRot32R7;
 use subroutines::xor_rot_32_r_8::XorRot32R8;
+use subroutines::xor_rot_32_r_12::XorRot32R12;
+use subroutines::xor_rot_32_r_16::XorRot32R16;
 
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 53;
 pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
-    RelationUse {
-        relation_id: "VerifyBitwiseXor_12",
-        uses: 2,
-    },
-    RelationUse {
-        relation_id: "VerifyBitwiseXor_4",
-        uses: 2,
-    },
-    RelationUse {
-        relation_id: "VerifyBitwiseXor_7",
-        uses: 2,
-    },
-    RelationUse {
-        relation_id: "VerifyBitwiseXor_8",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "VerifyBitwiseXor_8_B",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "VerifyBitwiseXor_9",
-        uses: 2,
-    },
+    RelationUse { relation_id: "VerifyBitwiseXor_12", uses: 2 },
+    RelationUse { relation_id: "VerifyBitwiseXor_4", uses: 2 },
+    RelationUse { relation_id: "VerifyBitwiseXor_7", uses: 2 },
+    RelationUse { relation_id: "VerifyBitwiseXor_8", uses: 4 },
+    RelationUse { relation_id: "VerifyBitwiseXor_8_B", uses: 4 },
+    RelationUse { relation_id: "VerifyBitwiseXor_9", uses: 2 },
 ];
 
 pub struct Eval {
@@ -148,26 +130,28 @@ impl FrameworkEval for Eval {
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [xor_rot_32_r_16_output_tmp_4da06_21_limb_0, xor_rot_32_r_16_output_tmp_4da06_21_limb_1] =
-            XorRot32R16::evaluate(
-                [
-                    triple_sum32_res_limb_0_col13.clone(),
-                    triple_sum32_res_limb_1_col14.clone(),
-                    input_limb_6_col7.clone(),
-                    input_limb_7_col8.clone(),
-                ],
-                enabler_col0.clone(),
-                ms_8_bits_col15.clone(),
-                ms_8_bits_col16.clone(),
-                ms_8_bits_col17.clone(),
-                ms_8_bits_col18.clone(),
-                xor_col19.clone(),
-                xor_col20.clone(),
-                xor_col21.clone(),
-                xor_col22.clone(),
-                &self.common_lookup_elements,
-                &mut eval,
-            );
+        let [
+            xor_rot_32_r_16_output_tmp_4da06_21_limb_0,
+            xor_rot_32_r_16_output_tmp_4da06_21_limb_1,
+        ] = XorRot32R16::evaluate(
+            [
+                triple_sum32_res_limb_0_col13.clone(),
+                triple_sum32_res_limb_1_col14.clone(),
+                input_limb_6_col7.clone(),
+                input_limb_7_col8.clone(),
+            ],
+            enabler_col0.clone(),
+            ms_8_bits_col15.clone(),
+            ms_8_bits_col16.clone(),
+            ms_8_bits_col17.clone(),
+            ms_8_bits_col18.clone(),
+            xor_col19.clone(),
+            xor_col20.clone(),
+            xor_col21.clone(),
+            xor_col22.clone(),
+            &self.common_lookup_elements,
+            &mut eval,
+        );
         TripleSum32::evaluate(
             [
                 input_limb_4_col5.clone(),
@@ -185,26 +169,28 @@ impl FrameworkEval for Eval {
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [xor_rot_32_r_12_output_tmp_4da06_43_limb_0, xor_rot_32_r_12_output_tmp_4da06_43_limb_1] =
-            XorRot32R12::evaluate(
-                [
-                    input_limb_2_col3.clone(),
-                    input_limb_3_col4.clone(),
-                    triple_sum32_res_limb_0_col23.clone(),
-                    triple_sum32_res_limb_1_col24.clone(),
-                ],
-                enabler_col0.clone(),
-                ms_4_bits_col25.clone(),
-                ms_4_bits_col26.clone(),
-                ms_4_bits_col27.clone(),
-                ms_4_bits_col28.clone(),
-                xor_col29.clone(),
-                xor_col30.clone(),
-                xor_col31.clone(),
-                xor_col32.clone(),
-                &self.common_lookup_elements,
-                &mut eval,
-            );
+        let [
+            xor_rot_32_r_12_output_tmp_4da06_43_limb_0,
+            xor_rot_32_r_12_output_tmp_4da06_43_limb_1,
+        ] = XorRot32R12::evaluate(
+            [
+                input_limb_2_col3.clone(),
+                input_limb_3_col4.clone(),
+                triple_sum32_res_limb_0_col23.clone(),
+                triple_sum32_res_limb_1_col24.clone(),
+            ],
+            enabler_col0.clone(),
+            ms_4_bits_col25.clone(),
+            ms_4_bits_col26.clone(),
+            ms_4_bits_col27.clone(),
+            ms_4_bits_col28.clone(),
+            xor_col29.clone(),
+            xor_col30.clone(),
+            xor_col31.clone(),
+            xor_col32.clone(),
+            &self.common_lookup_elements,
+            &mut eval,
+        );
         TripleSum32::evaluate(
             [
                 triple_sum32_res_limb_0_col13.clone(),

@@ -49,9 +49,7 @@ impl FrameworkEval for Eval {
         let M31_514232941 = E::F::from(M31::from(514232941));
         let M31_531010560 = E::F::from(M31::from(531010560));
         let M31_682009131 = E::F::from(M31::from(682009131));
-        let seq_20 = eval.get_preprocessed_column(PreProcessedColumnId {
-            id: "seq_20".to_owned(),
-        });
+        let seq_20 = eval.get_preprocessed_column(PreProcessedColumnId { id: "seq_20".to_owned() });
         let multiplicity_0_col0 = eval.next_trace_mask();
         let multiplicity_1_col1 = eval.next_trace_mask();
         let multiplicity_2_col2 = eval.next_trace_mask();

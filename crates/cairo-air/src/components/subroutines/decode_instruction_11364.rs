@@ -53,9 +53,6 @@ impl DecodeInstruction11364 {
             ],
         ));
 
-        [
-            (offset1_col0.clone() - M31_32768.clone()),
-            (offset2_col1.clone() - M31_32768.clone()),
-        ]
+        [(offset1_col0.clone() - M31_32768.clone()), (offset2_col1.clone() - M31_32768.clone())]
     }
 }
