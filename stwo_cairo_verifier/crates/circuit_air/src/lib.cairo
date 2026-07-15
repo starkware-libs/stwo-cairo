@@ -31,8 +31,7 @@ use claims::{
 };
 use per_component::{COMPONENT_LOG_SIZES, PerComponent};
 pub mod circuit_hash;
-#[cfg(not(feature: "poseidon252_verifier"))]
-use circuit_hash::compute_circuit_hash;
+pub use circuit_hash::compute_circuit_hash;
 pub mod components;
 pub mod prelude;
 pub mod preprocessed_columns;
@@ -55,24 +54,20 @@ pub struct CircuitProof {
     pub channel_salt: u32,
 }
 
-/// The output of a circuit verification: `blake2s(preprocessed_root || output_values)`,
-/// where `preprocessed_root` is the proof's preprocessed-trace (tree 0) commitment.
+/// The output of a circuit verification: `blake2s(circuit_hash || output_values)`.
 #[derive(Drop, Serde)]
 pub struct VerificationOutput {
     pub output_hash: Hash,
 }
 
-/// Returns the output of the verifier: `blake2s(preprocessed_root || output_values)`, where
-/// `preprocessed_root` is the proof's preprocessed-trace (tree 0) commitment.
+/// Returns the output of the verifier: `blake2s(circuit_hash || output_values)`.
 #[cfg(not(feature: "poseidon252_verifier"))]
-pub fn get_verification_output(proof: @CircuitProof) -> VerificationOutput {
-    let commitments: @Box<[Hash; 4]> = (*proof.stark_proof.commitment_scheme_proof.commitments)
-        .try_into()
-        .unwrap();
-    let [preprocessed_commitment, _, _, _] = commitments.unbox();
-    let [r0, r1, r2, r3, r4, r5, r6, r7] = preprocessed_commitment.hash.unbox();
-    let mut words = array![r0, r1, r2, r3, r4, r5, r6, r7];
-    for value in proof.claim.public_data.output_values.span() {
+pub fn get_verification_output(
+    output_values: Span<QM31>, circuit_hash: Box<[u32; 8]>,
+) -> VerificationOutput {
+    let [h0, h1, h2, h3, h4, h5, h6, h7] = circuit_hash.unbox();
+    let mut words = array![h0, h1, h2, h3, h4, h5, h6, h7];
+    for value in output_values {
         let [c0, c1, c2, c3] = (*value).to_fixed_array();
         words.append(c0.into());
         words.append(c1.into());
@@ -83,7 +78,24 @@ pub fn get_verification_output(proof: @CircuitProof) -> VerificationOutput {
 }
 
 #[cfg(feature: "poseidon252_verifier")]
-pub fn get_verification_output(_proof: @CircuitProof) -> VerificationOutput {
+pub fn get_verification_output(
+    _output_values: Span<QM31>, _circuit_hash: Box<[u32; 8]>,
+) -> VerificationOutput {
+    panic!("the privacy recursive circuit verifier only supports the blake2s hasher")
+}
+
+/// Extracts the preprocessed-trace (tree 0) commitment from the proof, as raw words.
+#[cfg(not(feature: "poseidon252_verifier"))]
+pub fn preprocessed_root(proof: @CircuitProof) -> [u32; 8] {
+    let commitments: @Box<[Hash; 4]> = (*proof.stark_proof.commitment_scheme_proof.commitments)
+        .try_into()
+        .unwrap();
+    let [preprocessed_commitment, _, _, _] = commitments.unbox();
+    preprocessed_commitment.hash.unbox()
+}
+
+#[cfg(feature: "poseidon252_verifier")]
+pub fn preprocessed_root(_proof: @CircuitProof) -> [u32; 8] {
     panic!("the privacy recursive circuit verifier only supports the blake2s hasher")
 }
 
@@ -91,21 +103,16 @@ pub fn get_verification_output(_proof: @CircuitProof) -> VerificationOutput {
 /// blowup factor) and the preprocessed root. Mirrors `mix_public_inputs` in the circuit-verifier
 /// crate (stwo-circuits), which mixes the circuit hash before the claim's output values.
 #[cfg(not(feature: "poseidon252_verifier"))]
-fn mix_circuit_hash(ref channel: Channel, preprocessed_commitment: Hash, log_blowup_factor: u32) {
-    let circuit_hash = compute_circuit_hash(
-        preprocessed_commitment.hash.unbox(), log_blowup_factor,
-    );
+fn mix_circuit_hash(ref channel: Channel, circuit_hash: Box<[u32; 8]>) {
     channel.mix_commitment(Blake2sHash { hash: circuit_hash });
 }
 
 #[cfg(feature: "poseidon252_verifier")]
-fn mix_circuit_hash(
-    ref _channel: Channel, _preprocessed_commitment: Hash, _log_blowup_factor: u32,
-) {
+fn mix_circuit_hash(ref _channel: Channel, _circuit_hash: Box<[u32; 8]>) {
     panic!("the privacy recursive circuit verifier only supports the blake2s hasher")
 }
 
-pub fn verify_circuit(proof: CircuitProof) {
+pub fn verify_circuit(proof: CircuitProof, circuit_hash: Box<[u32; 8]>) {
     let CircuitProof {
         claim, interaction_pow, interaction_claim, stark_proof, channel_salt,
     } = proof;
@@ -172,7 +179,7 @@ pub fn verify_circuit(proof: CircuitProof) {
     // Public inputs: the circuit hash (binds the circuit topology and preprocessed root) followed
     // by the claim's output values, mirroring `mix_public_inputs` in the circuit-verifier crate
     // (stwo-circuits).
-    mix_circuit_hash(ref channel, preprocessed_commitment, log_blowup_factor);
+    mix_circuit_hash(ref channel, circuit_hash);
     claim.mix_into(ref channel);
     commitment_scheme.commit(trace_commitment, trace_log_sizes, ref channel, log_blowup_factor);
 

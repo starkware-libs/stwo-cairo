@@ -5,6 +5,7 @@
 //! packing there byte-for-byte for the Fiat-Shamir transcript to agree.
 use stwo_verifier_utils::blake2s::hash_u32s;
 use crate::per_component::CANONICAL_ORDER_COMPONENT_LOG_SIZES;
+use crate::privacy_consts::circuit_pcs_config;
 
 /// Number of 32-bit words in a Blake2s-256 digest.
 pub const BLAKE2S_DIGEST_N_WORDS: usize = 8;
@@ -32,10 +33,12 @@ fn config_words(log_blowup_factor: u32) -> Array<u32> {
 }
 
 /// Computes the circuit hash: `blake2s(log_blowup_factor || component_log_sizes ||
-/// preprocessed_root)`, packing each value as little-endian bytes.
+/// preprocessed_root)`, packing each value as little-endian bytes. The log blowup factor and
+/// component log sizes are the circuit's hardcoded constants; only the preprocessed root varies.
 pub fn compute_circuit_hash(
-    preprocessed_root: [u32; BLAKE2S_DIGEST_N_WORDS], log_blowup_factor: u32,
+    preprocessed_root: [u32; BLAKE2S_DIGEST_N_WORDS],
 ) -> Box<[u32; BLAKE2S_DIGEST_N_WORDS]> {
+    let log_blowup_factor = circuit_pcs_config().fri_config.log_blowup_factor;
     let mut words = config_words(log_blowup_factor);
     words.append_span(preprocessed_root.span());
     hash_u32s(words.span())
@@ -45,7 +48,7 @@ pub fn compute_circuit_hash(
 mod tests {
     use super::{BLAKE2S_DIGEST_N_WORDS, compute_circuit_hash};
 
-    /// Known-answer test: `blake2s` over `log_blowup_factor = 3`, the canonical component log
+    /// Known-answer test: `blake2s` over the canonical `log_blowup_factor` (3) and component log
     /// sizes, and `preprocessed_root = [0, 1, .., 7]`, cross-checked against an independent
     /// `blake2s` reference. This pins the byte packing against `compute_circuit_hash_host` in the
     /// stwo-circuits repo.
@@ -56,6 +59,6 @@ mod tests {
             0xa8810641, 0x52391285, 0x90b37fd2, 0x905b887a, 0x7db7dc81, 0xa7c3a731, 0xd0d46b34,
             0x8fa6a471,
         ];
-        assert!(compute_circuit_hash(preprocessed_root, 3).unbox() == expected);
+        assert!(compute_circuit_hash(preprocessed_root).unbox() == expected);
     }
 }
