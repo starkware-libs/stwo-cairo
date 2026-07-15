@@ -50,15 +50,15 @@ jobs:
           # Proof Files Mapping
           # ==========================================
           - feature: poseidon252_verifier
-            proof_file: ../stwo_cairo_prover/test_data/test_prove_verify_ret_opcode/proof.json
+            proof_file: ../test_data/test_prove_verify_ret_opcode/proof.json
           - feature: "poseidon252_verifier,poseidon_outputs_packing"
-            proof_file: ../stwo_cairo_prover/test_data/test_prove_verify_ret_opcode/proof.json
+            proof_file: ../test_data/test_prove_verify_ret_opcode/proof.json
           - feature: qm31_opcode
-            proof_file: ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
+            proof_file: ../test_data/test_prove_verify_all_opcode_components/proof.json
           - feature: "qm31_opcode,blake_outputs_packing"
-            proof_file: ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
+            proof_file: ../test_data/test_prove_verify_all_opcode_components/proof.json
           - feature: "qm31_opcode,poseidon_outputs_packing"
-            proof_file: ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
+            proof_file: ../test_data/test_prove_verify_all_opcode_components/proof.json
           # ==========================================
           # Explicit Runner Size Mapping (20 combinations)
           # ==========================================
@@ -161,9 +161,6 @@ jobs:
       RUST_LOG_SPAN_EVENTS: enter,close
       RUST_LOG: info
       RUST_BACKTRACE: full
-    defaults:
-      run:
-        working-directory: ./stwo_cairo_prover
     steps:
       - uses: actions/checkout@v6
       - name: Install build dependencies
@@ -175,16 +172,11 @@ jobs:
         uses: taiki-e/install-action@nextest
       - name: Fetch cache
         uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: stwo_cairo_prover
       - run: cargo nextest run --cargo-profile witness-opt-1 --features=slow-tests -j ${{ env.NEXTTEST_THREADS }} -P ci
       - run: cargo nextest run --cargo-profile witness-opt-1 --features=extract-mem-trace test_serialize_deserialize_mem_trace -j ${{ env.NEXTTEST_THREADS }} -P ci
 
   cairo-prover-wasm:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./stwo_cairo_prover
     steps:
       - uses: actions/checkout@v6
       - id: rust-toolchain
@@ -200,9 +192,6 @@ jobs:
 
   cairo-air-wasm:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./stwo_cairo_prover
     steps:
       - uses: actions/checkout@v6
       - id: rust-toolchain
@@ -217,9 +206,6 @@ jobs:
 
   crates-stable:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./stwo_cairo_prover
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@master
@@ -233,9 +219,6 @@ jobs:
 
   format:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./stwo_cairo_prover
     steps:
       - uses: actions/checkout@v6
       - id: rust-toolchain
@@ -249,9 +232,6 @@ jobs:
 
   clippy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./stwo_cairo_prover
     steps:
       - uses: actions/checkout@v6
       - id: rust-toolchain
@@ -265,9 +245,6 @@ jobs:
 
   cargo-lock:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./stwo_cairo_prover
     steps:
       - uses: actions/checkout@v6
       - id: rust-toolchain
