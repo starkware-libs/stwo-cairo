@@ -31,8 +31,7 @@ use claims::{
 };
 use per_component::{COMPONENT_LOG_SIZES, PerComponent};
 pub mod circuit_hash;
-#[cfg(not(feature: "poseidon252_verifier"))]
-use circuit_hash::compute_circuit_hash;
+pub use circuit_hash::compute_circuit_hash;
 pub mod components;
 pub mod prelude;
 pub mod preprocessed_columns;
@@ -87,25 +86,35 @@ pub fn get_verification_output(_proof: @CircuitProof) -> VerificationOutput {
     panic!("the privacy recursive circuit verifier only supports the blake2s hasher")
 }
 
+/// Extracts the preprocessed-trace (tree 0) commitment from the proof, as raw words.
+#[cfg(not(feature: "poseidon252_verifier"))]
+pub fn preprocessed_root(proof: @CircuitProof) -> [u32; 8] {
+    let commitments: @Box<[Hash; 4]> = (*proof.stark_proof.commitment_scheme_proof.commitments)
+        .try_into()
+        .unwrap();
+    let [preprocessed_commitment, _, _, _] = commitments.unbox();
+    preprocessed_commitment.hash.unbox()
+}
+
+#[cfg(feature: "poseidon252_verifier")]
+pub fn preprocessed_root(_proof: @CircuitProof) -> [u32; 8] {
+    panic!("the privacy recursive circuit verifier only supports the blake2s hasher")
+}
+
 /// Mixes the circuit hash into the channel, binding the circuit topology (component log sizes and
 /// blowup factor) and the preprocessed root. Mirrors `mix_public_inputs` in the circuit-verifier
 /// crate (stwo-circuits), which mixes the circuit hash before the claim's output values.
 #[cfg(not(feature: "poseidon252_verifier"))]
-fn mix_circuit_hash(ref channel: Channel, preprocessed_commitment: Hash, log_blowup_factor: u32) {
-    let circuit_hash = compute_circuit_hash(
-        preprocessed_commitment.hash.unbox(), log_blowup_factor,
-    );
+fn mix_circuit_hash(ref channel: Channel, circuit_hash: Box<[u32; 8]>) {
     channel.mix_commitment(Blake2sHash { hash: circuit_hash });
 }
 
 #[cfg(feature: "poseidon252_verifier")]
-fn mix_circuit_hash(
-    ref _channel: Channel, _preprocessed_commitment: Hash, _log_blowup_factor: u32,
-) {
+fn mix_circuit_hash(ref _channel: Channel, _circuit_hash: Box<[u32; 8]>) {
     panic!("the privacy recursive circuit verifier only supports the blake2s hasher")
 }
 
-pub fn verify_circuit(proof: CircuitProof) {
+pub fn verify_circuit(proof: CircuitProof, circuit_hash: Box<[u32; 8]>) {
     let CircuitProof {
         claim, interaction_pow, interaction_claim, stark_proof, channel_salt,
     } = proof;
@@ -172,7 +181,7 @@ pub fn verify_circuit(proof: CircuitProof) {
     // Public inputs: the circuit hash (binds the circuit topology and preprocessed root) followed
     // by the claim's output values, mirroring `mix_public_inputs` in the circuit-verifier crate
     // (stwo-circuits).
-    mix_circuit_hash(ref channel, preprocessed_commitment, log_blowup_factor);
+    mix_circuit_hash(ref channel, circuit_hash);
     claim.mix_into(ref channel);
     commitment_scheme.commit(trace_commitment, trace_log_sizes, ref channel, log_blowup_factor);
 
