@@ -33,6 +33,7 @@ use claims::{
 };
 use per_component::PerComponent;
 pub mod circuit_hash;
+pub use circuit_hash::compute_circuit_hash;
 pub mod components;
 pub mod multiverifier_consts;
 pub mod prelude;
@@ -148,8 +149,12 @@ pub fn verify_circuit(proof: CircuitProof) {
             log_blowup_factor,
         );
 
-    // Claim and base trace.
+    // Mix the circuit hash and the claim into the channel.
+    let circuit_hash = compute_circuit_hash(log_blowup_factor, preprocessed_commitment);
+    channel.mix_commitment(circuit_hash);
     claim.mix_into(ref channel);
+
+    // Commit the trace.
     commitment_scheme.commit(trace_commitment, trace_log_sizes, ref channel, log_blowup_factor);
 
     // Interaction proof of work.
