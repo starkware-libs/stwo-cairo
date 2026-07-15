@@ -32,6 +32,7 @@ use claims::{
     accumulate_circuit_relation_uses, column_log_sizes_per_tree, lookup_sum,
 };
 use per_component::{COMPONENT_LOG_SIZES, PerComponent};
+pub mod circuit_hash;
 pub mod components;
 pub mod multiverifier_consts;
 pub mod prelude;
