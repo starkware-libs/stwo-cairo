@@ -31,7 +31,7 @@ use claims::{
     CircuitClaim, CircuitClaimImpl, CircuitInteractionClaim, CircuitInteractionClaimImpl,
     accumulate_circuit_relation_uses, column_log_sizes_per_tree, lookup_sum,
 };
-use per_component::PerComponent;
+use per_component::{COMPONENT_LOG_SIZES, PerComponent};
 pub mod components;
 pub mod multiverifier_consts;
 pub mod prelude;
