@@ -65,6 +65,7 @@ CRATES_TO_PUBLISH=(
   stwo-cairo-adapter
   stwo-cairo-prover
   stwo-cairo-utils
+  stwo-cairo-dev-utils
 )
 
 echo "Publish order:"
