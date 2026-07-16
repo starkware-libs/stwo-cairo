@@ -1,4 +1,5 @@
 use anyhow::Result;
+use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use tracing::{info, span, Level};
 
@@ -15,6 +16,7 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
     let relocatable_trace = runner.get_relocatable_trace()?;
     info!("Num steps: {:?}", relocatable_trace.len());
     let mut relocatable_memory = runner.get_relocatable_memory();
+    let program_segment = extract_int_segment(&relocatable_memory[0]);
     let public_memory_offsets = &runner.vm.segments.public_memory_offsets;
     let builtin_segments = runner.get_builtin_segments();
 
@@ -45,6 +47,7 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
     let public_segment_context = PublicSegmentContext::bootloader_context();
 
     Ok(ProverInput {
+        program_segment,
         state_transitions,
         memory,
         pc_count: inst_cache.len(),
@@ -56,6 +59,16 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
         #[cfg(feature = "extract-mem-trace")]
         relocated_trace: relocated_trace.clone(),
     })
+}
+
+fn extract_int_segment(segment: &[Option<MaybeRelocatable>]) -> Vec<[u32; 8]> {
+    segment
+        .iter()
+        .map(|cell| match cell.as_ref().unwrap() {
+            MaybeRelocatable::Int(val) => bytemuck::cast(val.to_bytes_le()),
+            _ => panic!("Expected Int value in segment"),
+        })
+        .collect()
 }
 
 #[cfg(test)]
