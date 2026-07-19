@@ -172,7 +172,7 @@ jobs:
         uses: taiki-e/install-action@nextest
       - name: Fetch cache
         uses: Swatinem/rust-cache@v2
-      - run: cargo nextest run --cargo-profile witness-opt-1 --features=slow-tests -j ${{ env.NEXTTEST_THREADS }} -P ci
+      - run: cargo nextest run --cargo-profile witness-opt-1 --features=slow-tests,integration -j ${{ env.NEXTTEST_THREADS }} -P ci
       - run: cargo nextest run --cargo-profile witness-opt-1 --features=extract-mem-trace test_serialize_deserialize_mem_trace -j ${{ env.NEXTTEST_THREADS }} -P ci
 
   cairo-prover-wasm:

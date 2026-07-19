@@ -8,6 +8,7 @@ description = "STARK prover for Cairo programs using the Stwo proving system"
 
 [features]
 slow-tests = []
+integration = []
 relation-tracker = []
 
 # Define Nightly features in order to allow selective tests
