@@ -17,8 +17,6 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Serde};
 use stwo_verifier_core::pcs::PcsConfigTrait;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::SpanExTrait;
-#[cfg(not(feature: "poseidon252_verifier"))]
-use stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash;
 use stwo_verifier_core::verifier::{StarkProof, VerificationError, verify};
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_utils::blake2s::hash_u32s;
@@ -67,11 +65,10 @@ pub struct VerificationOutput {
 /// `preprocessed_root` is the proof's preprocessed-trace (tree 0) commitment.
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub fn get_verification_output(
-    commitments: @Box<[Hash; 4]>, output_values: Span<QM31>,
+    circuit_hash: Hash, output_values: Span<QM31>,
 ) -> VerificationOutput {
-    let [preprocessed_commitment, _, _, _] = commitments.unbox();
-    let [r0, r1, r2, r3, r4, r5, r6, r7] = preprocessed_commitment.hash.unbox();
-    let mut words = array![r0, r1, r2, r3, r4, r5, r6, r7];
+    let [h0, h1, h2, h3, h4, h5, h6, h7] = circuit_hash.hash.unbox();
+    let mut words = array![h0, h1, h2, h3, h4, h5, h6, h7];
     for value in output_values {
         let [c0, c1, c2, c3] = (*value).to_fixed_array();
         words.append(c0.into());
@@ -79,17 +76,17 @@ pub fn get_verification_output(
         words.append(c2.into());
         words.append(c3.into());
     }
-    VerificationOutput { output_hash: Blake2sHash { hash: hash_u32s(words.span()) } }
+    VerificationOutput { output_hash: Hash { hash: hash_u32s(words.span()) } }
 }
 
 #[cfg(feature: "poseidon252_verifier")]
 pub fn get_verification_output(
-    _commitments: @Box<[Hash; 4]>, _output_values: Span<QM31>,
+    circuit_hash: Hash, output_values: Span<QM31>,
 ) -> VerificationOutput {
     panic!("the privacy recursive circuit verifier only supports the blake2s hasher")
 }
 
-pub fn verify_circuit(proof: CircuitProof) {
+pub fn verify_circuit(proof: CircuitProof, circuit_hash: Hash) {
     let CircuitProof {
         claim, interaction_pow, interaction_claim, stark_proof, channel_salt,
     } = proof;
@@ -105,7 +102,11 @@ pub fn verify_circuit(proof: CircuitProof) {
     let pcs_config = stark_proof.commitment_scheme_proof.config;
     assert!(pcs_config == circuit_pcs_config(), "unexpected proof pcs config");
 
+    // Component log sizes are hardcoded from the circuit topology; they are not carried in the
+    // claim. `claims::tests::hardcoded_component_log_sizes_match_derived` pins them against the
+    // values derived from the preprocessed column log sizes.
     let component_log_sizes = COMPONENT_LOG_SIZES;
+
     verify_claim(component_log_sizes);
 
     let mut channel: Channel = Default::default();
@@ -150,7 +151,6 @@ pub fn verify_circuit(proof: CircuitProof) {
         );
 
     // Mix the circuit hash and the claim into the channel.
-    let circuit_hash = compute_circuit_hash(log_blowup_factor, preprocessed_commitment);
     channel.mix_commitment(circuit_hash);
     claim.mix_into(ref channel);
 
