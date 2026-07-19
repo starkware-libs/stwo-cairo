@@ -476,7 +476,10 @@ pub fn create_and_serialize_proof(
 pub mod tests {
     use std::sync::Arc;
 
+    use cairo_air::verifier::verify_cairo;
     use cairo_vm::types::layout_name::LayoutName;
+    use stwo::core::pcs::PcsConfig;
+    use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
     use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
         PreProcessedTrace, testing_preprocessed_tree,
     };
@@ -484,6 +487,7 @@ pub mod tests {
     use stwo_cairo_dev_utils::vm_utils::{ProgramType, run_and_adapt};
 
     use crate::debug_tools::assert_constraints::assert_cairo_constraints;
+    use crate::prover::{ChannelHash, PreProcessedTraceVariant, ProverParameters, prove_cairo};
 
     #[test]
     fn test_all_cairo_constraints() {
@@ -505,6 +509,57 @@ pub mod tests {
                 .unwrap();
         let pp_tree = Arc::new(PreProcessedTrace::canonical_small());
         assert_cairo_constraints(input, pp_tree);
+    }
+
+    // TODO(Ohad): fine-grained constraints tests.
+    #[test]
+    fn test_cairo_constraints() {
+        let compiled_program =
+            get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
+        let input =
+            run_and_adapt(&compiled_program, ProgramType::Json, LayoutName::all_cairo_stwo, None)
+                .unwrap();
+        assert_cairo_constraints(input, Arc::new(PreProcessedTrace::canonical_without_pedersen()));
+    }
+
+    #[test]
+    fn test_add_mod_builtin_constraints() {
+        let compiled_program = get_compiled_cairo_program_path("test_prove_verify_add_mod_builtin");
+        let input =
+            run_and_adapt(&compiled_program, ProgramType::Json, LayoutName::all_cairo_stwo, None)
+                .unwrap();
+        assert_cairo_constraints(input, Arc::new(PreProcessedTrace::canonical_without_pedersen()));
+    }
+
+    #[test]
+    fn test_pedersen_narrow_windows_builtin_constraints() {
+        let compiled_program =
+            get_compiled_cairo_program_path("test_prove_verify_pedersen_builtin");
+        let input =
+            run_and_adapt(&compiled_program, ProgramType::Json, LayoutName::all_cairo_stwo, None)
+                .unwrap();
+        assert_cairo_constraints(input, Arc::new(PreProcessedTrace::canonical_small()));
+    }
+
+    #[test]
+    fn test_prove_verify_pedersen_canonical_small() {
+        let compiled_program =
+            get_compiled_cairo_program_path("test_prove_verify_pedersen_builtin");
+        let input =
+            run_and_adapt(&compiled_program, ProgramType::Json, LayoutName::stwo_no_ecop, None)
+                .unwrap();
+        let prover_params = ProverParameters {
+            channel_hash: ChannelHash::Blake2s,
+            pcs_config: PcsConfig::default(),
+            preprocessed_trace: PreProcessedTraceVariant::CanonicalSmall,
+            channel_salt: 0,
+            store_polynomials_coefficients: false,
+            include_all_preprocessed_columns: false,
+            opt_n_id_to_big_components: None,
+            raise_min_lifting_to_max_column: false,
+        };
+        let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+        verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
     }
 
     #[cfg(test)]
@@ -618,24 +673,6 @@ pub mod tests {
         use crate::prover::{
             ChannelHash, PreProcessedTraceVariant, ProverInput, ProverParameters, prove_cairo,
         };
-
-        // TODO(Ohad): fine-grained constraints tests.
-        #[test]
-        fn test_cairo_constraints() {
-            let compiled_program =
-                get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
-            let input = run_and_adapt(
-                &compiled_program,
-                ProgramType::Json,
-                LayoutName::all_cairo_stwo,
-                None,
-            )
-            .unwrap();
-            assert_cairo_constraints(
-                input,
-                Arc::new(PreProcessedTrace::canonical_without_pedersen()),
-            );
-        }
 
         #[test_log::test]
         fn test_prove_verify_all_opcode_components() {
@@ -881,32 +918,6 @@ pub mod tests {
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
             }
 
-            #[test]
-            fn test_prove_verify_pedersen_canonical_small() {
-                let compiled_program =
-                    get_compiled_cairo_program_path("test_prove_verify_pedersen_builtin");
-                let input = run_and_adapt(
-                    &compiled_program,
-                    ProgramType::Json,
-                    LayoutName::stwo_no_ecop,
-                    None,
-                )
-                .unwrap();
-                let prover_params = ProverParameters {
-                    channel_hash: ChannelHash::Blake2s,
-                    pcs_config: PcsConfig::default(),
-                    preprocessed_trace: PreProcessedTraceVariant::CanonicalSmall,
-                    channel_salt: 0,
-                    store_polynomials_coefficients: false,
-                    include_all_preprocessed_columns: false,
-                    opt_n_id_to_big_components: None,
-                    raise_min_lifting_to_max_column: false,
-                };
-                let cairo_proof =
-                    prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
-            }
-
             /// Exercises `raise_min_lifting_to_max_column`: the mixed config must record the
             /// maximal committed column log size, and all trees are lifted to that (uniform)
             /// height.
@@ -1003,23 +1014,6 @@ pub mod tests {
             }
 
             #[test]
-            fn test_add_mod_builtin_constraints() {
-                let compiled_program =
-                    get_compiled_cairo_program_path("test_prove_verify_add_mod_builtin");
-                let input = run_and_adapt(
-                    &compiled_program,
-                    ProgramType::Json,
-                    LayoutName::all_cairo_stwo,
-                    None,
-                )
-                .unwrap();
-                assert_cairo_constraints(
-                    input,
-                    Arc::new(PreProcessedTrace::canonical_without_pedersen()),
-                );
-            }
-
-            #[test]
             fn test_bitwise_builtin_constraints() {
                 let compiled_program =
                     get_compiled_cairo_program_path("test_prove_verify_bitwise_builtin");
@@ -1059,20 +1053,6 @@ pub mod tests {
                 )
                 .unwrap();
                 assert_cairo_constraints(input, Arc::new(PreProcessedTrace::canonical()));
-            }
-
-            #[test]
-            fn test_pedersen_narrow_windows_builtin_constraints() {
-                let compiled_program =
-                    get_compiled_cairo_program_path("test_prove_verify_pedersen_builtin");
-                let input = run_and_adapt(
-                    &compiled_program,
-                    ProgramType::Json,
-                    LayoutName::all_cairo_stwo,
-                    None,
-                )
-                .unwrap();
-                assert_cairo_constraints(input, Arc::new(PreProcessedTrace::canonical_small()));
             }
 
             #[test]
