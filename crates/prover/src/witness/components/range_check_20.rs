@@ -16,24 +16,13 @@ pub struct ClaimGenerator {
 impl ClaimGenerator {
     pub fn new(preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
         let mults = from_fn(|_| AtomicMultiplicityColumn::new(1 << LOG_SIZE));
-        Self {
-            mults,
-            preprocessed_trace,
-        }
+        Self { mults, preprocessed_trace }
     }
 
     pub fn write_trace(
         self,
-    ) -> (
-        ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
-        InteractionClaimGenerator,
-    ) {
-        let mults = self
-            .mults
-            .into_iter()
-            .map(|v| v.into_simd_vec())
-            .collect::<Vec<_>>();
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator) {
+        let mults = self.mults.into_iter().map(|v| v.into_simd_vec()).collect::<Vec<_>>();
 
         let (trace, lookup_data) = write_trace_simd(&self.preprocessed_trace, mults);
 
@@ -81,14 +70,10 @@ fn write_trace_simd(
     let M31_514232941 = PackedM31::broadcast(M31::from(514232941));
     let M31_531010560 = PackedM31::broadcast(M31::from(531010560));
     let M31_682009131 = PackedM31::broadcast(M31::from(682009131));
-    let seq_20 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "seq_20".to_owned(),
-    });
+    let seq_20 = preprocessed_trace.get_column(&PreProcessedColumnId { id: "seq_20".to_owned() });
 
-    (trace.par_iter_mut(), lookup_data.par_iter_mut())
-        .into_par_iter()
-        .enumerate()
-        .for_each(|(row_index, (row, lookup_data))| {
+    (trace.par_iter_mut(), lookup_data.par_iter_mut()).into_par_iter().enumerate().for_each(
+        |(row_index, (row, lookup_data))| {
             let seq_20 = seq_20.packed_at(row_index);
             let multiplicity_0_col0 = *mults[0].get(row_index).unwrap_or(&PackedM31::zero());
             *row[0] = multiplicity_0_col0;
@@ -122,7 +107,8 @@ fn write_trace_simd(
             *lookup_data.mults_5 = multiplicity_5_col5;
             *lookup_data.mults_6 = multiplicity_6_col6;
             *lookup_data.mults_7 = multiplicity_7_col7;
-        });
+        },
+    );
 
     (trace, lookup_data)
 }
@@ -154,10 +140,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(LOG_SIZE) };
 
         // Sum logup terms in pairs.

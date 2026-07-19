@@ -2,13 +2,13 @@ use starknet_ff::FieldElement;
 use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::fri::{FriConfig, FriLayerProof, FriProof};
-use stwo::core::pcs::quotients::CommitmentSchemeProof;
 use stwo::core::pcs::PcsConfig;
+use stwo::core::pcs::quotients::CommitmentSchemeProof;
 use stwo::core::poly::line::LinePoly;
 use stwo::core::proof::StarkProof;
 use stwo::core::vcs::blake2_hash::Blake2sHash;
-use stwo::core::vcs_lifted::verifier::MerkleDecommitmentLifted;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
+use stwo::core::vcs_lifted::verifier::MerkleDecommitmentLifted;
 // Make derive macro available.
 pub use stwo_cairo_serialize_derive::CairoSerialize;
 
@@ -69,11 +69,7 @@ where
     H::Hash: CairoSerialize,
 {
     fn serialize(&self, output: &mut Vec<FieldElement>) {
-        let Self {
-            fri_witness,
-            decommitment,
-            commitment,
-        } = self;
+        let Self { fri_witness, decommitment, commitment } = self;
         fri_witness.serialize(output);
         decommitment.serialize(output);
         commitment.serialize(output);
@@ -85,11 +81,7 @@ where
     H::Hash: CairoSerialize,
 {
     fn serialize(&self, output: &mut Vec<FieldElement>) {
-        let Self {
-            first_layer,
-            inner_layers,
-            last_layer_poly,
-        } = self;
+        let Self { first_layer, inner_layers, last_layer_poly } = self;
         first_layer.serialize(output);
         inner_layers.serialize(output);
         last_layer_poly.serialize(output);
@@ -104,12 +96,7 @@ impl CairoSerialize for FieldElement {
 
 impl CairoSerialize for FriConfig {
     fn serialize(&self, output: &mut Vec<FieldElement>) {
-        let Self {
-            log_blowup_factor,
-            log_last_layer_degree_bound,
-            n_queries,
-            fold_step,
-        } = self;
+        let Self { log_blowup_factor, log_last_layer_degree_bound, n_queries, fold_step } = self;
         log_blowup_factor.serialize(output);
         log_last_layer_degree_bound.serialize(output);
         n_queries.serialize(output);
@@ -119,11 +106,7 @@ impl CairoSerialize for FriConfig {
 
 impl CairoSerialize for PcsConfig {
     fn serialize(&self, output: &mut Vec<FieldElement>) {
-        let Self {
-            pow_bits,
-            fri_config,
-            min_lifting_log_size,
-        } = self;
+        let Self { pow_bits, fri_config, min_lifting_log_size } = self;
         // `min_lifting_log_size` is not carried in the wire format: the Cairo verifier only
         // accepts proofs created with `0` and mixes `0` into the channel.
         assert_eq!(

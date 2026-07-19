@@ -27,11 +27,7 @@ impl ReadU32 {
         eval: &mut E,
     ) -> [E::F; 0] {
         VerifyU32::evaluate(
-            [
-                read_u_32_input.clone(),
-                low_16_bits_col0.clone(),
-                high_16_bits_col1.clone(),
-            ],
+            [read_u_32_input.clone(), low_16_bits_col0.clone(), high_16_bits_col1.clone()],
             enabler.clone(),
             low_7_ms_bits_col2.clone(),
             high_14_ms_bits_col3.clone(),

@@ -129,18 +129,14 @@ impl Not for Bool {
 impl BitAnd for Bool {
     type Output = Bool;
     fn bitand(self, other: Self) -> Self::Output {
-        Bool {
-            value: self.value & other.value,
-        }
+        Bool { value: self.value & other.value }
     }
 }
 
 impl BitOr for Bool {
     type Output = Bool;
     fn bitor(self, other: Self) -> Self::Output {
-        Bool {
-            value: self.value | other.value,
-        }
+        Bool { value: self.value | other.value }
     }
 }
 
@@ -151,19 +147,12 @@ pub struct UInt16 {
 
 impl UInt16 {
     pub fn from_bool(val: Bool) -> Self {
-        Self {
-            value: val.value as u16,
-        }
+        Self { value: val.value as u16 }
     }
 
     pub fn from_m31(felt: M31) -> Self {
-        assert!(
-            felt < M31::from_u32_unchecked(2_u32.pow(16)),
-            "M31 value is not a u16"
-        );
-        Self {
-            value: felt.0 as u16,
-        }
+        assert!(felt < M31::from_u32_unchecked(2_u32.pow(16)), "M31 value is not a u16");
+        Self { value: felt.0 as u16 }
     }
 }
 
@@ -179,18 +168,14 @@ impl ProverType for UInt16 {
 impl Add for UInt16 {
     type Output = UInt16;
     fn add(self, other: UInt16) -> UInt16 {
-        UInt16 {
-            value: self.value.wrapping_add(other.value),
-        }
+        UInt16 { value: self.value.wrapping_add(other.value) }
     }
 }
 
 impl Sub for UInt16 {
     type Output = UInt16;
     fn sub(self, rhs: UInt16) -> UInt16 {
-        UInt16 {
-            value: self.value.wrapping_sub(rhs.value),
-        }
+        UInt16 { value: self.value.wrapping_sub(rhs.value) }
     }
 }
 
@@ -209,49 +194,37 @@ impl From<u16> for UInt16 {
 impl Rem for UInt16 {
     type Output = UInt16;
     fn rem(self, other: UInt16) -> UInt16 {
-        UInt16 {
-            value: self.value % other.value,
-        }
+        UInt16 { value: self.value % other.value }
     }
 }
 impl Shl for UInt16 {
     type Output = UInt16;
     fn shl(self, other: UInt16) -> UInt16 {
-        UInt16 {
-            value: self.value << other.value,
-        }
+        UInt16 { value: self.value << other.value }
     }
 }
 impl Shr for UInt16 {
     type Output = UInt16;
     fn shr(self, other: UInt16) -> UInt16 {
-        UInt16 {
-            value: self.value >> other.value,
-        }
+        UInt16 { value: self.value >> other.value }
     }
 }
 impl BitAnd for UInt16 {
     type Output = UInt16;
     fn bitand(self, other: UInt16) -> UInt16 {
-        UInt16 {
-            value: self.value & other.value,
-        }
+        UInt16 { value: self.value & other.value }
     }
 }
 impl BitOr for UInt16 {
     type Output = UInt16;
     fn bitor(self, other: UInt16) -> UInt16 {
-        UInt16 {
-            value: self.value | other.value,
-        }
+        UInt16 { value: self.value | other.value }
     }
 }
 impl BitXor for UInt16 {
     type Output = UInt16;
     fn bitxor(self, other: UInt16) -> UInt16 {
-        UInt16 {
-            value: self.value ^ other.value,
-        }
+        UInt16 { value: self.value ^ other.value }
     }
 }
 
@@ -262,15 +235,11 @@ pub struct UInt32 {
 
 impl UInt32 {
     pub fn low(&self) -> UInt16 {
-        UInt16 {
-            value: (self.value & 0xFFFF) as u16,
-        }
+        UInt16 { value: (self.value & 0xFFFF) as u16 }
     }
 
     pub fn high(&self) -> UInt16 {
-        UInt16 {
-            value: (self.value >> 16) as u16,
-        }
+        UInt16 { value: (self.value >> 16) as u16 }
     }
 
     pub fn from_m31(felt: M31) -> Self {
@@ -278,9 +247,7 @@ impl UInt32 {
     }
 
     pub fn from_limbs(low: M31, high: M31) -> Self {
-        Self {
-            value: (low.0 & 0xFFFF) | ((high.0 & 0xFFFF) << 16),
-        }
+        Self { value: (low.0 & 0xFFFF) | ((high.0 & 0xFFFF) << 16) }
     }
 }
 
@@ -302,57 +269,43 @@ impl ProverType for UInt32 {
 impl Add for UInt32 {
     type Output = UInt32;
     fn add(self, other: UInt32) -> UInt32 {
-        UInt32 {
-            value: self.value.wrapping_add(other.value),
-        }
+        UInt32 { value: self.value.wrapping_add(other.value) }
     }
 }
 impl Rem for UInt32 {
     type Output = UInt32;
     fn rem(self, other: UInt32) -> UInt32 {
-        UInt32 {
-            value: self.value % other.value,
-        }
+        UInt32 { value: self.value % other.value }
     }
 }
 impl Shl for UInt32 {
     type Output = UInt32;
     fn shl(self, other: UInt32) -> UInt32 {
-        UInt32 {
-            value: self.value << other.value,
-        }
+        UInt32 { value: self.value << other.value }
     }
 }
 impl Shr for UInt32 {
     type Output = UInt32;
     fn shr(self, other: UInt32) -> UInt32 {
-        UInt32 {
-            value: self.value >> other.value,
-        }
+        UInt32 { value: self.value >> other.value }
     }
 }
 impl BitAnd for UInt32 {
     type Output = UInt32;
     fn bitand(self, other: UInt32) -> UInt32 {
-        UInt32 {
-            value: self.value & other.value,
-        }
+        UInt32 { value: self.value & other.value }
     }
 }
 impl BitOr for UInt32 {
     type Output = UInt32;
     fn bitor(self, other: UInt32) -> UInt32 {
-        UInt32 {
-            value: self.value | other.value,
-        }
+        UInt32 { value: self.value | other.value }
     }
 }
 impl BitXor for UInt32 {
     type Output = UInt32;
     fn bitxor(self, other: UInt32) -> UInt32 {
-        UInt32 {
-            value: self.value ^ other.value,
-        }
+        UInt32 { value: self.value ^ other.value }
     }
 }
 
@@ -363,15 +316,11 @@ pub struct UInt64 {
 
 impl UInt64 {
     pub fn low(&self) -> UInt32 {
-        UInt32 {
-            value: (self.value & 0xFFFFFFFF) as u32,
-        }
+        UInt32 { value: (self.value & 0xFFFFFFFF) as u32 }
     }
 
     pub fn high(&self) -> UInt32 {
-        UInt32 {
-            value: (self.value >> 32) as u32,
-        }
+        UInt32 { value: (self.value >> 32) as u32 }
     }
 }
 
@@ -393,57 +342,43 @@ impl ProverType for UInt64 {
 impl Add for UInt64 {
     type Output = UInt64;
     fn add(self, other: UInt64) -> UInt64 {
-        UInt64 {
-            value: self.value.wrapping_add(other.value),
-        }
+        UInt64 { value: self.value.wrapping_add(other.value) }
     }
 }
 impl Rem for UInt64 {
     type Output = UInt64;
     fn rem(self, other: UInt64) -> UInt64 {
-        UInt64 {
-            value: self.value % other.value,
-        }
+        UInt64 { value: self.value % other.value }
     }
 }
 impl Shl for UInt64 {
     type Output = UInt64;
     fn shl(self, other: UInt64) -> UInt64 {
-        UInt64 {
-            value: self.value << other.value,
-        }
+        UInt64 { value: self.value << other.value }
     }
 }
 impl Shr for UInt64 {
     type Output = UInt64;
     fn shr(self, other: UInt64) -> UInt64 {
-        UInt64 {
-            value: self.value >> other.value,
-        }
+        UInt64 { value: self.value >> other.value }
     }
 }
 impl BitAnd for UInt64 {
     type Output = UInt64;
     fn bitand(self, other: UInt64) -> UInt64 {
-        UInt64 {
-            value: self.value & other.value,
-        }
+        UInt64 { value: self.value & other.value }
     }
 }
 impl BitOr for UInt64 {
     type Output = UInt64;
     fn bitor(self, other: UInt64) -> UInt64 {
-        UInt64 {
-            value: self.value | other.value,
-        }
+        UInt64 { value: self.value | other.value }
     }
 }
 impl BitXor for UInt64 {
     type Output = UInt64;
     fn bitxor(self, other: UInt64) -> UInt64 {
-        UInt64 {
-            value: self.value ^ other.value,
-        }
+        UInt64 { value: self.value ^ other.value }
     }
 }
 
@@ -451,9 +386,8 @@ pub const FELT252_N_WORDS: usize = 28;
 pub const FELT252_BITS_PER_WORD: usize = 9;
 
 // NOTE! This assumes Felt252 has shape (28, 9).
-pub const P_FELTS: [u32; FELT252_N_WORDS] = [
-    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 136, 0, 0, 0, 0, 0, 256,
-];
+pub const P_FELTS: [u32; FELT252_N_WORDS] =
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 136, 0, 0, 0, 0, 0, 256];
 
 // A non-redundant representation of a 252-bit element in the field of numbers
 // modulo the prime 2**251 + 17 * 2**192 + 1.
@@ -501,9 +435,7 @@ impl Felt252 {
     }
 
     pub fn from_m31(felt: M31) -> Self {
-        Self {
-            limbs: [felt.0 as u64, 0, 0, 0],
-        }
+        Self { limbs: [felt.0 as u64, 0, 0, 0] }
     }
 }
 
@@ -520,17 +452,13 @@ impl From<Felt252> for FieldElement {
 }
 impl From<FieldElement> for Felt252 {
     fn from(n: FieldElement) -> Felt252 {
-        Felt252 {
-            limbs: n.into_mont(),
-        }
+        Felt252 { limbs: n.into_mont() }
     }
 }
 
 impl From<StarknetTypesFelt> for Felt252 {
     fn from(value: StarknetTypesFelt) -> Self {
-        Felt252 {
-            limbs: value.to_le_digits(),
-        }
+        Felt252 { limbs: value.to_le_digits() }
     }
 }
 impl From<Felt252> for StarknetTypesFelt {
@@ -595,23 +523,13 @@ impl Div for Felt252 {
 
 impl From<[u64; 4]> for Felt252 {
     fn from(limbs: [u64; 4]) -> Felt252 {
-        Felt252 {
-            limbs: [
-                limbs[0],
-                limbs[1],
-                limbs[2],
-                limbs[3] & 0x0fffffff_ffffffffu64,
-            ],
-        }
+        Felt252 { limbs: [limbs[0], limbs[1], limbs[2], limbs[3] & 0x0fffffff_ffffffffu64] }
     }
 }
 
 impl ProverType for Felt252 {
     fn calc(&self) -> String {
-        format!(
-            "[{}, {}, {}, {}]",
-            self.limbs[0], self.limbs[1], self.limbs[2], self.limbs[3]
-        )
+        format!("[{}, {}, {}, {}]", self.limbs[0], self.limbs[1], self.limbs[2], self.limbs[3])
     }
     fn r#type() -> String {
         "Felt252".to_string()
@@ -646,10 +564,7 @@ impl Felt252Width27 {
     }
 
     pub fn from_limbs(felts: &[M31]) -> Self {
-        assert!(
-            felts.len() <= FELT252WIDTH27_N_WORDS,
-            "Invalid number of felts"
-        );
+        assert!(felts.len() <= FELT252WIDTH27_N_WORDS, "Invalid number of felts");
         let mut limbs = [0u64; 4];
         for (index, felt) in felts.iter().enumerate() {
             let shift = FELT252WIDTH27_BITS_PER_WORD * index;
@@ -666,9 +581,7 @@ impl Felt252Width27 {
     }
 
     pub fn from_m31(felt: M31) -> Self {
-        Self {
-            limbs: [felt.0 as u64, 0, 0, 0],
-        }
+        Self { limbs: [felt.0 as u64, 0, 0, 0] }
     }
 }
 
@@ -693,18 +606,13 @@ impl From<Felt252Width27> for FieldElement {
 }
 impl From<FieldElement> for Felt252Width27 {
     fn from(n: FieldElement) -> Felt252Width27 {
-        Felt252Width27 {
-            limbs: n.into_mont(),
-        }
+        Felt252Width27 { limbs: n.into_mont() }
     }
 }
 
 impl ProverType for Felt252Width27 {
     fn calc(&self) -> String {
-        format!(
-            "[{}, {}, {}, {}]",
-            self.limbs[0], self.limbs[1], self.limbs[2], self.limbs[3]
-        )
+        format!("[{}, {}, {}, {}]", self.limbs[0], self.limbs[1], self.limbs[2], self.limbs[3])
     }
     fn r#type() -> String {
         "Felt252Width27".to_string()
@@ -737,12 +645,7 @@ impl<const B: usize, const L: usize, const F: usize> ProverType for BigUInt<B, L
     }
     fn r#type() -> String {
         match L {
-            6 | 12 => format!(
-                "BigUInt<{}, {}, {}>",
-                64 * L,
-                L,
-                (64 * L) / BIGUINT_BITS_PER_WORD
-            ),
+            6 | 12 => format!("BigUInt<{}, {}, {}>", 64 * L, L, (64 * L) / BIGUINT_BITS_PER_WORD),
             _ => panic!("Unsupported BigUInt size"),
         }
     }
@@ -778,10 +681,7 @@ impl<const B: usize, const L: usize, const F: usize> BigUInt<B, L, F> {
         let word_pieces = mod_words
             .iter()
             .flat_map(|f| {
-                f.limbs[..needed_limbs_per252]
-                    .iter()
-                    .copied()
-                    .zip(inner_limbs_lengths.clone())
+                f.limbs[..needed_limbs_per252].iter().copied().zip(inner_limbs_lengths.clone())
             })
             .collect::<Vec<_>>();
 

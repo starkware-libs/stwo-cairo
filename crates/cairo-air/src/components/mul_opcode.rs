@@ -8,54 +8,18 @@ use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 130;
 pub const RELATION_USES_PER_ROW: [RelationUse; 12] = [
-    RelationUse {
-        relation_id: "MemoryAddressToId",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "MemoryIdToBig",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "Opcodes",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_B",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_C",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_D",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_E",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_F",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_G",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_20_H",
-        uses: 3,
-    },
-    RelationUse {
-        relation_id: "VerifyInstruction",
-        uses: 1,
-    },
+    RelationUse { relation_id: "MemoryAddressToId", uses: 3 },
+    RelationUse { relation_id: "MemoryIdToBig", uses: 3 },
+    RelationUse { relation_id: "Opcodes", uses: 1 },
+    RelationUse { relation_id: "RangeCheck_20", uses: 4 },
+    RelationUse { relation_id: "RangeCheck_20_B", uses: 4 },
+    RelationUse { relation_id: "RangeCheck_20_C", uses: 4 },
+    RelationUse { relation_id: "RangeCheck_20_D", uses: 4 },
+    RelationUse { relation_id: "RangeCheck_20_E", uses: 3 },
+    RelationUse { relation_id: "RangeCheck_20_F", uses: 3 },
+    RelationUse { relation_id: "RangeCheck_20_G", uses: 3 },
+    RelationUse { relation_id: "RangeCheck_20_H", uses: 3 },
+    RelationUse { relation_id: "VerifyInstruction", uses: 1 },
 ];
 
 pub struct Eval {
@@ -232,21 +196,25 @@ impl FrameworkEval for Eval {
         eval.add_constraint(((enabler_col0.clone() * enabler_col0.clone()) - enabler_col0.clone()));
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_c630b_output_tmp_93be2_11_offset0, decode_instruction_c630b_output_tmp_93be2_11_offset1, decode_instruction_c630b_output_tmp_93be2_11_offset2, decode_instruction_c630b_output_tmp_93be2_11_op1_base_ap] =
-            DecodeInstructionC630B::evaluate(
-                [input_pc_col1.clone()],
-                enabler_col0.clone(),
-                offset0_col4.clone(),
-                offset1_col5.clone(),
-                offset2_col6.clone(),
-                dst_base_fp_col7.clone(),
-                op0_base_fp_col8.clone(),
-                op1_imm_col9.clone(),
-                op1_base_fp_col10.clone(),
-                ap_update_add_1_col11.clone(),
-                &self.common_lookup_elements,
-                &mut eval,
-            );
+        let [
+            decode_instruction_c630b_output_tmp_93be2_11_offset0,
+            decode_instruction_c630b_output_tmp_93be2_11_offset1,
+            decode_instruction_c630b_output_tmp_93be2_11_offset2,
+            decode_instruction_c630b_output_tmp_93be2_11_op1_base_ap,
+        ] = DecodeInstructionC630B::evaluate(
+            [input_pc_col1.clone()],
+            enabler_col0.clone(),
+            offset0_col4.clone(),
+            offset1_col5.clone(),
+            offset2_col6.clone(),
+            dst_base_fp_col7.clone(),
+            op0_base_fp_col8.clone(),
+            op1_imm_col9.clone(),
+            op1_base_fp_col10.clone(),
+            ap_update_add_1_col11.clone(),
+            &self.common_lookup_elements,
+            &mut eval,
+        );
         // if imm then offset2 is 1.
         eval.add_constraint(
             (op1_imm_col9.clone()

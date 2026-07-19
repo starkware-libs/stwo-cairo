@@ -8,22 +8,10 @@ use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 273;
 pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
-    RelationUse {
-        relation_id: "MemoryAddressToId",
-        uses: 7,
-    },
-    RelationUse {
-        relation_id: "MemoryIdToBig",
-        uses: 7,
-    },
-    RelationUse {
-        relation_id: "PartialEcMulGeneric",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_8",
-        uses: 2,
-    },
+    RelationUse { relation_id: "MemoryAddressToId", uses: 7 },
+    RelationUse { relation_id: "MemoryIdToBig", uses: 7 },
+    RelationUse { relation_id: "PartialEcMulGeneric", uses: 1 },
+    RelationUse { relation_id: "RangeCheck_8", uses: 2 },
 ];
 
 pub struct Eval {

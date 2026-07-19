@@ -42,9 +42,7 @@ impl FrameworkEval for Eval {
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1185356339 = E::F::from(M31::from(1185356339));
-        let seq_6 = eval.get_preprocessed_column(PreProcessedColumnId {
-            id: "seq_6".to_owned(),
-        });
+        let seq_6 = eval.get_preprocessed_column(PreProcessedColumnId { id: "seq_6".to_owned() });
         let multiplicity_0_col0 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(

@@ -42,15 +42,12 @@ impl FrameworkEval for Eval {
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_62225763 = E::F::from(M31::from(62225763));
-        let bitwise_xor_7_0 = eval.get_preprocessed_column(PreProcessedColumnId {
-            id: "bitwise_xor_7_0".to_owned(),
-        });
-        let bitwise_xor_7_1 = eval.get_preprocessed_column(PreProcessedColumnId {
-            id: "bitwise_xor_7_1".to_owned(),
-        });
-        let bitwise_xor_7_2 = eval.get_preprocessed_column(PreProcessedColumnId {
-            id: "bitwise_xor_7_2".to_owned(),
-        });
+        let bitwise_xor_7_0 =
+            eval.get_preprocessed_column(PreProcessedColumnId { id: "bitwise_xor_7_0".to_owned() });
+        let bitwise_xor_7_1 =
+            eval.get_preprocessed_column(PreProcessedColumnId { id: "bitwise_xor_7_1".to_owned() });
+        let bitwise_xor_7_2 =
+            eval.get_preprocessed_column(PreProcessedColumnId { id: "bitwise_xor_7_2".to_owned() });
         let multiplicity_0_col0 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(

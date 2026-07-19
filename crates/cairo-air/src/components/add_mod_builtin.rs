@@ -6,14 +6,8 @@ use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 267;
 pub const RELATION_USES_PER_ROW: [RelationUse; 2] = [
-    RelationUse {
-        relation_id: "MemoryAddressToId",
-        uses: 29,
-    },
-    RelationUse {
-        relation_id: "MemoryIdToBig",
-        uses: 24,
-    },
+    RelationUse { relation_id: "MemoryAddressToId", uses: 29 },
+    RelationUse { relation_id: "MemoryIdToBig", uses: 24 },
 ];
 
 pub struct Eval {
@@ -331,10 +325,7 @@ impl FrameworkEval for Eval {
         let carry_13_col266 = eval.next_trace_mask();
 
         ModUtils::evaluate(
-            [
-                E::F::from(M31::from(self.add_mod_builtin_segment_start)),
-                seq.clone(),
-            ],
+            [E::F::from(M31::from(self.add_mod_builtin_segment_start)), seq.clone()],
             M31_1.clone(),
             is_instance_0_col0.clone(),
             p0_id_col1.clone(),

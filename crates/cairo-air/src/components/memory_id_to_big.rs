@@ -2,18 +2,18 @@ use itertools::Itertools;
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::Channel;
 use stwo::core::fields::m31::M31;
-use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
+use stwo::core::fields::qm31::{SECURE_EXTENSION_DEGREE, SecureField};
 use stwo::core::pcs::TreeVec;
 use stwo_cairo_common::memory::LARGE_MEMORY_VALUE_ID_BASE;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{PreProcessedColumn, Seq};
 use stwo_cairo_common::prover_types::cpu::FELT252_N_WORDS;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::{
-    relation, EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry, TraceLocationAllocator,
+    EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry, TraceLocationAllocator, relation,
 };
 
 use super::prelude::RelationUse;
-use crate::air::{accumulate_relation_uses, RelationUsesDict};
+use crate::air::{RelationUsesDict, accumulate_relation_uses};
 use crate::components::subroutines::range_check_mem_value_n_28::RangeCheckMemValueN28;
 use crate::relations;
 
@@ -27,38 +27,14 @@ pub type BigComponent = FrameworkComponent<BigEval>;
 const N_LOGUP_POWERS: usize = MEMORY_ID_SIZE + FELT252_N_WORDS;
 
 pub const RELATION_USES_PER_ROW: [RelationUse; 8] = [
-    RelationUse {
-        relation_id: "RangeCheck_9_9",
-        uses: 2,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_B",
-        uses: 2,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_C",
-        uses: 2,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_D",
-        uses: 2,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_E",
-        uses: 2,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_F",
-        uses: 2,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_G",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_9_9_H",
-        uses: 1,
-    },
+    RelationUse { relation_id: "RangeCheck_9_9", uses: 2 },
+    RelationUse { relation_id: "RangeCheck_9_9_B", uses: 2 },
+    RelationUse { relation_id: "RangeCheck_9_9_C", uses: 2 },
+    RelationUse { relation_id: "RangeCheck_9_9_D", uses: 2 },
+    RelationUse { relation_id: "RangeCheck_9_9_E", uses: 2 },
+    RelationUse { relation_id: "RangeCheck_9_9_F", uses: 2 },
+    RelationUse { relation_id: "RangeCheck_9_9_G", uses: 1 },
+    RelationUse { relation_id: "RangeCheck_9_9_H", uses: 1 },
 ];
 
 relation!(RelationElements, N_LOGUP_POWERS);
@@ -78,11 +54,7 @@ impl BigEval {
         offset: u32,
         common_lookup_elements: relations::CommonLookupElements,
     ) -> Self {
-        Self {
-            log_n_rows,
-            offset,
-            common_lookup_elements,
-        }
+        Self { log_n_rows, offset, common_lookup_elements }
     }
 }
 
@@ -271,9 +243,7 @@ impl Claim {
     }
 
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        self.big_log_sizes
-            .iter()
-            .for_each(|&log_size| channel.mix_u64(log_size as u64));
+        self.big_log_sizes.iter().for_each(|&log_size| channel.mix_u64(log_size as u64));
     }
 }
 

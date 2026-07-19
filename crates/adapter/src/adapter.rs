@@ -1,9 +1,9 @@
 use anyhow::Result;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
-use tracing::{info, span, Level};
+use tracing::{Level, info, span};
 
-use super::memory::{MemoryBuilder, MemoryConfig};
 use super::ProverInput;
+use super::memory::{MemoryBuilder, MemoryConfig};
 use crate::builtins::BuiltinSegments;
 use crate::relocator::Relocator;
 use crate::{PublicSegmentContext, StateTransitions};
@@ -33,10 +33,7 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
 
     let memory = MemoryBuilder::from_iter(MemoryConfig::default(), relocated_memory);
     let state_transitions = StateTransitions::from_slice_parallel(&relocated_trace, &memory);
-    info!(
-        "Opcode counts: {:?}",
-        state_transitions.casm_states_by_opcode.counts()
-    );
+    info!("Opcode counts: {:?}", state_transitions.casm_states_by_opcode.counts());
 
     // TODO(spapini): Add output builtin to public memory.
     let (memory, inst_cache) = memory.build();
@@ -61,13 +58,13 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
 #[cfg(test)]
 #[cfg(feature = "slow-tests")]
 mod tests {
-    use std::fs::{read_to_string, File};
+    use std::fs::{File, read_to_string};
     use std::io::Write;
 
     use cairo_vm::types::layout_name::LayoutName;
     use serde_json::{to_string_pretty, to_value};
     use stwo_cairo_dev_utils::utils::get_compiled_cairo_program_path;
-    use stwo_cairo_dev_utils::vm_utils::{run_and_adapt, ProgramType};
+    use stwo_cairo_dev_utils::vm_utils::{ProgramType, run_and_adapt};
 
     use crate::test_utils::get_prover_input_path;
 
@@ -75,13 +72,9 @@ mod tests {
         let is_fix_mode = std::env::var("FIX") == Ok("1".to_string());
 
         let compiled_program = get_compiled_cairo_program_path(test_name);
-        let mut prover_input = run_and_adapt(
-            &compiled_program,
-            ProgramType::Json,
-            LayoutName::all_cairo_stwo,
-            None,
-        )
-        .unwrap();
+        let mut prover_input =
+            run_and_adapt(&compiled_program, ProgramType::Json, LayoutName::all_cairo_stwo, None)
+                .unwrap();
         // Public memory addresses are not deterministic, sort them.
         prover_input.public_memory_addresses.sort();
 
@@ -97,9 +90,9 @@ mod tests {
             serde_json::from_str(&read_to_string(&expected_prover_input_path).unwrap()).unwrap();
 
         assert_eq!(
-            prover_input_value,
-            expected_prover_input,
-            "Prover input from compiled cairo program: {test_name} doesn't match the expected prover input. To update prover input file, run the test with FIX=1."
+            prover_input_value, expected_prover_input,
+            "Prover input from compiled cairo program: {test_name} doesn't match the expected \
+             prover input. To update prover input file, run the test with FIX=1."
         );
     }
 

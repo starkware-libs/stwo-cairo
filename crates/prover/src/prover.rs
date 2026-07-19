@@ -3,40 +3,40 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, LazyLock};
 
 use anyhow::Result;
-use cairo_air::cairo_components::CairoComponents;
-use cairo_air::claims::{lookup_sum, CairoClaim};
-use cairo_air::relations::CommonLookupElements;
-use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
-use cairo_air::verifier::{verify_cairo_ex, INTERACTION_POW_BITS};
 use cairo_air::CairoProof;
+use cairo_air::cairo_components::CairoComponents;
+use cairo_air::claims::{CairoClaim, lookup_sum};
+use cairo_air::relations::CommonLookupElements;
+use cairo_air::utils::{ProofFormat, serialize_proof_to_file};
+use cairo_air::verifier::{INTERACTION_POW_BITS, verify_cairo_ex};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::{Channel, MerkleChannel};
 use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::fri::FriConfig;
-use stwo::core::pcs::utils::InvalidMinLiftingLogSizeError;
 use stwo::core::pcs::PcsConfig;
+use stwo::core::pcs::utils::InvalidMinLiftingLogSizeError;
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::proof_of_work::GrindOps;
 use stwo::core::utils::MaybeOwned;
 use stwo::core::vcs_lifted::blake2_merkle::{Blake2sM31MerkleChannel, Blake2sMerkleChannel};
 use stwo::core::vcs_lifted::merkle_hasher::MerkleHasherLifted;
-use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
+use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::mempool::BaseColumnPool;
+use stwo::prover::poly::BitReversedOrder;
 use stwo::prover::poly::circle::PolyOps;
 use stwo::prover::poly::twiddles::TwiddleTree;
-use stwo::prover::poly::BitReversedOrder;
-use stwo::prover::{prove_ex, CommitmentSchemeProver, CommitmentTreeProver, ProvingError};
+use stwo::prover::{CommitmentSchemeProver, CommitmentTreeProver, ProvingError, prove_ex};
 use stwo_cairo_adapter::ProverInput;
-use stwo_cairo_common::preprocessed_columns::pedersen::{PEDERSEN_TABLE_18, PEDERSEN_TABLE_9};
+use stwo_cairo_common::preprocessed_columns::pedersen::{PEDERSEN_TABLE_9, PEDERSEN_TABLE_18};
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
     PreProcessedTrace, PreProcessedTraceVariant,
 };
 use stwo_cairo_common::preprocessed_columns::simd_prelude::CircleEvaluation;
 use stwo_cairo_serialize::CairoSerialize;
-use tracing::{event, span, Level};
+use tracing::{Level, event, span};
 
 use crate::utils::cairo_provers;
 use crate::witness::cairo::create_cairo_claim_generator;
@@ -126,18 +126,16 @@ where
 
     // The maximal log trace size (without blowup factor) is the maximum over preprocessed trace
     // column log sizes and the components log sizes.
-    let max_log_trace_size = claim.log_sizes().iter().flatten().fold(
-        preprocessed_trace_variant.max_log_trace_size(),
-        |max, &size| max.max(size),
-    );
+    let max_log_trace_size = claim
+        .log_sizes()
+        .iter()
+        .flatten()
+        .fold(preprocessed_trace_variant.max_log_trace_size(), |max, &size| max.max(size));
 
     let cairo_air_log_degree_bound = 1;
     // The maximal committed column log size over all trees (including the preprocessed tree).
     let mut max_domain_log_size = max_log_trace_size
-        + std::cmp::max(
-            cairo_air_log_degree_bound,
-            pcs_config.fri_config.log_blowup_factor,
-        );
+        + std::cmp::max(cairo_air_log_degree_bound, pcs_config.fri_config.log_blowup_factor);
 
     if raise_min_lifting_to_max_column {
         // Pin the lifting size: raise `min_lifting_log_size` to the maximal column log size, so
@@ -147,19 +145,15 @@ where
 
     let lifting_log_size = pcs_config.min_lifting_log_size;
     if lifting_log_size > 0 && lifting_log_size < max_domain_log_size {
-        return Err(ProvingError::InvalidLiftingLogSize(
-            InvalidMinLiftingLogSizeError {
-                min_lifting_log_size: lifting_log_size,
-                preprocessed_log_size: max_domain_log_size,
-            },
-        ));
+        return Err(ProvingError::InvalidLiftingLogSize(InvalidMinLiftingLogSizeError {
+            min_lifting_log_size: lifting_log_size,
+            preprocessed_log_size: max_domain_log_size,
+        }));
     }
     max_domain_log_size = max_domain_log_size.max(lifting_log_size);
     let span = span!(Level::INFO, "Precompute Twiddles").entered();
     let twiddles = SimdBackend::precompute_twiddles(
-        CanonicCoset::try_new(max_domain_log_size)?
-            .circle_domain()
-            .half_coset,
+        CanonicCoset::try_new(max_domain_log_size)?.circle_domain().half_coset,
     );
     span.exit();
 
@@ -186,10 +180,7 @@ where
         trace_evals,
         claim,
         interaction_generator,
-        ProverParameters {
-            pcs_config,
-            ..prover_params
-        },
+        ProverParameters { pcs_config, ..prover_params },
     )
 }
 
@@ -294,10 +285,7 @@ where
         interaction_generator.write_interaction_trace(&interaction_elements);
     span.exit();
 
-    tracing::info!(
-        "Witness trace cells: {:?}",
-        witness_trace_cells(&claim, &preprocessed_trace)
-    );
+    tracing::info!("Witness trace cells: {:?}", witness_trace_cells(&claim, &preprocessed_trace));
     // Validate lookup argument.
     debug_assert_eq!(
         lookup_sum(&claim, &interaction_elements, &interaction_claim),
@@ -490,10 +478,10 @@ pub mod tests {
 
     use cairo_vm::types::layout_name::LayoutName;
     use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
-        testing_preprocessed_tree, PreProcessedTrace,
+        PreProcessedTrace, testing_preprocessed_tree,
     };
     use stwo_cairo_dev_utils::utils::get_compiled_cairo_program_path;
-    use stwo_cairo_dev_utils::vm_utils::{run_and_adapt, ProgramType};
+    use stwo_cairo_dev_utils::vm_utils::{ProgramType, run_and_adapt};
 
     use crate::debug_tools::assert_constraints::assert_cairo_constraints;
 
@@ -501,13 +489,9 @@ pub mod tests {
     fn test_all_cairo_constraints() {
         let compiled_program =
             get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
-        let input = run_and_adapt(
-            &compiled_program,
-            ProgramType::Json,
-            LayoutName::all_cairo_stwo,
-            None,
-        )
-        .unwrap();
+        let input =
+            run_and_adapt(&compiled_program, ProgramType::Json, LayoutName::all_cairo_stwo, None)
+                .unwrap();
         let pp_tree = Arc::new(testing_preprocessed_tree(24));
         assert_cairo_constraints(input, pp_tree);
     }
@@ -516,13 +500,9 @@ pub mod tests {
     fn test_all_cairo_constraints_small_ppt() {
         let compiled_program =
             get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
-        let input = run_and_adapt(
-            &compiled_program,
-            ProgramType::Json,
-            LayoutName::all_cairo_stwo,
-            None,
-        )
-        .unwrap();
+        let input =
+            run_and_adapt(&compiled_program, ProgramType::Json, LayoutName::all_cairo_stwo, None)
+                .unwrap();
         let pp_tree = Arc::new(PreProcessedTrace::canonical_small());
         assert_cairo_constraints(input, pp_tree);
     }
@@ -538,13 +518,13 @@ pub mod tests {
         use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
         use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTraceVariant;
         use stwo_cairo_dev_utils::utils::get_proof_file_path;
-        use stwo_cairo_dev_utils::vm_utils::{run_and_adapt, ProgramType};
+        use stwo_cairo_dev_utils::vm_utils::{ProgramType, run_and_adapt};
         use stwo_cairo_serialize::CairoSerialize;
         use tempfile::NamedTempFile;
         use test_log::test;
 
         use super::*;
-        use crate::prover::{prove_cairo, ChannelHash, ProverParameters};
+        use crate::prover::{ChannelHash, ProverParameters, prove_cairo};
 
         #[test]
         fn test_poseidon_e2e_prove_cairo_verify_ret_opcode_components() {
@@ -575,10 +555,8 @@ pub mod tests {
             let mut proof_file = NamedTempFile::new().unwrap();
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
             CairoSerialize::serialize(&cairo_proof, &mut serialized);
-            let proof_hex: Vec<String> = serialized
-                .into_iter()
-                .map(|felt| format!("0x{felt:x}"))
-                .collect();
+            let proof_hex: Vec<String> =
+                serialized.into_iter().map(|felt| format!("0x{felt:x}")).collect();
             proof_file
                 .write_all(sonic_rs::to_string_pretty(&proof_hex).unwrap().as_bytes())
                 .unwrap();
@@ -602,10 +580,9 @@ pub mod tests {
             let status = Command::new("bash")
                 .arg("-c")
                 .arg(format!(
-                    "(cd ../../stwo_cairo_verifier; \
-                    scarb execute --package stwo_cairo_verifier \
-                    --arguments-file {} --output standard --target standalone \
-                    --features poseidon252_verifier
+                    "(cd ../../stwo_cairo_verifier; scarb execute --package stwo_cairo_verifier \
+                     --arguments-file {} --output standard --target standalone --features \
+                     poseidon252_verifier
                     )",
                     proof_file.path().to_str().unwrap()
                 ))
@@ -624,8 +601,8 @@ pub mod tests {
         use std::io::Write;
         use std::process::Command;
 
-        use cairo_air::verifier::verify_cairo;
         use cairo_air::CairoProofForRustVerifier;
+        use cairo_air::verifier::verify_cairo;
         use itertools::Itertools;
         use stwo::core::fri::FriConfig;
         use stwo::core::pcs::PcsConfig;
@@ -639,7 +616,7 @@ pub mod tests {
         use super::*;
         use crate::debug_tools::assert_constraints::assert_cairo_constraints;
         use crate::prover::{
-            prove_cairo, ChannelHash, PreProcessedTraceVariant, ProverInput, ProverParameters,
+            ChannelHash, PreProcessedTraceVariant, ProverInput, ProverParameters, prove_cairo,
         };
 
         // TODO(Ohad): fine-grained constraints tests.
@@ -672,10 +649,7 @@ pub mod tests {
             )
             .unwrap();
             for (opcode, n_instances) in &input.state_transitions.casm_states_by_opcode.counts() {
-                assert!(
-                    *n_instances > 0,
-                    "{opcode} isn't used in E2E full-Cairo opcode test"
-                );
+                assert!(*n_instances > 0, "{opcode} isn't used in E2E full-Cairo opcode test");
             }
             let prover_params = ProverParameters {
                 channel_hash: ChannelHash::Blake2s,
@@ -720,10 +694,8 @@ pub mod tests {
             let mut proof_file = NamedTempFile::new().unwrap();
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
             CairoSerialize::serialize(&cairo_proof, &mut serialized);
-            let proof_hex: Vec<String> = serialized
-                .into_iter()
-                .map(|felt| format!("0x{felt:x}"))
-                .collect();
+            let proof_hex: Vec<String> =
+                serialized.into_iter().map(|felt| format!("0x{felt:x}")).collect();
             proof_file
                 .write_all(sonic_rs::to_string_pretty(&proof_hex).unwrap().as_bytes())
                 .unwrap();
@@ -748,10 +720,9 @@ pub mod tests {
             let status = Command::new("bash")
                 .arg("-c")
                 .arg(format!(
-                    "(cd ../../stwo_cairo_verifier; \
-                    scarb execute --package stwo_cairo_verifier \
-                    --arguments-file {} --output standard --target standalone \
-                    --features qm31_opcode
+                    "(cd ../../stwo_cairo_verifier; scarb execute --package stwo_cairo_verifier \
+                     --arguments-file {} --output standard --target standalone --features \
+                     qm31_opcode
                     )",
                     proof_file.path().to_str().unwrap()
                 ))
@@ -791,10 +762,8 @@ pub mod tests {
             let mut proof_file = NamedTempFile::new().unwrap();
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
             CairoSerialize::serialize(&cairo_proof, &mut serialized);
-            let proof_hex: Vec<String> = serialized
-                .into_iter()
-                .map(|felt| format!("0x{felt:x}"))
-                .collect();
+            let proof_hex: Vec<String> =
+                serialized.into_iter().map(|felt| format!("0x{felt:x}")).collect();
             proof_file
                 .write_all(sonic_rs::to_string_pretty(&proof_hex).unwrap().as_bytes())
                 .unwrap();
@@ -802,10 +771,9 @@ pub mod tests {
             let status = Command::new("bash")
                 .arg("-c")
                 .arg(format!(
-                    "(cd ../../stwo_cairo_verifier; \
-                    scarb execute --package stwo_cairo_verifier \
-                    --arguments-file {} --output standard --target standalone \
-                    --features qm31_opcode
+                    "(cd ../../stwo_cairo_verifier; scarb execute --package stwo_cairo_verifier \
+                     --arguments-file {} --output standard --target standalone --features \
+                     qm31_opcode
                     )",
                     proof_file.path().to_str().unwrap()
                 ))
@@ -861,10 +829,10 @@ pub mod tests {
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
             use cairo_vm::types::layout_name::LayoutName;
-            use stwo::core::pcs::utils::prepare_preprocessed_query_positions;
             use stwo::core::pcs::PcsConfig;
+            use stwo::core::pcs::utils::prepare_preprocessed_query_positions;
             use stwo_cairo_common::preprocessed_columns::preprocessed_trace::testing_preprocessed_tree;
-            use stwo_cairo_dev_utils::vm_utils::{run_and_adapt, ProgramType};
+            use stwo_cairo_dev_utils::vm_utils::{ProgramType, run_and_adapt};
             use stwo_constraint_framework::ORIGINAL_TRACE_IDX;
             use test_log::test;
 
@@ -1015,26 +983,21 @@ pub mod tests {
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
                 // Check that this seed produces unsorted preprocessed query positions.
-                let unsorted_query_positions = cairo_proof
-                    .extended_stark_proof
-                    .aux
-                    .unsorted_query_locations
-                    .clone();
+                let unsorted_query_positions =
+                    cairo_proof.extended_stark_proof.aux.unsorted_query_locations.clone();
                 let log_sizes = cairo_proof.claim.log_sizes();
                 let max_trace_log_size = log_sizes[ORIGINAL_TRACE_IDX].iter().max().unwrap();
                 let max_pp_log_size = PreProcessedTraceVariant::CanonicalSmall.max_log_trace_size();
-                let log_blowup_factor = cairo_proof
-                    .extended_stark_proof
-                    .proof
-                    .config
-                    .fri_config
-                    .log_blowup_factor;
-                assert!(!prepare_preprocessed_query_positions(
-                    &unsorted_query_positions.into_iter().sorted().collect_vec(),
-                    *max_trace_log_size + log_blowup_factor,
-                    max_pp_log_size + log_blowup_factor,
-                )
-                .is_sorted());
+                let log_blowup_factor =
+                    cairo_proof.extended_stark_proof.proof.config.fri_config.log_blowup_factor;
+                assert!(
+                    !prepare_preprocessed_query_positions(
+                        &unsorted_query_positions.into_iter().sorted().collect_vec(),
+                        *max_trace_log_size + log_blowup_factor,
+                        max_pp_log_size + log_blowup_factor,
+                    )
+                    .is_sorted()
+                );
 
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
             }
@@ -1187,7 +1150,11 @@ pub mod tests {
                         .expect("Poseidon builtin is not present in the claim")
                         .log_size,
                 );
-                assert!(poseidon_builtin_size_a == 16, "Expected program to contain 15 poseidon instances, which then padded to the next power of two");
+                assert!(
+                    poseidon_builtin_size_a == 16,
+                    "Expected program to contain 15 poseidon instances, which then padded to the \
+                     next power of two"
+                );
 
                 let poseidon_aggregator_log_size_a = proof_a
                     .claim
@@ -1213,7 +1180,11 @@ pub mod tests {
                         .expect("Poseidon builtin is not present in the claim")
                         .log_size,
                 );
-                assert!(poseidon_builtin_size_b == 512, "Expected program to contain 15*30 poseidon instances, which then padded to the next power of two");
+                assert!(
+                    poseidon_builtin_size_b == 512,
+                    "Expected program to contain 15*30 poseidon instances, which then padded to \
+                     the next power of two"
+                );
 
                 let poseidon_aggregator_log_size_b = proof_b
                     .claim
@@ -1222,9 +1193,9 @@ pub mod tests {
                     .log_size;
 
                 assert_eq!(
-                    poseidon_aggregator_log_size_a,
-                    poseidon_aggregator_log_size_b,
-                    "Poseidon aggregator log size should be the same for both proof because it uses multiplicity"
+                    poseidon_aggregator_log_size_a, poseidon_aggregator_log_size_b,
+                    "Poseidon aggregator log size should be the same for both proof because it \
+                     uses multiplicity"
                 );
             }
 
@@ -1259,7 +1230,11 @@ pub mod tests {
                         .expect("Pedersen builtin is not present in the claim")
                         .log_size,
                 );
-                assert!(pedersen_builtin_size_a == 16, "Expected program to contain 15 pedersen instances, which then padded to the next power of two");
+                assert!(
+                    pedersen_builtin_size_a == 16,
+                    "Expected program to contain 15 pedersen instances, which then padded to the \
+                     next power of two"
+                );
 
                 let pedersen_aggregator_log_size_a = proof_a
                     .claim
@@ -1285,7 +1260,11 @@ pub mod tests {
                         .expect("Pedersen builtin is not present in the claim")
                         .log_size,
                 );
-                assert!(pedersen_builtin_size_b == 512, "Expected program to contain 15*30 pedersen instances, which then padded to the next power of two");
+                assert!(
+                    pedersen_builtin_size_b == 512,
+                    "Expected program to contain 15*30 pedersen instances, which then padded to \
+                     the next power of two"
+                );
 
                 let pedersen_aggregator_log_size_b = proof_b
                     .claim
@@ -1294,9 +1273,9 @@ pub mod tests {
                     .log_size;
 
                 assert_eq!(
-                    pedersen_aggregator_log_size_a,
-                    pedersen_aggregator_log_size_b,
-                    "Pedersen aggregator log size should be the same for both proof because it uses multiplicity"
+                    pedersen_aggregator_log_size_a, pedersen_aggregator_log_size_b,
+                    "Pedersen aggregator log size should be the same for both proof because it \
+                     uses multiplicity"
                 );
             }
         }

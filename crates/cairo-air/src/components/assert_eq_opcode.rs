@@ -7,18 +7,9 @@ use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 12;
 pub const RELATION_USES_PER_ROW: [RelationUse; 3] = [
-    RelationUse {
-        relation_id: "MemoryAddressToId",
-        uses: 2,
-    },
-    RelationUse {
-        relation_id: "Opcodes",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "VerifyInstruction",
-        uses: 1,
-    },
+    RelationUse { relation_id: "MemoryAddressToId", uses: 2 },
+    RelationUse { relation_id: "Opcodes", uses: 1 },
+    RelationUse { relation_id: "VerifyInstruction", uses: 1 },
 ];
 
 pub struct Eval {
@@ -77,18 +68,21 @@ impl FrameworkEval for Eval {
         eval.add_constraint(((enabler_col0.clone() * enabler_col0.clone()) - enabler_col0.clone()));
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_135e3_output_tmp_36a9d_7_offset0, decode_instruction_135e3_output_tmp_36a9d_7_offset2, decode_instruction_135e3_output_tmp_36a9d_7_op1_base_ap] =
-            DecodeInstruction135E3::evaluate(
-                [input_pc_col1.clone()],
-                enabler_col0.clone(),
-                offset0_col4.clone(),
-                offset2_col5.clone(),
-                dst_base_fp_col6.clone(),
-                op1_base_fp_col7.clone(),
-                ap_update_add_1_col8.clone(),
-                &self.common_lookup_elements,
-                &mut eval,
-            );
+        let [
+            decode_instruction_135e3_output_tmp_36a9d_7_offset0,
+            decode_instruction_135e3_output_tmp_36a9d_7_offset2,
+            decode_instruction_135e3_output_tmp_36a9d_7_op1_base_ap,
+        ] = DecodeInstruction135E3::evaluate(
+            [input_pc_col1.clone()],
+            enabler_col0.clone(),
+            offset0_col4.clone(),
+            offset2_col5.clone(),
+            dst_base_fp_col6.clone(),
+            op1_base_fp_col7.clone(),
+            ap_update_add_1_col8.clone(),
+            &self.common_lookup_elements,
+            &mut eval,
+        );
         // mem_dst_base.
         eval.add_constraint(
             (mem_dst_base_col9.clone()

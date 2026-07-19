@@ -13,7 +13,16 @@ impl VerifyTripleSum32 {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [verify_triple_sum_32_input_limb_0, verify_triple_sum_32_input_limb_1, verify_triple_sum_32_input_limb_2, verify_triple_sum_32_input_limb_3, verify_triple_sum_32_input_limb_4, verify_triple_sum_32_input_limb_5, verify_triple_sum_32_input_limb_6, verify_triple_sum_32_input_limb_7]: [E::F; 8],
+        [
+            verify_triple_sum_32_input_limb_0,
+            verify_triple_sum_32_input_limb_1,
+            verify_triple_sum_32_input_limb_2,
+            verify_triple_sum_32_input_limb_3,
+            verify_triple_sum_32_input_limb_4,
+            verify_triple_sum_32_input_limb_5,
+            verify_triple_sum_32_input_limb_6,
+            verify_triple_sum_32_input_limb_7,
+        ]: [E::F; 8],
         enabler: E::F,
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,

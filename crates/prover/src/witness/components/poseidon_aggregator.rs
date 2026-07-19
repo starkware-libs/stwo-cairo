@@ -5,7 +5,7 @@ use cairo_air::components::poseidon_aggregator::{Claim, InteractionClaim, N_TRAC
 
 use crate::witness::components::{
     cube_252, memory_id_to_big, poseidon_3_partial_rounds_chain, poseidon_full_round_chain,
-    range_check_252_width_27, range_check_3_3_3_3_3, range_check_4_4, range_check_4_4_4_4,
+    range_check_3_3_3_3_3, range_check_4_4, range_check_4_4_4_4, range_check_252_width_27,
 };
 use crate::witness::prelude::*;
 
@@ -32,11 +32,7 @@ impl ClaimGenerator {
         range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
         range_check_4_4_state: &range_check_4_4::ClaimGenerator,
         poseidon_3_partial_rounds_chain_state: &poseidon_3_partial_rounds_chain::ClaimGenerator,
-    ) -> (
-        ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
-        InteractionClaimGenerator,
-    ) {
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator) {
         let mut inputs_mults = self
             .mults
             .iter()
@@ -95,14 +91,7 @@ impl ClaimGenerator {
             add_inputs(poseidon_3_partial_rounds_chain_state, &inputs, size, 0);
         }
 
-        (
-            trace,
-            Claim { log_size },
-            InteractionClaimGenerator {
-                log_size,
-                lookup_data,
-            },
-        )
+        (trace, Claim { log_size }, InteractionClaimGenerator { log_size, lookup_data })
     }
 }
 
@@ -167,11 +156,7 @@ fn write_trace_simd(
     range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
     range_check_4_4_state: &range_check_4_4::ClaimGenerator,
     poseidon_3_partial_rounds_chain_state: &poseidon_3_partial_rounds_chain::ClaimGenerator,
-) -> (
-    ComponentTrace<N_TRACE_COLUMNS>,
-    LookupData,
-    SubComponentInputs,
-) {
+) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData, SubComponentInputs) {
     let log_n_packed_rows = inputs.len().ilog2();
     let log_size = log_n_packed_rows + LOG_N_LANES;
     let (mut trace, mut lookup_data, mut sub_component_inputs) = unsafe {
@@ -933,10 +918,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
 
         // Sum logup terms in pairs.

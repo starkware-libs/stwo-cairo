@@ -54,10 +54,7 @@ impl PreProcessedColumn for BlakeSigma {
 
     #[cfg(feature = "prover")]
     fn packed_at(&self, vec_row: usize) -> PackedM31 {
-        assert!(
-            vec_row == 0,
-            "Accessing BlakeSigma out of bounds row {vec_row}"
-        );
+        assert!(vec_row == 0, "Accessing BlakeSigma out of bounds row {vec_row}");
         PackedM31::from_array(pad(sigma_m31, N_BLAKE_ROUNDS, self.col).try_into().unwrap())
     }
 
@@ -70,8 +67,6 @@ impl PreProcessedColumn for BlakeSigma {
     }
 
     fn id(&self) -> PreProcessedColumnId {
-        PreProcessedColumnId {
-            id: format!("{}_{}", BLAKE_SIGMA_TABLE, self.col),
-        }
+        PreProcessedColumnId { id: format!("{}_{}", BLAKE_SIGMA_TABLE, self.col) }
     }
 }

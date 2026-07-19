@@ -8,14 +8,8 @@ use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 21;
 pub const RELATION_USES_PER_ROW: [RelationUse; 2] = [
-    RelationUse {
-        relation_id: "VerifyBitwiseXor_8",
-        uses: 4,
-    },
-    RelationUse {
-        relation_id: "VerifyBitwiseXor_8_B",
-        uses: 4,
-    },
+    RelationUse { relation_id: "VerifyBitwiseXor_8", uses: 4 },
+    RelationUse { relation_id: "VerifyBitwiseXor_8_B", uses: 4 },
 ];
 
 pub struct Eval {
@@ -146,10 +140,7 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         BitwiseXorNumBits8::evaluate(
-            [
-                xor_col13.clone(),
-                split_16_low_part_size_8_output_tmp_6e2d1_9_limb_0.clone(),
-            ],
+            [xor_col13.clone(), split_16_low_part_size_8_output_tmp_6e2d1_9_limb_0.clone()],
             enabler_col0.clone(),
             xor_col14.clone(),
             &self.common_lookup_elements,
@@ -180,10 +171,7 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         BitwiseXorNumBits8B::evaluate(
-            [
-                xor_col17.clone(),
-                split_16_low_part_size_8_output_tmp_6e2d1_11_limb_0.clone(),
-            ],
+            [xor_col17.clone(), split_16_low_part_size_8_output_tmp_6e2d1_11_limb_0.clone()],
             enabler_col0.clone(),
             xor_col18.clone(),
             &self.common_lookup_elements,

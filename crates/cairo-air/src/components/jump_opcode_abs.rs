@@ -7,22 +7,10 @@ use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 14;
 pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
-    RelationUse {
-        relation_id: "MemoryAddressToId",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "MemoryIdToBig",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "Opcodes",
-        uses: 1,
-    },
-    RelationUse {
-        relation_id: "VerifyInstruction",
-        uses: 1,
-    },
+    RelationUse { relation_id: "MemoryAddressToId", uses: 1 },
+    RelationUse { relation_id: "MemoryIdToBig", uses: 1 },
+    RelationUse { relation_id: "Opcodes", uses: 1 },
+    RelationUse { relation_id: "VerifyInstruction", uses: 1 },
 ];
 
 pub struct Eval {
@@ -85,16 +73,18 @@ impl FrameworkEval for Eval {
         eval.add_constraint(((enabler_col0.clone() * enabler_col0.clone()) - enabler_col0.clone()));
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_instruction_1f0a3_output_tmp_6e19b_5_offset2, decode_instruction_1f0a3_output_tmp_6e19b_5_op1_base_ap] =
-            DecodeInstruction1F0A3::evaluate(
-                [input_pc_col1.clone()],
-                enabler_col0.clone(),
-                offset2_col4.clone(),
-                op1_base_fp_col5.clone(),
-                ap_update_add_1_col6.clone(),
-                &self.common_lookup_elements,
-                &mut eval,
-            );
+        let [
+            decode_instruction_1f0a3_output_tmp_6e19b_5_offset2,
+            decode_instruction_1f0a3_output_tmp_6e19b_5_op1_base_ap,
+        ] = DecodeInstruction1F0A3::evaluate(
+            [input_pc_col1.clone()],
+            enabler_col0.clone(),
+            offset2_col4.clone(),
+            op1_base_fp_col5.clone(),
+            ap_update_add_1_col6.clone(),
+            &self.common_lookup_elements,
+            &mut eval,
+        );
         // mem1_base.
         eval.add_constraint(
             (mem1_base_col7.clone()

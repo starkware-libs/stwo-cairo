@@ -1,8 +1,8 @@
 use std::path::PathBuf;
 
 use anyhow::Result;
-use cairo_air::verifier::verify_cairo;
 use cairo_air::CairoProofForRustVerifier;
+use cairo_air::verifier::verify_cairo;
 use clap::Parser;
 use stwo::core::vcs_lifted::blake2_merkle::{
     Blake2sM31MerkleChannel, Blake2sMerkleChannel, Blake2sMerkleHasher,
@@ -11,7 +11,7 @@ use stwo::core::vcs_lifted::poseidon252_merkle::{
     Poseidon252MerkleChannel, Poseidon252MerkleHasher,
 };
 use stwo_cairo_prover::prover::ChannelHash;
-use tracing::{span, Level};
+use tracing::{Level, span};
 use tracing_subscriber::fmt::format::FmtSpan;
 
 /// CLI tool to verify Cairo proofs
@@ -63,9 +63,7 @@ fn verify_poseidon252_proof(proof: String) -> Result<()> {
 
 fn main() -> Result<()> {
     let args = Args::parse();
-    tracing_subscriber::fmt()
-        .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
-        .init();
+    tracing_subscriber::fmt().with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE).init();
     let _span = span!(Level::INFO, "verify").entered();
 
     log::info!("Verifying a {:?} proof", args.channel_hash);

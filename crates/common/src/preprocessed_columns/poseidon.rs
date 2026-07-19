@@ -65,9 +65,7 @@ impl PreProcessedColumn for PoseidonRoundKeys {
     }
 
     fn id(&self) -> PreProcessedColumnId {
-        PreProcessedColumnId {
-            id: format!("poseidon_round_keys_{}", self.col),
-        }
+        PreProcessedColumnId { id: format!("poseidon_round_keys_{}", self.col) }
     }
 }
 

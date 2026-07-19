@@ -22,10 +22,7 @@ pub fn get_builtins(
             "add mod segment length is not a multiple of it's cells_per_instance"
         );
         let n_instances = segment_length / ADD_MOD_BUILTIN_MEMORY_CELLS;
-        assert!(
-            n_instances.is_power_of_two(),
-            "add mod instances number is not a power of two"
-        );
+        assert!(n_instances.is_power_of_two(), "add mod instances number is not a power of two");
         builtins.push("add_mod_builtin");
     }
     if let Some(segment) = builtin_segments.bitwise_builtin {
@@ -35,10 +32,7 @@ pub fn get_builtins(
             "bitwise segment length is not a multiple of it's cells_per_instance"
         );
         let n_instances = segment_length / BITWISE_BUILTIN_MEMORY_CELLS;
-        assert!(
-            n_instances.is_power_of_two(),
-            "bitwise instances number is not a power of two"
-        );
+        assert!(n_instances.is_power_of_two(), "bitwise instances number is not a power of two");
         builtins.push("bitwise_builtin");
     }
     if let Some(segment) = builtin_segments.mul_mod_builtin {
@@ -48,10 +42,7 @@ pub fn get_builtins(
             "mul mod segment length is not a multiple of it's cells_per_instance"
         );
         let n_instances = segment_length / MUL_MOD_BUILTIN_MEMORY_CELLS;
-        assert!(
-            n_instances.is_power_of_two(),
-            "mul mod instances number is not a power of two"
-        );
+        assert!(n_instances.is_power_of_two(), "mul mod instances number is not a power of two");
         builtins.push("mul_mod_builtin");
     }
     if let Some(segment) = builtin_segments.pedersen_builtin {
@@ -61,18 +52,15 @@ pub fn get_builtins(
             "pedersen segment length is not a multiple of it's cells_per_instance"
         );
         let n_instances = segment_length / PEDERSEN_BUILTIN_MEMORY_CELLS;
-        assert!(
-            n_instances.is_power_of_two(),
-            "pedersen instances number is not a power of two"
-        );
+        assert!(n_instances.is_power_of_two(), "pedersen instances number is not a power of two");
 
-        if preprocessed_trace.has_column(&PreProcessedColumnId {
-            id: "pedersen_points_0".to_owned(),
-        }) {
+        if preprocessed_trace
+            .has_column(&PreProcessedColumnId { id: "pedersen_points_0".to_owned() })
+        {
             builtins.push("pedersen_builtin");
-        } else if preprocessed_trace.has_column(&PreProcessedColumnId {
-            id: "pedersen_points_small_0".to_owned(),
-        }) {
+        } else if preprocessed_trace
+            .has_column(&PreProcessedColumnId { id: "pedersen_points_small_0".to_owned() })
+        {
             builtins.push("pedersen_builtin_narrow_windows");
         } else {
             panic!("Missing pedersen points in the preprocessed trace.")
@@ -85,10 +73,7 @@ pub fn get_builtins(
             "poseidon segment length is not a multiple of it's cells_per_instance"
         );
         let n_instances = segment_length / POSEIDON_BUILTIN_MEMORY_CELLS;
-        assert!(
-            n_instances.is_power_of_two(),
-            "poseidon instances number is not a power of two"
-        );
+        assert!(n_instances.is_power_of_two(), "poseidon instances number is not a power of two");
         builtins.push("poseidon_builtin");
     }
     if let Some(segment) = builtin_segments.range_check96_builtin {
@@ -124,10 +109,7 @@ pub fn get_builtins(
             "ec_op segment length is not a multiple of it's cells_per_instance"
         );
         let n_instances = segment_length / EC_OP_BUILTIN_MEMORY_CELLS;
-        assert!(
-            n_instances.is_power_of_two(),
-            "ec_op instances number is not a power of two"
-        );
+        assert!(n_instances.is_power_of_two(), "ec_op instances number is not a power of two");
         builtins.push("ec_op_builtin");
     }
 

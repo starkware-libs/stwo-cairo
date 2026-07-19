@@ -3,10 +3,10 @@
 use std::simd::u32x16;
 
 use cairo_air::components::verify_bitwise_xor_12::{
-    Claim, InteractionClaim, EXPAND_BITS, LIMB_BITS, LOG_SIZE, N_MULT_COLUMNS,
+    Claim, EXPAND_BITS, InteractionClaim, LIMB_BITS, LOG_SIZE, N_MULT_COLUMNS,
 };
 use cairo_air::relations::VERIFY_BITWISE_XOR_12_RELATION_ID;
-use itertools::{chain, Itertools};
+use itertools::{Itertools, chain};
 
 use crate::witness::prelude::*;
 
@@ -19,18 +19,13 @@ pub struct ClaimGenerator {
 impl ClaimGenerator {
     #[allow(clippy::new_without_default)]
     pub fn new(_preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
-        Self {
-            mults: std::array::from_fn(|_| AtomicMultiplicityColumn::new(1 << LOG_SIZE)),
-        }
+        Self { mults: std::array::from_fn(|_| AtomicMultiplicityColumn::new(1 << LOG_SIZE)) }
     }
 
     pub fn write_trace(
         self,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        Claim,
-        InteractionClaimGenerator,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, Claim, InteractionClaimGenerator)
+    {
         let mults = self.mults.map(AtomicMultiplicityColumn::into_simd_vec);
 
         let domain = CanonicCoset::new(LOG_SIZE).circle_domain();
@@ -78,10 +73,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(LOG_SIZE) };
 
         // [0, 1, 2, ..., N_LANES - 1].
@@ -107,10 +99,8 @@ impl InteractionClaimGenerator {
             let bh1 = i1 as u32 & EXPAND_BITS_MASK;
 
             // Reconstruct the "expanded" values of a and b, and batch the lookups.
-            (col_gen.par_iter_mut(), mults0, mults1)
-                .into_par_iter()
-                .enumerate()
-                .for_each(|(vec_row, (writer, mults0, mults1))| {
+            (col_gen.par_iter_mut(), mults0, mults1).into_par_iter().enumerate().for_each(
+                |(vec_row, (writer, mults0, mults1))| {
                     // vec_row is LIMB_BITS of al and LIMB_BITS - LOG_N_LANES of bl. The low part of
                     // bl is just the consecutive numbers 0 .. N_LANES-1.
                     let al = vec_row as u32 >> (LIMB_BITS - LOG_N_LANES);
@@ -141,7 +131,8 @@ impl InteractionClaimGenerator {
                         &chain!([VERIFY_BITWISE_XOR_12_RELATION_ID.into()], v1).collect_vec(),
                     );
                     writer.write_frac(p0 * (-mults1) + p1 * (-mults0), p1 * p0);
-                });
+                },
+            );
             col_gen.finalize_col();
         }
 

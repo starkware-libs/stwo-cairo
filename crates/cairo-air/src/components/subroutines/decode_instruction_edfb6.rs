@@ -47,9 +47,6 @@ impl DecodeInstructionEdfb6 {
             ],
         ));
 
-        [
-            (offset2_col0.clone() - M31_32768.clone()),
-            (M31_1.clone() - op1_base_fp_col1.clone()),
-        ]
+        [(offset2_col0.clone() - M31_32768.clone()), (M31_1.clone() - op1_base_fp_col1.clone())]
     }
 }

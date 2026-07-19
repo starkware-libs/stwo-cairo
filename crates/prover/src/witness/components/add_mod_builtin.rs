@@ -15,21 +15,14 @@ pub struct ClaimGenerator {
 impl ClaimGenerator {
     pub fn new(log_size: u32, add_mod_builtin_segment_start: u32) -> Self {
         assert!(log_size >= LOG_N_LANES);
-        Self {
-            log_size,
-            add_mod_builtin_segment_start,
-        }
+        Self { log_size, add_mod_builtin_segment_start }
     }
 
     pub fn write_trace(
         self,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-    ) -> (
-        ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
-        InteractionClaimGenerator,
-    ) {
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator) {
         let log_size = self.log_size;
         let size = 1 << log_size;
 
@@ -46,14 +39,7 @@ impl ClaimGenerator {
             add_inputs(memory_id_to_big_state, &inputs, size, 0);
         }
 
-        (
-            trace,
-            Claim { log_size },
-            InteractionClaimGenerator {
-                log_size,
-                lookup_data,
-            },
-        )
+        (trace, Claim { log_size }, InteractionClaimGenerator { log_size, lookup_data })
     }
 }
 
@@ -72,11 +58,7 @@ fn write_trace_simd(
     add_mod_builtin_segment_start: u32,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-) -> (
-    ComponentTrace<N_TRACE_COLUMNS>,
-    LookupData,
-    SubComponentInputs,
-) {
+) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData, SubComponentInputs) {
     let log_n_packed_rows = log_size - LOG_N_LANES;
     let (mut trace, mut lookup_data, mut sub_component_inputs) = unsafe {
         (
@@ -115,11 +97,7 @@ fn write_trace_simd(
     let UInt16_3 = PackedUInt16::broadcast(UInt16::from(3));
     let seq = Seq::new(log_size);
 
-    (
-        trace.par_iter_mut(),
-        lookup_data.par_iter_mut(),
-        sub_component_inputs.par_iter_mut(),
-    )
+    (trace.par_iter_mut(), lookup_data.par_iter_mut(), sub_component_inputs.par_iter_mut())
         .into_par_iter()
         .enumerate()
         .for_each(|(row_index, (row, lookup_data, sub_component_inputs))| {
@@ -240,10 +218,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_99_output_tmp_36b1f_8 = (
-                read_positive_known_id_num_bits_99_output_tmp_36b1f_7,
-                p0_id_col1,
-            );
+            let read_positive_num_bits_99_output_tmp_36b1f_8 =
+                (read_positive_known_id_num_bits_99_output_tmp_36b1f_7, p0_id_col1);
 
             // Read Positive Num Bits 99.
 
@@ -254,11 +230,8 @@ fn write_trace_simd(
             let p1_id_col13 = memory_address_to_id_value_tmp_36b1f_9;
             *row[13] = p1_id_col13;
             *sub_component_inputs.memory_address_to_id[1] = ((instance_addr_tmp_36b1f_2) + (M31_1));
-            *lookup_data.memory_address_to_id_2 = [
-                M31_1444891767,
-                ((instance_addr_tmp_36b1f_2) + (M31_1)),
-                p1_id_col13,
-            ];
+            *lookup_data.memory_address_to_id_2 =
+                [M31_1444891767, ((instance_addr_tmp_36b1f_2) + (M31_1)), p1_id_col13];
 
             // Read Positive Known Id Num Bits 99.
 
@@ -351,10 +324,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_99_output_tmp_36b1f_13 = (
-                read_positive_known_id_num_bits_99_output_tmp_36b1f_12,
-                p1_id_col13,
-            );
+            let read_positive_num_bits_99_output_tmp_36b1f_13 =
+                (read_positive_known_id_num_bits_99_output_tmp_36b1f_12, p1_id_col13);
 
             // Read Positive Num Bits 99.
 
@@ -365,11 +336,8 @@ fn write_trace_simd(
             let p2_id_col25 = memory_address_to_id_value_tmp_36b1f_14;
             *row[25] = p2_id_col25;
             *sub_component_inputs.memory_address_to_id[2] = ((instance_addr_tmp_36b1f_2) + (M31_2));
-            *lookup_data.memory_address_to_id_4 = [
-                M31_1444891767,
-                ((instance_addr_tmp_36b1f_2) + (M31_2)),
-                p2_id_col25,
-            ];
+            *lookup_data.memory_address_to_id_4 =
+                [M31_1444891767, ((instance_addr_tmp_36b1f_2) + (M31_2)), p2_id_col25];
 
             // Read Positive Known Id Num Bits 99.
 
@@ -462,10 +430,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_99_output_tmp_36b1f_18 = (
-                read_positive_known_id_num_bits_99_output_tmp_36b1f_17,
-                p2_id_col25,
-            );
+            let read_positive_num_bits_99_output_tmp_36b1f_18 =
+                (read_positive_known_id_num_bits_99_output_tmp_36b1f_17, p2_id_col25);
 
             // Read Positive Num Bits 99.
 
@@ -476,11 +442,8 @@ fn write_trace_simd(
             let p3_id_col37 = memory_address_to_id_value_tmp_36b1f_19;
             *row[37] = p3_id_col37;
             *sub_component_inputs.memory_address_to_id[3] = ((instance_addr_tmp_36b1f_2) + (M31_3));
-            *lookup_data.memory_address_to_id_6 = [
-                M31_1444891767,
-                ((instance_addr_tmp_36b1f_2) + (M31_3)),
-                p3_id_col37,
-            ];
+            *lookup_data.memory_address_to_id_6 =
+                [M31_1444891767, ((instance_addr_tmp_36b1f_2) + (M31_3)), p3_id_col37];
 
             // Read Positive Known Id Num Bits 99.
 
@@ -573,10 +536,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_99_output_tmp_36b1f_23 = (
-                read_positive_known_id_num_bits_99_output_tmp_36b1f_22,
-                p3_id_col37,
-            );
+            let read_positive_num_bits_99_output_tmp_36b1f_23 =
+                (read_positive_known_id_num_bits_99_output_tmp_36b1f_22, p3_id_col37);
 
             // Read Positive Num Bits 29.
 
@@ -587,11 +548,8 @@ fn write_trace_simd(
             let values_ptr_id_col49 = memory_address_to_id_value_tmp_36b1f_24;
             *row[49] = values_ptr_id_col49;
             *sub_component_inputs.memory_address_to_id[4] = ((instance_addr_tmp_36b1f_2) + (M31_4));
-            *lookup_data.memory_address_to_id_8 = [
-                M31_1444891767,
-                ((instance_addr_tmp_36b1f_2) + (M31_4)),
-                values_ptr_id_col49,
-            ];
+            *lookup_data.memory_address_to_id_8 =
+                [M31_1444891767, ((instance_addr_tmp_36b1f_2) + (M31_4)), values_ptr_id_col49];
 
             // Read Positive Known Id Num Bits 29.
 
@@ -680,10 +638,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_29_output_tmp_36b1f_30 = (
-                read_positive_known_id_num_bits_29_output_tmp_36b1f_29,
-                values_ptr_id_col49,
-            );
+            let read_positive_num_bits_29_output_tmp_36b1f_30 =
+                (read_positive_known_id_num_bits_29_output_tmp_36b1f_29, values_ptr_id_col49);
 
             // Read Positive Num Bits 29.
 
@@ -694,11 +650,8 @@ fn write_trace_simd(
             let offsets_ptr_id_col55 = memory_address_to_id_value_tmp_36b1f_31;
             *row[55] = offsets_ptr_id_col55;
             *sub_component_inputs.memory_address_to_id[5] = ((instance_addr_tmp_36b1f_2) + (M31_5));
-            *lookup_data.memory_address_to_id_10 = [
-                M31_1444891767,
-                ((instance_addr_tmp_36b1f_2) + (M31_5)),
-                offsets_ptr_id_col55,
-            ];
+            *lookup_data.memory_address_to_id_10 =
+                [M31_1444891767, ((instance_addr_tmp_36b1f_2) + (M31_5)), offsets_ptr_id_col55];
 
             // Read Positive Known Id Num Bits 29.
 
@@ -787,10 +740,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_29_output_tmp_36b1f_37 = (
-                read_positive_known_id_num_bits_29_output_tmp_36b1f_36,
-                offsets_ptr_id_col55,
-            );
+            let read_positive_num_bits_29_output_tmp_36b1f_37 =
+                (read_positive_known_id_num_bits_29_output_tmp_36b1f_36, offsets_ptr_id_col55);
 
             // Read Positive Num Bits 29.
 
@@ -896,10 +847,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_29_output_tmp_36b1f_44 = (
-                read_positive_known_id_num_bits_29_output_tmp_36b1f_43,
-                offsets_ptr_prev_id_col61,
-            );
+            let read_positive_num_bits_29_output_tmp_36b1f_44 =
+                (read_positive_known_id_num_bits_29_output_tmp_36b1f_43, offsets_ptr_prev_id_col61);
 
             // Read Positive Num Bits 29.
 
@@ -910,11 +859,8 @@ fn write_trace_simd(
             let n_id_col67 = memory_address_to_id_value_tmp_36b1f_45;
             *row[67] = n_id_col67;
             *sub_component_inputs.memory_address_to_id[7] = ((instance_addr_tmp_36b1f_2) + (M31_6));
-            *lookup_data.memory_address_to_id_14 = [
-                M31_1444891767,
-                ((instance_addr_tmp_36b1f_2) + (M31_6)),
-                n_id_col67,
-            ];
+            *lookup_data.memory_address_to_id_14 =
+                [M31_1444891767, ((instance_addr_tmp_36b1f_2) + (M31_6)), n_id_col67];
 
             // Read Positive Known Id Num Bits 29.
 
@@ -1003,10 +949,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_29_output_tmp_36b1f_51 = (
-                read_positive_known_id_num_bits_29_output_tmp_36b1f_50,
-                n_id_col67,
-            );
+            let read_positive_num_bits_29_output_tmp_36b1f_51 =
+                (read_positive_known_id_num_bits_29_output_tmp_36b1f_50, n_id_col67);
 
             // Read Positive Num Bits 29.
 
@@ -1018,11 +962,8 @@ fn write_trace_simd(
             *row[73] = n_prev_id_col73;
             *sub_component_inputs.memory_address_to_id[8] =
                 ((prev_instance_addr_tmp_36b1f_3) + (M31_6));
-            *lookup_data.memory_address_to_id_16 = [
-                M31_1444891767,
-                ((prev_instance_addr_tmp_36b1f_3) + (M31_6)),
-                n_prev_id_col73,
-            ];
+            *lookup_data.memory_address_to_id_16 =
+                [M31_1444891767, ((prev_instance_addr_tmp_36b1f_3) + (M31_6)), n_prev_id_col73];
 
             // Read Positive Known Id Num Bits 29.
 
@@ -1111,10 +1052,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_29_output_tmp_36b1f_58 = (
-                read_positive_known_id_num_bits_29_output_tmp_36b1f_57,
-                n_prev_id_col73,
-            );
+            let read_positive_num_bits_29_output_tmp_36b1f_58 =
+                (read_positive_known_id_num_bits_29_output_tmp_36b1f_57, n_prev_id_col73);
 
             let offsets_ptr_tmp_36b1f_60 = ((((offsets_ptr_limb_0_col56)
                 + ((offsets_ptr_limb_1_col57) * (M31_512)))
@@ -1146,11 +1085,8 @@ fn write_trace_simd(
             let p_prev0_id_col80 = memory_address_to_id_value_tmp_36b1f_64;
             *row[80] = p_prev0_id_col80;
             *sub_component_inputs.memory_address_to_id[10] = prev_instance_addr_tmp_36b1f_3;
-            *lookup_data.memory_address_to_id_19 = [
-                M31_1444891767,
-                prev_instance_addr_tmp_36b1f_3,
-                p_prev0_id_col80,
-            ];
+            *lookup_data.memory_address_to_id_19 =
+                [M31_1444891767, prev_instance_addr_tmp_36b1f_3, p_prev0_id_col80];
 
             // Mem Cond Verify Equal Known Id.
 
@@ -1162,11 +1098,8 @@ fn write_trace_simd(
             *row[81] = p_prev1_id_col81;
             *sub_component_inputs.memory_address_to_id[11] =
                 ((prev_instance_addr_tmp_36b1f_3) + (M31_1));
-            *lookup_data.memory_address_to_id_20 = [
-                M31_1444891767,
-                ((prev_instance_addr_tmp_36b1f_3) + (M31_1)),
-                p_prev1_id_col81,
-            ];
+            *lookup_data.memory_address_to_id_20 =
+                [M31_1444891767, ((prev_instance_addr_tmp_36b1f_3) + (M31_1)), p_prev1_id_col81];
 
             // Mem Cond Verify Equal Known Id.
 
@@ -1178,11 +1111,8 @@ fn write_trace_simd(
             *row[82] = p_prev2_id_col82;
             *sub_component_inputs.memory_address_to_id[12] =
                 ((prev_instance_addr_tmp_36b1f_3) + (M31_2));
-            *lookup_data.memory_address_to_id_21 = [
-                M31_1444891767,
-                ((prev_instance_addr_tmp_36b1f_3) + (M31_2)),
-                p_prev2_id_col82,
-            ];
+            *lookup_data.memory_address_to_id_21 =
+                [M31_1444891767, ((prev_instance_addr_tmp_36b1f_3) + (M31_2)), p_prev2_id_col82];
 
             // Mem Cond Verify Equal Known Id.
 
@@ -1194,11 +1124,8 @@ fn write_trace_simd(
             *row[83] = p_prev3_id_col83;
             *sub_component_inputs.memory_address_to_id[13] =
                 ((prev_instance_addr_tmp_36b1f_3) + (M31_3));
-            *lookup_data.memory_address_to_id_22 = [
-                M31_1444891767,
-                ((prev_instance_addr_tmp_36b1f_3) + (M31_3)),
-                p_prev3_id_col83,
-            ];
+            *lookup_data.memory_address_to_id_22 =
+                [M31_1444891767, ((prev_instance_addr_tmp_36b1f_3) + (M31_3)), p_prev3_id_col83];
 
             // Read Small.
 
@@ -1304,11 +1231,8 @@ fn write_trace_simd(
             let offsets_b_id_col92 = memory_address_to_id_value_tmp_36b1f_82;
             *row[92] = offsets_b_id_col92;
             *sub_component_inputs.memory_address_to_id[15] = ((offsets_ptr_tmp_36b1f_60) + (M31_1));
-            *lookup_data.memory_address_to_id_25 = [
-                M31_1444891767,
-                ((offsets_ptr_tmp_36b1f_60) + (M31_1)),
-                offsets_b_id_col92,
-            ];
+            *lookup_data.memory_address_to_id_25 =
+                [M31_1444891767, ((offsets_ptr_tmp_36b1f_60) + (M31_1)), offsets_b_id_col92];
 
             let memory_id_to_big_value_tmp_36b1f_84 =
                 memory_id_to_big_state.deduce_output(offsets_b_id_col92);
@@ -1402,11 +1326,8 @@ fn write_trace_simd(
             let offsets_c_id_col100 = memory_address_to_id_value_tmp_36b1f_92;
             *row[100] = offsets_c_id_col100;
             *sub_component_inputs.memory_address_to_id[16] = ((offsets_ptr_tmp_36b1f_60) + (M31_2));
-            *lookup_data.memory_address_to_id_27 = [
-                M31_1444891767,
-                ((offsets_ptr_tmp_36b1f_60) + (M31_2)),
-                offsets_c_id_col100,
-            ];
+            *lookup_data.memory_address_to_id_27 =
+                [M31_1444891767, ((offsets_ptr_tmp_36b1f_60) + (M31_2)), offsets_c_id_col100];
 
             let memory_id_to_big_value_tmp_36b1f_94 =
                 memory_id_to_big_state.deduce_output(offsets_c_id_col100);
@@ -1603,10 +1524,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_99_output_tmp_36b1f_107 = (
-                read_positive_known_id_num_bits_99_output_tmp_36b1f_106,
-                a0_id_col108,
-            );
+            let read_positive_num_bits_99_output_tmp_36b1f_107 =
+                (read_positive_known_id_num_bits_99_output_tmp_36b1f_106, a0_id_col108);
 
             // Read Positive Num Bits 99.
 
@@ -1717,10 +1636,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_99_output_tmp_36b1f_112 = (
-                read_positive_known_id_num_bits_99_output_tmp_36b1f_111,
-                a1_id_col120,
-            );
+            let read_positive_num_bits_99_output_tmp_36b1f_112 =
+                (read_positive_known_id_num_bits_99_output_tmp_36b1f_111, a1_id_col120);
 
             // Read Positive Num Bits 99.
 
@@ -1831,10 +1748,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_99_output_tmp_36b1f_117 = (
-                read_positive_known_id_num_bits_99_output_tmp_36b1f_116,
-                a2_id_col132,
-            );
+            let read_positive_num_bits_99_output_tmp_36b1f_117 =
+                (read_positive_known_id_num_bits_99_output_tmp_36b1f_116, a2_id_col132);
 
             // Read Positive Num Bits 99.
 
@@ -1945,10 +1860,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_99_output_tmp_36b1f_122 = (
-                read_positive_known_id_num_bits_99_output_tmp_36b1f_121,
-                a3_id_col144,
-            );
+            let read_positive_num_bits_99_output_tmp_36b1f_122 =
+                (read_positive_known_id_num_bits_99_output_tmp_36b1f_121, a3_id_col144);
 
             // Read Positive Num Bits 99.
 
@@ -2057,10 +1970,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_99_output_tmp_36b1f_127 = (
-                read_positive_known_id_num_bits_99_output_tmp_36b1f_126,
-                b0_id_col156,
-            );
+            let read_positive_num_bits_99_output_tmp_36b1f_127 =
+                (read_positive_known_id_num_bits_99_output_tmp_36b1f_126, b0_id_col156);
 
             // Read Positive Num Bits 99.
 
@@ -2171,10 +2082,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_99_output_tmp_36b1f_132 = (
-                read_positive_known_id_num_bits_99_output_tmp_36b1f_131,
-                b1_id_col168,
-            );
+            let read_positive_num_bits_99_output_tmp_36b1f_132 =
+                (read_positive_known_id_num_bits_99_output_tmp_36b1f_131, b1_id_col168);
 
             // Read Positive Num Bits 99.
 
@@ -2285,10 +2194,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_99_output_tmp_36b1f_137 = (
-                read_positive_known_id_num_bits_99_output_tmp_36b1f_136,
-                b2_id_col180,
-            );
+            let read_positive_num_bits_99_output_tmp_36b1f_137 =
+                (read_positive_known_id_num_bits_99_output_tmp_36b1f_136, b2_id_col180);
 
             // Read Positive Num Bits 99.
 
@@ -2399,10 +2306,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_99_output_tmp_36b1f_142 = (
-                read_positive_known_id_num_bits_99_output_tmp_36b1f_141,
-                b3_id_col192,
-            );
+            let read_positive_num_bits_99_output_tmp_36b1f_142 =
+                (read_positive_known_id_num_bits_99_output_tmp_36b1f_141, b3_id_col192);
 
             // Read Positive Num Bits 99.
 
@@ -2511,10 +2416,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_99_output_tmp_36b1f_147 = (
-                read_positive_known_id_num_bits_99_output_tmp_36b1f_146,
-                c0_id_col204,
-            );
+            let read_positive_num_bits_99_output_tmp_36b1f_147 =
+                (read_positive_known_id_num_bits_99_output_tmp_36b1f_146, c0_id_col204);
 
             // Read Positive Num Bits 99.
 
@@ -2625,10 +2528,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_99_output_tmp_36b1f_152 = (
-                read_positive_known_id_num_bits_99_output_tmp_36b1f_151,
-                c1_id_col216,
-            );
+            let read_positive_num_bits_99_output_tmp_36b1f_152 =
+                (read_positive_known_id_num_bits_99_output_tmp_36b1f_151, c1_id_col216);
 
             // Read Positive Num Bits 99.
 
@@ -2739,10 +2640,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_99_output_tmp_36b1f_157 = (
-                read_positive_known_id_num_bits_99_output_tmp_36b1f_156,
-                c2_id_col228,
-            );
+            let read_positive_num_bits_99_output_tmp_36b1f_157 =
+                (read_positive_known_id_num_bits_99_output_tmp_36b1f_156, c2_id_col228);
 
             // Read Positive Num Bits 99.
 
@@ -2853,10 +2752,8 @@ fn write_trace_simd(
                     M31_0,
                 ]);
 
-            let read_positive_num_bits_99_output_tmp_36b1f_162 = (
-                read_positive_known_id_num_bits_99_output_tmp_36b1f_161,
-                c3_id_col240,
-            );
+            let read_positive_num_bits_99_output_tmp_36b1f_162 =
+                (read_positive_known_id_num_bits_99_output_tmp_36b1f_161, c3_id_col240);
 
             let mod_utils_output_tmp_36b1f_163 = [
                 [
@@ -3131,10 +3028,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
 
         // Sum logup terms in pairs.
@@ -3556,11 +3450,7 @@ impl InteractionClaimGenerator {
 
         // Sum last logup term.
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_52,
-            self.lookup_data.mults_0,
-        )
+        (col_gen.par_iter_mut(), &self.lookup_data.memory_id_to_big_52, self.lookup_data.mults_0)
             .into_par_iter()
             .for_each(|(writer, values, mult)| {
                 let denom = common_lookup_elements.combine(values);

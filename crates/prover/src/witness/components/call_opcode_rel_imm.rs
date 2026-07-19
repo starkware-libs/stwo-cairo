@@ -24,11 +24,7 @@ impl ClaimGenerator {
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
         verify_instruction_state: &verify_instruction::ClaimGenerator,
-    ) -> (
-        ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
-        InteractionClaimGenerator,
-    ) {
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator) {
         let n_active_rows = self.inputs.len();
         assert_ne!(n_active_rows, 0);
         let size = std::cmp::max(n_active_rows.next_power_of_two(), N_LANES);
@@ -53,14 +49,7 @@ impl ClaimGenerator {
             add_inputs(memory_id_to_big_state, &inputs, n_active_rows, 0);
         }
 
-        (
-            trace,
-            Claim { log_size },
-            InteractionClaimGenerator {
-                log_size,
-                lookup_data,
-            },
-        )
+        (trace, Claim { log_size }, InteractionClaimGenerator { log_size, lookup_data })
     }
 }
 
@@ -81,11 +70,7 @@ fn write_trace_simd(
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
     verify_instruction_state: &verify_instruction::ClaimGenerator,
-) -> (
-    ComponentTrace<N_TRACE_COLUMNS>,
-    LookupData,
-    SubComponentInputs,
-) {
+) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData, SubComponentInputs) {
     let log_n_packed_rows = inputs.len().ilog2();
     let log_size = log_n_packed_rows + LOG_N_LANES;
     let (mut trace, mut lookup_data, mut sub_component_inputs) = unsafe {
@@ -145,12 +130,8 @@ fn write_trace_simd(
                     memory_address_to_id_state.deduce_output(input_pc_col1);
                 let memory_id_to_big_value_tmp_82d62_1 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_82d62_0);
-                *sub_component_inputs.verify_instruction[0] = (
-                    input_pc_col1,
-                    [M31_32768, M31_32769, M31_32769],
-                    [M31_32, M31_68],
-                    M31_0,
-                );
+                *sub_component_inputs.verify_instruction[0] =
+                    (input_pc_col1, [M31_32768, M31_32769, M31_32769], [M31_32, M31_68], M31_0);
                 *lookup_data.verify_instruction_0 = [
                     M31_1719106205,
                     input_pc_col1,
@@ -269,10 +250,8 @@ fn write_trace_simd(
                         M31_0,
                     ]);
 
-                let read_positive_num_bits_29_output_tmp_82d62_9 = (
-                    read_positive_known_id_num_bits_29_output_tmp_82d62_8,
-                    stored_fp_id_col4,
-                );
+                let read_positive_num_bits_29_output_tmp_82d62_9 =
+                    (read_positive_known_id_num_bits_29_output_tmp_82d62_8, stored_fp_id_col4);
 
                 // Read Positive Num Bits 29.
 
@@ -283,11 +262,8 @@ fn write_trace_simd(
                 let stored_ret_pc_id_col10 = memory_address_to_id_value_tmp_82d62_10;
                 *row[10] = stored_ret_pc_id_col10;
                 *sub_component_inputs.memory_address_to_id[1] = ((input_ap_col2) + (M31_1));
-                *lookup_data.memory_address_to_id_3 = [
-                    M31_1444891767,
-                    ((input_ap_col2) + (M31_1)),
-                    stored_ret_pc_id_col10,
-                ];
+                *lookup_data.memory_address_to_id_3 =
+                    [M31_1444891767, ((input_ap_col2) + (M31_1)), stored_ret_pc_id_col10];
 
                 // Read Positive Known Id Num Bits 29.
 
@@ -391,11 +367,8 @@ fn write_trace_simd(
                 let distance_to_next_pc_id_col16 = memory_address_to_id_value_tmp_82d62_17;
                 *row[16] = distance_to_next_pc_id_col16;
                 *sub_component_inputs.memory_address_to_id[2] = ((input_pc_col1) + (M31_1));
-                *lookup_data.memory_address_to_id_5 = [
-                    M31_1444891767,
-                    ((input_pc_col1) + (M31_1)),
-                    distance_to_next_pc_id_col16,
-                ];
+                *lookup_data.memory_address_to_id_5 =
+                    [M31_1444891767, ((input_pc_col1) + (M31_1)), distance_to_next_pc_id_col16];
 
                 let memory_id_to_big_value_tmp_82d62_19 =
                     memory_id_to_big_state.deduce_output(distance_to_next_pc_id_col16);
@@ -521,10 +494,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
 
         // Sum logup terms in pairs.
@@ -594,11 +564,7 @@ impl InteractionClaimGenerator {
 
         // Sum last logup term.
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.opcodes_8,
-            self.lookup_data.mults_0,
-        )
+        (col_gen.par_iter_mut(), &self.lookup_data.opcodes_8, self.lookup_data.mults_0)
             .into_par_iter()
             .for_each(|(writer, values, mult)| {
                 let denom = common_lookup_elements.combine(values);

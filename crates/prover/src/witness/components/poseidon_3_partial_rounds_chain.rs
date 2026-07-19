@@ -6,7 +6,7 @@ use cairo_air::components::poseidon_3_partial_rounds_chain::{
 };
 
 use crate::witness::components::{
-    cube_252, poseidon_round_keys, range_check_252_width_27, range_check_4_4, range_check_4_4_4_4,
+    cube_252, poseidon_round_keys, range_check_4_4, range_check_4_4_4_4, range_check_252_width_27,
 };
 use crate::witness::prelude::*;
 
@@ -31,11 +31,7 @@ impl ClaimGenerator {
         range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
         range_check_4_4_state: &range_check_4_4::ClaimGenerator,
         range_check_252_width_27_state: &range_check_252_width_27::ClaimGenerator,
-    ) -> (
-        ComponentTrace<N_TRACE_COLUMNS>,
-        Claim,
-        InteractionClaimGenerator,
-    ) {
+    ) -> (ComponentTrace<N_TRACE_COLUMNS>, Claim, InteractionClaimGenerator) {
         let mut packed_inputs = self.packed_inputs.into_inner().unwrap();
         let remainder_inputs = self.remainder_inputs.into_inner().unwrap();
         let n_active_rows = packed_inputs.len() * N_LANES + remainder_inputs.len();
@@ -71,14 +67,7 @@ impl ClaimGenerator {
             add_inputs(range_check_252_width_27_state, &inputs, n_active_rows, 0);
         }
 
-        (
-            trace,
-            Claim { log_size },
-            InteractionClaimGenerator {
-                log_size,
-                lookup_data,
-            },
-        )
+        (trace, Claim { log_size }, InteractionClaimGenerator { log_size, lookup_data })
     }
 }
 
@@ -115,11 +104,7 @@ fn write_trace_simd(
     range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
     range_check_4_4_state: &range_check_4_4::ClaimGenerator,
     range_check_252_width_27_state: &range_check_252_width_27::ClaimGenerator,
-) -> (
-    ComponentTrace<N_TRACE_COLUMNS>,
-    LookupData,
-    SubComponentInputs,
-) {
+) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData, SubComponentInputs) {
     let log_n_packed_rows = inputs.len().ilog2();
     let log_size = log_n_packed_rows + LOG_N_LANES;
     let (mut trace, mut lookup_data, mut sub_component_inputs) = unsafe {
@@ -597,10 +582,8 @@ fn write_trace_simd(
                     ((carry_5_tmp_8c14f_9) + (M31_2)),
                     ((carry_6_tmp_8c14f_10) + (M31_2)),
                 ];
-                *sub_component_inputs.range_check_4_4[0] = [
-                    ((carry_7_tmp_8c14f_11) + (M31_2)),
-                    ((carry_8_tmp_8c14f_12) + (M31_2)),
-                ];
+                *sub_component_inputs.range_check_4_4[0] =
+                    [((carry_7_tmp_8c14f_11) + (M31_2)), ((carry_8_tmp_8c14f_12) + (M31_2))];
                 *lookup_data.range_check_4_4_4 = [
                     M31_1651211826,
                     ((carry_7_tmp_8c14f_11) + (M31_2)),
@@ -924,10 +907,8 @@ fn write_trace_simd(
                     ((carry_5_tmp_8c14f_44) + (M31_2)),
                     ((carry_6_tmp_8c14f_45) + (M31_2)),
                 ];
-                *sub_component_inputs.range_check_4_4[1] = [
-                    ((carry_7_tmp_8c14f_46) + (M31_2)),
-                    ((carry_8_tmp_8c14f_47) + (M31_2)),
-                ];
+                *sub_component_inputs.range_check_4_4[1] =
+                    [((carry_7_tmp_8c14f_46) + (M31_2)), ((carry_8_tmp_8c14f_47) + (M31_2))];
                 *lookup_data.range_check_4_4_9 = [
                     M31_1651211826,
                     ((carry_7_tmp_8c14f_46) + (M31_2)),
@@ -1252,10 +1233,8 @@ fn write_trace_simd(
                     ((carry_5_tmp_8c14f_79) + (M31_2)),
                     ((carry_6_tmp_8c14f_80) + (M31_2)),
                 ];
-                *sub_component_inputs.range_check_4_4[2] = [
-                    ((carry_7_tmp_8c14f_81) + (M31_2)),
-                    ((carry_8_tmp_8c14f_82) + (M31_2)),
-                ];
+                *sub_component_inputs.range_check_4_4[2] =
+                    [((carry_7_tmp_8c14f_81) + (M31_2)), ((carry_8_tmp_8c14f_82) + (M31_2))];
                 *lookup_data.range_check_4_4_14 = [
                     M31_1651211826,
                     ((carry_7_tmp_8c14f_81) + (M31_2)),
@@ -1488,10 +1467,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         common_lookup_elements: &relations::CommonLookupElements,
-    ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
-        InteractionClaim,
-    ) {
+    ) -> (Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>, InteractionClaim) {
         let mut logup_gen = unsafe { LogupTraceGenerator::uninitialized(self.log_size) };
 
         // Sum logup terms in pairs.

@@ -42,9 +42,7 @@ impl FrameworkEval for Eval {
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1024310512 = E::F::from(M31::from(1024310512));
-        let seq_6 = eval.get_preprocessed_column(PreProcessedColumnId {
-            id: "seq_6".to_owned(),
-        });
+        let seq_6 = eval.get_preprocessed_column(PreProcessedColumnId { id: "seq_6".to_owned() });
         let poseidon_round_keys_0 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "poseidon_round_keys_0".to_owned(),
         });

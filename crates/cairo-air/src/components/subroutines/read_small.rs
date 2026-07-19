@@ -45,15 +45,19 @@ impl ReadSmall {
             common_lookup_elements,
             eval,
         );
-        let [decode_small_sign_output_tmp_c806d_5_limb3_7_high_bits, decode_small_sign_output_tmp_c806d_5_limbs4_to_20, decode_small_sign_output_tmp_c806d_5_limb21, decode_small_sign_output_tmp_c806d_5_limb27] =
-            DecodeSmallSign::evaluate(
-                [],
-                enabler.clone(),
-                msb_col1.clone(),
-                mid_limbs_set_col2.clone(),
-                common_lookup_elements,
-                eval,
-            );
+        let [
+            decode_small_sign_output_tmp_c806d_5_limb3_7_high_bits,
+            decode_small_sign_output_tmp_c806d_5_limbs4_to_20,
+            decode_small_sign_output_tmp_c806d_5_limb21,
+            decode_small_sign_output_tmp_c806d_5_limb27,
+        ] = DecodeSmallSign::evaluate(
+            [],
+            enabler.clone(),
+            msb_col1.clone(),
+            mid_limbs_set_col2.clone(),
+            common_lookup_elements,
+            eval,
+        );
         CondRangeCheck2::evaluate(
             [remainder_bits_col6.clone(), M31_1.clone()],
             enabler.clone(),
@@ -99,12 +103,10 @@ impl ReadSmall {
             ],
         ));
 
-        [
-            (((((value_limb_0_col3.clone() + (value_limb_1_col4.clone() * M31_512.clone()))
-                + (value_limb_2_col5.clone() * M31_262144.clone()))
-                + (remainder_bits_col6.clone() * M31_134217728.clone()))
-                - msb_col1.clone())
-                - (M31_536870912.clone() * mid_limbs_set_col2.clone())),
-        ]
+        [(((((value_limb_0_col3.clone() + (value_limb_1_col4.clone() * M31_512.clone()))
+            + (value_limb_2_col5.clone() * M31_262144.clone()))
+            + (remainder_bits_col6.clone() * M31_134217728.clone()))
+            - msb_col1.clone())
+            - (M31_536870912.clone() * mid_limbs_set_col2.clone()))]
     }
 }

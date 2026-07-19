@@ -2,14 +2,14 @@ use std::collections::HashMap;
 #[cfg(feature = "prover")]
 use std::iter::zip;
 
-use itertools::{chain, Itertools};
+use itertools::{Itertools, chain};
 use serde::{Deserialize, Serialize};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
 use super::bitwise_xor::BitwiseXor;
 use super::blake::{BlakeSigma, N_BLAKE_SIGMA_COLS};
-use super::pedersen::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
-use super::poseidon::{PoseidonRoundKeys, N_WORDS as POSEIDON_N_WORDS};
+use super::pedersen::{PEDERSEN_TABLE_N_COLUMNS, PedersenPoints};
+use super::poseidon::{N_WORDS as POSEIDON_N_WORDS, PoseidonRoundKeys};
 #[cfg(feature = "prover")]
 use super::simd_prelude::*;
 
@@ -39,11 +39,7 @@ impl PreProcessedTraceVariant {
             Self::CanonicalWithoutPedersen => (),
             Self::CanonicalSmall => (),
         };
-        [
-            Self::Canonical,
-            Self::CanonicalWithoutPedersen,
-            Self::CanonicalSmall,
-        ]
+        [Self::Canonical, Self::CanonicalWithoutPedersen, Self::CanonicalSmall]
     };
 
     pub fn to_preprocessed_trace(&self) -> PreProcessedTrace {
@@ -117,11 +113,7 @@ impl PreProcessedTrace {
         let columns = Self::canonical_columns();
         let column_indices = Self::get_column_indices(&columns);
 
-        Self {
-            columns,
-            column_indices,
-            variant: PreProcessedTraceVariant::Canonical,
-        }
+        Self { columns, column_indices, variant: PreProcessedTraceVariant::Canonical }
     }
 
     fn canonical_columns() -> Vec<Box<dyn PreProcessedColumn>> {
@@ -175,11 +167,7 @@ impl PreProcessedTrace {
         let columns = Self::canonical_small_columns();
         let column_indices = Self::get_column_indices(&columns);
 
-        Self {
-            columns,
-            column_indices,
-            variant: PreProcessedTraceVariant::CanonicalSmall,
-        }
+        Self { columns, column_indices, variant: PreProcessedTraceVariant::CanonicalSmall }
     }
 
     fn canonical_small_columns() -> Vec<Box<dyn PreProcessedColumn>> {
@@ -202,16 +190,9 @@ impl PreProcessedTrace {
         let pedersen_points = (0..PEDERSEN_TABLE_N_COLUMNS)
             .map(|x| Box::new(PedersenPoints::<9>::new(x)) as Box<dyn PreProcessedColumn>);
 
-        chain!(
-            seq,
-            bitwise_xor,
-            range_check,
-            poseidon_keys,
-            blake_sigma,
-            pedersen_points
-        )
-        .sorted_by_key(|column| column.log_size())
-        .collect_vec()
+        chain!(seq, bitwise_xor, range_check, poseidon_keys, blake_sigma, pedersen_points)
+            .sorted_by_key(|column| column.log_size())
+            .collect_vec()
     }
 
     pub fn log_sizes(&self) -> Vec<u32> {
@@ -319,9 +300,7 @@ impl PreProcessedColumn for Seq {
         CircleEvaluation::new(CanonicCoset::new(self.log_size).circle_domain(), col)
     }
     fn id(&self) -> PreProcessedColumnId {
-        PreProcessedColumnId {
-            id: format!("seq_{}", self.log_size),
-        }
+        PreProcessedColumnId { id: format!("seq_{}", self.log_size) }
     }
 }
 
@@ -411,17 +390,11 @@ impl<const N: usize> PreProcessedColumn for RangeCheck<N> {
 /// As such, tests that use columns larger than `max_log_size` will fail.
 pub fn testing_preprocessed_tree(max_log_size: u32) -> PreProcessedTrace {
     let canonical = PreProcessedTrace::canonical_columns();
-    let columns: Vec<Box<dyn PreProcessedColumn>> = canonical
-        .into_iter()
-        .filter(|c| c.log_size() <= max_log_size)
-        .collect();
+    let columns: Vec<Box<dyn PreProcessedColumn>> =
+        canonical.into_iter().filter(|c| c.log_size() <= max_log_size).collect();
     let column_indices = PreProcessedTrace::get_column_indices(&columns);
 
-    PreProcessedTrace {
-        columns,
-        column_indices,
-        variant: PreProcessedTraceVariant::Canonical,
-    }
+    PreProcessedTrace { columns, column_indices, variant: PreProcessedTraceVariant::Canonical }
 }
 
 #[cfg(test)]
@@ -436,9 +409,7 @@ pub mod tests {
 
         let columns = preprocessed_trace.columns;
 
-        assert!(columns
-            .windows(2)
-            .all(|w| w[0].log_size() <= w[1].log_size()));
+        assert!(columns.windows(2).all(|w| w[0].log_size() <= w[1].log_size()));
     }
 
     #[cfg(feature = "prover")]
@@ -500,12 +471,7 @@ pub mod tests {
     fn test_max_log_trace_size() {
         for variant in PreProcessedTraceVariant::ALL_VARIANTS {
             let trace = variant.to_preprocessed_trace();
-            let actual_max = trace
-                .columns
-                .iter()
-                .map(|col| col.log_size())
-                .max()
-                .unwrap();
+            let actual_max = trace.columns.iter().map(|col| col.log_size()).max().unwrap();
             assert_eq!(actual_max, variant.max_log_trace_size());
         }
     }

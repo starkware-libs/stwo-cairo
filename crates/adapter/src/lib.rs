@@ -71,9 +71,7 @@ impl PublicSegmentContext {
 
     pub const fn bootloader_context() -> Self {
         // Bootloader always uses every builtin.
-        Self {
-            present: [true; N_PUBLIC_SEGMENTS],
-        }
+        Self { present: [true; N_PUBLIC_SEGMENTS] }
     }
 }
 impl Deref for PublicSegmentContext {
