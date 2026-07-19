@@ -602,7 +602,7 @@ pub mod tests {
             let status = Command::new("bash")
                 .arg("-c")
                 .arg(format!(
-                    "(cd ../../../stwo_cairo_verifier; \
+                    "(cd ../../stwo_cairo_verifier; \
                     scarb execute --package stwo_cairo_verifier \
                     --arguments-file {} --output standard --target standalone \
                     --features poseidon252_verifier
@@ -748,7 +748,7 @@ pub mod tests {
             let status = Command::new("bash")
                 .arg("-c")
                 .arg(format!(
-                    "(cd ../../../stwo_cairo_verifier; \
+                    "(cd ../../stwo_cairo_verifier; \
                     scarb execute --package stwo_cairo_verifier \
                     --arguments-file {} --output standard --target standalone \
                     --features qm31_opcode
@@ -802,7 +802,7 @@ pub mod tests {
             let status = Command::new("bash")
                 .arg("-c")
                 .arg(format!(
-                    "(cd ../../../stwo_cairo_verifier; \
+                    "(cd ../../stwo_cairo_verifier; \
                     scarb execute --package stwo_cairo_verifier \
                     --arguments-file {} --output standard --target standalone \
                     --features qm31_opcode

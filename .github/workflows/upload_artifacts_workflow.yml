@@ -20,7 +20,6 @@ jobs:
 
       - name: Build all stwo binaries
         run: |
-          cd stwo_cairo_prover
           cargo build -r --bin adapted_stwo
           RUSTFLAGS="-C target-cpu=neoverse-v2 -C opt-level=3 -C codegen-units=1 -C target-feature=+sve" cross build --release --target=aarch64-unknown-linux-gnu
 
@@ -33,12 +32,12 @@ jobs:
         id: upload_file
         uses: "google-github-actions/upload-cloud-storage@v2"
         with:
-          path: "stwo_cairo_prover/target/release/adapted_stwo"
+          path: "target/release/adapted_stwo"
           destination: "adapted_stwo_artifacts/${{ env.SHORT_HASH }}/release"
 
       - name: Upload ARM binary to GCP
         id: upload_file_arm
         uses: "google-github-actions/upload-cloud-storage@v2"
         with:
-          path: "stwo_cairo_prover/target/aarch64-unknown-linux-gnu/release/adapted_stwo"
+          path: "target/aarch64-unknown-linux-gnu/release/adapted_stwo"
           destination: "adapted_stwo_artifacts/${{ env.SHORT_HASH }}/aarch64-release"
