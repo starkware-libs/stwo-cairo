@@ -1,10 +1,4 @@
-//! Hardcoded structural constants for the privacy/recursion circuit verifier.
-//!
-//! These must match the recursive-verification circuit topology produced by the rust
-//! prover (`stwo-circuits/crates/circuit_verifier/src/verify.rs::build_verification_circuit`
-//! on the privacy circuit, plus the preprocessed trace built for that circuit). They are
-//! baked in at build time so the executable's `main` takes only a proof.
-//!
+//! Hardcoded constants for the multiverifier circuit.
 
 use stwo_verifier_core::fri::FriConfig;
 use stwo_verifier_core::pcs::PcsConfig;
