@@ -654,173 +654,18 @@ pub mod tests {
     #[cfg(feature = "slow-tests")]
     pub mod slow_tests {
 
-        use std::io::Write;
-        use std::process::Command;
-
         use cairo_air::CairoProofForRustVerifier;
         use cairo_air::verifier::verify_cairo;
         use itertools::Itertools;
-        use stwo::core::fri::FriConfig;
         use stwo::core::pcs::PcsConfig;
         use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
         use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
-        use stwo_cairo_dev_utils::utils::{get_compiled_cairo_program_path, get_proof_file_path};
-        use stwo_cairo_serialize::CairoSerialize;
-        use tempfile::NamedTempFile;
+        use stwo_cairo_dev_utils::utils::get_compiled_cairo_program_path;
         use test_log::test;
 
         use super::*;
         use crate::debug_tools::assert_constraints::assert_cairo_constraints;
-        use crate::prover::{
-            ChannelHash, PreProcessedTraceVariant, ProverInput, ProverParameters, prove_cairo,
-        };
-
-        #[test_log::test]
-        fn test_prove_verify_all_opcode_components() {
-            let compiled_program =
-                get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
-            let input = run_and_adapt(
-                &compiled_program,
-                ProgramType::Json,
-                LayoutName::all_cairo_stwo,
-                None,
-            )
-            .unwrap();
-            for (opcode, n_instances) in &input.state_transitions.casm_states_by_opcode.counts() {
-                assert!(*n_instances > 0, "{opcode} isn't used in E2E full-Cairo opcode test");
-            }
-            let prover_params = ProverParameters {
-                channel_hash: ChannelHash::Blake2s,
-                pcs_config: PcsConfig::default(),
-                preprocessed_trace: PreProcessedTraceVariant::CanonicalWithoutPedersen,
-                channel_salt: 0,
-                store_polynomials_coefficients: true,
-                include_all_preprocessed_columns: false,
-                opt_n_id_to_big_components: None,
-                raise_min_lifting_to_max_column: false,
-            };
-            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
-            verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
-        }
-
-        #[test]
-        fn test_e2e_prove_cairo_verify_all_opcode_components() {
-            let compiled_program =
-                get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
-            let input = run_and_adapt(
-                &compiled_program,
-                ProgramType::Json,
-                LayoutName::all_cairo_stwo,
-                None,
-            )
-            .unwrap();
-            let prover_params = ProverParameters {
-                channel_hash: ChannelHash::Blake2s,
-                pcs_config: PcsConfig {
-                    pow_bits: 26,
-                    fri_config: FriConfig::new(0, 1, 70, 3),
-                    min_lifting_log_size: 0,
-                },
-                preprocessed_trace: PreProcessedTraceVariant::Canonical,
-                channel_salt: 0,
-                store_polynomials_coefficients: false,
-                include_all_preprocessed_columns: false,
-                opt_n_id_to_big_components: None,
-                raise_min_lifting_to_max_column: false,
-            };
-            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
-            let mut proof_file = NamedTempFile::new().unwrap();
-            let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
-            CairoSerialize::serialize(&cairo_proof, &mut serialized);
-            let proof_hex: Vec<String> =
-                serialized.into_iter().map(|felt| format!("0x{felt:x}")).collect();
-            proof_file
-                .write_all(sonic_rs::to_string_pretty(&proof_hex).unwrap().as_bytes())
-                .unwrap();
-
-            let expected_proof_file =
-                get_proof_file_path("test_prove_verify_all_opcode_components");
-            if std::env::var("FIX_PROOF").is_ok() {
-                std::fs::copy(proof_file.path(), &expected_proof_file)
-                    .expect("Failed to overwrite expected proof file");
-            }
-
-            // Compare the contents of proof_file and expected_proof_file
-            let proof_file_contents = std::fs::read_to_string(proof_file.path())
-                .expect("Failed to read generated proof file");
-            let expected_proof_contents = std::fs::read_to_string(&expected_proof_file)
-                .expect("Failed to read expected proof file");
-            assert!(
-                proof_file_contents == expected_proof_contents,
-                "Generated proof file does not match the expected proof file"
-            );
-
-            let status = Command::new("bash")
-                .arg("-c")
-                .arg(format!(
-                    "(cd ../../stwo_cairo_verifier; scarb execute --package stwo_cairo_verifier \
-                     --arguments-file {} --output standard --target standalone --features \
-                     qm31_opcode
-                    )",
-                    proof_file.path().to_str().unwrap()
-                ))
-                .current_dir(env!("CARGO_MANIFEST_DIR"))
-                .status()
-                .unwrap();
-
-            assert!(status.success());
-        }
-
-        #[test]
-        fn test_e2e_prove_cairo_verify_all_builtins() {
-            let compiled_program =
-                get_compiled_cairo_program_path("test_prove_verify_all_builtins");
-            let input = run_and_adapt(
-                &compiled_program,
-                ProgramType::Json,
-                LayoutName::all_cairo_stwo,
-                None,
-            )
-            .unwrap();
-            let prover_params = ProverParameters {
-                channel_hash: ChannelHash::Blake2s,
-                pcs_config: PcsConfig {
-                    pow_bits: 26,
-                    fri_config: FriConfig::new(0, 1, 70, 1),
-                    min_lifting_log_size: 0,
-                },
-                preprocessed_trace: PreProcessedTraceVariant::Canonical,
-                channel_salt: 0,
-                store_polynomials_coefficients: false,
-                include_all_preprocessed_columns: false,
-                opt_n_id_to_big_components: None,
-                raise_min_lifting_to_max_column: false,
-            };
-            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
-            let mut proof_file = NamedTempFile::new().unwrap();
-            let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
-            CairoSerialize::serialize(&cairo_proof, &mut serialized);
-            let proof_hex: Vec<String> =
-                serialized.into_iter().map(|felt| format!("0x{felt:x}")).collect();
-            proof_file
-                .write_all(sonic_rs::to_string_pretty(&proof_hex).unwrap().as_bytes())
-                .unwrap();
-
-            let status = Command::new("bash")
-                .arg("-c")
-                .arg(format!(
-                    "(cd ../../stwo_cairo_verifier; scarb execute --package stwo_cairo_verifier \
-                     --arguments-file {} --output standard --target standalone --features \
-                     qm31_opcode
-                    )",
-                    proof_file.path().to_str().unwrap()
-                ))
-                .current_dir(env!("CARGO_MANIFEST_DIR"))
-                .status()
-                .unwrap();
-
-            assert!(status.success());
-        }
+        use crate::prover::{ChannelHash, PreProcessedTraceVariant, ProverParameters, prove_cairo};
 
         fn test_proof_stability(path: &str, n_proofs_to_compare: usize) {
             let compiled_program = get_compiled_cairo_program_path(path);
@@ -875,49 +720,6 @@ pub mod tests {
             use test_log::test;
 
             use super::*;
-
-            /// Asserts that all supported builtins are present in the input.
-            /// Panics if any of the builtins is missing.
-            fn assert_all_builtins_in_input(input: &ProverInput) {
-                let empty_builtins: Vec<_> = input
-                    .builtin_segments
-                    .get_counts()
-                    .into_iter()
-                    .filter(|(_, count)| *count == 0)
-                    .map(|(name, _)| name)
-                    .collect();
-
-                if !empty_builtins.is_empty() {
-                    panic!("Builtins missing in the input: {empty_builtins:?}");
-                }
-            }
-
-            #[test]
-            fn test_prove_verify_all_builtins() {
-                let compiled_program =
-                    get_compiled_cairo_program_path("test_prove_verify_all_builtins");
-                let input = run_and_adapt(
-                    &compiled_program,
-                    ProgramType::Json,
-                    LayoutName::all_cairo_stwo,
-                    None,
-                )
-                .unwrap();
-                assert_all_builtins_in_input(&input);
-                let prover_params = ProverParameters {
-                    channel_hash: ChannelHash::Blake2s,
-                    pcs_config: PcsConfig::default(),
-                    preprocessed_trace: PreProcessedTraceVariant::Canonical,
-                    channel_salt: 0,
-                    store_polynomials_coefficients: false,
-                    include_all_preprocessed_columns: false,
-                    opt_n_id_to_big_components: None,
-                    raise_min_lifting_to_max_column: false,
-                };
-                let cairo_proof =
-                    prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
-            }
 
             /// Exercises `raise_min_lifting_to_max_column`: the mixed config must record the
             /// maximal committed column log size, and all trees are lifted to that (uniform)
@@ -1259,6 +1061,216 @@ pub mod tests {
                      uses multiplicity"
                 );
             }
+        }
+    }
+
+    #[cfg(feature = "integration")]
+    pub mod integration_tests {
+        use std::io::Write;
+        use std::process::Command;
+
+        use cairo_air::verifier::verify_cairo;
+        use cairo_vm::types::layout_name::LayoutName;
+        use stwo::core::fri::FriConfig;
+        use stwo::core::pcs::PcsConfig;
+        use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
+        use stwo_cairo_dev_utils::utils::{get_compiled_cairo_program_path, get_proof_file_path};
+        use stwo_cairo_dev_utils::vm_utils::{ProgramType, run_and_adapt};
+        use stwo_cairo_serialize::CairoSerialize;
+        use tempfile::NamedTempFile;
+        use test_log::test;
+
+        use crate::prover::{
+            ChannelHash, PreProcessedTraceVariant, ProverInput, ProverParameters, prove_cairo,
+        };
+
+        /// Asserts that all supported builtins are present in the input.
+        /// Panics if any of the builtins is missing.
+        fn assert_all_builtins_in_input(input: &ProverInput) {
+            let empty_builtins: Vec<_> = input
+                .builtin_segments
+                .get_counts()
+                .into_iter()
+                .filter(|(_, count)| *count == 0)
+                .map(|(name, _)| name)
+                .collect();
+
+            if !empty_builtins.is_empty() {
+                panic!("Builtins missing in the input: {empty_builtins:?}");
+            }
+        }
+
+        #[test_log::test]
+        fn test_prove_verify_all_opcode_components() {
+            let compiled_program =
+                get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
+            let input = run_and_adapt(
+                &compiled_program,
+                ProgramType::Json,
+                LayoutName::all_cairo_stwo,
+                None,
+            )
+            .unwrap();
+            for (opcode, n_instances) in &input.state_transitions.casm_states_by_opcode.counts() {
+                assert!(*n_instances > 0, "{opcode} isn't used in E2E full-Cairo opcode test");
+            }
+            let prover_params = ProverParameters {
+                channel_hash: ChannelHash::Blake2s,
+                pcs_config: PcsConfig::default(),
+                preprocessed_trace: PreProcessedTraceVariant::CanonicalWithoutPedersen,
+                channel_salt: 0,
+                store_polynomials_coefficients: true,
+                include_all_preprocessed_columns: false,
+                opt_n_id_to_big_components: None,
+                raise_min_lifting_to_max_column: false,
+            };
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+            verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
+        }
+
+        #[test]
+        fn test_e2e_prove_cairo_verify_all_opcode_components() {
+            let compiled_program =
+                get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
+            let input = run_and_adapt(
+                &compiled_program,
+                ProgramType::Json,
+                LayoutName::all_cairo_stwo,
+                None,
+            )
+            .unwrap();
+            let prover_params = ProverParameters {
+                channel_hash: ChannelHash::Blake2s,
+                pcs_config: PcsConfig {
+                    pow_bits: 26,
+                    fri_config: FriConfig::new(0, 1, 70, 3),
+                    min_lifting_log_size: 0,
+                },
+                preprocessed_trace: PreProcessedTraceVariant::Canonical,
+                channel_salt: 0,
+                store_polynomials_coefficients: false,
+                include_all_preprocessed_columns: false,
+                opt_n_id_to_big_components: None,
+                raise_min_lifting_to_max_column: false,
+            };
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+            let mut proof_file = NamedTempFile::new().unwrap();
+            let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
+            CairoSerialize::serialize(&cairo_proof, &mut serialized);
+            let proof_hex: Vec<String> =
+                serialized.into_iter().map(|felt| format!("0x{felt:x}")).collect();
+            proof_file
+                .write_all(sonic_rs::to_string_pretty(&proof_hex).unwrap().as_bytes())
+                .unwrap();
+
+            let expected_proof_file =
+                get_proof_file_path("test_prove_verify_all_opcode_components");
+            if std::env::var("FIX_PROOF").is_ok() {
+                std::fs::copy(proof_file.path(), &expected_proof_file)
+                    .expect("Failed to overwrite expected proof file");
+            }
+
+            // Compare the contents of proof_file and expected_proof_file
+            let proof_file_contents = std::fs::read_to_string(proof_file.path())
+                .expect("Failed to read generated proof file");
+            let expected_proof_contents = std::fs::read_to_string(&expected_proof_file)
+                .expect("Failed to read expected proof file");
+            assert!(
+                proof_file_contents == expected_proof_contents,
+                "Generated proof file does not match the expected proof file"
+            );
+
+            let status = Command::new("bash")
+                .arg("-c")
+                .arg(format!(
+                    "(cd ../../stwo_cairo_verifier; scarb execute --package stwo_cairo_verifier \
+                     --arguments-file {} --output standard --target standalone --features \
+                     qm31_opcode
+                    )",
+                    proof_file.path().to_str().unwrap()
+                ))
+                .current_dir(env!("CARGO_MANIFEST_DIR"))
+                .status()
+                .unwrap();
+
+            assert!(status.success());
+        }
+
+        #[test]
+        fn test_e2e_prove_cairo_verify_all_builtins() {
+            let compiled_program =
+                get_compiled_cairo_program_path("test_prove_verify_all_builtins");
+            let input = run_and_adapt(
+                &compiled_program,
+                ProgramType::Json,
+                LayoutName::all_cairo_stwo,
+                None,
+            )
+            .unwrap();
+            let prover_params = ProverParameters {
+                channel_hash: ChannelHash::Blake2s,
+                pcs_config: PcsConfig {
+                    pow_bits: 26,
+                    fri_config: FriConfig::new(0, 1, 70, 1),
+                    min_lifting_log_size: 0,
+                },
+                preprocessed_trace: PreProcessedTraceVariant::Canonical,
+                channel_salt: 0,
+                store_polynomials_coefficients: false,
+                include_all_preprocessed_columns: false,
+                opt_n_id_to_big_components: None,
+                raise_min_lifting_to_max_column: false,
+            };
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+            let mut proof_file = NamedTempFile::new().unwrap();
+            let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
+            CairoSerialize::serialize(&cairo_proof, &mut serialized);
+            let proof_hex: Vec<String> =
+                serialized.into_iter().map(|felt| format!("0x{felt:x}")).collect();
+            proof_file
+                .write_all(sonic_rs::to_string_pretty(&proof_hex).unwrap().as_bytes())
+                .unwrap();
+
+            let status = Command::new("bash")
+                .arg("-c")
+                .arg(format!(
+                    "(cd ../../stwo_cairo_verifier; scarb execute --package stwo_cairo_verifier \
+                     --arguments-file {} --output standard --target standalone --features \
+                     qm31_opcode
+                    )",
+                    proof_file.path().to_str().unwrap()
+                ))
+                .current_dir(env!("CARGO_MANIFEST_DIR"))
+                .status()
+                .unwrap();
+
+            assert!(status.success());
+        }
+
+        #[test]
+        fn test_prove_verify_all_builtins() {
+            let compiled_program =
+                get_compiled_cairo_program_path("test_prove_verify_all_builtins");
+            let input = run_and_adapt(
+                &compiled_program,
+                ProgramType::Json,
+                LayoutName::all_cairo_stwo,
+                None,
+            )
+            .unwrap();
+            assert_all_builtins_in_input(&input);
+            let prover_params = ProverParameters {
+                channel_hash: ChannelHash::Blake2s,
+                pcs_config: PcsConfig::default(),
+                preprocessed_trace: PreProcessedTraceVariant::Canonical,
+                channel_salt: 0,
+                store_polynomials_coefficients: false,
+                include_all_preprocessed_columns: false,
+                opt_n_id_to_big_components: None,
+                raise_min_lifting_to_max_column: false,
+            };
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+            verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
         }
     }
 }
