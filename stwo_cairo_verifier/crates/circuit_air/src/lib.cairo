@@ -3,7 +3,7 @@
 use circuit_air::CircuitAirNewImpl;
 use core::dict::{Felt252DictTrait, SquashedFelt252DictTrait};
 use core::num::traits::Zero;
-use privacy_consts::{N_OUTPUTS, PREPROCESSED_COLUMN_LOG_SIZES, circuit_pcs_config};
+use multiverifier_consts::{N_OUTPUTS, PREPROCESSED_COLUMN_LOG_SIZES, circuit_pcs_config};
 use stwo_constraint_framework::LookupElementsImpl;
 pub use stwo_constraint_framework::{RelationUse, RelationUsesDict, accumulate_relation_uses};
 use stwo_verifier_core::Hash;
@@ -32,9 +32,9 @@ use claims::{
 };
 use per_component::PerComponent;
 pub mod components;
+pub mod multiverifier_consts;
 pub mod prelude;
 pub mod preprocessed_columns;
-pub mod privacy_consts;
 pub mod relations;
 
 // Security constants.
