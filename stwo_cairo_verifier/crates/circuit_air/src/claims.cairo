@@ -11,10 +11,6 @@ use crate::per_component::{
     PerComponentTrait,
 };
 use crate::prelude::{Invertible, M31, Zero, m31};
-use crate::preprocessed_columns::{
-    BLAKE_G_GATE_INPUT_ADDR_A_IDX, EQ_IN0_ADDRESS_IDX, M_31_TO_U_32_INPUT_ADDR_IDX, OP_0_ADDR_IDX,
-    TRIPLE_XOR_INPUT_ADDR_0_IDX,
-};
 use crate::relations::GATE_RELATION_ID;
 
 /// Variable index of the public input `u`.
@@ -100,26 +96,6 @@ pub fn lookup_sum(
     }
 
     component_sum + u_sum + output_sum
-}
-
-/// Derives each component's log size from the preprocessed column log sizes (supplied by the
-/// verifier config). variable-size components read the log size of one of their preprocessed
-/// columns (all columns of a component share its log size), and fixed-size components return their
-/// `LOG_SIZE` constant.
-pub fn derive_component_log_sizes(preprocessed_column_log_sizes: Span<u32>) -> PerComponent<u32> {
-    PerComponent {
-        verify_bitwise_xor_4: components::verify_bitwise_xor_4::LOG_SIZE,
-        verify_bitwise_xor_7: components::verify_bitwise_xor_7::LOG_SIZE,
-        verify_bitwise_xor_8: components::verify_bitwise_xor_8::LOG_SIZE,
-        range_check_16: components::range_check_16::LOG_SIZE,
-        eq: *preprocessed_column_log_sizes.at(EQ_IN0_ADDRESS_IDX),
-        triple_xor: *preprocessed_column_log_sizes.at(TRIPLE_XOR_INPUT_ADDR_0_IDX),
-        m_31_to_u_32: *preprocessed_column_log_sizes.at(M_31_TO_U_32_INPUT_ADDR_IDX),
-        verify_bitwise_xor_9: components::verify_bitwise_xor_9::LOG_SIZE,
-        blake_g_gate: *preprocessed_column_log_sizes.at(BLAKE_G_GATE_INPUT_ADDR_A_IDX),
-        verify_bitwise_xor_12: components::verify_bitwise_xor_12::LOG_SIZE,
-        qm31_ops: *preprocessed_column_log_sizes.at(OP_0_ADDR_IDX),
-    }
 }
 
 /// Builds `[preprocessed (empty placeholder), trace, interaction]` column log sizes from the
