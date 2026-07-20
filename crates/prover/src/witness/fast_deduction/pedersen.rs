@@ -157,6 +157,7 @@ mod tests {
     #[instantiate_tests(<28>)]
     mod small_window {}
 
+    #[cfg(feature = "slow-tests")]
     #[instantiate_tests(<14>)]
     mod large_window {}
 }

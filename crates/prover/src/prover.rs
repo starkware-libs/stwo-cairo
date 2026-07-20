@@ -480,15 +480,16 @@ pub mod tests {
     use cairo_vm::types::layout_name::LayoutName;
     use stwo::core::pcs::PcsConfig;
     use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
-    use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
-        PreProcessedTrace, testing_preprocessed_tree,
-    };
+    use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
+    #[cfg(feature = "slow-tests")]
+    use stwo_cairo_common::preprocessed_columns::preprocessed_trace::testing_preprocessed_tree;
     use stwo_cairo_dev_utils::utils::get_compiled_cairo_program_path;
     use stwo_cairo_dev_utils::vm_utils::{ProgramType, run_and_adapt};
 
     use crate::debug_tools::assert_constraints::assert_cairo_constraints;
     use crate::prover::{ChannelHash, PreProcessedTraceVariant, ProverParameters, prove_cairo};
 
+    #[cfg(feature = "slow-tests")]
     #[test]
     fn test_all_cairo_constraints() {
         let compiled_program =
