@@ -3,7 +3,6 @@
 //! Cairo port of `compute_circuit_hash_host` in the `circuit-verifier` crate (stwo-circuits repo).
 //! The component log sizes are taken in `ComponentList` (canonical) order, so this must match the
 //! packing there byte-for-byte for the Fiat-Shamir transcript to agree.
-#[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::Hash;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_utils::blake2s::hash_u32s;
@@ -45,6 +44,11 @@ pub fn compute_circuit_hash(log_blowup_factor: u32, preprocessed_root: Hash) -> 
     let mut words = config_words(log_blowup_factor);
     words.append_span(preprocessed_root.hash.unbox().span());
     Hash { hash: hash_u32s(words.span()) }
+}
+
+#[cfg(feature: "poseidon252_verifier")]
+pub fn compute_circuit_hash(_log_blowup_factor: u32, _preprocessed_root: Hash) -> Hash {
+    panic!("the privacy recursive circuit verifier only supports the blake2s hasher")
 }
 
 #[cfg(test)]
