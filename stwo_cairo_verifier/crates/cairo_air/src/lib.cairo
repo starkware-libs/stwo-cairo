@@ -302,9 +302,7 @@ fn verify_claim(claim: @CairoClaim) {
     assert!(initial_ap <= final_ap);
     assert!(final_ap < pow2(29));
 
-    // Sanity check: ensure that the maximum address in the address_to_id component fits within a
-    // 29-bit address space (i.e., is less than 2**29).
-    // Higher addresses are not supported by components that assume 29-bit addresses.
+    // Sanity check: the maximum address in the address_to_id component is at most 2**29.
     assert!(
         (*claim.memory_address_to_id).unwrap().log_size <= 29_u32 - LOG_MEMORY_ADDRESS_TO_ID_SPLIT,
     );
