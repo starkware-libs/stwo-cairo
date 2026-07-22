@@ -58,17 +58,17 @@ mod tests {
     use stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash;
     use super::{BLAKE2S_DIGEST_N_WORDS, compute_circuit_hash};
 
-    /// Known-answer test: `blake2s` over the canonical `log_blowup_factor` (3) and component log
+    /// Known-answer test: `blake2s` over the canonical `log_blowup_factor` (1) and component log
     /// sizes, and `preprocessed_root = [0, 1, .., 7]`, cross-checked against an independent
     /// `blake2s` reference. This pins the byte packing against `compute_circuit_hash_host` in the
     /// stwo-circuits repo.
     #[test]
     fn compute_circuit_hash_matches_reference() {
-        let log_blowup_factor = 3;
+        let log_blowup_factor = 1;
         let preprocessed_root = Blake2sHash { hash: BoxImpl::new([0, 1, 2, 3, 4, 5, 6, 7]) };
         let expected: [u32; BLAKE2S_DIGEST_N_WORDS] = [
-            0xa8810641, 0x52391285, 0x90b37fd2, 0x905b887a, 0x7db7dc81, 0xa7c3a731, 0xd0d46b34,
-            0x8fa6a471,
+            0x5b6cadf2, 0x78860d2c, 0xde9b6924, 0xf656020c, 0xc965e2b2, 0x0bb57f82, 0x9236ceb4,
+            0x388feeb7,
         ];
         assert!(
             compute_circuit_hash(log_blowup_factor, preprocessed_root).hash.unbox() == expected,
