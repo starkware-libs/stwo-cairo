@@ -3513,7 +3513,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo"
 version = "2.2.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=8f9b7be9#8f9b7be99de6f8f6f116036da23f5d050945bd8c"
+source = "git+https://github.com/starkware-libs/stwo?rev=7b211edd#7b211edde786775016ef3eecb837a6240d8fe792"
 dependencies = [
  "blake2",
  "blake3",
@@ -3542,7 +3542,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils"
 version = "2.2.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=8f9b7be9#8f9b7be99de6f8f6f116036da23f5d050945bd8c"
+source = "git+https://github.com/starkware-libs/stwo?rev=7b211edd#7b211edde786775016ef3eecb837a6240d8fe792"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -3554,7 +3554,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "2.2.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=8f9b7be9#8f9b7be99de6f8f6f116036da23f5d050945bd8c"
+source = "git+https://github.com/starkware-libs/stwo?rev=7b211edd#7b211edde786775016ef3eecb837a6240d8fe792"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3695,7 +3695,7 @@ dependencies = [
 [[package]]
 name = "stwo-constraint-framework"
 version = "2.2.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=8f9b7be9#8f9b7be99de6f8f6f116036da23f5d050945bd8c"
+source = "git+https://github.com/starkware-libs/stwo?rev=7b211edd#7b211edde786775016ef3eecb837a6240d8fe792"
 dependencies = [
  "hashbrown 0.15.5",
  "itertools 0.12.1",
