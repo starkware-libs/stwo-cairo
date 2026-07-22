@@ -134,13 +134,13 @@ pub impl CircuitAirImpl of Air<CircuitAir> {
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
             range_check_16,
-            eq,
-            triple_xor,
-            m_31_to_u_32,
             verify_bitwise_xor_9,
-            blake_g_gate,
+            triple_xor,
+            eq,
+            m_31_to_u_32,
             verify_bitwise_xor_12,
             qm31_ops,
+            blake_g_gate,
         } = self;
 
         verify_bitwise_xor_4
@@ -179,7 +179,7 @@ pub impl CircuitAirImpl of Air<CircuitAir> {
                 random_coeff,
                 [].span(),
             );
-        eq
+        verify_bitwise_xor_9
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -197,25 +197,16 @@ pub impl CircuitAirImpl of Air<CircuitAir> {
                 random_coeff,
                 [].span(),
             );
+        eq
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                [].span(),
+            );
         m_31_to_u_32
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                [].span(),
-            );
-        verify_bitwise_xor_9
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                [].span(),
-            );
-        blake_g_gate
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -234,6 +225,15 @@ pub impl CircuitAirImpl of Air<CircuitAir> {
                 [].span(),
             );
         qm31_ops
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                [].span(),
+            );
+        blake_g_gate
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
