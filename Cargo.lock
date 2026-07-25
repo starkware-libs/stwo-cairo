@@ -1317,6 +1317,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c8d4a3bb8b1e0c1050499d1815f5ab16d04f0959b233085fb31653fbfc9d98f9"
 
 [[package]]
+name = "cmake"
+version = "0.1.58"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c0f78a02292a74a88ac736019ab962ece0bc380e3f977bf72e376c5d78ff0678"
+dependencies = [
+ "cc",
+]
+
+[[package]]
 name = "colorchoice"
 version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3513,12 +3522,13 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo"
 version = "2.2.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=7b211edd#7b211edde786775016ef3eecb837a6240d8fe792"
+source = "git+https://github.com/starkware-libs/stwo?rev=616027ce#616027cec74b070333b3260addd7d2e10be5b422"
 dependencies = [
  "blake2",
  "blake3",
  "bytemuck",
  "cfg-if",
+ "cmake",
  "dashmap",
  "educe 0.5.11",
  "fnv",
@@ -3542,7 +3552,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils"
 version = "2.2.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=7b211edd#7b211edde786775016ef3eecb837a6240d8fe792"
+source = "git+https://github.com/starkware-libs/stwo?rev=616027ce#616027cec74b070333b3260addd7d2e10be5b422"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -3554,7 +3564,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "2.2.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=7b211edd#7b211edde786775016ef3eecb837a6240d8fe792"
+source = "git+https://github.com/starkware-libs/stwo?rev=616027ce#616027cec74b070333b3260addd7d2e10be5b422"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3695,7 +3705,7 @@ dependencies = [
 [[package]]
 name = "stwo-constraint-framework"
 version = "2.2.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=7b211edd#7b211edde786775016ef3eecb837a6240d8fe792"
+source = "git+https://github.com/starkware-libs/stwo?rev=616027ce#616027cec74b070333b3260addd7d2e10be5b422"
 dependencies = [
  "hashbrown 0.15.5",
  "itertools 0.12.1",
