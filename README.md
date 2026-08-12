@@ -15,6 +15,10 @@
 
 ---
 
+## Repository migration
+
+Starting from end of July 2026, all development on this repository is moved to [`www.github.com/starkware-libs/proving`](https://github.com/starkware-libs/proving).
+
 ## Overview
 
 Stwo Cairo is a **Circle STARK** prover and verifier for the [Cairo CPU](https://eprint.iacr.org/2021/1063) — the zero-knowledge virtual machine that powers Starknet and the broader StarkWare proving stack. It produces succinct, non-interactive proofs of correct Cairo execution and verifies them in two complementary settings:
