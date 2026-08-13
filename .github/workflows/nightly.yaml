@@ -9,20 +9,20 @@ jobs:
   run-tests:
     runs-on: namespace-profile-starkware-libs-stwo-cairo-xlarge-ubuntu-24-04-amd64
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential
       - name: Install Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@166cdcfd11aee3cb47222f9ddb555ce30ddb9659 # v1
       - name: Install Scarb
-        uses: software-mansion/setup-scarb@v1
-      - uses: Swatinem/rust-cache@v2
+        uses: software-mansion/setup-scarb@2a96b748888e3329ee44ac9ac073d930e692b3cd # v1
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
       - name: Run tests
         run: cargo test --release --features="nightly"
 
       - name: Notify Slack
         if: always()
-        uses: slackapi/slack-github-action@v2
+        uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2
         with:
           webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
           webhook-type: incoming-webhook

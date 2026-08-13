@@ -18,8 +18,8 @@ jobs:
       run:
         working-directory: ./stwo_cairo_verifier
     steps:
-      - uses: actions/checkout@v6
-      - uses: software-mansion/setup-scarb@v1
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: software-mansion/setup-scarb@2a96b748888e3329ee44ac9ac073d930e692b3cd # v1
       - run: scarb fmt --check
 
   scarb-lint:
@@ -28,8 +28,8 @@ jobs:
       run:
         working-directory: ./stwo_cairo_verifier
     steps:
-      - uses: actions/checkout@v6
-      - uses: software-mansion/setup-scarb@v1
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: software-mansion/setup-scarb@2a96b748888e3329ee44ac9ac073d930e692b3cd # v1
       - run: scarb lint --features=qm31_opcode --deny-warnings
 
   scarb-test:
@@ -128,8 +128,8 @@ jobs:
             runner: namespace-profile-starkware-libs-stwo-cairo-xlarge-ubuntu-24-04-amd64
 
     steps:
-      - uses: actions/checkout@v6
-      - uses: software-mansion/setup-scarb@v1
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: software-mansion/setup-scarb@2a96b748888e3329ee44ac9ac073d930e692b3cd # v1
       - run: scarb test --features=${{ matrix.feature }} --package ${{ matrix.package }}
       - if: matrix.package == 'stwo_cairo_verifier'
         run: scarb --profile proving execute --package stwo_cairo_verifier --features ${{ matrix.feature }} --print-resource-usage --output none --arguments-file ${{ matrix.proof_file }}
@@ -146,8 +146,8 @@ jobs:
           - stwo_circuit_air
           - stwo_circuit_verifier
     steps:
-      - uses: actions/checkout@v6
-      - uses: software-mansion/setup-scarb@v1
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: software-mansion/setup-scarb@2a96b748888e3329ee44ac9ac073d930e692b3cd # v1
       - run: scarb test --features=${{ matrix.feature }} --package ${{ matrix.package }}
       - if: matrix.package == 'stwo_circuit_verifier' && matrix.feature == 'qm31_opcode'
         run: scarb --profile proving execute --package stwo_circuit_verifier --features ${{ matrix.feature }} --print-resource-usage --output none --arguments-file crates/circuit_air/test_data/proof.json
@@ -162,56 +162,56 @@ jobs:
       RUST_LOG: info
       RUST_BACKTRACE: full
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - name: Install build dependencies
         run: sudo apt-get update && sudo apt-get install -y build-essential
       - name: Install Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-      - uses: software-mansion/setup-scarb@v1
+        uses: actions-rust-lang/setup-rust-toolchain@166cdcfd11aee3cb47222f9ddb555ce30ddb9659 # v1
+      - uses: software-mansion/setup-scarb@2a96b748888e3329ee44ac9ac073d930e692b3cd # v1
       - name: Install latest nextest release
-        uses: taiki-e/install-action@nextest
+        uses: taiki-e/install-action@37ba67210166984a515120020147f0b4ae3b8667 # nextest
       - name: Fetch cache
-        uses: Swatinem/rust-cache@v2
+        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
       - run: cargo nextest run --cargo-profile witness-opt-1 --features=slow-tests,integration -j ${{ env.NEXTTEST_THREADS }} -P ci
       - run: cargo nextest run --cargo-profile witness-opt-1 --features=extract-mem-trace test_serialize_deserialize_mem_trace -j ${{ env.NEXTTEST_THREADS }} -P ci
 
   cairo-prover-wasm:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - id: rust-toolchain
         run: echo "channel=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)" >> "$GITHUB_OUTPUT"
-      - uses: dtolnay/rust-toolchain@master
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
         with:
           toolchain: ${{ steps.rust-toolchain.outputs.channel }}
           targets: x86_64-unknown-linux-gnu
           components: rust-src
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
       - name: Build stwo_cairo_prover for wasm64
         run: RUSTFLAGS='--cfg getrandom_backend="custom"' cargo check --target wasm64-unknown-unknown -Z build-std=std,panic_abort --package stwo-cairo-prover --release 
 
   cairo-air-wasm:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - id: rust-toolchain
         run: echo "channel=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)" >> "$GITHUB_OUTPUT"
-      - uses: dtolnay/rust-toolchain@master
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
         with:
           toolchain: ${{ steps.rust-toolchain.outputs.channel }}
           targets: wasm32-unknown-unknown
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
       - name: Build cairo-air for wasm32
         run: cargo check --package cairo-air --no-default-features --target wasm32-unknown-unknown --release
 
   crates-stable:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: dtolnay/rust-toolchain@master
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
         with:
           toolchain: ${{ env.STABLE_VERSION }}
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
       - name: Check workspace crates (except prover and dev-utils) compile on stable
         env:
           RUSTUP_TOOLCHAIN: ${{ env.STABLE_VERSION }}
@@ -220,36 +220,36 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - id: rust-toolchain
         run: echo "channel=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)" >> "$GITHUB_OUTPUT"
-      - uses: dtolnay/rust-toolchain@master
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
         with:
           components: rustfmt
           toolchain: ${{ steps.rust-toolchain.outputs.channel }}
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
       - run: scripts/rust_fmt.sh --check
 
   clippy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - id: rust-toolchain
         run: echo "channel=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)" >> "$GITHUB_OUTPUT"
-      - uses: dtolnay/rust-toolchain@master
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
         with:
           components: clippy
           toolchain: ${{ steps.rust-toolchain.outputs.channel }}
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
       - run: scripts/clippy.sh
 
   cargo-lock:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - id: rust-toolchain
         run: echo "channel=$(sed -n 's/^channel = "\(.*\)"$/\1/p' rust-toolchain.toml)" >> "$GITHUB_OUTPUT"
-      - uses: dtolnay/rust-toolchain@master
+      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
         with:
           toolchain: ${{ steps.rust-toolchain.outputs.channel }}
       - name: Check Cargo.lock is up-to-date
@@ -258,8 +258,8 @@ jobs:
   typos:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: crate-ci/typos@v1.30.1
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: crate-ci/typos@72f3776b6edc3a10a567b8e43fd0524b2a3f1419 # v1.30.1
 
   merge-gatekeeper:
     runs-on: ubuntu-latest
@@ -271,7 +271,7 @@ jobs:
     steps:
       - name: Run Merge Gatekeeper on pull request
         if: github.event_name == 'pull_request'
-        uses: upsidr/merge-gatekeeper@v1
+        uses: upsidr/merge-gatekeeper@09af7a82c1666d0e64d2bd8c01797a0bcfd3bb5d # v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           timeout: 2500
@@ -280,7 +280,7 @@ jobs:
 
       - name: Run Merge Gatekeeper on Merge Queue || push
         if: github.event_name == 'merge_group' || github.event_name == 'push'
-        uses: upsidr/merge-gatekeeper@v1
+        uses: upsidr/merge-gatekeeper@09af7a82c1666d0e64d2bd8c01797a0bcfd3bb5d # v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{github.ref}}
