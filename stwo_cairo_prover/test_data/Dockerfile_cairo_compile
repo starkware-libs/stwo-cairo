@@ -1,0 +1,19 @@
+FROM ciimage/python:3.9-ci
+
+RUN git clone https://github.com/starkware-libs/cairo-lang.git /app
+
+WORKDIR /app/
+RUN ./docker_common_deps.sh
+
+RUN chown -R starkware:starkware /app
+
+USER starkware
+
+# Build the cairo compiler.
+RUN bazel build //src/starkware/cairo/lang/compiler:cairo_compile_exe
+# Set the path to the standard library.
+ENV CAIRO_PATH ./src/
+# Set entrypoint as the copmiler executable.
+ENTRYPOINT [ "/app/build/bazelbin/src/starkware/cairo/lang/compiler/cairo_compile_exe" ]
+
+WORKDIR /inputs/
